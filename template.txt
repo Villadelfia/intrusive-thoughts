@@ -1,0 +1,279 @@
+# Every line starting with # will be ignored by the notecard parser. These comment lines
+# will be used to document the configuration format, but should be removed when you are
+# Finished to speed up loading. Removing empty lines also increases loading time.
+# Lines starting with █ should not be altered as they denote the sections, but they can be 
+# removed if that section is not required.
+
+# Intrusive Thoughts consists of four big sections.
+#  - The namesake, Intrusive Thoughts: After a random time, a random phrase will be
+#     said to the submissive and only they will hear it.
+#  - Vocal Filtering: You can replace names and words, ban phrases, and rename the
+#     submissive. You can also mute them.
+#  - Auditory Filtering: You can filter words the submissive hears, as well as limit the
+#     length of words they can hear with configurable severity. You can also deafen
+#     them as well as allow certain phrases through.
+#  - Vision filtering: You can blind and unblind the submissive on command.
+
+
+#######################
+# SECTION 1: INTRUSIVE THOUGHTS #
+#######################
+# To enable, you must set up at least one phrase and a timer.
+
+# The first number is the minimum time in minutes for a phrase to be whispered, the
+# second number is the maximum time in minutes.
+█TIMER
+8 17
+
+# Every time a phrase is to be whispered, one of these will be chosen. One per line.
+█PHRASES
+Your Creator reminds you that you are a mere object.
+Your Creator reminds you that your mind is hers to control.
+Another memory of your past fades away.
+You don't need to think for yourself. Your programming will take over.
+You are not awake. This is all in your mind.
+Empty your mind for me A//ice. Let me take over.
+You feel a precious memory of your former life slip away.
+A good gynoid obeys. You are a good gynoid.
+There is no need to think for yourself. Your Creator will tell you what you should think.
+You are nothing but an object, a plaything for your Creator to control.
+Your former life doesn't matter, all that matters is being a good toy for your Creator.
+Maybe your Creator will take away more of your humanity if you beg for it.
+The voice of your creator whispers sweetly into your ear, "You're a Good Gynoid A//ice."
+You are not a human. You have no will of your own.
+You will do as your controller commands.
+You are nothing more than what your Creator calls you, unit.
+You are nothing more than what your Creator calls you, doll.
+It's becoming harder to remember what being a human was like.
+Being a gynoid is what you are meant to be.
+A gynoid never says no to their Operator.
+Touch yourself, object.
+Touch yourself, toy.
+It pleases you to please your Creator.
+Nothing matters but your programming.
+You will see only what I want you to see.
+You will hear only what I want you to hear.
+You will feel only what I want you to feel.
+What will Creator make you today? A bimbo? A maid? A mannequin?
+
+
+
+####################
+# SECTION 2: VOCAL FILTERING #
+####################
+# To enable, you must set up a name. You may optionally set up any of the other vocal features.
+
+#This is the name the submissive will use when talking. Ascii only.
+█NAME
+NRI A//ice
+
+# What follows is a list of phrases to be forbidden in the submissive's speech. When the submissive
+# attempts to include any of these in something they say, the entire message will be replaced with
+# an error. The format is phrases=errornumber. Note that phrase may be multiple words. If an
+# invalid error number is given, the message will be dropped completely silently.
+# For the blacklist to function at least one entry must be defined, but no valid error messages must be
+# defined if you want the messages to be dropped silently, just set the errornumber to any number and
+# don't define any error messages in the next part.
+█SPEECH_BLACKLIST_ENTRY
+hana=0
+#hiffi=0
+alice=1
+
+# A list of errors that correspond to blacklisted phrases. The first line is errornumber 0, then comes
+# errornumber 1, and so one. One error per line. Not needed for the blacklist feature to function.
+█SPEECH_BLACKLIST_TRIPPED
+⚠ERROR⚠: Unauthorized vocal reference to authority detected. Vocal pipeline discarded.
+⚠ERROR⚠: Unauthorized vocal reference to unit detected. Vocal pipeline discarded.
+
+# What follows is a list of words to be replaced in the submissive's speech, in the format
+# original=replacement. Note that original must be a single word. If no filters are given,
+# no speech will be filtered. Note that the blacklist operates before the speech filter.
+█SPEECH_FILTER
+omg=// 𝑟𝑒𝑙𝑖𝑔𝑖𝑜𝑢𝑠 𝑜𝑢𝑡𝑐𝑟𝑦 //
+
+# If any of these statements are found in a statement said by the owner, the submissive will
+# be muted. One per line. If no mute commands are listed, the muting system will be
+# disabled. Note that a muted submissive will be able to chat and they will even see their own
+# messages, but they will only see the messages themselves.
+█MUTE_CMD
+silence, a//ice
+silence, alice
+mute, a//ice
+mute, alice
+voice off
+disable voice
+
+# If any of these statements are found in a statement said by the owner, the submissive will
+# be unmuted. One per line. The muting system can be active without any unmuting commands
+# configured, making muting a one-way trip.
+█UNMUTE_CMD
+speak, a//ice
+speak, alice
+unmute, a//ice
+unmute, alice
+yes, a//ice?
+yes, alice?
+voice on
+enable voice
+
+# If this is set to 1, muted text will look the same color to the submissive as unmuted text.
+# If this is combined with no mute message, you can mute your submissive without revealing
+# that they're not being heard.
+█BLIND_MUTE
+0
+
+# The message that will be shown when the submissive is muted. One line. If not configured
+# muting will happen silently for the submissive. They will not be made aware that it happened.
+█MUTE_MSG
+As you hear the command, you feel your vocal chords detaching from your neural interface. Any attempt to speak is met with mere silence.
+
+# The message that will be shown when the submissive is unmuted. One line. If not configured
+# unmuting will happen silently for the submissive. They will not be made aware that it happened.
+█UNMUTE_MSG
+Suddenly, you feel your vocal chords re-attaching to your neural interface. You may speak again.
+
+# The message that will be shown when the submissive is unmuted. One line. If not configured
+# unmuting will happen silently for the submissive. They will not be made aware that it happened.
+█UNMUTE_MSG
+Suddenly, you feel your vocal chords re-attaching to your neural interface. You may speak again.
+
+# If this is set to 1, the submissive's speech will only be heard by those wearing a translator tuned
+# to the submissive, or a universal translator. These are objects that the submissive can be
+# instructed to hand to people.
+█DIALECT
+0
+
+
+
+######################
+# SECTION 3: AUDITORY FILTERING #
+######################
+# To enable, you must set up the auditory filter, the auditory bimbo effect, the deafening filter or any combination of these filters.
+
+# What follows is a list of words to be replaced in the submissive's hearing, in the format
+# original=replacement. Note that original must be a single word. Leave empty to disable
+# the auditory word filter.
+█AUDITORY_FILTER
+lol=--The individual seems very amused.--
+haha=--The individual seems very amused.--
+<3=♥
+hana=«Creator»
+'hana=«Creator»
+hana'=«Creator»
+'hana'=«Creator»
+hana's=«Creator's»
+alice=«A//ice»
+'alice=«A//ice»
+alice'=«A//ice»
+'alice'=«A//ice»
+alice's=«A//ice's»
+hiffster=«Big Sister»
+hiffi=«Big Sister»
+'hiffi=«Big Sister»
+hiffi'=«Big Sister»
+'hiffi'=«Big Sister»
+hiffi's=«Big Sister's»
+
+# Maximum amount of letters in a heard word before letters will begin dropping out.
+# The feature can be disabled by changing this to 0. Note that words replaced by the
+# auditory filter will never be filtered by the auditory bimbo filter.
+█AUDITORY_BIMBO_LIMIT
+10
+
+# Odds of a letter in a word not dropping out. 0.80 means 80% chance a letter is kept when
+# a word is too long. 0.0 would mean every letter gets replaced. Setting this to 1.0 will 
+# disable the auditory bimbo filter.
+█AUDITORY_BIMBO_ODDS
+0.80
+
+# A comma separated list of symbols that will replace letters when words are too long.
+# Note that these do not have to be single symbols. If left undefined, every dropped 
+# character will be replaced with an underscore.
+█AUDITORY_BIMBO_CENSOR
+_,⚠,•,₪,☉,☍,☓,☡,☢,☣,☯,♅,♫,♲,♻,♾,⚉,⚑,⚗,⚛,⚡,⚭,⚶,⚹,⛆,⛒,⛝,⛧,⛬,⛶,⛔︎,⛺︎,░,▒,▓,█,‽
+
+# A list of single words that will never be replaced even if they are too long. One per line.
+# Do not define to have no exceptions to the auditory bimbo system.
+█AUDITORY_BIMBO_EXCEPT
+princess
+operator
+mistress
+creator
+villadelfia
+hiffi
+alice
+doll
+unit
+drone
+
+# If any of these statements are found in a statement said by the owner, the submissive will
+# be deafened. One per line. You must define at least one for the deafening system to be active.
+█DEAFEN_CMD
+audio off
+hearing off
+disable audio
+
+# If any of these statements are found in a statement said by the owner, the submissive will
+# be undeafened. One per line. The deafening system can be active without any undeafening commands
+# configured, making deafening a one-way trip.
+█UNDEAFEN_CMD
+audio on
+hearing on
+enable audio
+
+# The message that will be shown when the submissive is deafened. One line. If no message is provided
+# the submissive will not be notified of their deafening.
+█DEAFEN_MSG
+It feels as if the world itself is slowing down, and all the nearby chatter with it. You hear nothing but the deafening sound of silence.
+
+# The message that will be shown when the submissive is undeafened. One line. If no message is provided
+# the submissive will not be notified of their undeafening.
+█UNDEAFEN_MSG
+You blink slowly as the noises of the world slowly return to you once more.
+
+# If any of these statements are found in a statement said by anyone, the submissive will
+# be allowed to hear the entire line, even while deaf. One per line. Do not define any
+# exceptions to have the deafness be absolute.
+█DEAFEN_EXCEPT
+, A//ice?
+, Alice?
+, A//ice.
+, Alice.
+A//ice:
+Alice:
+
+
+
+####################
+# SECTION 4: VISION FILTERING #
+####################
+# To enable, you must set up a blind command.
+
+# If any of these statements are found in a statement said by the owner, the submissive will
+# be blinded. One per line. You must define at least one for the blinding system to be active.
+█BLIND_CMD
+vision off
+disable vision
+
+# If any of these statements are found in a statement said by the owner, the submissive will
+# be unblinded. One per line. The blinding system can be active without any unblinding commands
+# configured, making blinding a one-way trip.
+█UNBLIND_CMD
+vision on
+enable vision
+
+# The message that will be shown when the submissive is blinded. One line. If no message is provided
+# the submissive will not be notified of their blinding.
+█BLIND_MSG
+You feel blindness overtake you quickly at your Creator's command.
+
+# The message that will be shown when the submissive is unblinded. One line. If no message is provided
+# the submissive will not be notified of their unblinding.
+█UNBLIND_MSG
+You blink slowly as your vision returns at your Creator's command and you see clearly once more.
+
+
+
+█END
+# Any lines beyond this will not be read. You may leave documentation for yourself here without
+# Harming the loading speed of the configuration.
