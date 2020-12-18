@@ -42,7 +42,7 @@ setText()
     if(line >= lines) 
     {
         llSetText("" , <1.0, 1.0, 1.0>, 0.0);
-        llRegionSay(MANTRA_CHANNEL, "END");
+        llRegionSayTo(target, MANTRA_CHANNEL, "END");
     }
     else 
     {

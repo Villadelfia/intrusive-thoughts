@@ -162,8 +162,17 @@ default
     {
         if(c == RLV_CHANNEL)
         {
-            if(path != "~") llRegionSayTo(owner, 0, "RLV folders in #RLV/" + path + ":\n" + strreplace(m, ",", "\n"));
-            else            llRegionSayTo(owner, 0, "RLV command response: " + m);
+            if(path != "~") 
+            {
+                list stuff = llParseString2List(m, [","], []);
+                stuff = llListSort(stuff, 1, TRUE);
+                llRegionSayTo(owner, 0, "RLV folders in #RLV/" + path + ":\n" + llDumpList2String(stuff, "\n"));
+            }
+            else
+            {
+                llRegionSayTo(owner, 0, "RLV command response: " + m);
+            }
+            llRegionSay(RLV_CHANNEL, m);
             return;
         }
         if(c == 1)
@@ -199,6 +208,10 @@ default
             m = llDeleteSubString(m, 0, llStringLength("NAME"));
             name = m;
         }
+        else if(m == "END")
+        {
+            llRegionSayTo(owner, 0, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+        }
         else if(llToLower(m) == "noim")
         {
             if(noim)
@@ -219,12 +232,23 @@ default
         }
         else if(llToLower(m) == "strip")
         {
+            llRegionSayTo(owner, 0, "Stripping " + name + " of all clothes.");
             llOwnerSay("@detach=force");
         }
         else if(llToLower(m) == "listoutfit")
         {
             path = "~outfit";
             llOwnerSay("@getinv:~outfit=" + (string)RLV_CHANNEL);
+        }
+        else if(llToLower(m) == "liststuff")
+        {
+            path = "~stuff";
+            llOwnerSay("@getinv:~stuff=" + (string)RLV_CHANNEL);
+        }
+        else if(llToLower(m) == "listform")
+        {
+            path = "~form";
+            llOwnerSay("@getinv:~stuff=" + (string)RLV_CHANNEL);
         }
         else if(startswith(llToLower(m), "list"))
         {
@@ -234,12 +258,50 @@ default
         else if(startswith(llToLower(m), "outfit"))
         {
             path = llDeleteSubString(m, 0, llStringLength("outfit"));
+            llRegionSayTo(owner, 0, "Stripping " + name + " of her outfit, then wearing outfit '" + path + "'.");
             llOwnerSay("@detachall:~outfit=force,attachover:~outfit/" + path + "=force");
+        }
+        else if(startswith(llToLower(m), "outfitstrip"))
+        {
+            path = llDeleteSubString(m, 0, llStringLength("outfitstrip"));
+            llRegionSayTo(owner, 0, "Stripping " + name + " of all clothes, then wearing outfit '" + path + "'.");
+            llOwnerSay("@detach=force,attachover:~outfit/" + path + "=force");
+        }
+        else if(startswith(llToLower(m), "form"))
+        {
+            path = llDeleteSubString(m, 0, llStringLength("form"));
+            llRegionSayTo(owner, 0, "Stripping " + name + " of all clothes, then wearing form '" + path + "'.");
+            llOwnerSay("@detach=force,attachover:~form/" + path + "=force");
+        }
+        else if(startswith(llToLower(m), "add"))
+        {
+            path = llDeleteSubString(m, 0, llStringLength("add"));
+            llRegionSayTo(owner, 0, "Wearing '~stuff/" + path + "' on " + name + ".");
+            llOwnerSay("@attachover:~stuff/" + path + "=force");
+        }
+        else if(startswith(llToLower(m), "remove"))
+        {
+            path = llDeleteSubString(m, 0, llStringLength("remove"));
+            llRegionSayTo(owner, 0, "Removing '~stuff/" + path + "' from " + name + ".");
+            llOwnerSay("@detachall:~stuff/" + path + "=force");
+        }
+        else if(startswith(llToLower(m), "+"))
+        {
+            path = llDeleteSubString(m, 0, 0);
+            llRegionSayTo(owner, 0, "Wearing '~stuff/" + path + "' on " + name + ".");
+            llOwnerSay("@attachover:~stuff/" + path + "=force");
+        }
+        else if(startswith(llToLower(m), "-"))
+        {
+            path = llDeleteSubString(m, 0, 0);
+            llRegionSayTo(owner, 0, "Removing '~stuff/" + path + "' from " + name + ".");
+            llOwnerSay("@detachall:~stuff/" + path + "=force");
         }
         else if(startswith(m, "@"))
         {
             m = strreplace(m, "RLV_CHANNEL", (string)RLV_CHANNEL);
             path = "~";
+            llRegionSayTo(owner, 0, "Executing RLV command'" + m + "' on " + name + ".");
             llOwnerSay(m);
         }
     }

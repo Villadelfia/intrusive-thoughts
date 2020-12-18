@@ -13,6 +13,7 @@ list auditoryfilterto = [];
 integer auditorybimbolimit = 0;
 float auditorybimboodds = 1.0;
 list auditorybimbocensor = ["_"];
+list auditorybimboreplace = ["blah"];
 list auditorybimboexcept = [];
 string deafenmsg = "";
 string undeafenmsg = "";
@@ -45,6 +46,8 @@ handleHear(key skey, string sender, string message)
 {
     if(!setup) return;
     if(startswith(message, "((") == TRUE && endswith(message, "))") == TRUE) return;
+    integer emote = FALSE;
+    if(startswith(llToLower(message), "/me")) emote = TRUE;
     while(startswith(message, "@")) message = llDeleteSubString(message, 0, 0);
     integer l1;
     string messagecopy;
@@ -53,6 +56,8 @@ handleHear(key skey, string sender, string message)
     string oldword;
     string prefix;
     string nameSay;
+    string newword;
+    integer quotecnt = 0;
 
     if(deaf)
     {
@@ -151,29 +156,55 @@ handleHear(key skey, string sender, string message)
         }
 
         // Then we bimbofy if the word is unchanged, too long and not in the exception list.
-        else if(auditorybimbolimit > 0 && llStringLength(word) > auditorybimbolimit && llListFindList(auditorybimboexcept, [llToLower(word)]) == -1)
+        else if(auditorybimbolimit > 0 && 
+                llStringLength(word) >= auditorybimbolimit && 
+                llListFindList(auditorybimboexcept, [llToLower(word)]) == -1 &&
+                (emote == FALSE || quotecnt % 2 != 0))
         {
-            string newword;
-            while(llStringLength(word) > 0)
+            if(auditorybimboodds > 0.0)
             {
-                if(llFrand(1.0) < auditorybimboodds)
+                while(llStringLength(word) > 0)
                 {
-                    newword += llGetSubString(word, 0, 0);
-                    word = llDeleteSubString(word, 0, 0);
+                    if(llFrand(1.0) < auditorybimboodds)
+                    {
+                        newword += llGetSubString(word, 0, 0);
+                        word = llDeleteSubString(word, 0, 0);
+                    }
+                    else
+                    {
+                        newword += llList2String(auditorybimbocensor, llFloor(llFrand(llGetListLength(auditorybimbocensor))));
+                        word = llDeleteSubString(word, 0, 0);
+                    }
                 }
-                else
+                word = newword;
+            }
+            else
+            {
+                if(word != "")
                 {
-                    newword += llList2String(auditorybimbocensor, llFloor(llFrand(llGetListLength(auditorybimbocensor))));
-                    word = llDeleteSubString(word, 0, 0);
+                    if(llFrand(1.0) < 0.01) newword = llList2String(auditorybimboexcept, llFloor(llFrand(llGetListLength(auditorybimboexcept))));
+                    else                    newword = llList2String(auditorybimboreplace, llFloor(llFrand(llGetListLength(auditorybimboreplace))));
+                    if(llToUpper(word) == word)
+                    {
+                        word = llToUpper(newword);
+                    }
+                    else if(llToUpper(llGetSubString(word, 0, 0)) == llGetSubString(word, 0, 0))
+                    {
+                        word = llToUpper(llGetSubString(newword, 0, 0)) + llGetSubString(newword, 1, -1);
+                    }
+                    else
+                    {
+                        word = newword;
+                    }
                 }
             }
-            word = newword;
         }
 
         message += word;
         if(llStringLength(messagecopy) != llStringLength(oldword))
         {
             message += llGetSubString(messagecopy, llStringLength(oldword), llStringLength(oldword));
+            if(llGetSubString(message, -1, -1) == "\"") quotecnt++;
         }
         messagecopy = llDeleteSubString(messagecopy, 0, llStringLength(oldword));
     }
@@ -235,6 +266,7 @@ default
             auditorybimboodds = 1.0;
             auditorybimbocensor = ["_"];
             auditorybimboexcept = [];
+            auditorybimboreplace = ["blah"];
             deafenmsg = "";
             undeafenmsg = "";
             deafencmd = [];
@@ -277,6 +309,12 @@ default
             m = llDeleteSubString(m, 0, llStringLength("AUDITORY_BIMBO_EXCEPT"));
             auditorybimboexcept += [llToLower(m)];
         }
+        else if(startswith(m, "AUDITORY_BIMBO_REPLACE"))
+        {
+            if(llList2String(auditorybimboreplace, 0) == "blah" && llGetListLength(auditorybimboreplace) == 1) auditorybimboreplace = [];
+            m = llDeleteSubString(m, 0, llStringLength("AUDITORY_BIMBO_REPLACE"));
+            auditorybimboreplace += [m];
+        }
         else if(startswith(m, "DEAFEN_MSG"))
         {
             m = llDeleteSubString(m, 0, llStringLength("DEAFEN_MSG"));
@@ -301,6 +339,10 @@ default
         {
             m = llDeleteSubString(m, 0, llStringLength("DEAFEN_EXCEPT"));
             deafenexcept += [llToLower(m)];
+        }
+        else if(m == "END")
+        {
+            llRegionSayTo(owner, 0, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         checkSetup();
     }

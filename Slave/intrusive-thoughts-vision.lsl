@@ -146,5 +146,9 @@ default
             m = llDeleteSubString(m, 0, llStringLength("UNBLIND_CMD"));
             unblindcmd += [llToLower(m)];
         }
+        else if(m == "END")
+        {
+            llRegionSayTo(owner, 0, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+        }
     }
 }

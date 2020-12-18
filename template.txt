@@ -122,6 +122,20 @@ enable voice
 █BLIND_MUTE
 0
 
+# This setting decides how the muting will work. If not defined it will default to DROP.
+#    DROP: Chat just gets dropped.
+#    REPLACE: Every line said will be replaced with a random line in the replacement list.
+#    CENSOR: Every word said will be replaced with a random line in the replacement list.
+█MUTE_TYPE
+CENSOR
+
+# The list of lines or words in the MUTE_CENSOR setting is used when MUTE_TYPE is set 
+# to CENSOR or REPLACE.
+█MUTE_CENSOR
+blah
+blaah
+blaaah
+
 # The message that will be shown when the submissive is muted. One line. If not configured
 # muting will happen silently for the submissive. They will not be made aware that it happened.
 █MUTE_MSG
@@ -181,8 +195,9 @@ hiffi's=«Big Sister's»
 10
 
 # Odds of a letter in a word not dropping out. 0.80 means 80% chance a letter is kept when
-# a word is too long. 0.0 would mean every letter gets replaced. Setting this to 1.0 will 
-# disable the auditory bimbo filter.
+# a word is too long. Setting this to 1.0 will disable the auditory bimbo filter.
+# A special mode is activated when this is set to 0.0: Entire words will be replaced
+# with random words from the AUDITORY_BIMBO_REPLACE list.
 █AUDITORY_BIMBO_ODDS
 0.80
 
@@ -191,6 +206,16 @@ hiffi's=«Big Sister's»
 # character will be replaced with an underscore.
 █AUDITORY_BIMBO_CENSOR
 _,⚠,•,₪,☉,☍,☓,☡,☢,☣,☯,♅,♫,♲,♻,♾,⚉,⚑,⚗,⚛,⚡,⚭,⚶,⚹,⛆,⛒,⛝,⛧,⛬,⛶,⛔︎,⛺︎,░,▒,▓,█,‽
+
+
+# This list is only used when AUDITORY_BIMBO_ODDS is set to 0.0. In that case, every word
+# that's filtered out is replaced with one of these. Note that for every word there's also
+# a 1% chance that a word from the AUDITORY_BIMBO_EXCEPT list will be picked instead as also
+# replacement.
+█AUDITORY_BIMBO_REPLACE
+blah
+blaah
+blaaah
 
 # A list of single words that will never be replaced even if they are too long. One per line.
 # Do not define to have no exceptions to the auditory bimbo system.

@@ -5,6 +5,7 @@
 #define API_SELF_DESC          -2
 #define API_SELF_SAY           -3
 #define API_SAY                -4
+#define API_ONLY_OTHERS_SAY    -5
 key owner = NULL_KEY;
 string name = "";
 list speechblacklistfrom = [];
@@ -15,8 +16,11 @@ list speechfilterto = [];
 integer mute = FALSE;
 string mutemsg = "";
 string unmutemsg = "";
+list mutecensor = [];
 list mutecmd = [];
 list unmutecmd = [];
+string mutetype = "DROP";
+integer blindmute = FALSE;
 
 integer getStringBytes(string msg)
 {
@@ -83,12 +87,16 @@ handleHear(key skey, string sender, string message)
 handleSay(string message)
 {
     if(startswith(message, "((") == TRUE && endswith(message, "))") == TRUE) return;
-
+    integer emote = FALSE;
+    if(startswith(llToLower(message), "/me") || startswith(llToLower(message), "/shout/me") || startswith(llToLower(message), "/shout /me") ||
+       startswith(llToLower(message), "/whisper/me") || startswith(llToLower(message), "/whisper /me")) emote = TRUE;
     integer l1;
     string messagecopy;
     string word;
     string oldword;
+    string newword;
     integer replaceidx;
+    integer quotecnt = 0;
     
     l1 = llGetListLength(speechblacklistfrom)-1;
     for(;l1 >= 0; --l1)
@@ -123,8 +131,67 @@ handleSay(string message)
 
     @blacklisttripped;
     integer bypass = startswith(message, "/me") == TRUE && contains(message, "\"") == FALSE;
-    if(mute == FALSE || bypass == TRUE) llMessageLinked(LINK_SET, API_SAY, message, (key)name);
-    else                                llMessageLinked(LINK_SET, API_SELF_SAY, message, (key)name);
+    if(mute == FALSE || bypass == TRUE) 
+    {
+        llMessageLinked(LINK_SET, API_SAY, message, (key)name);
+    }
+    else
+    {
+        if(mutetype == "DROP" || mutecensor == [])
+        {
+            llMessageLinked(LINK_SET, API_SELF_SAY, message, (key)name);
+        }
+        else if(mutetype == "REPLACE")
+        {
+            if(blindmute)
+            {
+                llMessageLinked(LINK_SET, API_SELF_SAY, message, (key)name);
+                llMessageLinked(LINK_SET, API_ONLY_OTHERS_SAY, llList2String(mutecensor, llFloor(llFrand(llGetListLength(mutecensor)))), (key)name);
+            }
+            else
+            {
+                llMessageLinked(LINK_SET, API_SAY, llList2String(mutecensor, llFloor(llFrand(llGetListLength(mutecensor)))), (key)name);
+            }
+        }
+        else
+        {
+            if(blindmute) llMessageLinked(LINK_SET, API_SELF_SAY, message, (key)name);
+            messagecopy = message;
+            message = "";
+            while(llStringLength(messagecopy) > 0)
+            {
+                word = llList2String(llParseStringKeepNulls(messagecopy, [" ", ",", "\"", ";", ":", ".", "!", "?"], []), 0);
+                oldword = word;
+
+                if(emote == FALSE || quotecnt % 2 != 0)
+                {
+                    newword = llList2String(mutecensor, llFloor(llFrand(llGetListLength(mutecensor))));
+                    if(llToUpper(word) == word)
+                    {
+                        word = llToUpper(newword);
+                    }
+                    else if(llToUpper(llGetSubString(word, 0, 0)) == llGetSubString(word, 0, 0))
+                    {
+                        word = llToUpper(llGetSubString(newword, 0, 0)) + llGetSubString(newword, 1, -1);
+                    }
+                    else
+                    {
+                        word = newword;
+                    }
+                }
+
+                message += word;
+                if(llStringLength(messagecopy) != llStringLength(oldword))
+                {
+                    message += llGetSubString(messagecopy, llStringLength(oldword), llStringLength(oldword));
+                    if(llGetSubString(message, -1, -1) == "\"") quotecnt++;
+                }
+                messagecopy = llDeleteSubString(messagecopy, 0, llStringLength(oldword));
+            }
+            if(blindmute) llMessageLinked(LINK_SET, API_ONLY_OTHERS_SAY, message, (key)name);
+            else          llMessageLinked(LINK_SET, API_SAY, message, (key)name);
+        }
+    }
 }
 
 checkSetup()
@@ -197,6 +264,8 @@ default
             unmutemsg = "";
             mutecmd = [];
             unmutecmd = [];
+            mutecensor = [];
+            blindmute = FALSE;
         }
         else if(startswith(m, "NAME"))
         {
@@ -241,6 +310,26 @@ default
         {
             m = llDeleteSubString(m, 0, llStringLength("UNMUTE_CMD"));
             unmutecmd += [llToLower(m)];
+        }
+        else if(startswith(m, "MUTE_CENSOR"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("MUTE_CENSOR"));
+            mutecensor += [llToLower(m)];
+        }
+        else if(startswith(m, "MUTE_TYPE"))
+        {
+            m = llToUpper(llDeleteSubString(m, 0, llStringLength("MUTE_TYPE")));
+            if(m == "DROP" || m == "REPLACE" || m == "CENSOR") mutetype = m;
+        }
+        else if(startswith(m, "BLIND_MUTE"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("BLIND_MUTE"));
+            if(m != "0") blindmute = TRUE;
+            else         blindmute = FALSE;
+        }
+        else if(m == "END")
+        {
+            llRegionSayTo(owner, 0, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         checkSetup();
     }

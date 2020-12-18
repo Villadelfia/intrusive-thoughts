@@ -6,6 +6,7 @@
 #define API_SELF_DESC          -2
 #define API_SELF_SAY           -3
 #define API_SAY                -4
+#define API_ONLY_OTHERS_SAY    -5
 key owner = NULL_KEY;
 integer blindmute = FALSE;
 integer speakon = 0;
@@ -79,14 +80,14 @@ handleSelfSay(string name, string message)
     llSetObjectName(currentObjectName);
 }
 
-handleSay(string name, string message)
+handleSay(string name, string message, integer excludeSelf)
 {
     list agents;
     integer l;
     vector pos;
     float range;
 
-    if(blindmute)
+    if(blindmute == TRUE || excludeSelf == TRUE)
     {
         agents = llGetAgentList(AGENT_LIST_REGION, []);
         l = llGetListLength(agents)-1;
@@ -118,14 +119,20 @@ handleSay(string name, string message)
     {
         if(bytes <= 1024)
         {
-            if(blindmute)
+            if(blindmute == TRUE || excludeSelf == TRUE)
             {
                 l = llGetListLength(agents)-1;
                 for(; l >= 0; --l)
                 {
                     key a = llList2Key(agents,l);
-                    if(a == llGetOwner()) llRegionSayTo(a, 0, message);
-                    else                  llRegionSayTo(a, speakon, message);
+                    if(a == llGetOwner()) 
+                    {
+                        if(excludeSelf == FALSE) llRegionSayTo(a, 0, message);
+                    }
+                    else
+                    {
+                        llRegionSayTo(a, speakon, message);
+                    }
                 }
             }
             else
@@ -140,14 +147,20 @@ handleSay(string name, string message)
         {
             integer offset = 0;
             while(bytes >= 1024) bytes = getStringBytes(llGetSubString(message, 0, --offset));
-            if(blindmute)
+            if(blindmute == TRUE || excludeSelf == TRUE)
             {
                 l = llGetListLength(agents)-1;
                 for(; l >= 0; --l)
                 {
                     key a = llList2Key(agents,l);
-                    if(a == llGetOwner()) llRegionSayTo(a, 0, llGetSubString(message, 0, offset));
-                    else                  llRegionSayTo(a, speakon, llGetSubString(message, 0, offset));
+                    if(a == llGetOwner())
+                    {
+                        if(excludeSelf == FALSE) llRegionSayTo(a, 0, llGetSubString(message, 0, offset));
+                    }
+                    else
+                    {
+                        llRegionSayTo(a, speakon, llGetSubString(message, 0, offset));
+                    }
                 }
             }
             else
@@ -170,7 +183,8 @@ default
         if(num == API_RESET && id == llGetOwner()) llResetScript();
         else if(num == API_SELF_DESC) handleSelfDescribe(str);
         else if(num == API_SELF_SAY) handleSelfSay((string)id, str);
-        else if(num == API_SAY) handleSay((string)id, str);
+        else if(num == API_SAY) handleSay((string)id, str, FALSE);
+        else if(num == API_ONLY_OTHERS_SAY) handleSay((string)id, str, TRUE);
     }
 
     changed(integer change)
@@ -195,12 +209,17 @@ default
         {
             m = llDeleteSubString(m, 0, llStringLength("BLIND_MUTE"));
             if(m != "0") blindmute = TRUE;
+            else         blindmute = FALSE;
         }
         else if(startswith(m, "DIALECT"))
         {
             m = llDeleteSubString(m, 0, llStringLength("DIALECT"));
             if(m != "0") speakon = SPEAK_CHANNEL;
             else         speakon = 0;
+        }
+        else if(m == "END")
+        {
+            llRegionSayTo(owner, 0, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
     }
 }

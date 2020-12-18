@@ -67,7 +67,7 @@ default
         if(k != owner && llGetOwnerKey(k) != owner) return;
         if(m == "RESET")
         {
-            llRegionSayTo(owner, 0, "Receiving new commands...");
+            llRegionSayTo(owner, 0, "Resetting configuration and listening to new programming...");
             statements = [];
         }
         else if(m == "LOCK")
@@ -87,7 +87,7 @@ default
         }
         else if(m == "END")
         {
-            llRegionSayTo(owner, 0, "Reprogrammed.");
+            llRegionSayTo(owner, 0, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         else if(m == "PING")
         {
