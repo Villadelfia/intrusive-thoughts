@@ -40,15 +40,46 @@ release(key id, integer disable)
     {
         llRegionSayTo(id, rlvrc, "release,"+(string)id+",!release,ok");
         integer sourceid = llListFindList(sources, [id]) + 1;
-        if(sourceid == 0) return;
-        if(sitidsetby == sourceid) sitid = NULL_KEY;
-        if(sourceid == 1) restrictions1 = [];
-        if(sourceid == 2) restrictions2 = [];
-        if(sourceid == 3) restrictions3 = [];
-        if(sourceid == 4) restrictions4 = [];
-        if(sourceid == 5) restrictions5 = [];
-        if(restrictions1 == [] && restrictions2 == [] && restrictions3 == [] && restrictions4 == [] && restrictions5 == []) llOwnerSay("@clear");
+        checkforclear(sourceid);
     }
+}
+
+checkforclear(integer sourceid)
+{
+    if(sourceid == 0) return;
+    if(sitidsetby == sourceid) sitid = NULL_KEY;
+    if(sourceid == 1) 
+    {
+        restrictions1 = restrictions2;
+        restrictions2 = restrictions3;
+        restrictions3 = restrictions4;
+        restrictions4 = restrictions5;
+        restrictions5 = [];
+    }
+    if(sourceid == 2)
+    {
+        restrictions2 = restrictions3;
+        restrictions3 = restrictions4;
+        restrictions4 = restrictions5;
+        restrictions5 = [];
+    }
+    if(sourceid == 3)
+    {
+        restrictions3 = restrictions4;
+        restrictions4 = restrictions5;
+        restrictions5 = [];
+    }
+    if(sourceid == 4)
+    {
+        restrictions4 = restrictions5;
+        restrictions5 = [];
+    }
+    if(sourceid == 5)
+    {
+        restrictions5 = [];
+    }
+    if(sourceid <= llGetListLength(sources)) sources = llDeleteSubList(sources, sourceid-1, sourceid-1);
+    if(restrictions1 == [] && restrictions2 == [] && restrictions3 == [] && restrictions4 == [] && restrictions5 == []) llOwnerSay("@clear");
 }
 
 integer startswith(string haystack, string needle)
@@ -229,20 +260,16 @@ default
            (sourceid == 4 && restrictions4 != []) ||
            (sourceid == 5 && restrictions5 != [])) 
         {
-            llOwnerSay("You got restricted by '" + w +"'.\nReminder: Type /1RED or click the purple half-circle to release yourself immediately.");
-            if(sourceid > llGetListLength(sources)) sources += [id];
-            llOwnerSay("@detach=n"); 
+            if(sourceid > llGetListLength(sources)) 
+            {
+                sources += [id];
+                llOwnerSay("You got restricted by '" + w +"'. It is device number " + (string)llGetListLength(sources) + " out of a maximum number of 5 that is currently controlling you.\n\nReminder: Type /1RED or click the purple half-circle to release yourself immediately.");
+                llOwnerSay("@detach=n");
+            }
         }
         else 
         {
-            if(sitidsetby == sourceid) sitid = NULL_KEY;
-            if(sourceid == 1) restrictions1 = [];
-            if(sourceid == 2) restrictions2 = [];
-            if(sourceid == 3) restrictions3 = [];
-            if(sourceid == 4) restrictions4 = [];
-            if(sourceid == 5) restrictions5 = [];
-            if(sourceid <= llGetListLength(sources)) sources = llDeleteSubList(sources, sourceid-1, sourceid-1);
-            if(restrictions1 == [] && restrictions2 == [] && restrictions3 == [] && restrictions4 == [] && restrictions5 == []) llOwnerSay("@clear");
+            checkforclear(sourceid);
         }
     }
  
