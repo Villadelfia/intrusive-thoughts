@@ -1,3 +1,4 @@
+#include <IT/globals.lsl>
 float interval = 60.0;
  
 default 

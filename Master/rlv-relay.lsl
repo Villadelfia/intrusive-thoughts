@@ -1,3 +1,4 @@
+#include <IT/globals.lsl>
 integer rlvrc = -1812221819;
 key wearer = NULL_KEY;
 integer viewerlistener = -1;

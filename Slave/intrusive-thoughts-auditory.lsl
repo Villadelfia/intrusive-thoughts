@@ -1,10 +1,4 @@
-#define MANTRA_CHANNEL -216684563
-#define VOICE_CHANNEL   166845631
-#define MC_CHANNEL            999
-#define API_RESET              -1
-#define API_SELF_DESC          -2
-#define API_SELF_SAY           -3
-#define API_SAY                -4
+#include <IT/globals.lsl>
 key owner = NULL_KEY;
 integer deaf = FALSE;
 string name = "";
@@ -21,26 +15,6 @@ list deafencmd = [];
 list undeafencmd = [];
 list deafenexcept = [];
 integer setup = FALSE;
-
-integer getStringBytes(string msg)
-{
-    return (llStringLength((string)llParseString2List(llStringToBase64(msg), ["="], [])) * 3) >> 2;
-}
-
-integer contains(string haystack, string needle)
-{
-    return 0 <= llSubStringIndex(haystack, needle);
-}
-
-integer endswith(string haystack, string needle)
-{
-    return llDeleteSubString(haystack, 0x8000000F, ~llStringLength(needle)) == needle;
-}
-
-integer startswith(string haystack, string needle)
-{
-    return llDeleteSubString(haystack, llStringLength(needle), 0x7FFFFFF0) == needle;
-}
 
 handleHear(key skey, string sender, string message)
 {
@@ -71,7 +45,7 @@ handleHear(key skey, string sender, string message)
                 {
                     deaf = FALSE;
                     llMessageLinked(LINK_SET, API_SELF_DESC, undeafenmsg, NULL_KEY);
-                    llRegionSayTo(owner, 0, name + " can hear the conversation again.");
+                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can hear the conversation again.");
                     jump cont1;
                 }
             }
@@ -84,7 +58,7 @@ handleHear(key skey, string sender, string message)
             if(contains(llToLower(message), llList2String(deafenexcept, l1)))
             {
                 llMessageLinked(LINK_SET, API_SELF_DESC, undeafenmsg, NULL_KEY);
-                llRegionSayTo(owner, 0, name + " heard that message because of exceptions.");
+                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " heard that message because of exceptions.");
                 jump cont1;
             }
         }
@@ -96,32 +70,32 @@ handleHear(key skey, string sender, string message)
 
     if(skey != llGetOwnerKey(skey))
     {
-        nameSay = sender;
+        string group = "";
+        if((string)llGetObjectDetails(skey, [OBJECT_OWNER]) == NULL_KEY)
+        {
+            group = "&groupowned=true";
+        }
+        vector pos = llList2Vector(llGetObjectDetails(skey, [OBJECT_POS]), 0);
+        string slurl = llEscapeURL(llGetRegionName()) + "/"+ (string)((integer)pos.x) + "/"+ (string)((integer)pos.y) + "/"+ (string)(llCeil(pos.z));
+        prefix = "[secondlife:///app/objectim/" + (string)skey + 
+                 "?name=" + llEscapeURL(sender) + 
+                 "&owner=" + (string)llGetOwnerKey(skey) + 
+                 group +
+                 "&slurl=" + llEscapeURL(slurl) + " " + sender + "]";
     }
     else
     {
-        if(endswith(sender, " Resident"))
-        {
-            sender = llDeleteSubString(sender, -9, -1);
-        }
-        if(llGetDisplayName(skey) != sender)
-        {
-            if(contains(sender, " Resident"))
-            {
-                sender = llDeleteSubString(sender, llSubStringIndex(sender, " Resident"), llStringLength("Resident"));
-            }
-            prefix = llGetDisplayName(skey) + " (" + sender + ")";
-            if(startswith(message, "/me"))
-            {
-                message = llDeleteSubString(message, 0, 2);
-            }
-            else
-            {
-                prefix += ": ";
-            }
-            sender = "";
-        }
-        nameSay = sender;
+        prefix = "secondlife:///app/agent/" + (string)skey + "/about";
+    }
+
+    if(startswith(message, "/me"))
+    {
+        prefix = "/me " + prefix;
+        message = llDeleteSubString(message, 0, 2);
+    }
+    else
+    {
+        prefix += ": ";
     }
 
     // Handle deafening by owner.
@@ -133,20 +107,55 @@ handleHear(key skey, string sender, string message)
             if(contains(llToLower(message), llList2String(deafencmd, l1)))
             {
                 deaf = TRUE;
-                llRegionSayTo(owner, 0, name + " can no longer hear the conversation.");
+                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer hear the conversation.");
                 jump cont2;
             }
         }
     }
     @cont2;
 
+    // Handle URLS.
+    messagecopy = message;
+    message = "";
+    integer inurl = FALSE;
+    while(llStringLength(messagecopy) > 0)
+    {
+        if(inurl)
+        {
+            if(llGetSubString(messagecopy, 0, 0) == " ")
+            {
+                message += "]]]";
+                inurl = FALSE;
+            }
+        }
+        else
+        {
+            if(startswith(messagecopy, "http://") || startswith(messagecopy, "https://") || startswith(messagecopy, "secondlife://"))
+            {
+                message += "[[[";
+                inurl = TRUE;
+            }
+        }
+        
+        message += llGetSubString(messagecopy, 0, 0);
+        messagecopy = llDeleteSubString(messagecopy, 0, 0);
+    }
+
     // Handle replacement.
     messagecopy = message;
     message = "";
+    inurl = 0;
     while(llStringLength(messagecopy) > 0)
     {
         word = llList2String(llParseStringKeepNulls(messagecopy, [" ", ",", "\"", ";", ":", ".", "?", "!"], []), 0);
         oldword = word;
+
+        if(startswith(oldword, "[[[")) 
+        {
+            word = llGetSubString(word, 3, -1);
+            inurl++;
+        }
+        if(inurl > 0) jump skipfilter;
 
         // First we check if it gets replaced.
         replaceidx = llListFindList(auditoryfilterfrom, [llToLower(word)]);
@@ -163,6 +172,7 @@ handleHear(key skey, string sender, string message)
         {
             if(auditorybimboodds > 0.0)
             {
+                newword = "";
                 while(llStringLength(word) > 0)
                 {
                     if(llFrand(1.0) < auditorybimboodds)
@@ -200,6 +210,13 @@ handleHear(key skey, string sender, string message)
             }
         }
 
+        @skipfilter;
+        if(endswith(oldword, "]]]") && inurl > 0)
+        {
+            word = llGetSubString(word, 0, -4);
+            inurl--;
+        }
+
         message += word;
         if(llStringLength(messagecopy) != llStringLength(oldword))
         {
@@ -210,7 +227,7 @@ handleHear(key skey, string sender, string message)
     }
 
     message = prefix + message;
-    llMessageLinked(LINK_SET, API_SELF_SAY, message, (key)nameSay);
+    llMessageLinked(LINK_SET, API_SELF_SAY, message, "");
     if(deaf) llMessageLinked(LINK_SET, API_SELF_DESC, deafenmsg, NULL_KEY);
 }
 
@@ -226,6 +243,11 @@ checkSetup()
         setup = FALSE;
         llOwnerSay("@recvchat_sec=y,recvemote_sec=y");
     }
+
+    if(deaf)
+    {
+        llOwnerSay("@recvchat_sec=n,recvemote_sec=n");
+    }
 }
 
 default
@@ -233,6 +255,25 @@ default
     link_message(integer sender_num, integer num, string str, key id)
     {
         if(num == API_RESET && id == llGetOwner()) llResetScript();
+        if(num == API_DEAF_TOGGLE)
+        {
+            if(deaf)
+            {
+                deaf = FALSE;
+                llMessageLinked(LINK_SET, API_SELF_DESC, undeafenmsg, NULL_KEY);
+                if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can hear the conversation again.");
+                else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can hear the conversation again.");
+                checkSetup();
+            }
+            else
+            {
+                deaf = TRUE;
+                llMessageLinked(LINK_SET, API_SELF_DESC, deafenmsg, NULL_KEY);
+                if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer hear the conversation.");
+                else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer hear the conversation.");
+                checkSetup();
+            }
+        }
     }
 
     changed(integer change)
@@ -342,7 +383,7 @@ default
         }
         else if(m == "END")
         {
-            llRegionSayTo(owner, 0, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         checkSetup();
     }

@@ -1,35 +1,7 @@
-#define MANTRA_CHANNEL -216684563
-#define VOICE_CHANNEL   166845631
-#define SPEAK_CHANNEL   166845632
-#define MC_CHANNEL            999
-#define API_RESET              -1
-#define API_SELF_DESC          -2
-#define API_SELF_SAY           -3
-#define API_SAY                -4
-#define API_ONLY_OTHERS_SAY    -5
+#include <IT/globals.lsl>
 key owner = NULL_KEY;
 integer blindmute = FALSE;
 integer speakon = 0;
-
-integer getStringBytes(string msg)
-{
-    return (llStringLength((string)llParseString2List(llStringToBase64(msg), ["="], [])) * 3) >> 2;
-}
-
-integer contains(string haystack, string needle)
-{
-    return ~llSubStringIndex(haystack, needle);
-}
-
-integer endswith(string haystack, string needle)
-{
-    return llDeleteSubString(haystack, 0x8000000F, ~llStringLength(needle)) == needle;
-}
-
-integer startswith(string haystack, string needle)
-{
-    return llDeleteSubString(haystack, llStringLength(needle), 0x7FFFFFF0) == needle;
-}
 
 handleSelfDescribe(string message)
 {
@@ -58,7 +30,7 @@ handleSelfSay(string name, string message)
 {
     string currentObjectName = llGetObjectName();
     llSetObjectName(name);
-    integer bytes = getStringBytes(message);
+    integer bytes = getstringbytes(message);
     while(bytes > 0)
     {
         if(bytes <= 1024)
@@ -70,11 +42,11 @@ handleSelfSay(string name, string message)
         else
         {
             integer offset = 0;
-            while(bytes >= 1024) bytes = getStringBytes(llGetSubString(message, 0, --offset));
+            while(bytes >= 1024) bytes = getstringbytes(llGetSubString(message, 0, --offset));
             if(blindmute) llRegionSayTo(llGetOwner(), 0, llGetSubString(message, 0, offset));
             else          llOwnerSay(message);
             message = llDeleteSubString(message, 0, offset);
-            bytes = getStringBytes(message);
+            bytes = getstringbytes(message);
         }
     }
     llSetObjectName(currentObjectName);
@@ -114,7 +86,7 @@ handleSay(string name, string message, integer excludeSelf)
 
     string currentObjectName = llGetObjectName();
     llSetObjectName(name);
-    integer bytes = getStringBytes(message);
+    integer bytes = getstringbytes(message);
     while(bytes > 0)
     {
         if(bytes <= 1024)
@@ -146,7 +118,7 @@ handleSay(string name, string message, integer excludeSelf)
         else
         {
             integer offset = 0;
-            while(bytes >= 1024) bytes = getStringBytes(llGetSubString(message, 0, --offset));
+            while(bytes >= 1024) bytes = getstringbytes(llGetSubString(message, 0, --offset));
             if(blindmute == TRUE || excludeSelf == TRUE)
             {
                 l = llGetListLength(agents)-1;
@@ -170,7 +142,7 @@ handleSay(string name, string message, integer excludeSelf)
                 if(speakon != 0 && blindmute == FALSE) llOwnerSay(llGetSubString(message, 0, offset));
             }
             message = llDeleteSubString(message, 0, offset);
-            bytes = getStringBytes(message);
+            bytes = getstringbytes(message);
         }
     }
     llSetObjectName(currentObjectName);
@@ -180,11 +152,11 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_RESET && id == llGetOwner()) llResetScript();
-        else if(num == API_SELF_DESC) handleSelfDescribe(str);
-        else if(num == API_SELF_SAY) handleSelfSay((string)id, str);
-        else if(num == API_SAY) handleSay((string)id, str, FALSE);
-        else if(num == API_ONLY_OTHERS_SAY) handleSay((string)id, str, TRUE);
+        if(num == API_RESET && id == llGetOwner())                    llResetScript();
+        else if(num == API_SELF_DESC && str != "")                    handleSelfDescribe(str);
+        else if(num == API_SELF_SAY && str != "" && (string)id != "") handleSelfSay((string)id, str);
+        else if(num == API_SAY && str != "")                          handleSay((string)id, str, FALSE);
+        else if(num == API_ONLY_OTHERS_SAY && str != "")              handleSay((string)id, str, TRUE);
     }
 
     changed(integer change)
@@ -219,7 +191,7 @@ default
         }
         else if(m == "END")
         {
-            llRegionSayTo(owner, 0, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
     }
 }

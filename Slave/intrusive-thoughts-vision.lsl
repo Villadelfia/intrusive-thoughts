@@ -1,42 +1,12 @@
-#define MANTRA_CHANNEL -216684563
-#define VOICE_CHANNEL   166845631
-#define MC_CHANNEL            999
-#define API_RESET              -1
-#define API_SELF_DESC          -2
-#define API_SELF_SAY           -3
-#define API_SAY                -4
+#include <IT/globals.lsl>
 key owner = NULL_KEY;
 string name = "";
 integer blind = FALSE;
+integer gotreply = TRUE;
 string unblindmsg = "";
 string blindmsg = "";
 list blindcmd = [];
 list unblindcmd = [];
-
-integer getStringBytes(string msg)
-{
-    return (llStringLength((string)llParseString2List(llStringToBase64(msg), ["="], [])) * 3) >> 2;
-}
-
-integer random(integer min, integer max)
-{
-    return min + (integer)(llFrand(max - min + 1));
-}
-
-integer contains(string haystack, string needle)
-{
-    return ~llSubStringIndex(haystack, needle);
-}
-
-integer endswith(string haystack, string needle)
-{
-    return llDeleteSubString(haystack, 0x8000000F, ~llStringLength(needle)) == needle;
-}
-
-integer startswith(string haystack, string needle)
-{
-    return llDeleteSubString(haystack, llStringLength(needle), 0x7FFFFFF0) == needle;
-}
 
 handleHear(key skey, string sender, string message)
 {
@@ -52,7 +22,7 @@ handleHear(key skey, string sender, string message)
                 {
                     blind = FALSE;
                     llMessageLinked(LINK_SET, API_SELF_DESC, unblindmsg, NULL_KEY);
-                    llRegionSayTo(owner, 0, name + " can see again.");
+                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can see again.");
                     checkSetup();
                 }
             }
@@ -69,7 +39,7 @@ handleHear(key skey, string sender, string message)
                 {
                     blind = TRUE;
                     llMessageLinked(LINK_SET, API_SELF_DESC, blindmsg, NULL_KEY);
-                    llRegionSayTo(owner, 0, name + " can no longer see.");
+                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer see.");
                     checkSetup();
                 }
             }
@@ -88,6 +58,25 @@ default
     link_message(integer sender_num, integer num, string str, key id)
     {
         if(num == API_RESET && id == llGetOwner()) llResetScript();
+        if(num == API_BLIND_TOGGLE)
+        {
+            if(blind)
+            {
+                blind = FALSE;
+                llMessageLinked(LINK_SET, API_SELF_DESC, unblindmsg, NULL_KEY);
+                if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can see again.");
+                else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can see again.");
+                checkSetup();
+            }
+            else
+            {
+                blind = TRUE;
+                llMessageLinked(LINK_SET, API_SELF_DESC, blindmsg, NULL_KEY);
+                if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer see.");
+                else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer see.");
+                checkSetup();
+            }
+        }
     }
 
     changed(integer change)
@@ -97,7 +86,17 @@ default
 
     attach(key id)
     {
-        if(id != NULL_KEY) checkSetup();
+        if(id != NULL_KEY)
+        {
+            checkSetup();
+            gotreply = TRUE;
+            llOwnerSay("@version=" + (string)RLV_CHECK_CHANNEL);
+            llSetTimerEvent(10.0);
+        }
+        else
+        {
+            llSetTimerEvent(0.0);
+        }
     }
 
     state_entry()
@@ -105,10 +104,32 @@ default
         owner = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(0, "", NULL_KEY, "");
+        llListen(RLV_CHECK_CHANNEL, "", llGetOwner(), "");
+    }
+
+    timer()
+    {
+        if(gotreply)
+        {
+            gotreply = FALSE;
+            llOwnerSay("@version=" + (string)RLV_CHECK_CHANNEL);
+            llSetTimerEvent(30.0);
+        }
+        else
+        {
+            llSetTimerEvent(0.0);
+            string oldn = llGetObjectName();
+            llSetObjectName("");
+            if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The intrusive thoughts slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
+            else                                     llInstantMessage(owner, "The intrusive thoughts slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
+            llSetObjectName(oldn);
+            llOwnerSay("Hey! Your RLV is turned off and I won't work properly until you turn it on and relog.");
+        }
     }
 
     listen(integer c, string n, key k, string m)
     {
+        if(c == RLV_CHECK_CHANNEL) gotreply = TRUE;
         if(c == 0) handleHear(k, n, m);
         if(k != owner && llGetOwnerKey(k) != owner) return;
         if(m == "RESET")
@@ -148,7 +169,7 @@ default
         }
         else if(m == "END")
         {
-            llRegionSayTo(owner, 0, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
     }
 }

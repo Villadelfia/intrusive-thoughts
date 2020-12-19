@@ -1,4 +1,4 @@
-#define API_RESET -1
+#include <IT/globals.lsl>
 float interval = 60.0;
  
 default 

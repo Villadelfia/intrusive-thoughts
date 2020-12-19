@@ -1,25 +1,9 @@
-#define MANTRA_CHANNEL -216684563
-#define VOICE_CHANNEL   166845631
-#define MC_CHANNEL            999
-#define API_RESET              -1
-#define API_SELF_DESC          -2
-#define API_SELF_SAY           -3
-#define API_SAY                -4
+#include <IT/globals.lsl>
 list statements = [];
 key owner = NULL_KEY;
 integer timerMin = 0;
 integer timerMax = 0;
 integer locked = FALSE;
-
-integer startswith(string haystack, string needle)
-{
-    return llDeleteSubString(haystack, llStringLength(needle), 0x7FFFFFF0) == needle;
-}
-
-integer random(integer min, integer max)
-{
-    return min + (integer)(llFrand(max - min + 1));
-}
 
 default
 {
@@ -67,31 +51,31 @@ default
         if(k != owner && llGetOwnerKey(k) != owner) return;
         if(m == "RESET")
         {
-            llRegionSayTo(owner, 0, "Resetting configuration and listening to new programming...");
+            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The intrusive thoughts slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is resetting configuration and listening to new programming...");
             statements = [];
         }
         else if(m == "LOCK")
         {
             if(locked)
             {
-                llRegionSayTo(owner, 0, "The intrusive thoughts slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.");
+                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The intrusive thoughts slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.");
                 locked = FALSE;
                 llOwnerSay("@detach=y");
             }
             else
             {
-                llRegionSayTo(owner, 0, "The intrusive thoughts slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.");
+                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The intrusive thoughts slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.");
                 locked = TRUE;
                 llOwnerSay("@detach=n");
             }
         }
         else if(m == "END")
         {
-            llRegionSayTo(owner, 0, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         else if(m == "PING")
         {
-            llRegionSayTo(owner, MANTRA_CHANNEL-1, "PING");
+            llRegionSayTo(owner, PING_CHANNEL, "PING");
         }
         else if(startswith(m, "TIMER"))
         {
@@ -104,11 +88,6 @@ default
         {
             m = llDeleteSubString(m, 0, llStringLength("PHRASES"));
             statements += [m];
-        }
-        else if(startswith(m, "TRIGGER_THOUGHT"))
-        {
-            m = llDeleteSubString(m, 0, llStringLength("TRIGGER_THOUGHT"));
-            llMessageLinked(LINK_SET, API_SELF_DESC, m, NULL_KEY);
         }
     }
 

@@ -1,16 +1,11 @@
-#define SPEAK_CHANNEL   166845632
+#include <IT/globals.lsl>
 key owner = NULL_KEY;
-
-integer getStringBytes(string msg)
-{
-    return (llStringLength((string)llParseString2List(llStringToBase64(msg), ["="], [])) * 3) >> 2;
-}
 
 handleSelfSay(string name, string message)
 {
     string currentObjectName = llGetObjectName();
     llSetObjectName(name);
-    integer bytes = getStringBytes(message);
+    integer bytes = getstringbytes(message);
     while(bytes > 0)
     {
         if(bytes <= 1024)
@@ -21,10 +16,10 @@ handleSelfSay(string name, string message)
         else
         {
             integer offset = 0;
-            while(bytes >= 1024) bytes = getStringBytes(llGetSubString(message, 0, --offset));
+            while(bytes >= 1024) bytes = getstringbytes(llGetSubString(message, 0, --offset));
             llOwnerSay(message);
             message = llDeleteSubString(message, 0, offset);
-            bytes = getStringBytes(message);
+            bytes = getstringbytes(message);
         }
     }
     llSetObjectName(currentObjectName);

@@ -1,5 +1,4 @@
-#define MANTRA_CHANNEL -216684563
-
+#include <IT/globals.lsl>
 list locations = [
     "tflab",    "Bedos",       "97",  "99",  "291",
     "tf",       "Bedos",       "97",  "99",  "291",
@@ -11,11 +10,6 @@ list locations = [
     "silenced", "San Fierro", "218",  "15", "2422",
     "hbc",      "Myanimo",     "96",  "20",  "903"
 ];
-
-integer startswith(string haystack, string needle)
-{
-    return llDeleteSubString(haystack, llStringLength(needle), 0x7FFFFFF0) == needle;
-}
 
 dotp(string region, string x, string y, string z)
 {

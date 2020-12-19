@@ -1,11 +1,4 @@
-#define MANTRA_CHANNEL -216684563
-#define VOICE_CHANNEL   166845631
-#define MC_CHANNEL            999
-#define API_RESET              -1
-#define API_SELF_DESC          -2
-#define API_SELF_SAY           -3
-#define API_SAY                -4
-#define API_ONLY_OTHERS_SAY    -5
+#include <IT/globals.lsl>
 key owner = NULL_KEY;
 string name = "";
 list speechblacklistfrom = [];
@@ -22,31 +15,6 @@ list unmutecmd = [];
 string mutetype = "DROP";
 integer blindmute = FALSE;
 
-integer getStringBytes(string msg)
-{
-    return (llStringLength((string)llParseString2List(llStringToBase64(msg), ["="], [])) * 3) >> 2;
-}
-
-integer random(integer min, integer max)
-{
-    return min + (integer)(llFrand(max - min + 1));
-}
-
-integer contains(string haystack, string needle)
-{
-    return 0 <= llSubStringIndex(haystack, needle);
-}
-
-integer endswith(string haystack, string needle)
-{
-    return llDeleteSubString(haystack, 0x8000000F, ~llStringLength(needle)) == needle;
-}
-
-integer startswith(string haystack, string needle)
-{
-    return llDeleteSubString(haystack, llStringLength(needle), 0x7FFFFFF0) == needle;
-}
-
 handleHear(key skey, string sender, string message)
 {
     integer l1;
@@ -61,7 +29,7 @@ handleHear(key skey, string sender, string message)
                 {
                     mute = FALSE;
                     llMessageLinked(LINK_SET, API_SELF_DESC, unmutemsg, NULL_KEY);
-                    llRegionSayTo(owner, 0, name + " can speak again.");
+                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can speak again.");
                 }
             }
         }
@@ -77,7 +45,7 @@ handleHear(key skey, string sender, string message)
                 {
                     mute = TRUE;
                     llMessageLinked(LINK_SET, API_SELF_DESC, mutemsg, NULL_KEY);
-                    llRegionSayTo(owner, 0, name + " can no longer speak.");
+                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer speak.");
                 }
             }
         }
@@ -196,8 +164,8 @@ handleSay(string message)
 
 checkSetup()
 {
-    if(name != "") llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=add,rediremote:" + (string)VOICE_CHANNEL + "=add");
-    else           llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=rem,rediremote:" + (string)VOICE_CHANNEL + "=rem");
+    if(name != "" || mute == TRUE) llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=add,rediremote:" + (string)VOICE_CHANNEL + "=add");
+    else                           llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=rem,rediremote:" + (string)VOICE_CHANNEL + "=rem");
 }
 
 default
@@ -205,6 +173,25 @@ default
     link_message(integer sender_num, integer num, string str, key id)
     {
         if(num == API_RESET && id == llGetOwner()) llResetScript();
+        if(num == API_MUTE_TOGGLE)
+        {
+            if(mute)
+            {
+                mute = FALSE;
+                llMessageLinked(LINK_SET, API_SELF_DESC, unmutemsg, NULL_KEY);
+                if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can speak again.");
+                else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.");
+                checkSetup();
+            }
+            else
+            {
+                mute = TRUE;
+                llMessageLinked(LINK_SET, API_SELF_DESC, mutemsg, NULL_KEY);
+                if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer speak.");
+                else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.");
+                checkSetup();
+            }
+        }
     }
 
     changed(integer change)
@@ -222,7 +209,6 @@ default
         owner = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(VOICE_CHANNEL, "", llGetOwner(), "");
-        llListen(MC_CHANNEL, "", owner, "");
         llListen(0, "", NULL_KEY, "");
     }
 
@@ -242,12 +228,6 @@ default
         else if(c == 0)
         {
             handleHear(k, n, m);
-            return;
-        }
-        else if(c == MC_CHANNEL)
-        {
-            string currentObjectName = llGetObjectName();
-            llMessageLinked(LINK_SET, API_SAY, m, (key)name);
             return;
         }
         if(k != owner && llGetOwnerKey(k) != owner) return;
@@ -329,7 +309,7 @@ default
         }
         else if(m == "END")
         {
-            llRegionSayTo(owner, 0, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         checkSetup();
     }
