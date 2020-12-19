@@ -116,7 +116,7 @@ handleClick(key k)
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "listoutfit - List all outfits.]");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "liststuff - List all stuff.]");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "daze dazing.]");
+        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing.]");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- /1" + prefix + "say <message>: Say a message.");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- /1" + prefix + "think <message>: Think a message.");
@@ -139,7 +139,11 @@ default
             string oldn = llGetObjectName();
             llSetObjectName("");
             if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
-            else                                     llInstantMessage(owner, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
+            else
+            {
+                llSetObjectName(oldn);
+                llInstantMessage(owner, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
+            }
             llSetObjectName(oldn);
         }
     }
@@ -153,7 +157,11 @@ default
             string oldn = llGetObjectName();
             llSetObjectName("");
             if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-            else                                     llInstantMessage(owner, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            else
+            {
+                llSetObjectName(oldn);
+                llInstantMessage(owner, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            }
             llSetObjectName(oldn);
         }
         else
@@ -162,7 +170,11 @@ default
             string oldn = llGetObjectName();
             llSetObjectName("");
             if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-            else                                     llInstantMessage(owner, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            else
+            {
+                llSetObjectName(oldn);
+                llInstantMessage(owner, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            }
             llSetObjectName(oldn);
         }
     }
@@ -299,7 +311,7 @@ default
         if(k != owner && llGetOwnerKey(k) != owner) return;
         if(m == "RESET" && c == MANTRA_CHANNEL)
         {
-            name = "";
+            name = llGetDisplayName(llGetOwner());
             noim = FALSE;
             daze = FALSE;
         }
@@ -421,6 +433,10 @@ default
                 llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " is now dazed.");
                 llOwnerSay("@shownames_sec=n,showhovertextworld=n,showworldmap=n,showminimap=n,showloc=n,fartouch=n,camunlock=n,alwaysrun=n,temprun=n");
             }
+        }
+        else if(llToLower(m) == "focus")
+        {
+            llMessageLinked(LINK_SET, API_FOCUS_TOGGLE, "", NULL_KEY);
         }
         else if(startswith(m, "@"))
         {

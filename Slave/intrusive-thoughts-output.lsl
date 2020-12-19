@@ -1,7 +1,9 @@
 #include <IT/globals.lsl>
 key owner = NULL_KEY;
 integer blindmute = FALSE;
+integer focus = FALSE;
 integer speakon = 0;
+string name;
 
 handleSelfDescribe(string message)
 {
@@ -148,6 +150,21 @@ handleSay(string name, string message, integer excludeSelf)
     llSetObjectName(currentObjectName);
 }
 
+focusToggle()
+{
+    if(focus)
+    {
+        focus = FALSE;
+        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " is no longer forced to look at you.");
+    }
+    else
+    {
+        focus = TRUE;
+        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " is now forced to look at you.");
+    }
+    llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
+}
+
 default
 {
     link_message(integer sender_num, integer num, string str, key id)
@@ -157,6 +174,7 @@ default
         else if(num == API_SELF_SAY && str != "" && (string)id != "") handleSelfSay((string)id, str);
         else if(num == API_SAY && str != "")                          handleSay((string)id, str, FALSE);
         else if(num == API_ONLY_OTHERS_SAY && str != "")              handleSay((string)id, str, TRUE);
+        else if(num == API_FOCUS_TOGGLE)                              focusToggle();
     }
 
     changed(integer change)
@@ -167,7 +185,76 @@ default
     state_entry()
     {
         owner = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
+        name = llGetDisplayName(llGetOwner());
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+        llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
+    }
+
+    run_time_permissions(integer mask)
+    {
+        if(llGetPermissions() & PERMISSION_CONTROL_CAMERA == 0)
+        {
+            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
+            return;
+        }
+
+        if(focus)
+        {
+            llOwnerSay("@camunlock=n,camdistmax:0=n");
+            llSetTimerEvent(0.1);
+        }
+    }
+
+    timer()
+    {
+        llSetTimerEvent(0.0);
+        if(llGetPermissions() & PERMISSION_CONTROL_CAMERA == 0)
+        {
+            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
+            return;
+        }
+
+        if(!focus)
+        {
+            if(llGetPermissions() & PERMISSION_CONTROL_CAMERA) llClearCameraParams();
+            llOwnerSay("@camunlock=y,camdistmax:0=y");
+            return;
+        }
+        vector pos = llList2Vector(llGetObjectDetails(owner, [OBJECT_POS]), 0);
+        if(pos != ZERO_VECTOR)
+        {
+            vector to = pos - llGetPos();
+            llOwnerSay("@setrot:" + (string)llAtan2(to.x, to.y) + "=force");
+            llClearCameraParams();
+            llSetCameraParams([
+                CAMERA_ACTIVE, TRUE,
+                CAMERA_FOCUS, pos,
+                CAMERA_FOCUS_LAG, 0.0,
+                CAMERA_FOCUS_LOCKED, TRUE,
+                CAMERA_POSITION, llGetPos() + <0.25, 0.0, 1.0> * llGetRot(),
+                CAMERA_POSITION_LAG, 0.0,
+                CAMERA_POSITION_LOCKED, TRUE
+            ]);
+            llSetTimerEvent(0.1);
+        }
+        else
+        {
+            llClearCameraParams();
+            focus = FALSE;
+            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
+        }
+    }
+
+    attach(key id)
+    {
+        if(id != NULL_KEY) 
+        {
+            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
+        }
+        else
+        {
+            llSetTimerEvent(0.0);
+        }
     }
 
     listen(integer c, string n, key k, string m)
@@ -176,6 +263,13 @@ default
         if(m == "RESET")
         {
             blindmute = FALSE;
+            focus = FALSE;
+            name = llGetDisplayName(llGetOwner());
+        }
+        else if(startswith(m, "NAME") && c == MANTRA_CHANNEL)
+        {
+            m = llDeleteSubString(m, 0, llStringLength("NAME"));
+            name = m;
         }
         else if(startswith(m, "BLIND_MUTE"))
         {
