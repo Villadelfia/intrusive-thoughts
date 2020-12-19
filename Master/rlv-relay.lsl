@@ -90,14 +90,20 @@ integer startswith(string haystack, string needle)
 
 enablerelay()
 {
+    string oldn = llGetObjectName();
+    llSetObjectName("");
     llOwnerSay("Enabling RLV relay. Click the purple half-circle to release yourself from any restrictions and to deactivate it again.");
+    llSetObjectName(oldn);
     if(listenhandle != -1) llListenRemove(listenhandle);
     listenhandle = llListen(rlvrc, "", NULL_KEY, "");
 }
 
 disablerelay()
 {
+    string oldn = llGetObjectName();
+    llSetObjectName("");
     llOwnerSay("Disabling RLV relay. Click the purple half-circle to activate it again.");
+    llSetObjectName(oldn);
     if(listenhandle != -1) llListenRemove(listenhandle);
     listenhandle = -1;
 }
@@ -111,7 +117,10 @@ default
         llListen(1, "", wearer, "RED");
         llListen(0, "", wearer, "((red))");
         llListen(0, "", wearer, "((RED))");
+        string oldn = llGetObjectName();
+        llSetObjectName("");
         llOwnerSay("RLV relay good to go. Click the purple half-circle to enable it.");
+        llSetObjectName(oldn);
     }
  
     touch_start(integer total_number) 
@@ -127,7 +136,10 @@ default
         }
         else
         {
+            string oldn = llGetObjectName();
+            llSetObjectName("");
             llOwnerSay("Releasing RLV restrictions and disabling the relay.");
+            llSetObjectName(oldn);
             release(NULL_KEY, TRUE);
         }
     }
@@ -144,13 +156,19 @@ default
         else if(c == 1 || c == 0)
         {
             if(sources == []) return;
+            string oldn = llGetObjectName();
+            llSetObjectName("");
             llOwnerSay("Releasing RLV restrictions and disabling the relay.");
+            llSetObjectName(oldn);
             release(NULL_KEY, TRUE);
         }
 
         if(llGetListLength(sources) == 5 && llListFindList(sources, [id]) == -1) 
         { 
+            string oldn = llGetObjectName();
+            llSetObjectName("");
             llOwnerSay("Another device is trying to access your RLV relay, but you're already being controlled by five devices!");
+            llSetObjectName(oldn);
             return;
         }
 
@@ -166,6 +184,8 @@ default
         integer sourceid = llListFindList(sources, [id]) + 1;
         if(sourceid == 0) sourceid = llGetListLength(sources) + 1;
 
+        string oldn = llGetObjectName();
+        llSetObjectName("");
         for(i=0; i < nc; ++i)
         {
             command = llList2String(commands, i);
@@ -273,6 +293,7 @@ default
         {
             checkforclear(sourceid);
         }
+        llSetObjectName(oldn);
     }
  
     changed(integer c) 
@@ -286,7 +307,10 @@ default
         {
             llSetTimerEvent(0);
             llSleep(30);
+            string oldn = llGetObjectName();
+            llSetObjectName("");
             llOwnerSay("Waking up from relog, attempting re-capture...");
+            llSetObjectName(oldn);
             replies = [];
             integer l = llGetListLength(sources);
             key source;
@@ -309,7 +333,10 @@ default
         }
         else
         {
+            string oldn = llGetObjectName();
+            llSetObjectName("");
             llOwnerSay("Capturing device(s) no longer responding. Releasing from them.");
+            llSetObjectName(oldn);
             llSetTimerEvent(0);
             integer l = llGetListLength(sources);
             key source;

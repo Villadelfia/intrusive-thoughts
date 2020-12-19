@@ -102,13 +102,17 @@ default
 
     touch_start(integer num)
     {
+        string oldn = llGetObjectName();
+        llSetObjectName("");
         if(llDetectedLinkNumber(0) != 1) return;
         if(name != "")
         {
             llOwnerSay("Hold on. We're busy sending settings...");
+            llSetObjectName(oldn);
             return;
         }
         llOwnerSay("Pinging the region for Intrusive Thoughts slaves under your control...");
+        llSetObjectName(oldn);
         targets = [];
         retry = FALSE;
         llRegionSay(MANTRA_CHANNEL, "PING");
@@ -347,21 +351,26 @@ default
 
     timer()
     {
+        string oldn = llGetObjectName();
+        llSetObjectName("");
         llSetTimerEvent(0.0);
         if(targets == [])
         {
             llOwnerSay("No slaves found.");
+            llSetObjectName(oldn);
             return;
         }
         else if(llGetListLength(targets) == 1)
         {
             target = llList2Key(targets, 0);
+            llSetObjectName(oldn);
             giveMenu();
             return;
         }
         else if(llGetListLength(targets) > 12 && retry == FALSE)
         {
             llOwnerSay("Too many responses. Trying again with a 10 meter range.");
+            llSetObjectName(oldn);
             targets = [];
             retry = TRUE;
             llWhisper(MANTRA_CHANNEL, "PING");
@@ -371,6 +380,7 @@ default
         else if(llGetListLength(targets) > 12 && retry == TRUE)
         {
             llOwnerSay("Too many responses. Giving a menu with the first 12 responses.");
+            llSetObjectName(oldn);
         }
         giveTargets();
     }
