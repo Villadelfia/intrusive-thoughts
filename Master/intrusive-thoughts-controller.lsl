@@ -102,6 +102,7 @@ default
 
     touch_start(integer num)
     {
+        if(llDetectedLinkNumber(0) != 1) return;
         if(name != "")
         {
             llOwnerSay("Hold on. We're busy sending settings...");

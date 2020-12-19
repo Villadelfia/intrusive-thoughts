@@ -89,7 +89,7 @@ default
         if(id != NULL_KEY)
         {
             checkSetup();
-            gotreply = TRUE;
+            gotreply = FALSE;
             llOwnerSay("@version=" + (string)RLV_CHECK_CHANNEL);
             llSetTimerEvent(10.0);
         }
@@ -109,21 +109,19 @@ default
 
     timer()
     {
-        if(gotreply)
+        llSetTimerEvent(0.0);
+        if(!gotreply)
         {
-            gotreply = FALSE;
-            llOwnerSay("@version=" + (string)RLV_CHECK_CHANNEL);
-            llSetTimerEvent(30.0);
+            string oldn = llGetObjectName();
+            llSetObjectName("");
+            if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
+            else                                     llInstantMessage(owner, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
+            llSetObjectName(oldn);
+            llOwnerSay("Hey! Your RLV is (probably) turned off and I won't work properly until you turn it on and relog. If it is on, you're just experiencing some lag and you shouldn't worry about it.");
         }
         else
         {
-            llSetTimerEvent(0.0);
-            string oldn = llGetObjectName();
-            llSetObjectName("");
-            if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The intrusive thoughts slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
-            else                                     llInstantMessage(owner, "The intrusive thoughts slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
-            llSetObjectName(oldn);
-            llOwnerSay("Hey! Your RLV is turned off and I won't work properly until you turn it on and relog.");
+            llOwnerSay("Intrusive Thoughts is good to go...");
         }
     }
 

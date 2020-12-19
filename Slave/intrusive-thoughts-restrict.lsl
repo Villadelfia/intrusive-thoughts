@@ -152,8 +152,8 @@ default
             llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);
             string oldn = llGetObjectName();
             llSetObjectName("");
-            if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The intrusive thoughts slave has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-            else                                     llInstantMessage(owner, "The intrusive thoughts slave has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            else                                     llInstantMessage(owner, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
             llSetObjectName(oldn);
         }
         else
@@ -161,8 +161,8 @@ default
             llSetTimerEvent(0.0);
             string oldn = llGetObjectName();
             llSetObjectName("");
-            if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The intrusive thoughts slave has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-            else                                     llInstantMessage(owner, "The intrusive thoughts slave has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            else                                     llInstantMessage(owner, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
             llSetObjectName(oldn);
         }
     }

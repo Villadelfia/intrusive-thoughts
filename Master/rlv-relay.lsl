@@ -116,6 +116,7 @@ default
  
     touch_start(integer total_number) 
     {
+        if(llGetLinkName(llDetectedLinkNumber(0)) != "relay") return;
         if(listenhandle == -1)
         {
             enablerelay();

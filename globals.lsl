@@ -2,10 +2,10 @@
 #define PING_CHANNEL     -216684564
 #define DIALOG_CHANNEL   -219755312
 #define HUD_SPEAK_CHANNEL 166845632
+#define RLV_CHECK_CHANNEL 166845633
 #define VOICE_CHANNEL     166845631
 #define SPEAK_CHANNEL     166845632
 #define RLV_CHANNEL       166845630
-#define RLV_CHECK_CHANNEL 166845631
 #define API_RESET                -1
 #define API_SELF_DESC            -2
 #define API_SELF_SAY             -3
@@ -14,6 +14,8 @@
 #define API_BLIND_TOGGLE         -6
 #define API_DEAF_TOGGLE          -7
 #define API_MUTE_TOGGLE          -8
+string VERSION_S = "Intrusive Thoughts Slave v4.6";
+string VERSION_C = "Intrusive Thoughts Controller v4.6";
 
 integer startswith(string haystack, string needle)
 {

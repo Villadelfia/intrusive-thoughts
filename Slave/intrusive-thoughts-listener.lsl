@@ -51,20 +51,20 @@ default
         if(k != owner && llGetOwnerKey(k) != owner) return;
         if(m == "RESET")
         {
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The intrusive thoughts slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is resetting configuration and listening to new programming...");
+            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is resetting configuration and listening to new programming...");
             statements = [];
         }
         else if(m == "LOCK")
         {
             if(locked)
             {
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The intrusive thoughts slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.");
+                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.");
                 locked = FALSE;
                 llOwnerSay("@detach=y");
             }
             else
             {
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The intrusive thoughts slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.");
+                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.");
                 locked = TRUE;
                 llOwnerSay("@detach=n");
             }
