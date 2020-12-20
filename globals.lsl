@@ -16,8 +16,8 @@
 #define API_DEAF_TOGGLE          -7
 #define API_MUTE_TOGGLE          -8
 #define API_FOCUS_TOGGLE         -9
-string VERSION_S = "Intrusive Thoughts Slave v4.7";
-string VERSION_C = "Intrusive Thoughts Controller v4.7";
+string VERSION_S = "Intrusive Thoughts Slave v4.8";
+string VERSION_C = "Intrusive Thoughts Controller v4.8";
 
 integer startswith(string haystack, string needle)
 {

@@ -367,17 +367,17 @@ default
             path = llDeleteSubString(m, 0, llStringLength("list"));
             llOwnerSay("@getinv:" + path + "=" + (string)RLV_CHANNEL);
         }
-        else if(startswith(llToLower(m), "outfit"))
-        {
-            path = llDeleteSubString(m, 0, llStringLength("outfit"));
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Stripping " + name + " of her outfits, then wearing outfit '" + path + "'.");
-            llOwnerSay("@detachall:~outfit=force,attachover:~outfit/" + path + "=force");
-        }
         else if(startswith(llToLower(m), "outfitstrip"))
         {
             path = llDeleteSubString(m, 0, llStringLength("outfitstrip"));
             llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Stripping " + name + " of everything, then wearing outfit '" + path + "'.");
             llOwnerSay("@detach=force,remoutfit=force,attachover:~outfit/" + path + "=force");
+        }
+        else if(startswith(llToLower(m), "outfit"))
+        {
+            path = llDeleteSubString(m, 0, llStringLength("outfit"));
+            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Stripping " + name + " of her outfits, then wearing outfit '" + path + "'.");
+            llOwnerSay("@detachall:~outfit=force,attachover:~outfit/" + path + "=force");
         }
         else if(startswith(llToLower(m), "form"))
         {
