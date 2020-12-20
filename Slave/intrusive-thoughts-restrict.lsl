@@ -442,7 +442,7 @@ default
         {
             m = strreplace(m, "RLV_CHANNEL", (string)RLV_CHANNEL);
             path = "~";
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Executing RLV command'" + m + "' on " + name + ".");
+            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Executing RLV command '" + m + "' on " + name + ".");
             llOwnerSay(m);
         }
     }
