@@ -41,6 +41,12 @@ default
         {
             llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
             llDie();
+            return;
+        }
+        else if(m == "abouttotp")
+        {
+            llDie();
+            return;
         }
         offset = (vector)m;
     }
@@ -55,19 +61,18 @@ default
             {
                 llSetRegionPos(my - offset);
                 llDie();
+                return;
             }
             vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + offset;
             if(pos == llGetPos()) return;
-            else
+            my.z = pos.z;
+            if(llVecDist(my, pos) > 365 || pos == ZERO_VECTOR)
             {
-                my.z = pos.z;
-                if(llVecDist(my, pos) > 365)
-                {
-                    llSetRegionPos(llGetPos() - offset);
-                    llDie();
-                }
-                llSetRegionPos(pos);
+                llSetRegionPos(llGetPos() - offset);
+                llDie();
+                return;
             }
+            llSetRegionPos(pos);
         }
     }
 }

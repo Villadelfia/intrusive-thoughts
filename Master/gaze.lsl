@@ -246,7 +246,7 @@ default
                 while(l >= 0)
                 {
                     key av = llList2Key(objectifiedavatars, l);
-                    llRegionSayTo(llList2Key(objectifiedballs, l), MANTRA_CHANNEL, "unsit");
+                    llRegionSayTo(llList2Key(objectifiedballs, l), MANTRA_CHANNEL, "abouttotp");
                     llRegionSayTo(av, RLVRC, "Sit," + (string)av + "," + str);
                     --l;
                 }
