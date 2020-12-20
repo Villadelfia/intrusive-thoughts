@@ -1,4 +1,6 @@
 #include <IT/globals.lsl>
+string target = "";
+string tptarget = "";
 list locations = [
     "tflab",    "Bedos",       "97",  "99",  "291",
     "tf",       "Bedos",       "97",  "99",  "291",
@@ -14,13 +16,14 @@ list locations = [
 dotp(string region, string x, string y, string z)
 {
     llRegionSay(MANTRA_CHANNEL, "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force");
-    llSleep(1.0);
-    llOwnerSay("@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force");
+    llMessageLinked(LINK_SET, API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", NULL_KEY);
+    tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
 }
 
 tpme(string region, string x, string y, string z)
 {
-    llOwnerSay("@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force");
+    llMessageLinked(LINK_SET, API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", NULL_KEY);
+    tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
 }
 
 default
@@ -36,6 +39,11 @@ default
         {
             llResetScript();
         }
+    }
+
+    link_message(integer sender_num, integer num, string str, key id)
+    {
+        if(num == API_TPOK) llOwnerSay(tptarget);
     }
 
     listen(integer c, string n, key id, string m)

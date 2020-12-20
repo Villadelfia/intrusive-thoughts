@@ -1,11 +1,12 @@
 #define MANTRA_CHANNEL   -216684563
 #define PING_CHANNEL     -216684564
 #define DIALOG_CHANNEL   -219755312
+#define RLV_CHANNEL       166845630
+#define VOICE_CHANNEL     166845631
 #define HUD_SPEAK_CHANNEL 166845632
 #define RLV_CHECK_CHANNEL 166845633
-#define VOICE_CHANNEL     166845631
-#define SPEAK_CHANNEL     166845632
-#define RLV_CHANNEL       166845630
+#define GAZE_CHANNEL      166845634
+#define SPEAK_CHANNEL     166845635
 #define RLVRC           -1812221819
 #define API_RESET                -1
 #define API_SELF_DESC            -2
@@ -16,8 +17,10 @@
 #define API_DEAF_TOGGLE          -7
 #define API_MUTE_TOGGLE          -8
 #define API_FOCUS_TOGGLE         -9
-string VERSION_S = "Intrusive Thoughts Slave v4.8";
-string VERSION_C = "Intrusive Thoughts Controller v4.8";
+#define API_DOTP                -10
+#define API_TPOK                -11
+string VERSION_S = "Intrusive Thoughts Slave v5.0";
+string VERSION_C = "Intrusive Thoughts Controller v5.0";
 
 integer startswith(string haystack, string needle)
 {

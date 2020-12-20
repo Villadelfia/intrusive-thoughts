@@ -1,0 +1,73 @@
+#include <IT/globals.lsl>
+string animation = "";
+key rezzer;
+vector offset = <0.0, 0.0, -3.0>;
+
+default
+{
+    state_entry()
+    {
+        llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+        llSitTarget(<0.0, 0.0, 0.001>, ZERO_ROTATION);
+    }
+
+    on_rez(integer start_param)
+    {
+        if(start_param == 1)      animation = "hide_a";
+        else if(start_param == 2) animation = "hide_b";
+        else                      return;
+        rezzer = llGetOwnerKey((key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0));
+        llSetTimerEvent(10.0);
+    }
+
+    changed(integer change)
+    {
+        if(change & CHANGED_LINK)
+        {
+            if(llAvatarOnSitTarget() == NULL_KEY) llDie();
+            else                                  llRequestPermissions(llAvatarOnSitTarget(), PERMISSION_TRIGGER_ANIMATION);
+        }
+    }
+
+    run_time_permissions(integer perm)
+    {
+        llStartAnimation(animation);
+        llSetTimerEvent(0.1);
+    }
+
+    listen(integer channel, string name, key id, string m)
+    {
+        if(m == "unsit")
+        {
+            llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
+            llDie();
+        }
+        offset = (vector)m;
+    }
+
+    timer()
+    {
+        if(llGetNumberOfPrims() == 1) llDie();
+        else
+        {
+            vector my = llGetPos();
+            if(llGetAgentSize(rezzer) == ZERO_VECTOR)
+            {
+                llSetRegionPos(my - offset);
+                llDie();
+            }
+            vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + offset;
+            if(pos == llGetPos()) return;
+            else
+            {
+                my.z = pos.z;
+                if(llVecDist(my, pos) > 365)
+                {
+                    llSetRegionPos(llGetPos() - offset);
+                    llDie();
+                }
+                llSetRegionPos(pos);
+            }
+        }
+    }
+}
