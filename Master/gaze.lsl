@@ -60,8 +60,8 @@ default
             if(llGetAgentSize(lockedavatar) != ZERO_VECTOR && lastseenobjectname != "")
             {
                 llOwnerSay("Sitting '" + lockedname + "' on '" + lastseenobjectname + "'.");
-                llRegionSayTo(lockedavatar, RLVRC, "Sit," + (string)lockedavatar + ",@sit:" + (string)lastseenobject + "=force");
-                // llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "@sit:" + (string)lastseenobject + "=force");
+                if(lockedavatar == llGetOwner()) llOwnerSay("@sit:" + (string)lastseenobject + "=force");
+                else                             llRegionSayTo(lockedavatar, RLVRC, "Sit," + (string)lockedavatar + ",@sit:" + (string)lastseenobject + "=force|!release");
             }
         }
     }
