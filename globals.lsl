@@ -6,6 +6,7 @@
 #define VOICE_CHANNEL     166845631
 #define SPEAK_CHANNEL     166845632
 #define RLV_CHANNEL       166845630
+#define RLVRC           -1812221819
 #define API_RESET                -1
 #define API_SELF_DESC            -2
 #define API_SELF_SAY             -3

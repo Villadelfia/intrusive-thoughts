@@ -190,7 +190,7 @@ default
         {
             command = llList2String(commands, i);
             if(llGetSubString(command, 0, 0) == "@") 
-            {
+            { 
                 llOwnerSay(command);
                 llRegionSayTo(id, rlvrc, ident + "," + (string)id + "," + command + ",ok");
                 list subargs = llParseString2List(command, ["="], []);
