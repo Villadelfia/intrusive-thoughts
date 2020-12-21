@@ -1,17 +1,7 @@
 #include <IT/globals.lsl>
 string target = "";
 string tptarget = "";
-list locations = [
-    "tflab",    "Bedos",       "97",  "99",  "291",
-    "tf",       "Bedos",       "97",  "99",  "291",
-    "home",     "Bedos",       "96",  "99",  "198",
-    "house",    "Bedos",       "96",  "99",  "198",
-    "dungeon",  "Bedos",       "95", "104",  "235",
-    "mystwood", "Quiet Riot", "141",  "95",   "55",
-    "mw",       "Quiet Riot", "141",  "95",   "55",
-    "silenced", "San Fierro", "218",  "15", "2422",
-    "hbc",      "Myanimo",     "96",  "20",  "903"
-];
+list locations = [];
 
 dotp(string region, string x, string y, string z)
 {
@@ -28,14 +18,14 @@ tpme(string region, string x, string y, string z)
 
 default
 {
-    state_entry()
-    {
-        llListen(1, "", llGetOwner(), "");
-    }
-
     changed(integer change)
     {
         if(change & CHANGED_OWNER)
+        {
+            llResetScript();
+        }
+
+        if(change & CHANGED_INVENTORY)
         {
             llResetScript();
         }
@@ -44,6 +34,13 @@ default
     link_message(integer sender_num, integer num, string str, key id)
     {
         if(num == API_TPOK) llOwnerSay(tptarget);
+        if(num == API_STARTUP_DONE) llListen(1, "", llGetOwner(), "");
+        if(num == API_CONFIG_DATA && str == "tp")
+        {
+            locations += llParseString2List((string)id, [","], []);
+            llSetObjectName("");
+            llOwnerSay(VERSION_C + ": Loaded teleport location " + llList2String(locations, -5));
+        }
     }
 
     listen(integer c, string n, key id, string m)

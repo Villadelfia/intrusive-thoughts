@@ -1,5 +1,6 @@
 #include <IT/globals.lsl>
 integer retry = FALSE;
+integer ready = FALSE;
 key target;
 list targets = [];
 key getline;
@@ -41,12 +42,15 @@ giveMenu()
     string prompt = "Controlling secondlife:///app/agent/" + (string)target + "/about. Choose a notecard to send, or select another option.\n";
     integer i;
     integer l = llGetInventoryNumber(INVENTORY_NOTECARD);
-    if(l > 10) l = 10;
+    if(l > 11) l = 11;
     list buttons = [];
     for(i = 0; i < l; ++i)
     {
-        buttons += [(string)i];
-        prompt += "\n" + (string)i + ": " + llGetInventoryName(INVENTORY_NOTECARD, i);
+        if(llGetInventoryName(INVENTORY_NOTECARD, i) != "!config")
+        {
+            buttons += [(string)i];
+            prompt += "\n" + (string)i + ": " + llGetInventoryName(INVENTORY_NOTECARD, i);
+        }
     }
     while(llGetListLength(buttons) < 10) buttons += [" "];
     buttons += ["MENU", "CANCEL"];
@@ -73,6 +77,11 @@ giveTargets()
 
 default
 {
+    link_message(integer sender_num, integer num, string str, key id)
+    {
+        if(num == API_STARTUP_DONE) llOwnerSay(VERSION_C + ": Startup complete. Welcome to your Intrusive Thoughts system!");
+    }
+
     attach(key id)
     {
         if(id) llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
@@ -85,10 +94,11 @@ default
 
     state_entry()
     {
-        llListen(DIALOG_CHANNEL, "", llGetOwner(), "");
-        llListen(PING_CHANNEL, "", NULL_KEY, "");
-        llListen(HUD_SPEAK_CHANNEL, "", NULL_KEY, "");
-        llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
+        llSetText("Loading config...\n \n \n \n \n \n ", <1.0, 1.0, 1.0>, 1.0);
+        llSleep(1.5);
+        name = "!config";
+        line = 0;
+        getline = llGetNotecardLine(name, line);
     }
 
     changed(integer change)
@@ -97,10 +107,16 @@ default
         {
             llResetScript();
         }
+        
+        if(change & CHANGED_INVENTORY)
+        {
+            llResetScript();
+        }
     }
 
     touch_start(integer num)
     {
+        if(!ready) return;
         string oldn = llGetObjectName();
         llSetObjectName("");
         if(llDetectedLinkNumber(0) != 1) return;
@@ -309,7 +325,35 @@ default
 
     dataserver(key q, string d)
     {
-        if(q == getlines)
+        if(q == getline && ready == FALSE)
+        {
+            if(d == EOF)
+            {
+                llListen(DIALOG_CHANNEL, "", llGetOwner(), "");
+                llListen(PING_CHANNEL, "", NULL_KEY, "");
+                llListen(HUD_SPEAK_CHANNEL, "", NULL_KEY, "");
+                llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
+                llMessageLinked(LINK_SET, API_STARTUP_DONE, "", NULL_KEY);
+                ready = TRUE;
+                name = "";
+                return;
+            }
+            else if(llStringTrim(d, STRING_TRIM) == "") 
+            {
+            }
+            else if(startswith(d, "#"))
+            {
+            }
+            else
+            {
+                list tokens = llParseString2List(d, ["|"], []);
+                llMessageLinked(LINK_SET, API_CONFIG_DATA, llList2String(tokens, 0), (key)llList2String(tokens, 1));
+            }
+            
+            ++line;
+            getline = llGetNotecardLine(name, line);
+        }
+        else if(q == getlines)
         {
             lines = (integer)d;
             line = 0;

@@ -23,8 +23,10 @@
 #define API_TPOK                -11
 #define API_DISABLE             -12
 #define API_ENABLE              -13
-string VERSION_S = "Intrusive Thoughts Slave β5.2";
-string VERSION_C = "Intrusive Thoughts Controller β5.2";
+#define API_STARTUP_DONE        -14
+#define API_CONFIG_DATA         -15
+string VERSION_S = "IT-Slave β5.2";
+string VERSION_C = "IT-Cntrl β5.2";
 
 integer startswith(string haystack, string needle)
 {

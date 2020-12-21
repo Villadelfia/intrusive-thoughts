@@ -4,19 +4,21 @@ setheight()
 {
     string oldn = llGetObjectName();
     llSetObjectName("");
-    llOwnerSay("Hover height set to " + (string)hoverheight + ".");
+    if(hoverheight != 0.0) llOwnerSay("Hover height set to " + (string)hoverheight + ".");
     llOwnerSay("@adjustheight:" + (string)hoverheight + "=force");
     llSetObjectName(oldn);
 }
 
 default
 {
+    changed(integer change)
+    {
+        if(change & CHANGED_OWNER) llResetScript();
+    }
+
     attach(key id)
     {
-        if(id)
-        {
-            setheight();
-        }
+        if(id) setheight();
     }
 
     touch_start(integer total_number)

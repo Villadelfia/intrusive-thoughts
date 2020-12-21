@@ -92,7 +92,7 @@ enablerelay()
 {
     string oldn = llGetObjectName();
     llSetObjectName("");
-    llOwnerSay("Enabling RLV relay. Click the purple half-circle to release yourself from any restrictions and to deactivate it again.");
+    llOwnerSay("Enabling RLV relay. Click the RLV button to release yourself from any restrictions and to deactivate it again.");
     llSetObjectName(oldn);
     if(listenhandle != -1) llListenRemove(listenhandle);
     listenhandle = llListen(rlvrc, "", NULL_KEY, "");
@@ -102,7 +102,7 @@ disablerelay()
 {
     string oldn = llGetObjectName();
     llSetObjectName("");
-    llOwnerSay("Disabling RLV relay. Click the purple half-circle to activate it again.");
+    llOwnerSay("Disabling RLV relay. Click the RLV button to activate it again.");
     llSetObjectName(oldn);
     if(listenhandle != -1) llListenRemove(listenhandle);
     listenhandle = -1;
@@ -119,7 +119,7 @@ default
         llListen(0, "", wearer, "((RED))");
         string oldn = llGetObjectName();
         llSetObjectName("");
-        llOwnerSay("RLV relay good to go. Click the purple half-circle to enable it.");
+        llOwnerSay("RLV relay good to go. Click the RLV button to enable it.");
         llSetObjectName(oldn);
     }
  
@@ -285,7 +285,7 @@ default
             if(sourceid > llGetListLength(sources)) 
             {
                 sources += [id];
-                llOwnerSay("You got restricted by '" + w +"'. It is device number " + (string)llGetListLength(sources) + " out of a maximum number of 5 that is currently controlling you.\n\nReminder: Type /1RED or click the purple half-circle to release yourself immediately.");
+                llOwnerSay("You got restricted by '" + w +"'. It is device number " + (string)llGetListLength(sources) + " out of a maximum number of 5 that is currently controlling you.\n\nReminder: Type /1RED or click the RLV button to release yourself immediately.");
                 llOwnerSay("@detach=n");
             }
         }

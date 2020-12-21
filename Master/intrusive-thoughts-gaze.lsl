@@ -1,7 +1,10 @@
 #include <IT/globals.lsl>
 
-string owner = "Hana";
-string pronoun = "her";
+integer ready = FALSE;
+string owner = "";
+string objectprefix = "";
+string capturespoof = "";
+string releasespoof = "";
 key lastseenavatar;
 string lastseenavatarname;
 key lastseenobject;
@@ -63,7 +66,11 @@ givemenu()
 
 release(integer i)
 {
-    llSay(0, owner + " releases the soul trapped within " + pronoun + " " + llList2String(objectifieddescriptions, i) + " back into the living form of " + llList2String(objectifiednames, i) + ".");
+    string spoof;
+    spoof = llDumpList2String(llParseStringKeepNulls(releasespoof, ["\%ME\%"], []), owner);
+    spoof = llDumpList2String(llParseStringKeepNulls(releasespoof, ["\%OBJ\%"], []), llList2String(objectifieddescriptions, i));
+    spoof = llDumpList2String(llParseStringKeepNulls(releasespoof, ["\%VIC\%"], []), llList2String(objectifiednames, i));
+    llSay(0, spoof);
     llRegionSayTo(llList2Key(objectifiedballs, i), MANTRA_CHANNEL, "unsit");
     llRegionSayTo(llList2Key(objectifiedavatars, i), RLVRC, "release," + (string)llList2Key(objectifiedavatars, i) + ",!release");
     objectifiednames = llDeleteSubList(objectifiednames, i, i);
@@ -151,14 +158,6 @@ handletp()
 
 default
 {
-    state_entry()
-    {
-        llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA);
-        llListen(GAZE_CHANNEL, "", llGetOwner(), "");
-        llListen(RLVRC, "", NULL_KEY, "");
-        llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
-    }
-
     changed(integer change)
     {
         if(change & CHANGED_OWNER) llResetScript();
@@ -171,7 +170,8 @@ default
                 responses = [];
                 handletp();
             }
-        }
+        }        
+        if(change & CHANGED_INVENTORY) llResetScript();
     }
 
     attach(key id)
@@ -291,7 +291,11 @@ default
                 {
                     if(accept) 
                     {
-                        llSay(0, owner + " chants in an ancient forbidden language as " + lockedname + " finds themselves being drawn into the inanimate form of " + pronoun + " " + targetdescription + ".");
+                        string spoof;
+                        spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["\%ME\%"], []), owner);
+                        spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["\%OBJ\%"], []), targetdescription);
+                        spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["\%VIC\%"], []), lockedname);
+                        llSay(0, spoof);
                         key av = llGetOwnerKey(id);
                     }
                     else llOwnerSay("Could not capture '" + lockedname + "'.");
@@ -305,7 +309,7 @@ default
             integer i = llListFindList(objectifiedavatars, [id]);
             string obj = llList2String(objectifieddescriptions, i);
             if(i == -1) obj = "unknown object";
-            llSetObjectName(owner + "'s " + obj);
+            llSetObjectName(objectprefix + obj);
             llSay(0, m);
             llSetObjectName(oldn);
         }
@@ -354,6 +358,7 @@ default
 
     touch_start(integer total_number)
     {
+        if(!ready) return;
         string name = llGetLinkName(llDetectedLinkNumber(0));
         if(name == "lock")
         {
@@ -433,6 +438,42 @@ default
                     --l;
                 }
                 llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 10.0);
+            }
+        }
+        else if(num == API_STARTUP_DONE) 
+        {
+            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA);
+            llListen(GAZE_CHANNEL, "", llGetOwner(), "");
+            llListen(RLVRC, "", NULL_KEY, "");
+            llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
+            ready = TRUE;
+        }
+        else if(num == API_CONFIG_DATA)
+        {
+            if(str == "name")
+            {
+                owner = (string)id;
+                llSetObjectName("");
+                llOwnerSay(VERSION_C + ": Set spoof name prefix to " + owner);
+            }
+            else if(str == "objectprefix")
+            {
+                objectprefix = (string)id;
+                llSetObjectName("");
+                llOwnerSay(VERSION_C + ": Set spoof object prefix to " + objectprefix);
+                objectprefix += " ";
+            }
+            else if(str == "capture")
+            {
+                capturespoof = (string)id;
+                llSetObjectName("");
+                llOwnerSay(VERSION_C + ": Set capture phrase to '" + capturespoof + "'");
+            }
+            else if(str == "release")
+            {
+                releasespoof = (string)id;
+                llSetObjectName("");
+                llOwnerSay(VERSION_C + ": Set release phrase to '" + releasespoof + "'");
             }
         }
     }

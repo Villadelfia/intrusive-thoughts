@@ -1,0 +1,13 @@
+tp|tflab,Bedos,97,99,291
+tp|tf,Bedos,97,99,291
+tp|home,Bedos,96,99,198
+tp|house,Bedos,96,99,198
+tp|dungeon,Bedos,95,104,235
+tp|mystwood,Quiet Riot,141,95,55
+tp|mw,Quiet Riot,141,95,55
+tp|silenced,San Fierro,218,15,2422
+tp|hbc,Myanimo,96,20,903
+name|Hana
+objectprefix|Hana's
+capture|%ME% chants in an ancient forbidden language as %VIC% finds themselves being drawn into the inanimate form of %ME%'s %OBJ%.
+release|%ME% releases the soul trapped within her %OBJ% back into the living form of %VIC%.
