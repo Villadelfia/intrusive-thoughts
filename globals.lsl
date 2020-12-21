@@ -25,6 +25,7 @@
 #define API_ENABLE              -13
 #define API_STARTUP_DONE        -14
 #define API_CONFIG_DATA         -15
+#define API_GIVE_TP_MENU        -16
 string VERSION_S = "IT-Slave β5.2";
 string VERSION_C = "IT-Cntrl β5.2";
 

@@ -46,22 +46,26 @@ integer canrez(vector pos)
 
 givemenu()
 {
-    string oldn = llGetObjectName();
-    llSetObjectName("");
-    llOwnerSay("Objectification:");
+    llOwnerSay("Objectification options:");
     if(lockedavatar != NULL_KEY) 
     {
         llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/capture Objectify " + lockedname + ".]");
-        llOwnerSay("Manually type /1capture <description> to choose what your object will be.");
+        llOwnerSay("—or— manually type /1capture <description> to choose what your object will be.");
     }
     integer l = llGetListLength(objectifiednames) - 1;
+    if(l >= 0) llOwnerSay("");
     while(l >= 0)
     {
-        llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/release\%20" + (string)l + " Release " + llList2String(objectifiednames, l) +".]");
+        llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/release\%20" + (string)l + " Release " + llList2String(objectifiednames, l) + " (" + objectprefix + llList2String(objectifieddescriptions, l)+ ").]");
         l--;
     }
-    if(llGetListLength(objectifiednames) > 1) llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/releaseall Release everyone.]");
-    llSetObjectName(oldn);
+    if(llGetListLength(objectifiednames) > 1) 
+    {
+        llOwnerSay("");
+        llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/releaseall Release everyone.]");
+    }
+    llOwnerSay("");
+    llMessageLinked(LINK_SET, API_GIVE_TP_MENU, "", NULL_KEY);
 }
 
 release(integer i)
