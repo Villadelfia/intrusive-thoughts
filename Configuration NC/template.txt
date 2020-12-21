@@ -157,6 +157,21 @@ Suddenly, you feel your vocal chords re-attaching to your neural interface. You 
 █DIALECT
 0
 
+# This is the percent chance from 0.0 (not at all) to 1.0 (always) that a RANDOM_PREFIX_WORD will be
+# inserted before any said word. This happens AFTER any filtering, so these will even be inserted
+# in error messages given by the blacklist.
+█RANDOM_PREFIX_CHANCE
+0.2
+
+# These are the words that will be randomly prefixed given the above odds. Note that the end result
+# will look something like: prefix word word word prefix word prefix word...
+# This is useful for things like verbal tics.
+█RANDOM_PREFIX_WORDS
+*oink*
+*grunt*
+*squeal*
+*snort*
+
 
 
 ######################

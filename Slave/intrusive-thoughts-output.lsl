@@ -5,6 +5,8 @@ integer focus = FALSE;
 integer disabled = FALSE;
 integer speakon = 0;
 string name;
+float randomprefixchance = 0.0;
+list randomprefixwords = [];
 
 handleSelfDescribe(string message)
 {
@@ -166,6 +168,43 @@ focusToggle()
     llSetTimerEvent(0.1);
 }
 
+string prefixfilter(string m)
+{
+    if(randomprefixchance == 0.0) return m;
+    integer emote = FALSE;
+    if(startswith(llToLower(m), "/me") || startswith(llToLower(m), "/shout/me") || startswith(llToLower(m), "/shout /me") ||
+       startswith(llToLower(m), "/whisper/me") || startswith(llToLower(m), "/whisper /me")) emote = TRUE;
+    if(emote == TRUE && contains(m, "\"") == FALSE) return m;
+
+    integer quotecnt = 0;
+    string word;
+    string oldword;
+    string mcpy = m;
+    m = "";
+    while(llStringLength(mcpy) > 0)
+    {
+        word = llList2String(llParseStringKeepNulls(mcpy, [" ", ",", "\"", ";", ":", ".", "!", "?"], []), 0);
+        oldword = word;
+
+        if(emote == FALSE || quotecnt % 2 != 0)
+        {
+            if(llFrand(1.0) < randomprefixchance)
+            {
+                word = llList2String(randomprefixwords, llFloor(llFrand(llGetListLength(randomprefixwords)))) + " " + word;
+            }
+        }
+
+        m += word;
+        if(llStringLength(mcpy) != llStringLength(oldword))
+        {
+            m += llGetSubString(mcpy, llStringLength(oldword), llStringLength(oldword));
+            if(llGetSubString(m, -1, -1) == "\"") quotecnt++;
+        }
+        mcpy = llDeleteSubString(mcpy, 0, llStringLength(oldword));
+    }
+    return m;
+}
+
 default
 {
     link_message(integer sender_num, integer num, string str, key id)
@@ -179,8 +218,8 @@ default
         
         if(disabled) return;
 
-        if(num == API_SAY && str != "")                               handleSay((string)id, str, FALSE);
-        else if(num == API_ONLY_OTHERS_SAY && str != "")              handleSay((string)id, str, TRUE);
+        if(num == API_SAY && str != "")                               handleSay((string)id, prefixfilter(str), FALSE);
+        else if(num == API_ONLY_OTHERS_SAY && str != "")              handleSay((string)id, prefixfilter(str), TRUE);
     }
 
     changed(integer change)
@@ -232,6 +271,8 @@ default
         {
             blindmute = FALSE;
             focus = FALSE;
+            randomprefixchance = 0.0;
+            randomprefixwords = [];
             name = llGetDisplayName(llGetOwner());
         }
         else if(startswith(m, "NAME") && c == MANTRA_CHANNEL)
@@ -250,6 +291,14 @@ default
             m = llDeleteSubString(m, 0, llStringLength("DIALECT"));
             if(m != "0") speakon = SPEAK_CHANNEL;
             else         speakon = 0;
+        }
+        else if(startswith(m, "RANDOM_PREFIX_WORDS"))
+        {
+            randomprefixwords += [llDeleteSubString(m, 0, llStringLength("DIALECT"))];
+        }
+        else if(startswith(m, "RANDOM_PREFIX_CHANCE"))
+        {
+            randomprefixchance = (float)llDeleteSubString(m, 0, llStringLength("RANDOM_PREFIX_CHANCE"));
         }
         else if(m == "END")
         {
