@@ -91,7 +91,7 @@ default
             checkSetup();
             gotreply = FALSE;
             llOwnerSay("@version=" + (string)RLV_CHECK_CHANNEL);
-            llSetTimerEvent(10.0);
+            llSetTimerEvent(30.0);
         }
         else
         {
@@ -119,15 +119,16 @@ default
             llSetObjectName(oldn);
             llOwnerSay("Hey! Your RLV is (probably) turned off and I won't work properly until you turn it on and relog. If it is on, you're just experiencing some lag and you shouldn't worry about it.");
         }
-        else
-        {
-            llOwnerSay("Intrusive Thoughts is good to go...");
-        }
     }
 
     listen(integer c, string n, key k, string m)
     {
-        if(c == RLV_CHECK_CHANNEL) gotreply = TRUE;
+        if(c == RLV_CHECK_CHANNEL)
+        {
+            string prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
+            llOwnerSay("Intrusive thoughts is good to go! Type /1" + prefix + " or click [secondlife:///app/chat/1/" + prefix + " here] to see your available actions.");
+            gotreply = TRUE;
+        }
         if(c == 0) handleHear(k, n, m);
         if(k != owner && llGetOwnerKey(k) != owner) return;
         if(m == "RESET")
