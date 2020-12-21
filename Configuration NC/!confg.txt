@@ -1,3 +1,5 @@
+# Tp lines configure pre-set locations for the tpto and tpme commands
+# The format is: tp|shortname,region,x,y,z
 tp|tflab,Bedos,97,99,291
 tp|tf,Bedos,97,99,291
 tp|home,Bedos,96,99,198
@@ -7,7 +9,18 @@ tp|mystwood,Quiet Riot,141,95,55
 tp|mw,Quiet Riot,141,95,55
 tp|silenced,San Fierro,218,15,2422
 tp|hbc,Myanimo,96,20,903
+
+# The name that will be used in place of %ME% in spoofs.
 name|Hana
+
+# The prefix for your objects when they emote, in the following example
+# an emote would look like: "Hana's shoes wiggle a little"
 objectprefix|Hana's
+
+# The capture and release phrases used when someone is turned into an object
+# and when they're released again.
+# %ME% is replaced with the name set above
+# %VIC% is replaced with the name of the victim
+# %OBJ% is replaced with the name of the object they're turning into
 capture|%ME% chants in an ancient forbidden language as %VIC% finds themselves being drawn into the inanimate form of %ME%'s %OBJ%.
 release|%ME% releases the soul trapped within her %OBJ% back into the living form of %VIC%.
