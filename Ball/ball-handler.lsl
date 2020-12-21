@@ -32,7 +32,7 @@ default
     run_time_permissions(integer perm)
     {
         llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "onball " + (string)llGetKey());
-        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames_sec=n|@showhovertextworld=n|@showworldmap=n|@showminimap=n|@showloc=n|@touchworld=n|@setcam_focus:" + (string)rezzer + ";5;1/0/0=force|@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@showinv=n|@edit=n|@rez=n|@showself=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add");
+        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames_sec=n|@showhovertextworld=n|@showworldmap=n|@showminimap=n|@showloc=n|@touchworld=n|@setcam_focus:" + (string)rezzer + ";2;1/0/0=force|@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@showinv=n|@edit=n|@rez=n|@showself=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add");
         llStartAnimation(animation);
         llSetTimerEvent(0.1);
     }
@@ -92,7 +92,7 @@ default
                 return;
             }
             llSetRegionPos(pos);
-            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)rezzer + ";5;=force");
+            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)rezzer + ";2;=force");
         }
     }
 }

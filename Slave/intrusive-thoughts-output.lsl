@@ -163,7 +163,7 @@ focusToggle()
         focus = TRUE;
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " is now forced to look at you.");
     }
-    llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
+    llSetTimerEvent(0.1);
 }
 
 default
@@ -196,58 +196,20 @@ default
         llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
     }
 
-    run_time_permissions(integer mask)
-    {
-        if(llGetPermissions() & PERMISSION_CONTROL_CAMERA == 0)
-        {
-            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
-            return;
-        }
-
-        if(focus)
-        {
-            llOwnerSay("@camunlock=n,camdistmax:0=n");
-            llSetTimerEvent(0.1);
-        }
-    }
-
     timer()
     {
         llSetTimerEvent(0.0);
-        if(llGetPermissions() & PERMISSION_CONTROL_CAMERA == 0)
-        {
-            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
-            return;
-        }
+        if(!focus) return;
 
-        if(!focus)
-        {
-            if(llGetPermissions() & PERMISSION_CONTROL_CAMERA) llClearCameraParams();
-            llOwnerSay("@camunlock=y,camdistmax:0=y");
-            return;
-        }
         vector pos = llList2Vector(llGetObjectDetails(owner, [OBJECT_POS]), 0);
         if(pos != ZERO_VECTOR)
         {
-            vector to = pos - llGetPos();
-            llOwnerSay("@setrot:" + (string)llAtan2(to.x, to.y) + "=force");
-            llClearCameraParams();
-            llSetCameraParams([
-                CAMERA_ACTIVE, TRUE,
-                CAMERA_FOCUS, pos,
-                CAMERA_FOCUS_LAG, 0.0,
-                CAMERA_FOCUS_LOCKED, TRUE,
-                CAMERA_POSITION, llGetPos() + <0.25, 0.0, 1.0> * llGetRot(),
-                CAMERA_POSITION_LAG, 0.0,
-                CAMERA_POSITION_LOCKED, TRUE
-            ]);
+            llOwnerSay("@setcam_focus:" + (string)owner + ";2;=force");
             llSetTimerEvent(0.1);
         }
         else
         {
-            llClearCameraParams();
             focus = FALSE;
-            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
         }
     }
 
@@ -255,7 +217,7 @@ default
     {
         if(id != NULL_KEY) 
         {
-            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
+            if(focus) llSetTimerEvent(0.1);
         }
         else
         {
