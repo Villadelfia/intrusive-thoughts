@@ -79,12 +79,20 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_STARTUP_DONE) llOwnerSay(VERSION_C + ": Startup complete. Welcome to your Intrusive Thoughts system!");
+        if(num == API_STARTUP_DONE) llOwnerSay(VERSION_C + ": Startup complete. Welcome to your Intrusive Thoughts system. Click the white button to get a menu with commands, or the center button to configure one of your slaves.");
     }
 
     attach(key id)
     {
-        if(id) llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
+        if(id != NULL_KEY && ready == TRUE) 
+        {
+            llOwnerSay(VERSION_C + ": Startup complete. Welcome to your Intrusive Thoughts system. Click the white button to get a menu with commands, or the center button to configure one of your slaves.");
+            llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
+        }
+        else if(id != NULL_KEY)
+        {
+            llResetScript();
+        }
     }
 
     run_time_permissions(integer perm)
