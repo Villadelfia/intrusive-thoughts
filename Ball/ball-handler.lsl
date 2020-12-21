@@ -43,11 +43,17 @@ default
         {
             llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
             llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
+            llSleep(0.5);
+            llUnSit(llAvatarOnSitTarget());
+            llSleep(10.0);
             llDie();
         }
         else if(m == "abouttotp")
         {
             llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
+            llSleep(0.5);
+            llUnSit(llAvatarOnSitTarget());
+            llSleep(10.0);
             llDie();
         }
         else if(startswith(m, "balloffset"))
@@ -65,6 +71,10 @@ default
             if(llGetAgentSize(rezzer) == ZERO_VECTOR)
             {
                 llSetRegionPos(my - offset);
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
+                llSleep(0.5);
+                llUnSit(llAvatarOnSitTarget());
+                llSleep(10.0);
                 llDie();
                 return;
             }
@@ -74,6 +84,10 @@ default
             if(llVecDist(my, pos) > 365 || pos == ZERO_VECTOR)
             {
                 llSetRegionPos(llGetPos() - offset);
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
+                llSleep(0.5);
+                llUnSit(llAvatarOnSitTarget());
+                llSleep(10.0);
                 llDie();
                 return;
             }

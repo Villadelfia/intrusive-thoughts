@@ -175,11 +175,11 @@ default
         else if(num == API_FOCUS_TOGGLE)                              focusToggle();
         else if(num == API_ENABLE)                                    disabled = FALSE;
         else if(num == API_DISABLE)                                   disabled = TRUE;
+        else if(num == API_SELF_SAY && str != "")                     handleSelfSay((string)id, str);
         
         if(disabled) return;
 
-        if(num == API_SELF_SAY && str != "")                          handleSelfSay((string)id, str);
-        else if(num == API_SAY && str != "")                          handleSay((string)id, str, FALSE);
+        if(num == API_SAY && str != "")                               handleSay((string)id, str, FALSE);
         else if(num == API_ONLY_OTHERS_SAY && str != "")              handleSay((string)id, str, TRUE);
     }
 

@@ -9,6 +9,7 @@ list nearby = [];
 string path = "";
 string playing = "";
 integer daze = FALSE;
+integer locked = FALSE;
 
 doSetup()
 {
@@ -26,6 +27,7 @@ doSetup()
     {
         llOwnerSay("@recvim:20=y,sendim:20=y,sendim:" + (string)owner + "=rem,recvim:" + (string)owner + "=rem");
     }
+    if(locked) llOwnerSay("@detach=n");
 }
 
 handleClick(key k)
@@ -74,7 +76,7 @@ handleClick(key k)
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "listoutfit - List all outfits.]");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "liststuff - List all stuff.]");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing.]");
+        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing]/[secondlife:///app/chat/1/" + prefix + "itlock lock.]");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- /1" + prefix + "say <message>: Say a message.");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- /1" + prefix + "think <message>: Think a message.");
@@ -414,6 +416,21 @@ default
             llSetTimerEvent(0.0);
             m = llDeleteSubString(m, 0, llStringLength("tpto"));
             llOwnerSay("@tploc=y,unsit=y,tpto:" + m + "=force");
+        }
+        else if(llToLower(m) == "lock" || llToLower(m) == "itlock")
+        {
+            if(locked)
+            {
+                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.");
+                locked = FALSE;
+                llOwnerSay("@detach=y");
+            }
+            else
+            {
+                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.");
+                locked = TRUE;
+                llOwnerSay("@detach=n");
+            }
         }
         else if(startswith(m, "@"))
         {

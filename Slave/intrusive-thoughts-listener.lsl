@@ -3,7 +3,6 @@ list statements = [];
 key owner = NULL_KEY;
 integer timerMin = 0;
 integer timerMax = 0;
-integer locked = FALSE;
 
 default
 {
@@ -34,7 +33,6 @@ default
         else
         {
             llSetObjectDesc((string)owner);
-            if(locked) llOwnerSay("@detach=n");
         }
     }
 
@@ -53,21 +51,6 @@ default
         {
             llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is resetting configuration and listening to new programming...");
             statements = [];
-        }
-        else if(m == "LOCK")
-        {
-            if(locked)
-            {
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.");
-                locked = FALSE;
-                llOwnerSay("@detach=y");
-            }
-            else
-            {
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.");
-                locked = TRUE;
-                llOwnerSay("@detach=n");
-            }
         }
         else if(m == "END")
         {

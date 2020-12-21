@@ -156,6 +156,7 @@ default
         llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA);
         llListen(GAZE_CHANNEL, "", llGetOwner(), "");
         llListen(RLVRC, "", NULL_KEY, "");
+        llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
     }
 
     changed(integer change)
@@ -302,8 +303,9 @@ default
         {
             string oldn = llGetObjectName();
             integer i = llListFindList(objectifiedavatars, [id]);
-            if(i == -1) return;
-            llSetObjectName(owner + "'s " + llList2String(objectifieddescriptions, i));
+            string obj = llList2String(objectifieddescriptions, i);
+            if(i == -1) obj = "unknown object";
+            llSetObjectName(owner + "'s " + obj);
             llSay(0, m);
             llSetObjectName(oldn);
         }
