@@ -23,8 +23,8 @@
 #define API_TPOK                -11
 #define API_DISABLE             -12
 #define API_ENABLE              -13
-string VERSION_S = "Intrusive Thoughts Slave v5.1";
-string VERSION_C = "Intrusive Thoughts Controller v5.1";
+string VERSION_S = "Intrusive Thoughts Slave β5.2";
+string VERSION_C = "Intrusive Thoughts Controller β5.2";
 
 integer startswith(string haystack, string needle)
 {
