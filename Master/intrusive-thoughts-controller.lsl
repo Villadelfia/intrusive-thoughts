@@ -28,12 +28,11 @@ setText()
 {
     if(line >= lines) 
     {
-        llSetText("" , <1.0, 1.0, 1.0>, 0.0);
         llRegionSayTo(target, MANTRA_CHANNEL, "END");
     }
     else 
     {
-        llSetText("Reading " + name + ":\n" + (string)line + "/" + (string)lines, <1.0, 1.0, 1.0>, 1.0);
+        llSetText("Reading " + name + ":\n" + (string)line + "/" + (string)lines + "\n \n \n \n \n \n ", <0.0, 1.0, 1.0>, 1.0);
     }
 }
 

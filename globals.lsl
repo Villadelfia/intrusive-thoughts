@@ -5,7 +5,9 @@
 #define VOICE_CHANNEL     166845631
 #define HUD_SPEAK_CHANNEL 166845632
 #define RLV_CHECK_CHANNEL 166845633
-#define GAZE_CHANNEL      166845634
+#define GAZE_CHANNEL              1
+#define GAZE_CHAT_CHANNEL 166845634
+#define COMMAND_CHANNEL           1
 #define SPEAK_CHANNEL     166845635
 #define RLVRC           -1812221819
 #define API_RESET                -1
@@ -19,6 +21,8 @@
 #define API_FOCUS_TOGGLE         -9
 #define API_DOTP                -10
 #define API_TPOK                -11
+#define API_DISABLE             -12
+#define API_ENABLE              -13
 string VERSION_S = "Intrusive Thoughts Slave v5.0";
 string VERSION_C = "Intrusive Thoughts Controller v5.0";
 

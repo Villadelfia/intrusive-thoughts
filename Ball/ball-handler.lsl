@@ -31,6 +31,8 @@ default
 
     run_time_permissions(integer perm)
     {
+        llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "onball " + (string)llGetKey());
+        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames_sec=n|@showhovertextworld=n|@showworldmap=n|@showminimap=n|@showloc=n|@touchworld=n|@setcam_focus:" + (string)rezzer + ";5;1/0/0=force|@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@showinv=n|@edit=n|@rez=n|@showself=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add");
         llStartAnimation(animation);
         llSetTimerEvent(0.1);
     }
@@ -40,15 +42,18 @@ default
         if(m == "unsit")
         {
             llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
+            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
             llDie();
-            return;
         }
         else if(m == "abouttotp")
         {
+            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
             llDie();
-            return;
         }
-        offset = (vector)m;
+        else if(startswith(m, "balloffset"))
+        {
+            offset = (vector)llDeleteSubString(m, 0, llStringLength("balloffset"));;
+        }
     }
 
     timer()
@@ -73,6 +78,7 @@ default
                 return;
             }
             llSetRegionPos(pos);
+            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)rezzer + ";5;=force");
         }
     }
 }

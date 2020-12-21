@@ -1,6 +1,8 @@
 #include <IT/globals.lsl>
 key owner = NULL_KEY;
 integer noim = FALSE;
+integer onball = FALSE;
+key ball;
 string name = "";
 string prefix = "xx";
 list nearby = [];
@@ -167,6 +169,7 @@ default
         else
         {
             llSetTimerEvent(0.0);
+            onball = FALSE;
             string oldn = llGetObjectName();
             llSetObjectName("");
             if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
@@ -302,7 +305,7 @@ default
             playing = "";
             return;
         }
-        else if(c == 1 && llToLower(m) == "!")
+        else if(c == 1 && (llToLower(m) == "!" || m == ""))
         {
             handleClick(k);
         }
@@ -438,12 +441,41 @@ default
         {
             llMessageLinked(LINK_SET, API_FOCUS_TOGGLE, "", NULL_KEY);
         }
+        else if(startswith(llToLower(m), "onball"))
+        {
+            llMessageLinked(LINK_SET, API_DISABLE, "", NULL_KEY);
+            onball = TRUE;
+            ball = (key)llDeleteSubString(m, 0, llStringLength("onball"));
+            llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 5.0);
+        }
+        else if(startswith(llToLower(m), "tpto"))
+        {
+            if(onball == TRUE && llList2Key(llGetObjectDetails(llGetOwner(), [OBJECT_ROOT]), 0) == ball) return;
+            llMessageLinked(LINK_SET, API_ENABLE, "", NULL_KEY);
+            onball = FALSE;
+            ball = NULL_KEY;
+            llSensorRemove();
+            m = llDeleteSubString(m, 0, llStringLength("tpto"));
+            llOwnerSay("@tploc=y,unsit=y,tpto:" + m + "=force");
+        }
         else if(startswith(m, "@"))
         {
             m = strreplace(m, "RLV_CHANNEL", (string)RLV_CHANNEL);
             path = "~";
             llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Executing RLV command '" + m + "' on " + name + ".");
             llOwnerSay(m);
+        }
+    }
+
+    no_sensor()
+    {
+        key obj = llList2Key(llGetObjectDetails(llGetOwner(), [OBJECT_ROOT]), 0);
+        if(obj != ball)
+        {
+            llMessageLinked(LINK_SET, API_ENABLE, "", NULL_KEY);
+            onball = FALSE;
+            ball = NULL_KEY;
+            llSensorRemove();
         }
     }
 

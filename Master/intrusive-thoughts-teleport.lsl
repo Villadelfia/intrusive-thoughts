@@ -15,14 +15,14 @@ list locations = [
 
 dotp(string region, string x, string y, string z)
 {
-    llRegionSay(MANTRA_CHANNEL, "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force");
-    llMessageLinked(LINK_SET, API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", NULL_KEY);
+    llRegionSay(MANTRA_CHANNEL, "tpto " + region + "/" + x + "/" + y  + "/" + z);
+    llMessageLinked(LINK_SET, API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", (key)region);
     tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
 }
 
 tpme(string region, string x, string y, string z)
 {
-    llMessageLinked(LINK_SET, API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", NULL_KEY);
+    llMessageLinked(LINK_SET, API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", (key)region);
     tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
 }
 
@@ -48,7 +48,7 @@ default
 
     listen(integer c, string n, key id, string m)
     {
-        if(startswith(llToLower(m), "tpto") == FALSE && startswith(llToLower(m), "tpme") == FALSE) return;
+        if(startswith(llToLower(m), "dotp") == FALSE && startswith(llToLower(m), "tpto") == FALSE && startswith(llToLower(m), "tpme") == FALSE) return;
         integer justme = startswith(llToLower(m), "tpme");
         m = llDeleteSubString(m, 0, llStringLength("tpto"));
         if(llListFindList(locations, [llToLower(m)]) != -1)

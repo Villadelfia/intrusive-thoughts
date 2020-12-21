@@ -2,6 +2,7 @@
 key owner = NULL_KEY;
 integer blindmute = FALSE;
 integer focus = FALSE;
+integer disabled = FALSE;
 integer speakon = 0;
 string name;
 
@@ -171,10 +172,15 @@ default
     {
         if(num == API_RESET && id == llGetOwner())                    llResetScript();
         else if(num == API_SELF_DESC && str != "")                    handleSelfDescribe(str);
-        else if(num == API_SELF_SAY && str != "" && (string)id != "") handleSelfSay((string)id, str);
+        else if(num == API_FOCUS_TOGGLE)                              focusToggle();
+        else if(num == API_ENABLE)                                    disabled = FALSE;
+        else if(num == API_DISABLE)                                   disabled = TRUE;
+        
+        if(disabled) return;
+
+        if(num == API_SELF_SAY && str != "")                          handleSelfSay((string)id, str);
         else if(num == API_SAY && str != "")                          handleSay((string)id, str, FALSE);
         else if(num == API_ONLY_OTHERS_SAY && str != "")              handleSay((string)id, str, TRUE);
-        else if(num == API_FOCUS_TOGGLE)                              focusToggle();
     }
 
     changed(integer change)
