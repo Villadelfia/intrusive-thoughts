@@ -10,66 +10,22 @@ string path = "";
 string playing = "";
 integer daze = FALSE;
 
-doScan()
-{
-    llSetTimerEvent(0.0);
-    if(!noim)
-    {
-        llOwnerSay("@clear=recvimfrom,clear=sendimto");
-        nearby = [];
-        llMessageLinked(LINK_SET, API_SAY, "/me can IM with people within 20 meters of them again.", (key)name);
-        return;
-    }
-    list check = llGetAgentList(AGENT_LIST_REGION, []);
-    vector pos = llGetPos();
-
-    // Filter by distance.
-    integer l = llGetListLength(check);
-    integer i;
-    key k;
-    for(l--; l >= 0; l--)
-    {
-        k = llList2Key(check, l);
-        if(llVecDist(pos, llList2Vector(llGetObjectDetails(k, [OBJECT_POS]), 0)) > 19.5) check = llDeleteSubList(check, l, l);
-    }
-    
-    // Check for every key in nearby, remove restriction if no longer present.
-    l = llGetListLength(nearby);
-    for(l--; l >= 0; l--)
-    {
-        k = llList2Key(nearby, l);
-        i = llListFindList(check, [k]);
-        if(i == -1) 
-        {
-            llOwnerSay("@recvimfrom:" + (string)k +"=y,sendimto:" + (string)k +"=y");
-            nearby = llDeleteSubList(nearby, l, l);
-        }
-    }
-    
-    // Check for newly arrived people, add restriction.
-    l = llGetListLength(check);
-    for(l--; l >= 0; l--)
-    {
-        k = llList2Key(check, l);
-        i = llListFindList(nearby, [k]);
-        if(i == -1 && llGetAgentSize(k) != ZERO_VECTOR && k != (key)NULL_KEY && k != owner)
-        {
-            llOwnerSay("@recvimfrom:" + (string)k +"=n,sendimto:" + (string)k +"=n");
-            nearby += [k];
-        }
-    }
-    llSetTimerEvent(1.0);
-}
-
 doSetup()
 {
-    llSetTimerEvent(0.0);
     llOwnerSay("@accepttp:" + (string)owner + "=add,accepttprequest:" + (string) owner + "=add,acceptpermission=add");
     if(daze) llOwnerSay("@shownames_sec=n,showhovertextworld=n,showworldmap=n,showminimap=n,showloc=n,fartouch=n,camunlock=n,alwaysrun=n,temprun=n");
     else     llOwnerSay("@shownames_sec=y,showhovertextworld=y,showworldmap=y,showminimap=y,showloc=y,fartouch=y,camunlock=y,alwaysrun=y,temprun=y");
     nearby = [];
     playing = "";
-    if(noim) llSetTimerEvent(1.0);
+    if(noim)
+    {
+        llMessageLinked(LINK_SET, API_SAY, "/me can not IM with people within 20 meters of them.", (key)name);
+        llOwnerSay("@recvim:20=n,sendim:20=n,sendim:" + (string)owner + "=add,recvim:" + (string)owner + "=add");
+    }
+    else
+    {
+        llOwnerSay("@recvim:20=y,sendim:20=y,sendim:" + (string)owner + "=rem,recvim:" + (string)owner + "=rem");
+    }
 }
 
 handleClick(key k)
@@ -168,7 +124,6 @@ default
         }
         else
         {
-            llSetTimerEvent(0.0);
             onball = FALSE;
             string oldn = llGetObjectName();
             llSetObjectName("");
@@ -331,13 +286,15 @@ default
         {
             if(noim)
             {
+                llMessageLinked(LINK_SET, API_SAY, "/me can IM with people within 20 meters of them again.", (key)name);
+                llOwnerSay("@recvim:20=y,sendim:20=y,sendim:" + (string)owner + "=rem,recvim:" + (string)owner + "=rem");
                 noim = FALSE;
             }
             else
             {
                 llMessageLinked(LINK_SET, API_SAY, "/me can no longer IM with people within 20 meters of them.", (key)name);
+                llOwnerSay("@recvim:20=n,sendim:20=n,sendim:" + (string)owner + "=add,recvim:" + (string)owner + "=add");
                 noim = TRUE;
-                llSetTimerEvent(1.0);
             }
         }
         else if(llToLower(m) == "list")
@@ -446,7 +403,7 @@ default
             llMessageLinked(LINK_SET, API_DISABLE, "", NULL_KEY);
             onball = TRUE;
             ball = (key)llDeleteSubString(m, 0, llStringLength("onball"));
-            llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 5.0);
+            llSetTimerEvent(5.0);
         }
         else if(startswith(llToLower(m), "tpto"))
         {
@@ -454,7 +411,7 @@ default
             llMessageLinked(LINK_SET, API_ENABLE, "", NULL_KEY);
             onball = FALSE;
             ball = NULL_KEY;
-            llSensorRemove();
+            llSetTimerEvent(0.0);
             m = llDeleteSubString(m, 0, llStringLength("tpto"));
             llOwnerSay("@tploc=y,unsit=y,tpto:" + m + "=force");
         }
@@ -467,7 +424,7 @@ default
         }
     }
 
-    no_sensor()
+    timer()
     {
         key obj = llList2Key(llGetObjectDetails(llGetOwner(), [OBJECT_ROOT]), 0);
         if(obj != ball)
@@ -475,12 +432,7 @@ default
             llMessageLinked(LINK_SET, API_ENABLE, "", NULL_KEY);
             onball = FALSE;
             ball = NULL_KEY;
-            llSensorRemove();
+            llSetTimerEvent(0.0);
         }
-    }
-
-    timer()
-    {
-        doScan();
     }
 }
