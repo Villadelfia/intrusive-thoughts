@@ -24,6 +24,8 @@ list responses;
 string await = "";
 integer intp = FALSE;
 integer handling;
+integer store = -1;
+string storingon;
 
 updatetitle()
 {
@@ -49,20 +51,21 @@ integer canrez(vector pos)
 givemenu()
 {
     llOwnerSay("Objectification options:");
-    if(lockedavatar != NULL_KEY) 
-    {
-        llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/capture Objectify " + lockedname + ".]");
-        llOwnerSay("—or— manually type /1capture <description> to choose what your object will be.");
-    }
-    else
-    {
-        llOwnerSay("Lock an avatar using the L button to be able to capture them.");
-    }
-    integer l = llGetListLength(objectifiednames) - 1;
+    if(lockedname != "") llOwnerSay("Locked avatar: " + lockedname);
+    else                 llOwnerSay("Locked avatar: -no avatar-");
+    llOwnerSay("Last seen avatar: " + lastseenavatarname);
+    llOwnerSay("Last seen object: " + lastseenobjectname);
+    llOwnerSay(" ");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/transfer Take stored object from last seen object.]");
+    llOwnerSay(" ");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/capture Objectify the locked avatar.]");
+    llOwnerSay("—or— manually type /1capture <description> to choose what your object will be.");
+    integer l = llGetListLength(objectifiednames)-1;
     if(l >= 0) llOwnerSay(" ");
     while(l >= 0)
     {
-        llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/release%20" + (string)l + " Release " + llList2String(objectifiednames, l) + " (" + objectprefix + llList2String(objectifieddescriptions, l)+ ").]");
+        llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/release%20" + (string)l + " Release " + llList2String(objectifiednames, l) + " (" + objectprefix + llList2String(objectifieddescriptions, l)+ ")] " + 
+                   "[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/transfer%20" + (string)l + " (store as last seen object)].");
         l--;
     }
     if(llGetListLength(objectifiednames) > 1) 
@@ -102,6 +105,7 @@ releaseall()
 addobject(string desc)
 {
     if(lockedavatar == llGetOwner()) return;
+    if(lockedavatar == NULL_KEY) return;
     if(desc == "") desc = "object";
     targetdescription = desc;
     
@@ -232,6 +236,62 @@ default
             else if(startswith(llToLower(m), "release"))
             {
                 release((integer)llDeleteSubString(m, 0, llStringLength("release")));
+            }
+            else if(m == "transfer")
+            {
+                store = -1;
+                llRegionSayTo(lastseenobject, MANTRA_CHANNEL, "furniture");
+            }
+            else if(startswith(llToLower(m), "transfer"))
+            {
+                store = (integer)llDeleteSubString(m, 0, llStringLength("transfer"));
+                llRegionSayTo(lastseenobject, MANTRA_CHANNEL, "furniture");
+            }
+        }
+        else if(c == MANTRA_CHANNEL)
+        {
+            if(startswith(m, "furniture"))
+            {
+                storingon = n;
+                if(store == -1)
+                {
+                    if(m == "furniture 0") llOwnerSay("No object is stored in '" + n + "'.");
+                    else
+                    {
+                        llOwnerSay("Taking object from '" + n + "'.");
+                        llRegionSayTo(id, MANTRA_CHANNEL, "puton");
+                    }
+                }
+                else
+                {
+                    string spoof;
+                    spoof = llDumpList2String(llParseStringKeepNulls(putdownspoof, ["%ME%"], []), owner);
+                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), llList2String(objectifieddescriptions, store));
+                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), llList2String(objectifiednames, store));
+                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%TAR%"], []), n);
+                    llSay(0, spoof);
+                    llRegionSayTo(id, MANTRA_CHANNEL, "putdown " + (string)llList2Key(objectifiedballs, store) + "|||" + llList2String(objectifieddescriptions, store));
+                    objectifiednames = llDeleteSubList(objectifiednames, store, store);
+                    objectifiedavatars = llDeleteSubList(objectifiedavatars, store, store);
+                    objectifiedballs = llDeleteSubList(objectifiedballs, store, store);
+                    objectifieddescriptions = llDeleteSubList(objectifieddescriptions, store, store);
+                }
+            }
+            else if(startswith(m, "puton"))
+            {
+                list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("puton")), ["|||"], []);
+                key av = (key)llList2String(params, 0);
+                string desc = llList2String(params, 1);
+                string spoof;
+                spoof = llDumpList2String(llParseStringKeepNulls(putonspoof, ["%ME%"], []), owner);
+                spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), desc);
+                spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), llGetDisplayName(av));
+                spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%TAR%"], []), storingon);
+                llSay(0, spoof);
+                objectifiedballs += [id];
+                objectifiedavatars += [av];
+                objectifiednames += [llGetDisplayName(av)];
+                objectifieddescriptions += [desc];
             }
         }
         else if(c == RLVRC)
@@ -456,6 +516,7 @@ default
             llListen(GAZE_CHANNEL, "", llGetOwner(), "");
             llListen(RLVRC, "", NULL_KEY, "");
             llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
+            llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
             ready = TRUE;
         }
         else if(num == API_CONFIG_DATA)

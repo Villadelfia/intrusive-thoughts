@@ -1,7 +1,9 @@
 #include <IT/globals.lsl>
+#define avataroffset <0.0, 0.0, -3.0>
 string animation = "";
 key rezzer;
-vector offset = <0.0, 0.0, -3.0>;
+integer keyisavatar = TRUE;
+string name;
 
 default
 {
@@ -13,9 +15,10 @@ default
 
     on_rez(integer start_param)
     {
-        if(start_param == 1)      animation = "hide_a";
-        else if(start_param == 2) animation = "hide_b";
-        else                      return;
+        if(start_param & 1)      animation = "hide_a";
+        else if(start_param & 2) animation = "hide_b";
+        else                     return;
+        if(start_param & 4)      keyisavatar = FALSE;
         rezzer = llGetOwnerKey((key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0));
         llSetTimerEvent(10.0);
     }
@@ -25,7 +28,11 @@ default
         if(change & CHANGED_LINK)
         {
             if(llAvatarOnSitTarget() == NULL_KEY) llDie();
-            else                                  llRequestPermissions(llAvatarOnSitTarget(), PERMISSION_TRIGGER_ANIMATION);
+            else
+            {
+                llListen(GAZE_CHAT_CHANNEL, "", llAvatarOnSitTarget(), "");
+                llRequestPermissions(llAvatarOnSitTarget(), PERMISSION_TRIGGER_ANIMATION);
+            }
         }
     }
 
@@ -37,28 +44,52 @@ default
         llSetTimerEvent(0.1);
     }
 
-    listen(integer channel, string name, key id, string m)
+    listen(integer c, string n, key id, string m)
     {
-        if(m == "unsit")
+        if(c == GAZE_CHAT_CHANNEL)
         {
-            llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
-            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
-            llSleep(0.5);
-            llUnSit(llAvatarOnSitTarget());
-            llSleep(10.0);
-            llDie();
+            if(keyisavatar == TRUE || startswith(m, "/me") == FALSE || contains(m, "\"") == TRUE) return;
+            string oldn = llGetObjectName();
+            llSetObjectName(name);
+            llSay(0, m);
+            llSetObjectName(oldn);
         }
-        else if(m == "abouttotp")
+        else
         {
-            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
-            llSleep(0.5);
-            llUnSit(llAvatarOnSitTarget());
-            llSleep(10.0);
-            llDie();
-        }
-        else if(startswith(m, "balloffset"))
-        {
-            offset = (vector)llDeleteSubString(m, 0, llStringLength("balloffset"));;
+            if(m == "unsit")
+            {
+                llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
+                llSleep(0.5);
+                llUnSit(llAvatarOnSitTarget());
+                llSleep(10.0);
+                llDie();
+            }
+            else if(m == "abouttotp")
+            {
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
+                llSleep(0.5);
+                llUnSit(llAvatarOnSitTarget());
+                llSleep(10.0);
+                llDie();
+            }
+
+            // We've been told by furniture that we should give ourselves back to an IT controller.
+            else if(startswith(m, "puton"))
+            {
+                list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("puton")), ["|||"], []);
+                rezzer = (key)llList2String(params, 0);
+                name = llList2String(params, 1);
+                llRegionSayTo(rezzer, MANTRA_CHANNEL, "puton " + (string)llAvatarOnSitTarget() + "|||" + name);
+                keyisavatar = TRUE;
+            }
+            else if(startswith(m, "putdown"))
+            {
+                list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("putdown")), ["|||"], []);
+                rezzer = (key)llList2String(params, 0);
+                name = llList2String(params, 1);
+                keyisavatar = FALSE;
+            }
         }
     }
 
@@ -67,8 +98,11 @@ default
         if(llGetNumberOfPrims() == 1) llDie();
         else
         {
+            vector offset = ZERO_VECTOR;
+            if(keyisavatar) offset = avataroffset;
+
             vector my = llGetPos();
-            if(llGetAgentSize(rezzer) == ZERO_VECTOR)
+            if(keyisavatar == TRUE && llGetAgentSize(rezzer) == ZERO_VECTOR)
             {
                 llSetRegionPos(my - offset);
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
@@ -78,8 +112,9 @@ default
                 llDie();
                 return;
             }
+
             vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + offset;
-            if(pos == llGetPos()) return;
+            if(pos == my) return;
             my.z = pos.z;
             if(llVecDist(my, pos) > 365 || pos == ZERO_VECTOR)
             {
@@ -91,6 +126,7 @@ default
                 llDie();
                 return;
             }
+
             llSetRegionPos(pos);
             llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)rezzer + ";2;=force");
         }
