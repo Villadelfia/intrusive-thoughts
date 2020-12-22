@@ -55,6 +55,11 @@ string slurl()
     return "http://maps.secondlife.com/secondlife/" + llEscapeURL(llGetRegionName()) + "/" + (string)llRound(pos.x) + "/" + (string)llRound(pos.y) + "/" + (string)llRound(pos.z) + "/";
 }
 
+string slurlp(string region, string x, string y, string z)
+{
+    return "http://maps.secondlife.com/secondlife/" + llEscapeURL(region) + "/" + x + "/" + y + "/" + z + "/";
+}
+
 string strreplace(string source, string pattern, string replace) 
 {
     while (llSubStringIndex(source, pattern) > -1) 

@@ -26,9 +26,11 @@ integer intp = FALSE;
 integer handling;
 integer store = -1;
 string storingon;
+integer disabled = FALSE;
 
 updatetitle()
 {
+    if(disabled) return;
     if(lockedavatar)
     {
         llSetText("« " + lockedname + " »\n" + lastseenobjectname + "\n \n \n \n \n \n ", <1.0, 1.0, 0.0>, 1.0);
@@ -184,8 +186,7 @@ default
                 responses = [];
                 handletp();
             }
-        }        
-        if(change & CHANGED_INVENTORY) llResetScript();
+        }
     }
 
     attach(key id)
@@ -558,6 +559,14 @@ default
                 llSetObjectName("");
                 llOwnerSay(VERSION_C + ": Set put down phrase to '" + putdownspoof + "'");
             }
+        }
+        else if(num == API_ENABLE) 
+        {
+            disabled = FALSE;
+        }
+        else if(num == API_DISABLE) 
+        {
+            disabled = TRUE;
         }
     }
 

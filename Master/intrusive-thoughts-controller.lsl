@@ -10,6 +10,7 @@ integer lines;
 string name;
 string prefix;
 integer menu = 0;
+key confignc;
 
 list page1 = [
     "B.MUTE OFF", "BIMBO OFF",  "TIMER SET",
@@ -102,6 +103,7 @@ default
 
     state_entry()
     {
+        confignc = llGetInventoryKey("!config");
         llSetText("Loading config...\n \n \n \n \n \n ", <1.0, 1.0, 1.0>, 1.0);
         llSleep(1.5);
         name = "!config";
@@ -118,7 +120,7 @@ default
         
         if(change & CHANGED_INVENTORY)
         {
-            llResetScript();
+            if(llGetInventoryKey("!config") != confignc) llResetScript();
         }
     }
 
@@ -366,6 +368,7 @@ default
             lines = (integer)d;
             line = 0;
             prefix = "";
+            llMessageLinked(LINK_SET, API_DISABLE, "", NULL_KEY);
             getline = llGetNotecardLine(name, line);
         }
         else if(q == getline)
@@ -374,6 +377,7 @@ default
             if(d == EOF) 
             {
                 name = "";
+                llMessageLinked(LINK_SET, API_ENABLE, "", NULL_KEY);
                 return;
             }
             else if(llStringTrim(d, STRING_TRIM) == "") 
