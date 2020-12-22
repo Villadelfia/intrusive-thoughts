@@ -122,6 +122,10 @@ default
         {
             unleash();
         }
+        else if(m == "yank")
+        {
+            if(leashedto) yankTo(leashedto);
+        }
     }
 
     at_target(integer num, vector tar, vector me)

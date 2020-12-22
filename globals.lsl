@@ -27,8 +27,13 @@
 #define API_CONFIG_DATA         -15
 #define API_GIVE_TP_MENU        -16
 #define API_CLOSEST_TO_CAM      -17
-string VERSION_S = "IT-Slave β5.5";
-string VERSION_C = "IT-Cntrl β5.5";
+#define API_RLV_SET_SRC         -18
+#define API_RLV_CLR_SRC         -19
+#define API_RLV_HANDLE_CMD      -20
+#define API_RLV_SAFEWORD        -21
+string VERSION_S = "IT-Slave v1.0";
+string VERSION_C = "IT-Cntrl v1.0";
+string RLVSCRIPT = "Intrusive Thoughts RLV Client [v1.0 CT]";
 
 integer startswith(string haystack, string needle)
 {

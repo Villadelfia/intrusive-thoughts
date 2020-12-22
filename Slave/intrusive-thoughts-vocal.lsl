@@ -214,13 +214,7 @@ default
 
     listen(integer c, string n, key k, string m)
     {
-        if((c == 0 || c == VOICE_CHANNEL) && k == llGetOwner() && contains(llToLower(m), "((red))") == TRUE)
-        {
-            llOwnerSay("Safeworded! Detaching immediately...");
-            llOwnerSay("@clear,detachme=force");
-            return;
-        }
-        else if(c == VOICE_CHANNEL)
+        if(c == VOICE_CHANNEL)
         {
             handleSay(m);
             return;

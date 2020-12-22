@@ -60,11 +60,6 @@ givemenu()
     llOwnerSay("Last seen avatar: " + lastseenavatarname);
     llOwnerSay("Last seen object: " + lastseenobjectname);
     llOwnerSay(" ");
-    llOwnerSay("Leash options:");
-    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/leashme Leash locked avatar to self]");
-    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/leashto Leash locked avatar to last seen object]");
-    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/unleash Unleash locked avatar]");
-    llOwnerSay(" ");
     llOwnerSay("Objectification options:");
     llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/transfer Take stored object from last seen object]");
     llOwnerSay(" ");
@@ -267,6 +262,18 @@ default
             else if(m == "unleash")
             {
                 llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "unleash");
+            }
+            else if(m == "yank")
+            {
+                llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "yank");
+            }
+            else if(m == "clear")
+            {
+                llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "CLEAR");
+            }
+            else if(m == "forceclear")
+            {
+                llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "FORCECLEAR");
             }
         }
         else if(c == MANTRA_CHANNEL)

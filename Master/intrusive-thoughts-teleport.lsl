@@ -24,6 +24,17 @@ tpme(string region, string x, string y, string z)
 
 givemenu()
 {
+    llOwnerSay("Leash options:");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/leashme Leash locked avatar to self]");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/leashto Leash locked avatar to last seen object]");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/yank Yank locked avatar]");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/unleash Unleash locked avatar]");
+    llOwnerSay(" ");
+    llOwnerSay("RLV options:");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/clear Clear RLV relay for locked avatar]");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/forceclear Clear and detach RLV relay for locked avatar]");
+    llOwnerSay("You can type ((RED)) to clear your own relay, or ((FORCERED)) to clear and detach it.");
+    llOwnerSay(" ");
     llOwnerSay("Teleportation options:");
     integer i;
     integer l = llGetListLength(locations);
@@ -36,7 +47,7 @@ givemenu()
     llOwnerSay("You may also use the following commands:");
     llOwnerSay("/1tpto <slurl> — Teleport with your slaves to the SLURL");
     llOwnerSay("/1tpme <slurl> — Teleport alone to the SLURL");
-    llOwnerSay("—or— drop a nbotecard onto the HUD to teleport there with your slaves");
+    llOwnerSay("—or— drop a landmark onto the HUD to teleport there with your slaves");
 }
 
 default
