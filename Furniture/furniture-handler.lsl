@@ -25,6 +25,7 @@ default
             if(storedobject == NULL_KEY) return;
             llRegionSayTo(storedobject, MANTRA_CHANNEL, "puton " + (string)llGetOwnerKey(id) + "|||" + storedname);
             llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
+            llSetTimerEvent(0.0);
         }
 
         // We've been told by the IT controller that whatever it is storing is now ours.
@@ -42,6 +43,12 @@ default
             llRegionSayTo(storedobject, MANTRA_CHANNEL, "putdown " + (string)llGetKey() + "|||" + llGetObjectName());
             llRegionSayTo(id, MANTRA_CHANNEL, "putdown");
             llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
+            llSetTimerEvent(5.0);
         }
+    }
+
+    timer()
+    {
+        if(llGetObjectDetails(storedobject, [OBJECT_POS]) == []) llResetScript();
     }
 }

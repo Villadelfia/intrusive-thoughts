@@ -139,7 +139,7 @@ default
         targets = [];
         retry = FALSE;
         llRegionSay(MANTRA_CHANNEL, "PING");
-        llSetTimerEvent(2.5);
+        llSetTimerEvent(1.0);
     }
 
     listen(integer c, string n, key k, string m)
@@ -425,7 +425,7 @@ default
             targets = [];
             retry = TRUE;
             llWhisper(MANTRA_CHANNEL, "PING");
-            llSetTimerEvent(2.5);
+            llSetTimerEvent(1.0);
             return;
         }
         else if(llGetListLength(targets) > 12 && retry == TRUE)

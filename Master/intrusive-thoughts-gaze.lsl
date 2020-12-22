@@ -51,27 +51,27 @@ integer canrez(vector pos)
 givemenu()
 {
     llOwnerSay("Objectification options:");
-    if(lockedname != "") llOwnerSay("Locked avatar: " + lockedname);
-    else                 llOwnerSay("Locked avatar: -no avatar-");
+    if(lockedavatar != NULL_KEY) llOwnerSay("Locked avatar: " + lockedname);
+    else                         llOwnerSay("Locked avatar: -no avatar-");
     llOwnerSay("Last seen avatar: " + lastseenavatarname);
     llOwnerSay("Last seen object: " + lastseenobjectname);
     llOwnerSay(" ");
-    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/transfer Take stored object from last seen object.]");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/transfer Take stored object from last seen object]");
     llOwnerSay(" ");
-    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/capture Objectify the locked avatar.]");
-    llOwnerSay("—or— manually type /1capture <description> to choose what your object will be.");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/capture Objectify the locked avatar]");
+    llOwnerSay("—or— manually type /1capture <objectname>");
     integer l = llGetListLength(objectifiednames)-1;
     if(l >= 0) llOwnerSay(" ");
     while(l >= 0)
     {
         llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/release%20" + (string)l + " Release " + llList2String(objectifiednames, l) + " (" + objectprefix + llList2String(objectifieddescriptions, l)+ ")] " + 
-                   "[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/transfer%20" + (string)l + " (store as last seen object)].");
+                   "[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/transfer%20" + (string)l + " (store as last seen object)]");
         l--;
     }
     if(llGetListLength(objectifiednames) > 1) 
     {
         llOwnerSay(" ");
-        llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/releaseall Release everyone.]");
+        llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/releaseall Release everyone]");
     }
     llOwnerSay(" ");
     llMessageLinked(LINK_SET, API_GIVE_TP_MENU, "", NULL_KEY);
