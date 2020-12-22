@@ -148,6 +148,11 @@ default
         if(perm & PERMISSION_TAKE_CONTROLS) llTakeControls(CONTROL_FWD, FALSE, TRUE);
     }
 
+    touch_start(integer num)
+    {
+        handleClick(llDetectedKey(0));
+    }
+
     state_entry()
     {
         llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);

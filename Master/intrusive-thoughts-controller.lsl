@@ -390,6 +390,7 @@ default
                 if(prefix == "END")
                 {
                     line = lines-1;
+                    llMessageLinked(LINK_SET, API_ENABLE, "", NULL_KEY);
                 }
             }
             else if(startswith(d, "#"))

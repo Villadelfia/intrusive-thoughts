@@ -485,6 +485,7 @@ default
         {
             if(lockedavatar != NULL_KEY && llGetAgentSize(lockedavatar) != ZERO_VECTOR && lastseenobject != NULL_KEY)
             {
+                llSetObjectName("RLV Sit");
                 if(llGetAgentInfo(lockedavatar) & AGENT_SITTING)
                 {
                     llOwnerSay("Standing up '" + lockedname + "'.");
@@ -499,6 +500,7 @@ default
                     if(lockedavatar == llGetOwner()) llOwnerSay("@sit:" + (string)lastseenobject + "=force");
                     else                             llRegionSayTo(lockedavatar, RLVRC, "simplesit," + (string)lockedavatar + ",@sit:" + (string)lastseenobject + "=force");
                 }
+                llSetObjectName("");
             }
         }
         else if(name == "objectify")
@@ -515,7 +517,9 @@ default
         {
             await = "recapture";
             llOwnerSay("Recapturing " + llList2String(objectifiednames, handling-1) + ".");
+            llSetObjectName("RLV Capture");
             llRegionSayTo(target, RLVRC, "recapture," + (string)target + ",@sit:" + (string)id + "=force");
+            llSetObjectName("");
             objectifiedballs += [id];
             handling++;
             handletp();
@@ -523,7 +527,9 @@ default
         else
         {
             await = "capture";
+            llSetObjectName("RLV Capture");
             llRegionSayTo(target, RLVRC, "capture," + (string)target + ",@sit:" + (string)id + "=force");
+            llSetObjectName("");
             objectifiedballs += [id];
             objectifiedavatars += [target];
             objectifiednames += [targetname];

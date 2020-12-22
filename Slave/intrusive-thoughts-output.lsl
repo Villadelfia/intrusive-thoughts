@@ -171,6 +171,7 @@ focusToggle()
 string prefixfilter(string m)
 {
     if(randomprefixchance == 0.0) return m;
+    if(randomprefixwords == []) return m;
     integer emote = FALSE;
     if(startswith(llToLower(m), "/me") || startswith(llToLower(m), "/shout/me") || startswith(llToLower(m), "/shout /me") ||
        startswith(llToLower(m), "/whisper/me") || startswith(llToLower(m), "/whisper /me")) emote = TRUE;
@@ -186,11 +187,14 @@ string prefixfilter(string m)
         word = llList2String(llParseStringKeepNulls(mcpy, [" ", ",", "\"", ";", ":", ".", "!", "?"], []), 0);
         oldword = word;
 
-        if(emote == FALSE || quotecnt % 2 != 0)
+        if(word != "")
         {
-            if(llFrand(1.0) < randomprefixchance)
+            if(emote == FALSE || quotecnt % 2 != 0)
             {
-                word = llList2String(randomprefixwords, llFloor(llFrand(llGetListLength(randomprefixwords)))) + " " + word;
+                if(llFrand(1.0) < randomprefixchance)
+                {
+                    word = llList2String(randomprefixwords, llFloor(llFrand(llGetListLength(randomprefixwords)))) + " " + word;
+                }
             }
         }
 
@@ -294,7 +298,7 @@ default
         }
         else if(startswith(m, "RANDOM_PREFIX_WORDS"))
         {
-            randomprefixwords += [llDeleteSubString(m, 0, llStringLength("DIALECT"))];
+            randomprefixwords += [llDeleteSubString(m, 0, llStringLength("RANDOM_PREFIX_WORDS"))];
         }
         else if(startswith(m, "RANDOM_PREFIX_CHANCE"))
         {
