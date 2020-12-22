@@ -62,6 +62,7 @@ default
         {
             llListen(1, "", llGetOwner(), "");
             configured = TRUE;
+            llOwnerSay("[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         if(num == API_CONFIG_DATA && str == "tp")
         {

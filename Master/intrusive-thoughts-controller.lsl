@@ -344,6 +344,7 @@ default
                 llListen(HUD_SPEAK_CHANNEL, "", NULL_KEY, "");
                 llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
                 llMessageLinked(LINK_SET, API_STARTUP_DONE, "", NULL_KEY);
+                llOwnerSay("[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
                 ready = TRUE;
                 name = "";
                 return;

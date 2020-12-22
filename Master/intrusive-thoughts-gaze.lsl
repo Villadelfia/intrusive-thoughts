@@ -27,6 +27,7 @@ integer handling;
 integer store = -1;
 string storingon;
 integer disabled = FALSE;
+key closestavatar = NULL_KEY;
 
 updatetitle()
 {
@@ -312,6 +313,12 @@ default
                     else       llOwnerSay("Could not sit down '" + lockedname + "'.");
                     await = "";
                 }
+                if(await == "simplestand" && startswith(command, "@unsit"))
+                {
+                    if(accept) llOwnerSay("Successfully stood up '" + lockedname + "'.");
+                    else       llOwnerSay("Could not stand up '" + lockedname + "'.");
+                    await = "";
+                }
                 else if(await == "dotp" && startswith(command, "@tpto"))
                 {
                     key av = llGetOwnerKey(id);
@@ -448,10 +455,20 @@ default
         {
             if(lockedavatar != NULL_KEY && llGetAgentSize(lockedavatar) != ZERO_VECTOR && lastseenobject != NULL_KEY)
             {
-                llOwnerSay("Sitting '" + lockedname + "' on '" + lastseenobjectname + "'.");
-                await = "simplesit";
-                if(lockedavatar == llGetOwner()) llOwnerSay("@sit:" + (string)lastseenobject + "=force");
-                else                             llRegionSayTo(lockedavatar, RLVRC, "simplesit," + (string)lockedavatar + ",@sit:" + (string)lastseenobject + "=force");
+                if(llGetAgentInfo(lockedavatar) & AGENT_SITTING)
+                {
+                    llOwnerSay("Standing up '" + lockedname + "'.");
+                    await = "simplestand";
+                    if(lockedavatar == llGetOwner()) llOwnerSay("@unsit=force");
+                    else                             llRegionSayTo(lockedavatar, RLVRC, "simplestand," + (string)lockedavatar + ",@unsit=force");
+                }
+                else
+                {
+                    llOwnerSay("Sitting '" + lockedname + "' on '" + lastseenobjectname + "'.");
+                    await = "simplesit";
+                    if(lockedavatar == llGetOwner()) llOwnerSay("@sit:" + (string)lastseenobject + "=force");
+                    else                             llRegionSayTo(lockedavatar, RLVRC, "simplesit," + (string)lockedavatar + ",@sit:" + (string)lastseenobject + "=force");
+                }
             }
         }
         else if(name == "objectify")
@@ -518,6 +535,7 @@ default
             llListen(RLVRC, "", NULL_KEY, "");
             llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
             llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+            llOwnerSay("[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
             ready = TRUE;
         }
         else if(num == API_CONFIG_DATA)
@@ -525,39 +543,26 @@ default
             if(str == "name")
             {
                 owner = (string)id;
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set spoof name prefix to " + owner);
             }
             else if(str == "objectprefix")
             {
-                objectprefix = (string)id;
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set spoof object prefix to " + objectprefix);
-                objectprefix += " ";
+                objectprefix = (string)id + " ";
             }
             else if(str == "capture")
             {
                 capturespoof = (string)id;
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set capture phrase to '" + capturespoof + "'");
             }
             else if(str == "release")
             {
                 releasespoof = (string)id;
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set release phrase to '" + releasespoof + "'");
             }
             else if(str == "puton")
             {
                 putonspoof = (string)id;
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set put on phrase to '" + putonspoof + "'");
             }
             else if(str == "putdown")
             {
                 putdownspoof = (string)id;
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set put down phrase to '" + putdownspoof + "'");
             }
         }
         else if(num == API_ENABLE) 
@@ -567,6 +572,10 @@ default
         else if(num == API_DISABLE) 
         {
             disabled = TRUE;
+        }
+        else if(num == API_CLOSEST_TO_CAM) 
+        {
+            closestavatar = id;
         }
     }
 
@@ -592,6 +601,14 @@ default
             {
                 lastseenavatar = target;
                 lastseenavatarname = llGetDisplayName(target);
+            }
+        }
+        else
+        {
+            if(lastseenavatar != closestavatar && closestavatar != NULL_KEY)
+            {
+                lastseenavatar = closestavatar;
+                lastseenavatarname = llGetDisplayName(closestavatar);
             }
         }
 
