@@ -17,7 +17,6 @@ buildclients()
     }
     while(llGetInventoryType(RLVSCRIPT + " " + (string)i) == INVENTORY_SCRIPT);
     llOwnerSay("RLV relay online with up to " + (string)i + " devices supported.");
-    llOwnerSay("Note that you can type ((RED)) to clear the relay, or ((FORCERED)) to clear and detach it.");
 }
 
 default
@@ -39,6 +38,9 @@ default
 
     listen(integer c, string n, key id, string m)
     {
+        list args = llParseStringKeepNulls(m, [","], []);
+        if(llGetListLength(args)!=3) return;
+
         if(c == RLVRC)
         {
             integer inlist = llListFindList(rlvclients, [id]);
