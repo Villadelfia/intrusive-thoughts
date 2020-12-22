@@ -16,6 +16,25 @@ tpme(string region, string x, string y, string z)
     tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
 }
 
+givemenu()
+{
+    llOwnerSay("Teleportation options:");
+    integer i;
+    integer l = llGetListLength(locations);
+    for(i = 0; i < l; i += 5)
+    {
+        string dest = llList2String(locations, i);
+        llOwnerSay(dest + " — [secondlife:///app/chat/1/tpto%20" + dest + " (together)] [secondlife:///app/chat/1/tpme%20" + dest + " (alone)].");
+    }
+    if(l > 0)
+    {
+        llOwnerSay(" ");
+        llOwnerSay("You may also use the following commands:");
+    }
+    llOwnerSay("/1tpto <slurl> — Teleport with your slaves to the SLURL.");
+    llOwnerSay("/1tpme <slurl> — Teleport alone to the SLURL.");
+}
+
 default
 {
     changed(integer change)
@@ -41,6 +60,7 @@ default
             llSetObjectName("");
             llOwnerSay(VERSION_C + ": Loaded teleport location " + llList2String(locations, -5));
         }
+        if(num == API_GIVE_TP_MENU) givemenu();
     }
 
     listen(integer c, string n, key id, string m)

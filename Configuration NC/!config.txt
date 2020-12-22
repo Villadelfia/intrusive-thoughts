@@ -17,10 +17,19 @@ name|Hana
 # an emote would look like: "Hana's shoes wiggle a little"
 objectprefix|Hana's
 
-# The capture and release phrases used when someone is turned into an object
-# and when they're released again.
+# Spoof configuration:
 # %ME% is replaced with the name set above
 # %VIC% is replaced with the name of the victim
 # %OBJ% is replaced with the name of the object they're turning into
+# %TAR% is the target rezzed furniture
+
+# The capture and release phrases used when someone is turned into an object
+# and when they're released again.
 capture|%ME% chants in an ancient forbidden language as %VIC% finds themselves being drawn into the inanimate form of %ME%'s %OBJ%.
 release|%ME% releases the soul trapped within her %OBJ% back into the living form of %VIC%.
+
+# The pick up and put down phrases used when an object is transferred to rezzed
+# furniture. Note that you have the freedom for these to be different kinds of
+# objects.
+puton|%ME% picks up the %TAR% and morphs its inanimate form into her %OBJ%.
+putdown|%ME% takes off her %OBJ% and morphs its form into a %TAR% as she puts it down.

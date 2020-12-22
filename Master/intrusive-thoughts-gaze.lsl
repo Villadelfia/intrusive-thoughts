@@ -5,6 +5,8 @@ string owner = "";
 string objectprefix = "";
 string capturespoof = "";
 string releasespoof = "";
+string putonspoof = "";
+string putdownspoof = "";
 key lastseenavatar;
 string lastseenavatarname;
 key lastseenobject;
@@ -52,28 +54,32 @@ givemenu()
         llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/capture Objectify " + lockedname + ".]");
         llOwnerSay("—or— manually type /1capture <description> to choose what your object will be.");
     }
+    else
+    {
+        llOwnerSay("Lock an avatar using the L button to be able to capture them.");
+    }
     integer l = llGetListLength(objectifiednames) - 1;
-    if(l >= 0) llOwnerSay("");
+    if(l >= 0) llOwnerSay(" ");
     while(l >= 0)
     {
-        llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/release\%20" + (string)l + " Release " + llList2String(objectifiednames, l) + " (" + objectprefix + llList2String(objectifieddescriptions, l)+ ").]");
+        llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/release%20" + (string)l + " Release " + llList2String(objectifiednames, l) + " (" + objectprefix + llList2String(objectifieddescriptions, l)+ ").]");
         l--;
     }
     if(llGetListLength(objectifiednames) > 1) 
     {
-        llOwnerSay("");
+        llOwnerSay(" ");
         llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/releaseall Release everyone.]");
     }
-    llOwnerSay("");
+    llOwnerSay(" ");
     llMessageLinked(LINK_SET, API_GIVE_TP_MENU, "", NULL_KEY);
 }
 
 release(integer i)
 {
     string spoof;
-    spoof = llDumpList2String(llParseStringKeepNulls(releasespoof, ["\%ME\%"], []), owner);
-    spoof = llDumpList2String(llParseStringKeepNulls(releasespoof, ["\%OBJ\%"], []), llList2String(objectifieddescriptions, i));
-    spoof = llDumpList2String(llParseStringKeepNulls(releasespoof, ["\%VIC\%"], []), llList2String(objectifiednames, i));
+    spoof = llDumpList2String(llParseStringKeepNulls(releasespoof, ["%ME%"], []), owner);
+    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), llList2String(objectifieddescriptions, i));
+    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), llList2String(objectifiednames, i));
     llSay(0, spoof);
     llRegionSayTo(llList2Key(objectifiedballs, i), MANTRA_CHANNEL, "unsit");
     llRegionSayTo(llList2Key(objectifiedavatars, i), RLVRC, "release," + (string)llList2Key(objectifiedavatars, i) + ",!release");
@@ -296,9 +302,9 @@ default
                     if(accept) 
                     {
                         string spoof;
-                        spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["\%ME\%"], []), owner);
-                        spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["\%OBJ\%"], []), targetdescription);
-                        spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["\%VIC\%"], []), lockedname);
+                        spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["%ME%"], []), owner);
+                        spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), targetdescription);
+                        spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
                         llSay(0, spoof);
                         key av = llGetOwnerKey(id);
                     }
@@ -312,7 +318,7 @@ default
             string oldn = llGetObjectName();
             integer i = llListFindList(objectifiedavatars, [id]);
             string obj = llList2String(objectifieddescriptions, i);
-            if(i == -1) obj = "unknown object";
+            if(i == -1) return;
             llSetObjectName(objectprefix + obj);
             llSay(0, m);
             llSetObjectName(oldn);
@@ -478,6 +484,18 @@ default
                 releasespoof = (string)id;
                 llSetObjectName("");
                 llOwnerSay(VERSION_C + ": Set release phrase to '" + releasespoof + "'");
+            }
+            else if(str == "puton")
+            {
+                putonspoof = (string)id;
+                llSetObjectName("");
+                llOwnerSay(VERSION_C + ": Set put on phrase to '" + putonspoof + "'");
+            }
+            else if(str == "putdown")
+            {
+                putdownspoof = (string)id;
+                llSetObjectName("");
+                llOwnerSay(VERSION_C + ": Set put down phrase to '" + putdownspoof + "'");
             }
         }
     }
