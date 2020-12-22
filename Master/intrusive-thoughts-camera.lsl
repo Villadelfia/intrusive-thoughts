@@ -84,10 +84,30 @@ default
             ++i;
         }
 
-        if(newclosest != NULL_KEY && closestavatar != newclosest)
+        endpos = startpos + (llRot2Fwd(rot) * 10);
+        list results = llCastRay(startpos, endpos, [
+            RC_REJECT_TYPES, RC_REJECT_LAND | RC_REJECT_PHYSICAL | RC_REJECT_NONPHYSICAL,
+            RC_DETECT_PHANTOM, FALSE,
+            RC_DATA_FLAGS, 0,
+            RC_MAX_HITS, 1
+        ]);
+
+        if(llList2Integer(results, -1) == 1)
         {
-            closestavatar = newclosest;
-            llMessageLinked(LINK_SET, API_CLOSEST_TO_CAM, "", closestavatar);
+            key target = llList2Key(results, 0);
+            if(target != NULL_KEY && closestavatar != target)
+            {
+                closestavatar = target;
+                llMessageLinked(LINK_SET, API_CLOSEST_TO_CAM, "", closestavatar);
+            }
+        }
+        else
+        {
+            if(newclosest != NULL_KEY && closestavatar != newclosest)
+            {
+                closestavatar = newclosest;
+                llMessageLinked(LINK_SET, API_CLOSEST_TO_CAM, "", closestavatar);
+            }
         }
         llSetTimerEvent(0.5);
     }

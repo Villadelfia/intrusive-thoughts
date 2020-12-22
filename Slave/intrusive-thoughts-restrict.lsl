@@ -27,7 +27,11 @@ doSetup()
     {
         llOwnerSay("@recvim:20=y,sendim:20=y,sendim:" + (string)owner + "=rem,recvim:" + (string)owner + "=rem");
     }
-    if(locked) llOwnerSay("@detach=n");
+    if(locked)
+    {
+        llOwnerSay("@detach=n");
+        llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
+    }
 }
 
 handleClick(key k)
@@ -146,6 +150,7 @@ default
 
     state_entry()
     {
+        llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
         owner = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         name = llGetDisplayName(llGetOwner());
@@ -154,11 +159,6 @@ default
         llListen(1, "", owner, "");
         llListen(1, "", llGetOwner(), "");
         llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);
-    }
-
-    touch_start(integer num)
-    {
-        handleClick(llDetectedKey(0));
     }
 
     listen(integer c, string n, key k, string m)
@@ -423,12 +423,14 @@ default
             {
                 llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.");
                 locked = FALSE;
+                llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
                 llOwnerSay("@detach=y");
             }
             else
             {
                 llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.");
                 locked = TRUE;
+                llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
                 llOwnerSay("@detach=n");
             }
         }

@@ -28,6 +28,7 @@ integer store = -1;
 string storingon;
 integer disabled = FALSE;
 key closestavatar = NULL_KEY;
+key leashtarget;
 
 updatetitle()
 {
@@ -53,12 +54,18 @@ integer canrez(vector pos)
 
 givemenu()
 {
-    llOwnerSay("Objectification options:");
+    llOwnerSay("Intrusive Thoughts Controller Menu:");
     if(lockedavatar != NULL_KEY) llOwnerSay("Locked avatar: " + lockedname);
     else                         llOwnerSay("Locked avatar: -no avatar-");
     llOwnerSay("Last seen avatar: " + lastseenavatarname);
     llOwnerSay("Last seen object: " + lastseenobjectname);
     llOwnerSay(" ");
+    llOwnerSay("Leash options:");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/leashme Leash locked avatar to self]");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/leashto Leash locked avatar to last seen object]");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/unleash Unleash locked avatar]");
+    llOwnerSay(" ");
+    llOwnerSay("Objectification options:");
     llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/transfer Take stored object from last seen object]");
     llOwnerSay(" ");
     llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/capture Objectify the locked avatar]");
@@ -249,6 +256,18 @@ default
                 store = (integer)llDeleteSubString(m, 0, llStringLength("transfer"));
                 llRegionSayTo(lastseenobject, MANTRA_CHANNEL, "furniture");
             }
+            else if(m == "leashme")
+            {
+                llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "leashto " + (string)leashtarget);
+            }
+            else if(m == "leashto")
+            {
+                llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "leashto " + (string)lastseenobject);
+            }
+            else if(m == "unleash")
+            {
+                llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "unleash");
+            }
         }
         else if(c == MANTRA_CHANNEL)
         {
@@ -294,6 +313,10 @@ default
                 objectifiedavatars += [av];
                 objectifiednames += [llGetDisplayName(av)];
                 objectifieddescriptions += [desc];
+            }
+            else if(m == "leashpoint")
+            {
+                leashtarget = id;
             }
         }
         else if(c == RLVRC)
@@ -535,84 +558,40 @@ default
             llListen(RLVRC, "", NULL_KEY, "");
             llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
             llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+            leashtarget = llGetOwner();
             llOwnerSay("[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
             ready = TRUE;
         }
         else if(num == API_CONFIG_DATA)
         {
-            if(str == "name")
-            {
-                owner = (string)id;
-            }
-            else if(str == "objectprefix")
-            {
-                objectprefix = (string)id + " ";
-            }
-            else if(str == "capture")
-            {
-                capturespoof = (string)id;
-            }
-            else if(str == "release")
-            {
-                releasespoof = (string)id;
-            }
-            else if(str == "puton")
-            {
-                putonspoof = (string)id;
-            }
-            else if(str == "putdown")
-            {
-                putdownspoof = (string)id;
-            }
+            if(str == "name") owner = (string)id;
+            else if(str == "objectprefix") objectprefix = (string)id + " ";
+            else if(str == "capture") capturespoof = (string)id;
+            else if(str == "release") releasespoof = (string)id;
+            else if(str == "puton") putonspoof = (string)id;
+            else if(str == "putdown") putdownspoof = (string)id;
         }
-        else if(num == API_ENABLE) 
-        {
-            disabled = FALSE;
-        }
-        else if(num == API_DISABLE) 
-        {
-            disabled = TRUE;
-        }
-        else if(num == API_CLOSEST_TO_CAM) 
-        {
-            closestavatar = id;
-        }
+        else if(num == API_ENABLE) disabled = FALSE;
+        else if(num == API_DISABLE) disabled = TRUE;
+        else if(num == API_CLOSEST_TO_CAM) closestavatar = id;
     }
 
     timer()
     {
         llSetTimerEvent(0.0);
         if(llGetPermissions() & PERMISSION_TRACK_CAMERA == 0) return;
+        if(llList2Vector(llGetObjectDetails(leashtarget, [OBJECT_POS]), 0) == ZERO_VECTOR) leashtarget = llGetOwner();
         vector startpos = llGetCameraPos();
         rotation rot = llGetCameraRot();
         vector endpos = startpos + (llRot2Fwd(rot) * 10);
 
+        if(lastseenavatar != closestavatar && closestavatar != NULL_KEY)
+        {
+            lastseenavatar = closestavatar;
+            lastseenavatarname = llGetDisplayName(closestavatar);
+        }
+
         list results = llCastRay(startpos, endpos, [
-            RC_REJECT_TYPES, RC_REJECT_LAND | RC_REJECT_PHYSICAL | RC_REJECT_NONPHYSICAL,
-            RC_DETECT_PHANTOM, FALSE,
-            RC_DATA_FLAGS, 0,
-            RC_MAX_HITS, 1
-        ]);
-
-        if(llList2Integer(results, -1) == 1)
-        {
-            key target = llList2Key(results, 0);
-            if(lastseenavatar != target)
-            {
-                lastseenavatar = target;
-                lastseenavatarname = llGetDisplayName(target);
-            }
-        }
-        else
-        {
-            if(lastseenavatar != closestavatar && closestavatar != NULL_KEY)
-            {
-                lastseenavatar = closestavatar;
-                lastseenavatarname = llGetDisplayName(closestavatar);
-            }
-        }
-
-        results = llCastRay(startpos, endpos, [
             RC_REJECT_TYPES, RC_REJECT_LAND | RC_REJECT_PHYSICAL | RC_REJECT_AGENTS,
             RC_DETECT_PHANTOM, TRUE,
             RC_DATA_FLAGS, RC_GET_ROOT_KEY,
