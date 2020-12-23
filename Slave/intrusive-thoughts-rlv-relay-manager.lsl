@@ -57,7 +57,16 @@ default
         {
             if(rlvclients == []) return;
             list args = llParseStringKeepNulls(m, [","], []);
-            if(llGetListLength(args)!=3) return;            
+
+            // We discard if the message is too short.
+            if(llGetListLength(args)!=3) return;
+            string ident = llList2String(args, 0);
+            string target = llList2String(args, 1);
+            string command = llList2String(args, 2);
+
+            // Or if the target is not us.
+            if(target != (string)llGetOwner() && target != "ffffffff-ffff-ffff-ffff-ffffffffffff") return;
+
             integer inlist = llListFindList(rlvclients, [id]);
             if(inlist != -1)
             {
@@ -82,15 +91,23 @@ default
                 }
                 else
                 {
+                    // If it's not owned by the owner or us, we check if it's one of the allowed commands.
+                    if(command == "!version") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!version,1100");
+                    else if(command == "!implversion") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!implversion,ORG=0004/Hana's Relay");
+                    else if(command == "!x-orgversions") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!x-orgversions,ORG=0004");
+
                     // If not, we ask the owner for permission if they're available, or the
                     // wearer if they're not.
-                    key target = llGetOwner();
-                    if(llGetAgentSize(owner) != ZERO_VECTOR) target = owner;
-                    handlingk = id;
-                    handlingm = m;
-                    handlingi = available;
-                    llDialog(target, "The device '" + n + "' owned by secondlife:///app/agent/" + (string)llGetOwnerKey(id) + "/about wants to access the relay of secondlife:///app/agent/" + (string)llGetOwner() + "/about, will you allow this?\n \n(Timeout in 15 seconds.)", ["ALLOW", "DENY", "BLOCK"], MANTRA_CHANNEL);
-                    llSetTimerEvent(15.0);
+                    else
+                    {
+                        key target = llGetOwner();
+                        if(llGetAgentSize(owner) != ZERO_VECTOR) target = owner;
+                        handlingk = id;
+                        handlingm = m;
+                        handlingi = available;
+                        llDialog(target, "The device '" + n + "' owned by secondlife:///app/agent/" + (string)llGetOwnerKey(id) + "/about wants to access the relay of secondlife:///app/agent/" + (string)llGetOwner() + "/about, will you allow this?\n \n(Timeout in 15 seconds.)", ["ALLOW", "DENY", "BLOCK"], MANTRA_CHANNEL);
+                        llSetTimerEvent(15.0);
+                    }
                 }
             }
         }
