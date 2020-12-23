@@ -18,7 +18,6 @@ default
         if(start_param & 1)      animation = "hide_a";
         else if(start_param & 2) animation = "hide_b";
         else                     return;
-        if(start_param & 4)      keyisavatar = FALSE;
         rezzer = llGetOwnerKey((key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0));
         llSetTimerEvent(10.0);
     }
@@ -62,6 +61,13 @@ default
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
+                if(animation == "hide_b")
+                {
+                    string oldn = llGetObjectName();
+                    llSetObjectName("");
+                    llRegionSayTo(llAvatarOnSitTarget(), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, try undeforming yourself via the Avatar -> Avatar Health menu. If that doesn't work, teleport to a different region, and as a last resort, you can relog.");
+                    llSetObjectName(oldn);
+                }
                 llSleep(10.0);
                 llDie();
             }
