@@ -33,6 +33,7 @@ givemenu()
     llOwnerSay("RLV options:");
     llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/clear Clear RLV relay for locked avatar]");
     llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/forceclear Clear and detach RLV relay for locked avatar]");
+    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/resetrelay Reset the RLV relay for locked avatar]");
     llOwnerSay("You can click the RLV button to clear your own relay");
     llOwnerSay(" ");
     llOwnerSay("Teleportation options:");

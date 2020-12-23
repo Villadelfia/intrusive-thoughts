@@ -37,11 +37,10 @@ default
 
     listen(integer c, string n, key id, string m)
     {
-        list args = llParseStringKeepNulls(m, [","], []);
-        if(llGetListLength(args)!=3) return;
-
         if(c == RLVRC)
         {
+            list args = llParseStringKeepNulls(m, [","], []);
+            if(llGetListLength(args)!=3) return;
             integer inlist = llListFindList(rlvclients, [id]);
             if(inlist != -1)
             {
