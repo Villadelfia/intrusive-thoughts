@@ -9,14 +9,29 @@ integer handlingi;
 
 buildclients()
 {
-    integer i = 0;
-    do
+    integer ct = llGetInventoryNumber(INVENTORY_SCRIPT);
+    integer i;
+    integer handlers = 0;
+    for(i = 0; i < ct; ++i)
+    {
+        if(contains(llToLower(llGetInventoryName(INVENTORY_SCRIPT, i)), "client")) handlers++;
+    }
+
+    integer change = FALSE;
+    while(llGetListLength(rlvclients) < handlers) 
     {
         rlvclients += [(key)NULL_KEY];
-        i++;
+        change = TRUE;
     }
-    while(llGetInventoryType(RLVSCRIPT + " " + (string)i) == INVENTORY_SCRIPT);
-    llOwnerSay("RLV relay online with up to " + (string)i + " devices supported.");
+
+    while(llGetListLength(rlvclients) > handlers)
+    {
+        rlvclients = llDeleteSubList(rlvclients, -1, -1);
+        change = TRUE;
+    }
+
+    if(change && rlvclients != []) llOwnerSay("RLV relay online with up to " + (string)handlers + " devices supported.");
+    if(rlvclients == [])           llOwnerSay("RLV relay offline. Add client scripts to my inventory.");
 }
 
 default
@@ -24,6 +39,7 @@ default
     changed(integer change)
     {
         if(change & CHANGED_OWNER) llResetScript();
+        if(change & CHANGED_INVENTORY) buildclients();
     }
 
     state_entry()
@@ -39,6 +55,7 @@ default
     {
         if(c == RLVRC)
         {
+            if(rlvclients == []) return;
             list args = llParseStringKeepNulls(m, [","], []);
             if(llGetListLength(args)!=3) return;
             integer inlist = llListFindList(rlvclients, [id]);

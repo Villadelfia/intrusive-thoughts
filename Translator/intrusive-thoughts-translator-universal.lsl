@@ -1,5 +1,4 @@
 #include <IT/globals.lsl>
-key owner = NULL_KEY;
 
 handleSelfSay(string name, string message)
 {
@@ -27,9 +26,18 @@ handleSelfSay(string name, string message)
 
 default
 {
+    attach(key id)
+    {
+        if(id)
+        {
+            llOwnerSay("This translator is tuned to hear everything said by wearers of the Intrusive Thoughts system.");
+        }
+    }
+
     state_entry()
     {
         llListen(SPEAK_CHANNEL, "", NULL_KEY, "");
+        llOwnerSay("This translator is tuned to hear everything said by wearers of the Intrusive Thoughts system.");
     }
 
     listen(integer c, string n, key k, string m)

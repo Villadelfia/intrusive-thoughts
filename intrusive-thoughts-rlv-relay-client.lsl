@@ -18,7 +18,7 @@ release()
             --l;
         }
         llRegionSayTo(id, RLVRC, "release,"+(string)id+",!release,ok");
-        llOwnerSay((string)rlvid + ": Released restrictions from " + objectname + ".");
+        llOwnerSay("RLV Device " + (string)(rlvid + 1) + ": Released restrictions from " + objectname + ".");
     }
     llMessageLinked(LINK_SET, API_RLV_CLR_SRC, (string)rlvid, NULL_KEY);
     restrictions = [];
@@ -107,7 +107,6 @@ default
         wearer = llGetOwner();
         list tokens = llParseString2List(llGetScriptName(), [" "], []);
         rlvid = (integer)llList2String(tokens, -1);
-        if(llGetScriptName() == RLVSCRIPT) rlvid = 0;
     }
 
     listen(integer c, string w, key id, string msg)

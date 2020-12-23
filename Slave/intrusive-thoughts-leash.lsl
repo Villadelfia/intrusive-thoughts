@@ -6,6 +6,9 @@ integer leasherinrange;
 key leashedto;
 key owner = NULL_KEY;
 integer awaycounter = -1;
+integer llength = 2;
+string prefix;
+string name;
 
 particles(key k)
 {
@@ -54,7 +57,7 @@ leash(key target)
     leashtarget = llList2Vector(llGetObjectDetails(leashedto, [OBJECT_POS]), 0);
     llTargetRemove(leashinghandle);
     llStopMoveToTarget();
-    leashinghandle = llTarget(leashtarget, 2.0);
+    leashinghandle = llTarget(leashtarget, (float)llength);
     if(leashtarget != ZERO_VECTOR)
     {
         llMoveToTarget(leashtarget, 0.7);
@@ -102,6 +105,9 @@ default
     state_entry()
     {
         owner = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
+        prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
+        name = llGetDisplayName(llGetOwner());
+        llListen(1, "", owner, "");
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         unleash();
     }
@@ -109,22 +115,59 @@ default
     listen(integer c, string n, key k, string m)
     {
         if(k != owner && llGetOwnerKey(k) != owner) return;
-        if(m == "END")
+        if(c == MANTRA_CHANNEL)
         {
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            if(m == "END")
+            {
+                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            }
+            else if(startswith(m, "leashto"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("leashto"));
+                leash((key)m);
+            }
+            else if(m == "unleash")
+            {
+                unleash();
+            }
+            else if(m == "yank")
+            {
+                if(leashedto) yankTo(leashedto);
+            }
         }
-        else if(startswith(m, "leashto"))
+        else if(c == 1)
         {
-            m = llDeleteSubString(m, 0, llStringLength("leashto"));
-            leash((key)m);
-        }
-        else if(m == "unleash")
-        {
-            unleash();
-        }
-        else if(m == "yank")
-        {
-            if(leashedto) yankTo(leashedto);
+            if(startswith(m, "#") && k == llGetOwner())       return;
+            if(startswith(m, prefix))                         m = llDeleteSubString(m, 0, 1);
+            else if(startswith(m, "*") || startswith(m, "#")) m = llDeleteSubString(m, 0, 0);
+            else                                              return;
+            if(llToLower(m) == "leash")
+            {   
+                if(leashedto) unleash();
+                else          leash(owner);
+            }
+            else if(llToLower(m) == "unleash")
+            {
+                unleash();
+            }
+            else if(llToLower(m) == "yank")
+            {
+                if(leashedto) yankTo(leashedto);
+            }
+            else if(startswith(llToLower(m), "leashlength"))
+            {
+                integer leashlength = (integer)llDeleteSubString(m, 0, llStringLength("leashlength"));
+                if(llength != leashlength)
+                {
+                    llength = leashlength;
+                    if(leashedto)
+                    {
+                        key k = leashedto;
+                        unleash();
+                        leash(k);
+                    }
+                }
+            }
         }
     }
 
@@ -133,7 +176,7 @@ default
         llStopMoveToTarget();
         llTargetRemove(leashinghandle);
         leashtarget = llList2Vector(llGetObjectDetails(leashedto, [OBJECT_POS]), 0);
-        leashinghandle = llTarget(leashtarget, 2.0);
+        leashinghandle = llTarget(leashtarget, (float)llength);
         if(justmoved)
         {
             vector p = leashtarget - llGetPos();
@@ -153,7 +196,7 @@ default
             {
                 llTargetRemove(leashinghandle);
                 leashtarget = newpos;
-                leashinghandle = llTarget(leashtarget, 2.0);
+                leashinghandle = llTarget(leashtarget, (float)llength);
             }
             if(leashtarget != ZERO_VECTOR)
             {
@@ -179,14 +222,14 @@ default
         integer isinsim = TRUE;
         if(leashedtopos == ZERO_VECTOR || llVecDist(llGetPos(), leashedtopos) > 255) isinsim = FALSE;
         
-        if(isinsim && llVecDist(llGetPos(), leashedtopos) < 62) 
+        if(isinsim && llVecDist(llGetPos(), leashedtopos) < (60 + llength)) 
         {
             if(!leasherinrange) 
             {
                 leasherinrange = TRUE;
                 llTargetRemove(leashinghandle);
                 leashtarget = leashedtopos;
-                leashinghandle = llTarget(leashtarget, 2.0);
+                leashinghandle = llTarget(leashtarget, (float)llength);
                 if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 0.8);
                 checkSetup();
             }
