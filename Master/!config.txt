@@ -33,3 +33,8 @@ release|%ME% releases the soul trapped within her %OBJ% back into the living for
 # objects.
 puton|%ME% picks up the %TAR% and morphs its inanimate form into her %OBJ%.
 putdown|%ME% takes off her %OBJ% and morphs its form into a %TAR% as she puts it down.
+
+# Set the following to 2 if you want to fully hide the captured avatars, but they may
+# need to teleport to another region to become visible again. If you are okay with
+# just pushing them beneath the ground, set it to 1.
+ball|2

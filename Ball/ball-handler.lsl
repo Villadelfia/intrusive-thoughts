@@ -98,13 +98,10 @@ default
         if(llGetNumberOfPrims() == 1) llDie();
         else
         {
-            vector offset = ZERO_VECTOR;
-            if(keyisavatar) offset = avataroffset;
-
             vector my = llGetPos();
             if(keyisavatar == TRUE && llGetAgentSize(rezzer) == ZERO_VECTOR)
             {
-                llSetRegionPos(my - offset);
+                llSetRegionPos(my - avataroffset);
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
@@ -113,12 +110,11 @@ default
                 return;
             }
 
-            vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + offset;
-            if(pos == my) return;
+            vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + avataroffset;
             my.z = pos.z;
             if(llVecDist(my, pos) > 365 || pos == ZERO_VECTOR)
             {
-                llSetRegionPos(llGetPos() - offset);
+                llSetRegionPos(llGetPos() - avataroffset);
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());

@@ -31,8 +31,7 @@ default
         owner = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(0, "", llGetOwner(), "");
-        llListen(MANTRA_CHANNEL, "", llGetOwner(), "");
-        llListen(MANTRA_CHANNEL, "", owner, "");
+        llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         buildclients();
     }
 
@@ -81,6 +80,7 @@ default
         }
         else if(c == MANTRA_CHANNEL)
         {
+            if(llGetOwnerKey(id) != owner) return;
             if(m == "ALLOW")
             {
                 llSetTimerEvent(0.0);
@@ -114,6 +114,11 @@ default
                 if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared and detached.");
                 llMessageLinked(LINK_SET, API_RLV_SAFEWORD, "", NULL_KEY);
                 llOwnerSay("@clear,detachme=force");
+            }
+            else if(m == "RESETRELAY")    
+            {
+                if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been reset and has been rebuilt.");
+                llResetScript();
             }
         }
         else if(c == 0)

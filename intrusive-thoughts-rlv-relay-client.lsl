@@ -5,6 +5,7 @@ key wearer = NULL_KEY;
 integer viewerlistener;
 key sitid;
 list restrictions = [];
+string objectname;
 
 release()
 {
@@ -17,9 +18,11 @@ release()
             --l;
         }
         llRegionSayTo(id, RLVRC, "release,"+(string)id+",!release,ok");
+        llOwnerSay((string)rlvid + ": Released restrictions from " + objectname + ".");
     }
     llMessageLinked(LINK_SET, API_RLV_CLR_SRC, (string)rlvid, NULL_KEY);
-    llResetScript();
+    restrictions = [];
+    id = NULL_KEY;
 }
 
 handlerlvrc(string msg)
@@ -60,7 +63,7 @@ handlerlvrc(string msg)
                 if (behav == "unsit") sitid = NULL_KEY;
             }
         }
-        else if (command=="!pong")
+        else if(command == "!pong")
         {
             llOwnerSay("@sit:"+(string)sitid+"=force,"+llDumpList2String(restrictions, "=n,")+"=n");
             llSetTimerEvent(0);
@@ -75,9 +78,9 @@ handlerlvrc(string msg)
         }
         else if(command == "!x-orgversions")
         {
-            llRegionSayTo(id, RLVRC, ident+","+(string)id+",!x-orgversions,ORG=0004/who=001");
+            llRegionSayTo(id, RLVRC, ident+","+(string)id+",!x-orgversions,ORG=0004");
         }
-        else if (command=="!release")
+        else if(command == "!release")
         {
             release();
         }
@@ -103,15 +106,15 @@ default
     {
         wearer = llGetOwner();
         list tokens = llParseString2List(llGetScriptName(), [" "], []);
-        integer amount = llGetListLength(tokens);
-        if(amount > 1) rlvid = (integer)llList2String(tokens, 1);
+        rlvid = (integer)llList2String(tokens, -1);
+        if(llGetScriptName() == RLVSCRIPT) rlvid = 0;
     }
 
     listen(integer c, string w, key id, string msg)
     {
-        if (c == 12345)
+        if(c == 12345)
         {
-            if(msg) sitid = (key)msg;
+            if(msg)sitid = (key)msg;
             llListenRemove(viewerlistener);
         }
     }
@@ -124,7 +127,9 @@ default
         }
         else if(num == API_RLV_SET_SRC && str == (string)rlvid)                        
         {
+            if(id != NULL_KEY) release();
             id = k;
+            objectname = llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0);
         }
         else if(num == API_RLV_SAFEWORD)                                               
         {

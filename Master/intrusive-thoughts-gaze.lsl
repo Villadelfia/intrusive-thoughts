@@ -29,6 +29,7 @@ string storingon;
 integer disabled = FALSE;
 key closestavatar = NULL_KEY;
 key leashtarget;
+integer hideopt = 1;
 
 updatetitle()
 {
@@ -130,7 +131,7 @@ addobject(string desc)
     llOwnerSay("Capturing '" + lockedname + "'.");
     target = lockedavatar;
     targetname = lockedname;
-    llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, 1);
+    llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, hideopt);
 }
 
 handletp()
@@ -170,7 +171,7 @@ handletp()
         if(handling < llGetListLength(objectifiedavatars))
         {
             target = llList2Key(objectifiedavatars, handling);
-            llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, 1);
+            llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, hideopt);
         }
     }
 }
@@ -274,6 +275,10 @@ default
             else if(m == "forceclear")
             {
                 llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "FORCECLEAR");
+            }
+            else if(m == "resetrelay")
+            {
+                llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "RESETRELAY");
             }
         }
         else if(c == MANTRA_CHANNEL)
@@ -413,13 +418,12 @@ default
         }
         else if(c == GAZE_CHAT_CHANNEL && startswith(m, "/me") == TRUE && contains(m, "\"") == FALSE)
         {
-            string oldn = llGetObjectName();
             integer i = llListFindList(objectifiedavatars, [id]);
             string obj = llList2String(objectifieddescriptions, i);
             if(i == -1) return;
             llSetObjectName(objectprefix + obj);
             llSay(0, m);
-            llSetObjectName(oldn);
+            llSetObjectName("");
         }
     }
 
@@ -485,10 +489,10 @@ default
         {
             if(lockedavatar != NULL_KEY && llGetAgentSize(lockedavatar) != ZERO_VECTOR && lastseenobject != NULL_KEY)
             {
-                llSetObjectName("RLV Sit");
                 if(llGetAgentInfo(lockedavatar) & AGENT_SITTING)
                 {
                     llOwnerSay("Standing up '" + lockedname + "'.");
+                    llSetObjectName("RLV Sit");
                     await = "simplestand";
                     if(lockedavatar == llGetOwner()) llOwnerSay("@unsit=force");
                     else                             llRegionSayTo(lockedavatar, RLVRC, "simplestand," + (string)lockedavatar + ",@unsit=force");
@@ -496,6 +500,7 @@ default
                 else
                 {
                     llOwnerSay("Sitting '" + lockedname + "' on '" + lastseenobjectname + "'.");
+                    llSetObjectName("RLV Sit");
                     await = "simplesit";
                     if(lockedavatar == llGetOwner()) llOwnerSay("@sit:" + (string)lastseenobject + "=force");
                     else                             llRegionSayTo(lockedavatar, RLVRC, "simplesit," + (string)lockedavatar + ",@sit:" + (string)lastseenobject + "=force");
@@ -583,6 +588,7 @@ default
             else if(str == "release") releasespoof = (string)id;
             else if(str == "puton") putonspoof = (string)id;
             else if(str == "putdown") putdownspoof = (string)id;
+            else if(str == "ball" && ((string)id == "1" || (string)id == "2")) hideopt = (integer)((string)id);
         }
         else if(num == API_ENABLE) disabled = FALSE;
         else if(num == API_DISABLE) disabled = TRUE;

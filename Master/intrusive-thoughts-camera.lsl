@@ -52,6 +52,17 @@ default
                 llSetObjectName("");
                 llOwnerSay(VERSION_C + ": Set put down phrase to '" + (string)id + "'");
             }
+            else if(str == "ball" && ((string)id == "1" || (string)id == "2")) 
+            {
+                if((integer)((string)id) == 1)
+                {
+                    llOwnerSay(VERSION_C + ": Objectifiying something will put it below the floor.");
+                }
+                else
+                {
+                    llOwnerSay(VERSION_C + ": Objectifiying something will make it invisible.");
+                }
+            }
         }
     }
 

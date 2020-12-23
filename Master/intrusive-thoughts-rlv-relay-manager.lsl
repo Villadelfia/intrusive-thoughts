@@ -32,7 +32,6 @@ default
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(0, "", llGetOwner(), "");
         llListen(MANTRA_CHANNEL, "", llGetOwner(), "");
-        llListen(MANTRA_CHANNEL, "", owner, "");
         buildclients();
     }
 
