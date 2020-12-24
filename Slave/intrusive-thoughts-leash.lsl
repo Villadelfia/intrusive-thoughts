@@ -5,6 +5,7 @@ vector leashtarget;
 integer leasherinrange;
 key leashedto;
 key owner = NULL_KEY;
+key leashpoint = NULL_KEY;
 integer awaycounter = -1;
 integer llength = 2;
 string prefix;
@@ -48,6 +49,8 @@ checkSetup()
 
 leash(key target) 
 {
+    llRegionSayTo(target, LEASH_CHANNEL, "leashed");
+
     leashedto = target;
 
     particles(target);
@@ -68,6 +71,8 @@ leash(key target)
 
 unleash()
 {
+    llRegionSayTo(leashedto, LEASH_CHANNEL, "unleashed");
+
     llTargetRemove(leashinghandle);
     llStopMoveToTarget();
     particles(NULL_KEY);
@@ -134,6 +139,18 @@ default
             {
                 if(leashedto) yankTo(leashedto);
             }
+            else if(m == "leashpoint")
+            {
+                if(k != leashpoint) 
+                {
+                    leashpoint = k;
+                    if(leashedto) 
+                    {
+                        unleash();
+                        leash(leashpoint);
+                    }
+                }
+            }
         }
         else if(c == 1)
         {
@@ -144,7 +161,25 @@ default
             if(llToLower(m) == "leash")
             {   
                 if(leashedto) unleash();
-                else          leash(owner);
+                else
+                {
+                    if(leashpoint != NULL_KEY)
+                    {
+                        if(llList2Vector(llGetObjectDetails(leashpoint, [OBJECT_POS]), 0) == ZERO_VECTOR)
+                        {
+                            leashpoint = NULL_KEY;
+                            leash(owner);
+                        }
+                        else
+                        {
+                            leash(leashpoint);
+                        }
+                    }
+                    else
+                    {
+                        leash(owner);
+                    }
+                }
             }
             else if(llToLower(m) == "unleash")
             {

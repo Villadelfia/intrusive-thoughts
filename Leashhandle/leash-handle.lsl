@@ -9,6 +9,6 @@ default
 
     timer()
     {
-        llRegionSayTo(llGetOwner(), MANTRA_CHANNEL, "leashpoint");
+        llRegionSay(MANTRA_CHANNEL, "leashpoint");
     }
 }

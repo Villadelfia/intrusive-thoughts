@@ -44,9 +44,9 @@ default
     run_time_permissions(integer perm)
     {
         llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "onball " + (string)llGetKey());
-        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames_sec:" + (string)llGetOwnerKey(rezzer) + "=n|@shownametags=n|@shownearby=n|@showhovertextall=n|@showworldmap=n|@showminimap=n|@showloc=n|@setcam_focus:" + (string)rezzer + ";;1/0/0=force|@setcam_origindistmax:10=n|@buy=n|@pay=n|@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@showinv=n|@interact=n|@showself=n|@sendgesture=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add");
+        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames_sec:" + (string)llGetOwnerKey(rezzer) + "=n|@shownametags=n|@shownearby=n|@showhovertextall=n|@showworldmap=n|@showminimap=n|@showloc=n|@setcam_focus:" + (string)rezzer + ";;1/0/0=force|@setcam_origindistmax:10=n|@buy=n|@pay=n|@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@showinv=n|@interact=n|@showself=n|@sendgesture=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add|@sendchannel_sec=n|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add");
         llStartAnimation(animation);
-        llSetTimerEvent(0.25);
+        llSetTimerEvent(0.5);
     }
 
     listen(integer c, string n, key id, string m)
@@ -65,6 +65,7 @@ default
             {
                 if(llAvatarOnSitTarget() == NULL_KEY) llDie();
                 llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
@@ -81,6 +82,7 @@ default
             else if(m == "abouttotp")
             {
                 if(llAvatarOnSitTarget() == NULL_KEY) llDie();
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
@@ -114,18 +116,20 @@ default
                 llSetObjectName(name);
                 llSay(0, "Attempting recapture...");
                 llSetObjectName(oldn);
-                llRegionSayTo(id, RLVRC, "ping," + (string)llGetOwnerKey(id) + ",!pong");
+                llRegionSay(RLVRC, "ping," + (string)llGetOwnerKey(id) + ",!pong");
             }
             else if(endswith(m, (string)llGetKey()+",!release,ok"))
             {
-                if(llAvatarOnSitTarget() == NULL_KEY) llDie();
+                string oldn = llGetObjectName();
+                llSetObjectName(name);
+                llSay(0, "Releasing captive...");
                 llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
                 if(animation == "hide_b")
                 {
-                    string oldn = llGetObjectName();
                     llSetObjectName("");
                     llRegionSayTo(llAvatarOnSitTarget(), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, try undeforming yourself via the Avatar -> Avatar Health menu. If that doesn't work, teleport to a different region, and as a last resort, you can relog.");
                     llSetObjectName(oldn);
@@ -138,7 +142,6 @@ default
 
     timer()
     {
-        llSetTimerEvent(0.0);
         if(llGetNumberOfPrims() == 1)
         {
             integer hours = (integer)llGetObjectDesc();
@@ -209,6 +212,7 @@ default
             if(keyisavatar == TRUE && llGetAgentSize(rezzer) == ZERO_VECTOR)
             {
                 llSetRegionPos(my - offset);
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
@@ -222,6 +226,7 @@ default
             if(llVecDist(my, pos) > 365 || pos == ZERO_VECTOR)
             {
                 llSetRegionPos(llGetPos() - offset);
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
@@ -231,8 +236,6 @@ default
             }
             llSetRegionPos(pos);
             llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)rezzer + ";;=force");
-            
         }
-        llSetTimerEvent(0.25);
     }
 }

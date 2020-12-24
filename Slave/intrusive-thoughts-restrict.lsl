@@ -429,6 +429,7 @@ default
                 llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.");
                 locked = FALSE;
                 llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
+                llSetScale(<0.01, 0.01, 0.01>);
                 llOwnerSay("@detach=y");
             }
             else
@@ -436,6 +437,7 @@ default
                 llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.");
                 locked = TRUE;
                 llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
+                llSetScale(<0.4, 0.4, 0.4>);
                 llOwnerSay("@detach=n");
             }
         }

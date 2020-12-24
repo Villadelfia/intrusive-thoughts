@@ -9,6 +9,7 @@
 #define GAZE_CHAT_CHANNEL 166845634
 #define COMMAND_CHANNEL           1
 #define SPEAK_CHANNEL     166845635
+#define LEASH_CHANNEL     166845636
 #define RLVRC           -1812221819
 #define API_RESET                -1
 #define API_SELF_DESC            -2
@@ -31,8 +32,9 @@
 #define API_RLV_CLR_SRC         -19
 #define API_RLV_HANDLE_CMD      -20
 #define API_RLV_SAFEWORD        -21
-string VERSION_S = "IT-Slave v1.1";
-string VERSION_C = "IT-Cntrl v1.1";
+#define API_CLOSEST_OBJ         -22
+string VERSION_S = "IT-Slave v1.3";
+string VERSION_C = "IT-Cntrl v1.3";
 
 integer startswith(string haystack, string needle)
 {

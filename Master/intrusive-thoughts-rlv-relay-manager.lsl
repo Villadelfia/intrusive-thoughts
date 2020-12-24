@@ -6,6 +6,21 @@ list whitelist = [];
 key handlingk = NULL_KEY;
 string handlingm;
 integer handlingi;
+integer templisten = -1;
+integer tempchannel;
+
+makelisten(key who)
+{
+    if(templisten != -1) llListenRemove(templisten);
+    tempchannel = ((integer)("0x"+llGetSubString((string)llGenerateKey(),-8,-1)) & 0x3FFFFFFF) ^ 0xBFFFFFF;
+    templisten = llListen(tempchannel, "", who, "");
+}
+
+clearlisten()
+{
+    if(templisten != -1) llListenRemove(templisten);
+    templisten = -1;
+}
 
 buildclients()
 {
@@ -63,6 +78,9 @@ default
             string ident = llList2String(args, 0);
             string target = llList2String(args, 1);
             string command = llList2String(args, 2);
+            string firstcommand = llList2String(llParseString2List(command, ["|"], []), 0);
+            string behavior = llList2String(llParseString2List(firstcommand, ["="], []), 0);
+            string value = llList2String(llParseString2List(firstcommand, ["="], []), 1);
 
             // Or if the target is not us.
             if(target != (string)llGetOwner() && target != "ffffffff-ffff-ffff-ffff-ffffffffffff") return;
@@ -95,6 +113,7 @@ default
                     if(command == "!version") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!version,1100");
                     else if(command == "!implversion") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!implversion,ORG=0004/Hana's Relay");
                     else if(command == "!x-orgversions") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!x-orgversions,ORG=0004");
+                    else if((behavior == "@version" || behavior == "@versionnew" || behavior == "@versionnum" || behavior == "@versionnumbl") && command == behavior + "=" + value) llOwnerSay(command);
 
                     // If not, we ask the wearer for permission.
                     else
@@ -104,14 +123,17 @@ default
                         handlingk = id;
                         handlingm = m;
                         handlingi = available;
-                        llDialog(target, "The device '" + n + "' owned by secondlife:///app/agent/" + (string)llGetOwnerKey(id) + "/about wants to access the relay of secondlife:///app/agent/" + (string)llGetOwner() + "/about, will you allow this?\n \n(Timeout in 15 seconds.)", ["ALLOW", "DENY", "BLOCK"], MANTRA_CHANNEL);
+                        makelisten(target);
+                        llDialog(target, "The device '" + n + "' owned by secondlife:///app/agent/" + (string)llGetOwnerKey(id) + "/about wants to access the relay of secondlife:///app/agent/" + (string)llGetOwner() + "/about, will you allow this?\n \n(Timeout in 15 seconds.)", ["ALLOW", "DENY", "BLOCK"], tempchannel);
                         llSetTimerEvent(15.0);
                     }
                 }
             }
         }
-        else if(c == MANTRA_CHANNEL)
+        else if(c == tempchannel)
         {
+            if(handlingk == NULL_KEY) return;
+            if(llGetOwnerKey(id) != llGetOwner()) return;
             if(m == "ALLOW")
             {
                 llSetTimerEvent(0.0);
@@ -166,6 +188,7 @@ default
     {
         llSetTimerEvent(0.0);
         handlingk = NULL_KEY;
+        clearlisten();
     }
 
     touch_start(integer total_number)

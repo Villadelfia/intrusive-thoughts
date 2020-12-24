@@ -1,5 +1,6 @@
 #include <IT/globals.lsl>
 key closestavatar;
+key closestobject;
 
 default
 {
@@ -106,20 +107,37 @@ default
         if(llList2Integer(results, -1) == 1)
         {
             key target = llList2Key(results, 0);
-            if(target != NULL_KEY && closestavatar != target)
+            if(target != NULL_KEY)
             {
                 closestavatar = target;
-                llMessageLinked(LINK_SET, API_CLOSEST_TO_CAM, "", closestavatar);
+                llMessageLinked(LINK_SET, API_CLOSEST_TO_CAM, llGetDisplayName(closestavatar), closestavatar);
             }
         }
         else
         {
-            if(newclosest != NULL_KEY && closestavatar != newclosest)
+            if(newclosest != NULL_KEY)
             {
                 closestavatar = newclosest;
-                llMessageLinked(LINK_SET, API_CLOSEST_TO_CAM, "", closestavatar);
+                llMessageLinked(LINK_SET, API_CLOSEST_TO_CAM, llGetDisplayName(closestavatar), closestavatar);
             }
         }
+
+        results = llCastRay(startpos, endpos, [
+            RC_REJECT_TYPES, RC_REJECT_LAND | RC_REJECT_PHYSICAL | RC_REJECT_AGENTS,
+            RC_DETECT_PHANTOM, TRUE,
+            RC_DATA_FLAGS, RC_GET_ROOT_KEY,
+            RC_MAX_HITS, 1
+        ]);
+
+        if(llList2Integer(results, -1) == 1)
+        {
+            key target = llList2Key(results, 0);
+            list data = llGetObjectDetails(target, [OBJECT_NAME]);
+            string name = llList2String(data, 0);
+            closestobject = target;
+            llMessageLinked(LINK_SET, API_CLOSEST_OBJ, name, target);
+        }
+
         llSetTimerEvent(0.5);
     }
 }

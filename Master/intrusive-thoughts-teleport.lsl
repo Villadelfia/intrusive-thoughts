@@ -25,10 +25,7 @@ tpme(string region, string x, string y, string z)
 givemenu()
 {
     llOwnerSay("Leash options:");
-    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/leashme Leash locked avatar to self]");
     llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/leashto Leash locked avatar to last seen object]");
-    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/yank Yank locked avatar]");
-    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/unleash Unleash locked avatar]");
     llOwnerSay(" ");
     llOwnerSay("RLV options:");
     llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/clear Clear RLV relay for locked avatar]");

@@ -7,20 +7,20 @@ string capturespoof = "";
 string releasespoof = "";
 string putonspoof = "";
 string putdownspoof = "";
-key lastseenavatar;
-string lastseenavatarname;
-key lastseenobject;
-string lastseenobjectname;
-key lockedavatar;
-string lockedname;
+key lastseenavatar = NULL_KEY;
+string lastseenavatarname = " ";
+key lastseenobject = NULL_KEY;
+string lastseenobjectname = " ";
+key lockedavatar = NULL_KEY;
+string lockedname = "";
 key target;
 string targetname;
 string targetdescription;
-list objectifiedavatars;
-list objectifiednames;
-list objectifieddescriptions;
-list objectifiedballs;
-list responses;
+list objectifiedavatars = [];
+list objectifiednames = [];
+list objectifieddescriptions = [];
+list objectifiedballs = [];
+list responses = [];
 string await = "";
 integer intp = FALSE;
 integer handling;
@@ -28,8 +28,17 @@ integer store = -1;
 string storingon;
 integer disabled = FALSE;
 key closestavatar = NULL_KEY;
-key leashtarget;
 integer hideopt = 1;
+
+attachobject(string o)
+{
+    llOwnerSay("@detachall:~IT/" + llToLower(o) + "=force");
+}
+
+detachobject(string o)
+{
+    llOwnerSay("@attachover:~IT/" + llToLower(o) + "=force");
+}
 
 updatetitle()
 {
@@ -85,6 +94,7 @@ givemenu()
 
 release(integer i)
 {
+    detachobject(llList2String(objectifieddescriptions, i));
     string spoof;
     spoof = llDumpList2String(llParseStringKeepNulls(releasespoof, ["%ME%"], []), owner);
     spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), llList2String(objectifieddescriptions, i));
@@ -119,7 +129,7 @@ addobject(string desc)
     {
         llOwnerSay("Can't rez here, trying to set land group.");
         llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
-        llSleep(5.0);
+        llSleep(2.5);
     }
 
     if(!canrez(llGetPos())) 
@@ -195,23 +205,12 @@ default
 
     attach(key id)
     {
-        if(id != NULL_KEY) llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA);
-        else               
+        if(id != NULL_KEY)
         {
-            llSetTimerEvent(0.0);
-            llSetText("", <1.0, 1.0, 0.0>, 1.0);
-        }
-    }
-
-    run_time_permissions(integer perm)
-    {
-        if(perm & PERMISSION_TRACK_CAMERA) 
-        {
-            llSetTimerEvent(0.5);
             lastseenavatar = NULL_KEY;
-            lastseenavatarname = "-no avatar-";
+            lastseenavatarname = " ";
             lastseenobject = NULL_KEY;
-            lastseenobjectname = "-no object-";
+            lastseenobjectname = " ";
             lockedavatar = NULL_KEY;
             lockedname = "";
             objectifiedavatars = [];
@@ -219,6 +218,11 @@ default
             objectifiedballs = [];
             objectifieddescriptions = [];
             intp = FALSE;
+        }
+        else               
+        {
+            llSetTimerEvent(0.0);
+            llSetText("", <1.0, 1.0, 0.0>, 1.0);
         }
     }
 
@@ -252,21 +256,9 @@ default
                 store = (integer)llDeleteSubString(m, 0, llStringLength("transfer"));
                 llRegionSayTo(lastseenobject, MANTRA_CHANNEL, "furniture");
             }
-            else if(m == "leashme")
-            {
-                llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "leashto " + (string)leashtarget);
-            }
             else if(m == "leashto")
             {
                 llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "leashto " + (string)lastseenobject);
-            }
-            else if(m == "unleash")
-            {
-                llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "unleash");
-            }
-            else if(m == "yank")
-            {
-                llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "yank");
             }
             else if(m == "clear")
             {
@@ -297,6 +289,7 @@ default
                 }
                 else
                 {
+                    detachobject(llList2String(objectifieddescriptions, store));
                     string spoof;
                     spoof = llDumpList2String(llParseStringKeepNulls(putdownspoof, ["%ME%"], []), owner);
                     spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), llList2String(objectifieddescriptions, store));
@@ -315,6 +308,7 @@ default
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("puton")), ["|||"], []);
                 key av = (key)llList2String(params, 0);
                 string desc = llList2String(params, 1);
+                attachobject(desc);
                 string spoof;
                 spoof = llDumpList2String(llParseStringKeepNulls(putonspoof, ["%ME%"], []), owner);
                 spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), desc);
@@ -325,10 +319,6 @@ default
                 objectifiedavatars += [av];
                 objectifiednames += [llGetDisplayName(av)];
                 objectifieddescriptions += [desc];
-            }
-            else if(m == "leashpoint")
-            {
-                leashtarget = id;
             }
         }
         else if(c == RLVRC)
@@ -409,7 +399,7 @@ default
                         spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), targetdescription);
                         spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
                         llSay(0, spoof);
-                        key av = llGetOwnerKey(id);
+                        attachobject(targetdescription);
                     }
                     else llOwnerSay("Could not capture '" + lockedname + "'.");
                     await = "";
@@ -571,14 +561,13 @@ default
         }
         else if(num == API_STARTUP_DONE) 
         {
-            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA);
             llListen(GAZE_CHANNEL, "", llGetOwner(), "");
             llListen(RLVRC, "", NULL_KEY, "");
             llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
             llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
-            leashtarget = llGetOwner();
-            llOwnerSay("[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            llSetTimerEvent(0.5);
             ready = TRUE;
+            llOwnerSay("[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         else if(num == API_CONFIG_DATA)
         {
@@ -588,46 +577,25 @@ default
             else if(str == "release") releasespoof = (string)id;
             else if(str == "puton") putonspoof = (string)id;
             else if(str == "putdown") putdownspoof = (string)id;
-            else if(str == "ball" && ((string)id == "1" || (string)id == "2")) hideopt = (integer)((string)id);
+            else if(str == "ball") hideopt = (integer)((string)id);
         }
         else if(num == API_ENABLE) disabled = FALSE;
         else if(num == API_DISABLE) disabled = TRUE;
-        else if(num == API_CLOSEST_TO_CAM) closestavatar = id;
+        else if(num == API_CLOSEST_TO_CAM)
+        {
+            lastseenavatar = id;
+            lastseenavatarname = str;
+        }
+        else if(num == API_CLOSEST_OBJ)
+        {
+            lastseenobject = id;
+            lastseenobjectname = str;
+        }
     }
 
     timer()
     {
         llSetTimerEvent(0.0);
-        if(llGetPermissions() & PERMISSION_TRACK_CAMERA == 0) return;
-        if(llList2Vector(llGetObjectDetails(leashtarget, [OBJECT_POS]), 0) == ZERO_VECTOR) leashtarget = llGetOwner();
-        vector startpos = llGetCameraPos();
-        rotation rot = llGetCameraRot();
-        vector endpos = startpos + (llRot2Fwd(rot) * 10);
-
-        if(lastseenavatar != closestavatar && closestavatar != NULL_KEY)
-        {
-            lastseenavatar = closestavatar;
-            lastseenavatarname = llGetDisplayName(closestavatar);
-        }
-
-        list results = llCastRay(startpos, endpos, [
-            RC_REJECT_TYPES, RC_REJECT_LAND | RC_REJECT_PHYSICAL | RC_REJECT_AGENTS,
-            RC_DETECT_PHANTOM, TRUE,
-            RC_DATA_FLAGS, RC_GET_ROOT_KEY,
-            RC_MAX_HITS, 1
-        ]);
-
-        if(llList2Integer(results, -1) == 1)
-        {
-            key target = llList2Key(results, 0);
-            list data = llGetObjectDetails(target, [OBJECT_NAME]);
-            string name = llList2String(data, 0);
-            if(lastseenobject != target)
-            {
-                lastseenobject = target;
-                lastseenobjectname = name;
-            }
-        }
 
         if(lockedavatar != NULL_KEY && llGetAgentSize(lockedavatar) == ZERO_VECTOR)
         {
