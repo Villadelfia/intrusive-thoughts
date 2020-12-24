@@ -1,4 +1,7 @@
 # Intrusive Thoughts
+## License:
+This project is licensed under the GNU Affero GPL v3.
+
 ## Instructions:
 
 Create a cube and put one copy of every script in the Slave directory into it. Then add as many rlv relay client scripts as you need device support. Make sure to check global.lsl for the expected name of this client script. Add as many transferrable animations as you want into it. Reset all the scripts. This is your slave device.
