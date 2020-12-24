@@ -1,6 +1,8 @@
 # Intrusive Thoughts
 ## License:
-This project is licensed under the GNU Affero GPL v3.
+This project is licensed under the GNU Affero GPL v3. I, Hana Nova, am the sole contributor to this project. Any external contributions will only be accepted with a waiver handing over all rights to the contributed code back to the project owner.
+
+This does not mean you can just use this code without making your changes public, in fact you must make them public for free. But it does mean that I will not include your changes in this main repository without signing a contributor agreement.
 
 ## Instructions:
 
