@@ -98,7 +98,7 @@ handleSay(string message)
     }
 
     @blacklisttripped;
-    integer bypass = emote == TRUE && contains(message, "\"") == FALSE;
+    integer bypass = emote == TRUE && llToLower(llStringTrim(message, STRING_TRIM)) != "/me" && contains(message, "\"") == FALSE;
     if(mute == FALSE || bypass == TRUE) 
     {
         llMessageLinked(LINK_SET, API_SAY, message, (key)name);

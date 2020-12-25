@@ -175,7 +175,7 @@ string prefixfilter(string m)
     integer emote = FALSE;
     if(startswith(llToLower(m), "/me") || startswith(llToLower(m), "/shout/me") || startswith(llToLower(m), "/shout /me") ||
        startswith(llToLower(m), "/whisper/me") || startswith(llToLower(m), "/whisper /me")) emote = TRUE;
-    if(emote == TRUE && contains(m, "\"") == FALSE) return m;
+    if(emote == TRUE && llToLower(llStringTrim(m, STRING_TRIM)) != "/me" && contains(m, "\"") == FALSE) return m;
 
     integer quotecnt = 0;
     string word;

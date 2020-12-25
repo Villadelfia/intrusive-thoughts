@@ -412,7 +412,7 @@ default
                 }
             }
         }
-        else if(c == GAZE_CHAT_CHANNEL && startswith(m, "/me") == TRUE && contains(m, "\"") == FALSE)
+        else if(c == GAZE_CHAT_CHANNEL && llToLower(llStringTrim(m, STRING_TRIM)) != "/me" && startswith(m, "/me") == TRUE && contains(m, "\"") == FALSE)
         {
             integer i = llListFindList(objectifiedavatars, [id]);
             string obj = llList2String(objectifieddescriptions, i);

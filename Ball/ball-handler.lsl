@@ -102,7 +102,7 @@ default
     {
         if(c == GAZE_CHAT_CHANNEL)
         {
-            if(keyisavatar == TRUE || startswith(m, "/me") == FALSE || contains(m, "\"") == TRUE) return;
+            if(keyisavatar == TRUE || llToLower(llStringTrim(m, STRING_TRIM)) == "/me" || startswith(m, "/me") == FALSE || contains(m, "\"") == TRUE) return;
             string oldn = llGetObjectName();
             llSetObjectName(name);
             llSay(0, m);
