@@ -392,18 +392,23 @@ default
                 }
                 else if(await == "c")
                 {
-                    if(accept == TRUE && (llGetAgentInfo(target) & AGENT_SITTING) != 0)
+                    if(accept == TRUE)
                     {
-                        llRegionSayTo(lastrezzed, MANTRA_CHANNEL, "check");
-                        string spoof;
-                        spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["%ME%"], []), owner);
-                        spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), targetdescription);
-                        spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
-                        llSay(0, spoof);
-                        attachobject(targetdescription);
-                        lockedavatar = NULL_KEY;
+                        llSleep(1.0);
+                        if((llGetAgentInfo(target) & AGENT_SITTING) != 0)
+                        {
+                            string spoof;
+                            spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["%ME%"], []), owner);
+                            spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), targetdescription);
+                            spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
+                            llSay(0, spoof);
+                            attachobject(targetdescription);
+                            lockedavatar = NULL_KEY;
+                        }
+                        else llOwnerSay("Could not capture '" + lockedname + "'.");
                     }
                     else llOwnerSay("Could not capture '" + lockedname + "'.");
+                    llRegionSayTo(lastrezzed, MANTRA_CHANNEL, "check");
                 }
             }
         }
