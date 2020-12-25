@@ -2,11 +2,49 @@
 #define avataroffset <0.0, 0.0, -3.0>
 string animation = "";
 key rezzer;
-key firstavatar = NULL_KEY;
-integer keyisavatar = TRUE;
-integer saton = FALSE;
+key firstavatar;
+integer keyisavatar;
+integer saton;
+integer editmode;
+vector seatedoffset;
+vector oldpos;
 string name;
-integer waitingstate = 0;
+integer waitingstate;
+
+die()
+{
+    llSetAlpha(0.0, ALL_SIDES);
+    llSetPrimitiveParams([PRIM_TEMP_ON_REZ, TRUE]);
+    llDie();
+    while(TRUE) llSleep(60.0);
+}
+
+toggleedit()
+{
+    if(editmode == FALSE && (keyisavatar == FALSE || (llGetAgentInfo(rezzer) & AGENT_SITTING) == 0))
+    {
+        string oldn = llGetObjectName();
+        llSetObjectName(name);
+        llOwnerSay("I must be following a seated avatar to edit my position.");
+        llSetObjectName(oldn);
+        return;
+    }
+    editmode = !editmode;
+    if(editmode)
+    {
+        oldpos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + seatedoffset;
+        llSetRegionPos(oldpos);
+        llSetAlpha(1.0, ALL_SIDES);
+        llSetScale(<0.1, 0.1, 5.0>);
+    }
+    else
+    {
+        vector offset = llGetPos() - oldpos;
+        seatedoffset += offset;
+        llSetAlpha(0.0, ALL_SIDES);
+        llSetScale(<0.1, 0.1, 0.1>);
+    }
+}
 
 default
 {
@@ -18,11 +56,17 @@ default
 
     on_rez(integer start_param)
     {
+        rezzer = llGetOwnerKey((key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0));
+        firstavatar = NULL_KEY;
+        keyisavatar = TRUE;
+        saton = FALSE;
+        editmode = FALSE;
+        seatedoffset = ZERO_VECTOR;
+        waitingstate = 0;
         if(start_param & 1)      animation = "hide_a";
         else if(start_param & 2) animation = "hide_b";
         else                     return;
-        rezzer = llGetOwnerKey((key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0));
-        llSetTimerEvent(10.0);
+        llSetTimerEvent(60.0);
     }
 
     changed(integer change)
@@ -49,6 +93,11 @@ default
         llSetTimerEvent(0.5);
     }
 
+    touch_start(integer num_detected)
+    {
+        if(llDetectedKey(0) == llGetOwnerKey(rezzer) && editmode == TRUE) toggleedit();
+    }
+
     listen(integer c, string n, key id, string m)
     {
         if(c == GAZE_CHAT_CHANNEL)
@@ -63,7 +112,7 @@ default
         {
             if(m == "unsit")
             {
-                if(llAvatarOnSitTarget() == NULL_KEY) llDie();
+                if(llAvatarOnSitTarget() == NULL_KEY) die();
                 llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
@@ -77,21 +126,29 @@ default
                     llSetObjectName(oldn);
                 }
                 llSleep(10.0);
-                llDie();
+                die();
             }
             else if(m == "abouttotp")
             {
-                if(llAvatarOnSitTarget() == NULL_KEY) llDie();
+                if(llAvatarOnSitTarget() == NULL_KEY) die();
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
                 llSleep(10.0);
-                llDie();
+                die();
+            }
+            else if(m == "check")
+            {
+                if(llAvatarOnSitTarget() == NULL_KEY) die();
+            }
+            else if(m == "edit" && llGetOwnerKey(id) == llGetOwnerKey(rezzer) && keyisavatar == TRUE)
+            {
+                toggleedit();
             }
             else if(startswith(m, "puton"))
             {
-                if(llAvatarOnSitTarget() == NULL_KEY) llDie();
+                if(llAvatarOnSitTarget() == NULL_KEY) die();
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("puton")), ["|||"], []);
                 rezzer = (key)llList2String(params, 0);
                 name = llList2String(params, 1);
@@ -101,7 +158,7 @@ default
             }
             else if(startswith(m, "putdown"))
             {
-                if(llAvatarOnSitTarget() == NULL_KEY) llDie();
+                if(llAvatarOnSitTarget() == NULL_KEY) die();
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("putdown")), ["|||"], []);
                 rezzer = (key)llList2String(params, 0);
                 name = llList2String(params, 1);
@@ -135,22 +192,28 @@ default
                     llSetObjectName(oldn);
                 }
                 llSleep(10.0);
-                llDie();
+                die();
             }
         }
     }
 
     timer()
     {
+        if(editmode)
+        {
+            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)rezzer + ";;=force");
+            return;
+        }
+
         if(llGetNumberOfPrims() == 1)
         {
             integer hours = (integer)llGetObjectDesc();
             
             // If we were never sat on, delete.
-            if(saton == FALSE) llDie();
+            if(saton == FALSE) die();
 
             // If the key is an avatar, delete.
-            if(keyisavatar) llDie();
+            if(keyisavatar) die();
 
             // Just recently vacated.
             if(waitingstate == 0)
@@ -173,7 +236,7 @@ default
             // Die if too long without sitter, go to next step if we see the sitter in the region.
             else if(waitingstate == 2)
             {
-                if(llGetTime() > (hours * 3600)) llDie();
+                if(llGetTime() > (hours * 3600)) die();
                 if(llGetAgentSize(firstavatar) != ZERO_VECTOR)
                 {
                     waitingstate = 3;
@@ -200,7 +263,7 @@ default
             else if(waitingstate == 5)
             {
                 if(llGetTime() < 60.0) return;
-                llDie();
+                die();
             }
         }
         else
@@ -208,7 +271,12 @@ default
             waitingstate = 0;
             vector my = llGetPos();
             vector offset = ZERO_VECTOR;
-            if(keyisavatar) offset = avataroffset;
+            if(keyisavatar == TRUE)
+            {
+                if((llGetAgentInfo(rezzer) & AGENT_SITTING) == 0) offset = avataroffset;
+                else                                              offset = seatedoffset;
+            }
+
             if(keyisavatar == TRUE && llGetAgentSize(rezzer) == ZERO_VECTOR)
             {
                 llSetRegionPos(my - offset);
@@ -217,7 +285,7 @@ default
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
                 llSleep(10.0);
-                llDie();
+                die();
                 return;
             }
 
@@ -231,7 +299,7 @@ default
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
                 llSleep(10.0);
-                llDie();
+                die();
                 return;
             }
             llSetRegionPos(pos);

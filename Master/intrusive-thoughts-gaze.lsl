@@ -29,13 +29,14 @@ string storingon;
 integer disabled = FALSE;
 key closestavatar = NULL_KEY;
 integer hideopt = 1;
+key lastrezzed;
 
-attachobject(string o)
+detachobject(string o)
 {
     llOwnerSay("@detachall:~IT/" + llToLower(o) + "=force");
 }
 
-detachobject(string o)
+attachobject(string o)
 {
     llOwnerSay("@attachover:~IT/" + llToLower(o) + "=force");
 }
@@ -80,7 +81,8 @@ givemenu()
     while(l >= 0)
     {
         llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/release%20" + (string)l + " Release " + llList2String(objectifiednames, l) + " (" + objectprefix + llList2String(objectifieddescriptions, l)+ ")] " + 
-                   "[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/transfer%20" + (string)l + " (store as last seen object)]");
+                   "[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/edit%20" + (string)l + " (edit position)] " +
+                   "[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/transfer%20" + (string)l + " (store object)]");
         l--;
     }
     if(llGetListLength(objectifiednames) > 1) 
@@ -218,12 +220,18 @@ default
             objectifiedballs = [];
             objectifieddescriptions = [];
             intp = FALSE;
+            llSetTimerEvent(0.5);
         }
         else               
         {
             llSetTimerEvent(0.0);
             llSetText("", <1.0, 1.0, 0.0>, 1.0);
         }
+    }
+
+    state_entry()
+    {
+        llSetTimerEvent(0.5);
     }
 
     listen(integer c, string n, key id, string m)
@@ -245,6 +253,11 @@ default
             else if(startswith(llToLower(m), "release"))
             {
                 release((integer)llDeleteSubString(m, 0, llStringLength("release")));
+            }
+            else if(startswith(llToLower(m), "edit"))
+            {
+                integer i = (integer)llDeleteSubString(m, 0, llStringLength("edit"));
+                llRegionSayTo(llList2Key(objectifiedballs, i), MANTRA_CHANNEL, "edit");
             }
             else if(m == "transfer")
             {
@@ -332,19 +345,7 @@ default
 
             if(identifier == await)
             {
-                if(await == "simplesit" && startswith(command, "@sit"))
-                {
-                    if(accept) llOwnerSay("Successfully sat down '" + lockedname + "'.");
-                    else       llOwnerSay("Could not sit down '" + lockedname + "'.");
-                    await = "";
-                }
-                if(await == "simplestand" && startswith(command, "@unsit"))
-                {
-                    if(accept) llOwnerSay("Successfully stood up '" + lockedname + "'.");
-                    else       llOwnerSay("Could not stand up '" + lockedname + "'.");
-                    await = "";
-                }
-                else if(await == "dotp" && startswith(command, "@tpto"))
+                if(await == "dotp" && startswith(command, "@tpto"))
                 {
                     key av = llGetOwnerKey(id);
                     if(accept)
@@ -362,21 +363,21 @@ default
                     if(llGetListLength(responses) == llGetListLength(objectifiedavatars))
                     {
                         llSensorRemove();
-                        await = "";
                         if(responses == []) intp = FALSE;
                         llMessageLinked(LINK_SET, API_TPOK, "", NULL_KEY);
                     }
                 }
-                else if(await == "recapture" && startswith(command, "@sit"))
+                else if(await == "r")
                 {
                     key av = llGetOwnerKey(id);
+                    integer i = llListFindList(objectifiedavatars, [av]);
                     if(accept)
                     {
-                        responses += [id];
+                        responses += [0];
+                        llRegionSayTo(llList2Key(objectifiedballs, i), MANTRA_CHANNEL, "check");
                     }
                     else
                     {
-                        integer i = llListFindList(objectifiedavatars, [av]);
                         objectifiednames = llDeleteSubList(objectifiednames, i, i);
                         objectifiedavatars = llDeleteSubList(objectifiedavatars, i, i);
                         objectifiedballs = llDeleteSubList(objectifiedballs, i, i);
@@ -386,23 +387,23 @@ default
                     {
                         llOwnerSay("Done recapturing.");
                         llSensorRemove();
-                        await = "";
                         intp = FALSE;
                     }
                 }
-                else if(await == "capture" && startswith(command, "@sit"))
+                else if(await == "c")
                 {
-                    if(accept) 
+                    if(accept == TRUE && (llGetAgentInfo(target) & AGENT_SITTING) != 0)
                     {
+                        llRegionSayTo(lastrezzed, MANTRA_CHANNEL, "check");
                         string spoof;
                         spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["%ME%"], []), owner);
                         spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), targetdescription);
                         spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
                         llSay(0, spoof);
                         attachobject(targetdescription);
+                        lockedavatar = NULL_KEY;
                     }
                     else llOwnerSay("Could not capture '" + lockedname + "'.");
-                    await = "";
                 }
             }
         }
@@ -460,7 +461,6 @@ default
 
     touch_start(integer total_number)
     {
-        if(!ready) return;
         string name = llGetLinkName(llDetectedLinkNumber(0));
         if(name == "lock")
         {
@@ -472,33 +472,20 @@ default
             else if(lockedavatar != NULL_KEY)
             {
                 lockedavatar = NULL_KEY;
-                lockedname = "";
             }
         }
         else if(name == "sit")
         {
             if(lockedavatar != NULL_KEY && llGetAgentSize(lockedavatar) != ZERO_VECTOR && lastseenobject != NULL_KEY)
             {
-                if(llGetAgentInfo(lockedavatar) & AGENT_SITTING)
-                {
-                    llOwnerSay("Standing up '" + lockedname + "'.");
-                    llSetObjectName("RLV Sit");
-                    await = "simplestand";
-                    if(lockedavatar == llGetOwner()) llOwnerSay("@unsit=force");
-                    else                             llRegionSayTo(lockedavatar, RLVRC, "simplestand," + (string)lockedavatar + ",@unsit=force");
-                }
-                else
-                {
-                    llOwnerSay("Sitting '" + lockedname + "' on '" + lastseenobjectname + "'.");
-                    llSetObjectName("RLV Sit");
-                    await = "simplesit";
-                    if(lockedavatar == llGetOwner()) llOwnerSay("@sit:" + (string)lastseenobject + "=force");
-                    else                             llRegionSayTo(lockedavatar, RLVRC, "simplesit," + (string)lockedavatar + ",@sit:" + (string)lastseenobject + "=force");
-                }
+                llOwnerSay("Sitting '" + lockedname + "' on '" + lastseenobjectname + "'.");
+                llSetObjectName("RLV Sit");
+                if(lockedavatar == llGetOwner()) llOwnerSay("@sit:" + (string)lastseenobject + "=force");
+                else                             llRegionSayTo(lockedavatar, RLVRC, "s," + (string)lockedavatar + ",@sit:" + (string)lastseenobject + "=force");
                 llSetObjectName("");
             }
         }
-        else if(name == "objectify")
+        else if(name == "objectify" && ready == TRUE)
         {
             givemenu();
         }
@@ -506,41 +493,45 @@ default
 
     object_rez(key id)
     {
-        llSleep(2.5);
+        lastrezzed = id;
         llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 10.0);
+        llSetObjectName("RLV Capture");
         if(intp)
         {
-            await = "recapture";
             llOwnerSay("Recapturing " + llList2String(objectifiednames, handling-1) + ".");
-            llSetObjectName("RLV Capture");
-            llRegionSayTo(target, RLVRC, "recapture," + (string)target + ",@sit:" + (string)id + "=force");
-            llSetObjectName("");
+            await = "r";
+            llRegionSayTo(target, RLVRC, "r," + (string)target + ",@sit:" + (string)id + "=force");
             objectifiedballs += [id];
             handling++;
             handletp();
         }
         else
         {
-            await = "capture";
-            llSetObjectName("RLV Capture");
-            llRegionSayTo(target, RLVRC, "capture," + (string)target + ",@sit:" + (string)id + "=force");
-            llSetObjectName("");
+            await = "c";
+            llRegionSayTo(target, RLVRC, "c," + (string)target + ",@sit:" + (string)id + "=force");
             objectifiedballs += [id];
             objectifiedavatars += [target];
             objectifiednames += [targetname];
             objectifieddescriptions += [targetdescription];
-            lockedavatar = NULL_KEY;
         }
+        llSetObjectName("");
     }
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_DOTP)
+        if(num == API_STARTUP_DONE) 
         {
-            if(objectifiedavatars == [] || (string)id == llGetRegionName())
-            {
-                llMessageLinked(LINK_SET, API_TPOK, "", NULL_KEY);
-            }
+            llListen(GAZE_CHANNEL, "", llGetOwner(), "");
+            llListen(RLVRC, "", NULL_KEY, "");
+            llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
+            llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+            llSetTimerEvent(0.5);
+            ready = TRUE;
+            llOwnerSay("[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+        }
+        else if(num == API_DOTP)
+        {
+            if(objectifiedavatars == [] || (string)id == llGetRegionName()) llMessageLinked(LINK_SET, API_TPOK, "", NULL_KEY);
             else
             {
                 intp = TRUE;
@@ -558,16 +549,6 @@ default
                 }
                 llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 10.0);
             }
-        }
-        else if(num == API_STARTUP_DONE) 
-        {
-            llListen(GAZE_CHANNEL, "", llGetOwner(), "");
-            llListen(RLVRC, "", NULL_KEY, "");
-            llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
-            llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
-            llSetTimerEvent(0.5);
-            ready = TRUE;
-            llOwnerSay("[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         else if(num == API_CONFIG_DATA)
         {
@@ -597,13 +578,9 @@ default
     {
         llSetTimerEvent(0.0);
 
-        if(lockedavatar != NULL_KEY && llGetAgentSize(lockedavatar) == ZERO_VECTOR)
-        {
-            lockedavatar = NULL_KEY;
-            lockedname = "";
-        }
+        if(lockedavatar != NULL_KEY && llGetAgentSize(lockedavatar) == ZERO_VECTOR) lockedavatar = NULL_KEY;
 
-        if(intp == FALSE)
+        if(!intp)
         {
             integer l = llGetListLength(objectifiedballs) - 1;
             while(l >= 0)
@@ -611,6 +588,7 @@ default
                 list req = llGetObjectDetails(llList2Key(objectifiedballs, l), [OBJECT_CREATOR]);
                 if(req == [] || llList2Key(req, 0) != llGetCreator())
                 {
+                    detachobject(llList2String(objectifieddescriptions, l));
                     objectifiednames = llDeleteSubList(objectifiednames, l, l);
                     objectifiedavatars = llDeleteSubList(objectifiedavatars, l, l);
                     objectifiedballs = llDeleteSubList(objectifiedballs, l, l);
@@ -620,7 +598,7 @@ default
             }
         }
 
-        llSetTimerEvent(0.5);
         updatetitle();
+        llSetTimerEvent(0.5);
     }
 }
