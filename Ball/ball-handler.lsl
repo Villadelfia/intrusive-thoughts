@@ -179,6 +179,7 @@ default
                 rezzer = (key)llList2String(params, 0);
                 name = llList2String(params, 1);
                 keyisavatar = FALSE;
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "unrestrict," + (string)llAvatarOnSitTarget() + ",@recvim:10=y|@sendim:10=y");
             }
         }
         else if(c == RLVRC && waitingstate < 4)
