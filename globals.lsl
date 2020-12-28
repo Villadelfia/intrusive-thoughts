@@ -35,8 +35,8 @@
 #define API_RLV_HANDLE_CMD      -20
 #define API_RLV_SAFEWORD        -21
 #define API_CLOSEST_OBJ         -22
-string VERSION_S = "IT-Slave v1.4";
-string VERSION_C = "IT-Cntrl v1.4";
+string VERSION_S = "IT-Slave v1.5";
+string VERSION_C = "IT-Cntrl v1.5";
 
 integer startswith(string haystack, string needle)
 {

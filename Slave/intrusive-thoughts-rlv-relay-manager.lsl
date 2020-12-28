@@ -158,7 +158,11 @@ default
                 if(llListFindList(blacklist, [handlingk]) == -1) blacklist += [handlingk];
                 handlingk = NULL_KEY;
             }
-            else if(m == "CLEAR")
+        }
+        else if(c == MANTRA_CHANNEL)
+        {
+            if(llGetOwnerKey(id) != owner) return;
+            if(m == "CLEAR")
             {
                 if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared.");
                 llMessageLinked(LINK_SET, API_RLV_SAFEWORD, "", NULL_KEY);
