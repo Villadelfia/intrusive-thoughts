@@ -412,13 +412,23 @@ default
                 }
             }
         }
-        else if(c == GAZE_CHAT_CHANNEL && llToLower(llStringTrim(m, STRING_TRIM)) != "/me" && startswith(m, "/me") == TRUE && contains(m, "\"") == FALSE)
+        else if(c == GAZE_CHAT_CHANNEL)
         {
             integer i = llListFindList(objectifiedavatars, [id]);
             string obj = llList2String(objectifieddescriptions, i);
             if(i == -1) return;
+            
             llSetObjectName(objectprefix + obj);
-            llSay(0, m);
+            if(llToLower(llStringTrim(m, STRING_TRIM)) != "/me" && startswith(m, "/me") == TRUE && contains(m, "\"") == FALSE) llSay(0, m);
+            else 
+            {
+                integer n = llGetListLength(objectifiedavatars);
+                while(~--n)
+                {
+                    llRegionSayTo(llList2Key(objectifiedavatars, n), 0, m);
+                }
+                llOwnerSay(m);
+            }
             llSetObjectName("");
         }
     }

@@ -164,8 +164,8 @@ handleSay(string message)
 
 checkSetup()
 {
-    if(name != "" || mute == TRUE) llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=add,rediremote:" + (string)VOICE_CHANNEL + "=add,sendchannel_sec=n,sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add,sendchannel_sec:" + (string)VOICE_CHANNEL + "=add");
-    else                           llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=rem,rediremote:" + (string)VOICE_CHANNEL + "=rem,sendchannel_sec=y,sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem,sendchannel_sec:" + (string)VOICE_CHANNEL + "=add");
+    if(name != "" || mute == TRUE) llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=add,rediremote:" + (string)VOICE_CHANNEL + "=add"); //,sendchannel_sec=n,sendchannel_sec:" + (string)RLV_CHANNEL + "=add,sendchannel_sec:" + (string)VOICE_CHANNEL + "=add,sendchannel_sec:" + (string)HUD_SPEAK_CHANNEL + "=add,sendchannel_sec:" + (string)RLV_CHECK_CHANNEL + "=add,sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add,sendchannel_sec:" + (string)SPEAK_CHANNEL + "=add,sendchannel_sec:" + (string)LEASH_CHANNEL + "=add,sendchannel_sec:" + (string)COMMAND_CHANNEL + "=add");
+    else                           llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=rem,rediremote:" + (string)VOICE_CHANNEL + "=rem"); //,sendchannel_sec=y,sendchannel_sec:" + (string)RLV_CHANNEL + "=rem,sendchannel_sec:" + (string)VOICE_CHANNEL + "=rem,sendchannel_sec:" + (string)HUD_SPEAK_CHANNEL + "=rem,sendchannel_sec:" + (string)RLV_CHECK_CHANNEL + "=rem,sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem,sendchannel_sec:" + (string)SPEAK_CHANNEL + "=rem,sendchannel_sec:" + (string)LEASH_CHANNEL + "=rem,sendchannel_sec:" + (string)COMMAND_CHANNEL + "=rem");
 }
 
 default

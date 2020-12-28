@@ -162,7 +162,7 @@ default
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(RLV_CHANNEL, "", llGetOwner(), "");
         llListen(1, "", owner, "");
-        llListen(1, "", llGetOwner(), "");
+        if(owner != llGetOwner()) llListen(1, "", llGetOwner(), "");
         llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);
     }
 

@@ -1,3 +1,4 @@
+#include <IT/globals.lsl>
 float hoverheight = 0.0;
 
 setheight()
@@ -19,6 +20,19 @@ default
     attach(key id)
     {
         if(id) setheight();
+    }
+
+    state_entry()
+    {
+        llListen(BALL_CHANNEL, "", NULL_KEY, "");
+    }
+
+    listen(integer channel, string name, key id, string message)
+    {
+        string oldn = llGetObjectName();
+        llSetObjectName("Your Thoughts");
+        llOwnerSay(message);
+        llSetObjectName(oldn);
     }
 
     touch_start(integer total_number)

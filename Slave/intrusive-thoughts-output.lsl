@@ -119,6 +119,7 @@ handleSay(string name, string message, integer excludeSelf)
                 if(speakon != 0 && blindmute == FALSE) llOwnerSay(message);
             }
             bytes = 0;
+            if(blindmute == TRUE || excludeSelf == TRUE || speakon != 0) llRegionSay(HOME_HUD_CHANNEL, message);
         }
         else
         {
@@ -146,6 +147,7 @@ handleSay(string name, string message, integer excludeSelf)
                 if(speakon != 0 && blindmute == TRUE) llRegionSayTo(llGetOwner(), 0, llGetSubString(message, 0, offset));
                 if(speakon != 0 && blindmute == FALSE) llOwnerSay(llGetSubString(message, 0, offset));
             }
+            if(blindmute == TRUE || excludeSelf == TRUE || speakon != 0) llRegionSay(HOME_HUD_CHANNEL, llGetSubString(message, 0, offset));
             message = llDeleteSubString(message, 0, offset);
             bytes = getstringbytes(message);
         }

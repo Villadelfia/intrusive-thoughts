@@ -5,12 +5,14 @@
 #define VOICE_CHANNEL     166845631
 #define HUD_SPEAK_CHANNEL 166845632
 #define RLV_CHECK_CHANNEL 166845633
-#define GAZE_CHANNEL              1
 #define GAZE_CHAT_CHANNEL 166845634
-#define COMMAND_CHANNEL           1
 #define SPEAK_CHANNEL     166845635
 #define LEASH_CHANNEL     166845636
+#define HOME_HUD_CHANNEL  166845637
 #define RLVRC           -1812221819
+#define COMMAND_CHANNEL           1
+#define GAZE_CHANNEL              1
+#define BALL_CHANNEL              8
 #define API_RESET                -1
 #define API_SELF_DESC            -2
 #define API_SELF_SAY             -3
@@ -33,8 +35,8 @@
 #define API_RLV_HANDLE_CMD      -20
 #define API_RLV_SAFEWORD        -21
 #define API_CLOSEST_OBJ         -22
-string VERSION_S = "IT-Slave v1.3";
-string VERSION_C = "IT-Cntrl v1.3";
+string VERSION_S = "IT-Slave v1.4";
+string VERSION_C = "IT-Cntrl v1.4";
 
 integer startswith(string haystack, string needle)
 {

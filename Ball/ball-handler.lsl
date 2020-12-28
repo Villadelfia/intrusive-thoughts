@@ -51,6 +51,7 @@ default
     state_entry()
     {
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+        llListen(BALL_CHANNEL, "", NULL_KEY, "");
         llSitTarget(<0.0, 0.0, 0.001>, ZERO_ROTATION);
     }
 
@@ -88,7 +89,7 @@ default
     run_time_permissions(integer perm)
     {
         llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "onball " + (string)llGetKey());
-        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames_sec:" + (string)llGetOwnerKey(rezzer) + "=n|@shownametags=n|@shownearby=n|@showhovertextall=n|@showworldmap=n|@showminimap=n|@showloc=n|@setcam_focus:" + (string)rezzer + ";;1/0/0=force|@setcam_origindistmax:10=n|@buy=n|@pay=n|@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@showinv=n|@interact=n|@showself=n|@sendgesture=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add|@sendchannel_sec=n|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add");
+        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames_sec:" + (string)llGetOwnerKey(rezzer) + "=n|@shownametags=n|@shownearby=n|@showhovertextall=n|@showworldmap=n|@showminimap=n|@showloc=n|@setcam_focus:" + (string)rezzer + ";;1/0/0=force|@setcam_origindistmax:10=n|@buy=n|@pay=n|@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@showinv=n|@interact=n|@showself=n|@sendgesture=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add|@sendchannel_sec=n|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add|@recvim:10=n|@sendim:10=n");
         llStartAnimation(animation);
         llSetTimerEvent(0.5);
     }
@@ -102,10 +103,25 @@ default
     {
         if(c == GAZE_CHAT_CHANNEL)
         {
-            if(keyisavatar == TRUE || llToLower(llStringTrim(m, STRING_TRIM)) == "/me" || startswith(m, "/me") == FALSE || contains(m, "\"") == TRUE) return;
+            if(keyisavatar == TRUE) return;
             string oldn = llGetObjectName();
             llSetObjectName(name);
-            llSay(0, m);
+            if(llToLower(llStringTrim(m, STRING_TRIM)) == "/me" || startswith(m, "/me") == FALSE || contains(m, "\"") == TRUE)
+            {
+                llRegionSayTo(llAvatarOnSitTarget(), 0, m);
+            }
+            else
+            {
+                llSay(0, m);
+            }
+            llSetObjectName(oldn);
+        }
+        else if(c == BALL_CHANNEL)
+        {
+            if(keyisavatar == FALSE || llGetOwnerKey(id) != rezzer) return;
+            string oldn = llGetObjectName();
+            llSetObjectName("Wearer's Thoughts");
+            llRegionSayTo(llAvatarOnSitTarget(), 0, m);
             llSetObjectName(oldn);
         }
         else if(c == MANTRA_CHANNEL)
