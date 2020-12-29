@@ -160,25 +160,21 @@ default
             else                                              return;
             if(llToLower(m) == "leash")
             {   
-                if(leashedto) unleash();
-                else
+                if(leashpoint != NULL_KEY)
                 {
-                    if(leashpoint != NULL_KEY)
+                    if(llList2Vector(llGetObjectDetails(leashpoint, [OBJECT_POS]), 0) == ZERO_VECTOR)
                     {
-                        if(llList2Vector(llGetObjectDetails(leashpoint, [OBJECT_POS]), 0) == ZERO_VECTOR)
-                        {
-                            leashpoint = NULL_KEY;
-                            leash(owner);
-                        }
-                        else
-                        {
-                            leash(leashpoint);
-                        }
+                        leashpoint = NULL_KEY;
+                        leash(owner);
                     }
                     else
                     {
-                        leash(owner);
+                        leash(leashpoint);
                     }
+                }
+                else
+                {
+                    leash(owner);
                 }
             }
             else if(llToLower(m) == "unleash")
@@ -251,7 +247,7 @@ default
         }
     }
 
-    timer() 
+    timer()
     {
         vector leashedtopos = llList2Vector(llGetObjectDetails(leashedto, [OBJECT_POS]), 0);
         integer isinsim = TRUE;

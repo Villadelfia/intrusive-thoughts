@@ -93,3 +93,63 @@ integer random(integer min, integer max)
 {
     return min + (integer)(llFrand(max - min + 1));
 }
+
+string attachpointtotext(integer p)
+{
+    if(p == ATTACH_HEAD)                  return "Skull";
+    else if(p == ATTACH_NOSE)             return "Nose";
+    else if(p == ATTACH_MOUTH)            return "Nose";
+    else if(p == ATTACH_FACE_TONGUE)      return "Tongue";
+    else if(p == ATTACH_CHIN)             return "Chin";
+    else if(p == ATTACH_FACE_JAW)         return "Jaw";
+    else if(p == ATTACH_LEAR)             return "Left Ear";
+    else if(p == ATTACH_REAR)             return "Right Ear";
+    else if(p == ATTACH_FACE_LEAR)        return "Alt Left Ear";
+    else if(p == ATTACH_FACE_REAR)        return "Alt Right Ear";
+    else if(p == ATTACH_LEYE)             return "Left Eye";
+    else if(p == ATTACH_REYE)             return "Right Eye";
+    else if(p == ATTACH_FACE_LEYE)        return "Alt Left Eye";
+    else if(p == ATTACH_FACE_REYE)        return "Alt Right Eye";
+    else if(p == ATTACH_NECK)             return "Neck";
+    else if(p == ATTACH_LSHOULDER)        return "Left Shoulder";
+    else if(p == ATTACH_RSHOULDER)        return "Right Shoulder";
+    else if(p == ATTACH_LUARM)            return "L Upper Arm";
+    else if(p == ATTACH_RUARM)            return "R Upper Arm";
+    else if(p == ATTACH_LLARM)            return "L Lower Arm";
+    else if(p == ATTACH_RLARM)            return "R Lower Arm";
+    else if(p == ATTACH_LHAND)            return "Left Hand";
+    else if(p == ATTACH_RHAND)            return "Right Hand";
+    else if(p == ATTACH_LHAND_RING1)      return "Left Ring Finger";
+    else if(p == ATTACH_RHAND_RING1)      return "Right Ring Finger";
+    else if(p == ATTACH_LWING)            return "Left Wing";
+    else if(p == ATTACH_RWING)            return "Right Wing";
+    else if(p == ATTACH_CHEST)            return "Chest";
+    else if(p == ATTACH_LEFT_PEC)         return "Left Pec";
+    else if(p == ATTACH_RIGHT_PEC)        return "Right Pec";
+    else if(p == ATTACH_BELLY)            return "Stomach";
+    else if(p == ATTACH_BACK)             return "Spine";
+    else if(p == ATTACH_TAIL_BASE)        return "Tail Base";
+    else if(p == ATTACH_TAIL_TIP)         return "Tail Tip";
+    else if(p == ATTACH_AVATAR_CENTER)    return "Avatar Center";
+    else if(p == ATTACH_PELVIS)           return "Pelvis";
+    else if(p == ATTACH_GROIN)            return "Groin";
+    else if(p == ATTACH_LHIP)             return "Left Hip";
+    else if(p == ATTACH_RHIP)             return "Right Hip";
+    else if(p == ATTACH_LULEG)            return "L Upper Leg";
+    else if(p == ATTACH_RULEG)            return "R Upper Leg";
+    else if(p == ATTACH_RLLEG)            return "R Lower Leg";
+    else if(p == ATTACH_LLLEG)            return "L Lower Leg";
+    else if(p == ATTACH_LFOOT)            return "Left Foot";
+    else if(p == ATTACH_RFOOT)            return "Right Foot";
+    else if(p == ATTACH_HIND_LFOOT)       return "Left Hind Foot";
+    else if(p == ATTACH_HIND_RFOOT)       return "Right Hind Foot";
+    else if(p == ATTACH_HUD_CENTER_2)     return "HUD Center 2";
+    else if(p == ATTACH_HUD_TOP_RIGHT)    return "HUD Top Right";
+    else if(p == ATTACH_HUD_TOP_CENTER)   return "HUD Top";
+    else if(p == ATTACH_HUD_TOP_LEFT)     return "HUD Top Left";
+    else if(p == ATTACH_HUD_CENTER_1)     return "HUD Center";
+    else if(p == ATTACH_HUD_BOTTOM_LEFT)  return "HUD Bottom Left";
+    else if(p == ATTACH_HUD_BOTTOM)       return "HUD Bottom";
+    else if(p == ATTACH_HUD_BOTTOM_RIGHT) return "HUD Bottom Right";
+    else                                  return "Unknown";
+}

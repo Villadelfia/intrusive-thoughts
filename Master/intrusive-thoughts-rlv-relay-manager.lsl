@@ -7,7 +7,7 @@ key handlingk = NULL_KEY;
 string handlingm;
 integer handlingi;
 integer templisten = -1;
-integer tempchannel;
+integer tempchannel = DEBUG_CHANNEL;
 
 makelisten(key who)
 {
@@ -68,6 +68,7 @@ default
 
     listen(integer c, string n, key id, string m)
     {
+        llOwnerSay((string)c + " - " + m);
         if(c == RLVRC)
         {
             if(rlvclients == []) return;
@@ -130,7 +131,7 @@ default
                 }
             }
         }
-        else if(c == tempchannel)
+        else if(c == tempchannel && templisten != -1)
         {
             if(handlingk == NULL_KEY) return;
             if(llGetOwnerKey(id) != llGetOwner()) return;

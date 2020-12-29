@@ -22,6 +22,10 @@ default
         {
             llOwnerSay("@clear");
         }
+        else
+        {
+            llRegionSayTo(id, MANTRA_CHANNEL, "CHECKPOS " + (string)llGetAttached());
+        }
     }
 
     on_rez(integer start)
@@ -46,6 +50,34 @@ default
 
     listen(integer c, string n, key k, string m)
     {
+        if(startswith(m, "CHECKPOS") == TRUE && llGetOwnerKey(k) == llGetOwner())
+        {
+            integer attachedto = (integer)llDeleteSubString(m, 0, llStringLength("CHECKPOS"));
+            if(attachedto == llGetAttached())
+            {
+                llRegionSayTo(k, MANTRA_CHANNEL, "POSMATCH " + (string)llGetLocalPos());
+                llOwnerSay("Detected new IT Slave on this attachment point. Moving it in place and detaching myself.");
+                llOwnerSay("@clear,detachme=force");
+            }
+            else
+            {
+                llOwnerSay("Detected new IT Slave on another attachment point. Detaching it.");
+                llRegionSayTo(k, MANTRA_CHANNEL, "POSNOMATCH " + (string)llGetAttached());
+            }
+        }
+        else if(startswith(m, "POSMATCH") == TRUE && llGetOwnerKey(k) == llGetOwner())
+        {
+            vector newpos = (vector)llDeleteSubString(m, 0, llStringLength("POSMATCH"));
+            llOwnerSay("Moving myself into the position of your old IT slave.");
+            llSetPos(newpos);
+        }
+        else if(startswith(m, "POSNOMATCH") == TRUE && llGetOwnerKey(k) == llGetOwner())
+        {
+            integer attachedto = (integer)llDeleteSubString(m, 0, llStringLength("POSNOMATCH"));
+            llOwnerSay("You already have another IT slave attached, but it is attached to " + attachpointtotext(attachedto) + ". Please attach me to that point instead. Detaching now.");
+            llOwnerSay("@clear,detachme=force");
+        }
+
         if(k != owner && llGetOwnerKey(k) != owner) return;
         if(m == "RESET")
         {

@@ -80,7 +80,7 @@ handleClick(key k)
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "listoutfit - List all outfits.]");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "liststuff - List all stuff.]");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing]/[secondlife:///app/chat/1/" + prefix + "itlock lock.]");
+        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing]/[secondlife:///app/chat/1/" + prefix + "lock lock].");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- /1" + prefix + "say <message>: Say a message.");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- /1" + prefix + "think <message>: Think a message.");
@@ -422,7 +422,7 @@ default
             m = llDeleteSubString(m, 0, llStringLength("tpto"));
             llOwnerSay("@tploc=y,unsit=y,tpto:" + m + "=force");
         }
-        else if(llToLower(m) == "lock" || llToLower(m) == "itlock")
+        else if(llToLower(m) == "lock")
         {
             if(locked)
             {
@@ -440,6 +440,10 @@ default
                 llSetScale(<0.4, 0.4, 0.4>);
                 llOwnerSay("@detach=n");
             }
+        }
+        else if(llToLower(m) == "stand" || llToLower(m) == "unsit")
+        {
+            llOwnerSay("@unsit=force");
         }
         else if(startswith(m, "@"))
         {
