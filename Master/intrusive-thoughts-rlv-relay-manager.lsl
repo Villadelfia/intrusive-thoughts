@@ -68,7 +68,6 @@ default
 
     listen(integer c, string n, key id, string m)
     {
-        llOwnerSay((string)c + " - " + m);
         if(c == RLVRC)
         {
             if(rlvclients == []) return;
