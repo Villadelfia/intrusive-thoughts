@@ -53,6 +53,21 @@ default
                 llSetObjectName("");
                 llOwnerSay(VERSION_C + ": Set put down phrase to '" + (string)id + "'");
             }
+            else if(str == "food")
+            {
+                llSetObjectName("");
+                llOwnerSay(VERSION_C + ": Set food name to '" + (string)id + "'");
+            }
+            else if(str == "vore")
+            {
+                llSetObjectName("");
+                llOwnerSay(VERSION_C + ": Set vore phrase to '" + (string)id + "'");
+            }
+            else if(str == "unvore")
+            {
+                llSetObjectName("");
+                llOwnerSay(VERSION_C + ": Set unvore phrase to '" + (string)id + "'");
+            }
             else if(str == "ball" && ((string)id == "1" || (string)id == "2")) 
             {
                 if((integer)((string)id) == 1)

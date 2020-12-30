@@ -33,11 +33,13 @@ key lastrezzed;
 
 detachobject(string o)
 {
-    llOwnerSay("@detachall:~IT/" + llToLower(o) + "=force");
+    if(o == "") return;
+    llOwnerSay("@detach:~IT/" + llToLower(o) + "=force");
 }
 
 attachobject(string o)
 {
+    if(o == "") return;
     llOwnerSay("@attachover:~IT/" + llToLower(o) + "=force");
 }
 
@@ -91,7 +93,7 @@ givemenu()
         llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/releaseall Release everyone]");
     }
     llOwnerSay(" ");
-    llMessageLinked(LINK_SET, API_GIVE_TP_MENU, "", NULL_KEY);
+    llMessageLinked(LINK_SET, API_GIVE_VORE_MENU, "", NULL_KEY);
 }
 
 release(integer i)
@@ -403,7 +405,7 @@ default
                             spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
                             llSay(0, spoof);
                             attachobject(targetdescription);
-                            lockedavatar = NULL_KEY;
+                            llMessageLinked(LINK_SET, API_SET_LOCK, "", NULL_KEY);
                         }
                         else llOwnerSay("Could not capture '" + lockedname + "'.");
                     }
@@ -454,7 +456,7 @@ default
             if(responses == []) intp = FALSE;
             llMessageLinked(LINK_SET, API_TPOK, "", NULL_KEY);
         }
-        else if(await == "recapture")
+        else if(await == "r")
         {
             llOwnerSay("Done recapturing.");
             integer l = llGetListLength(objectifiedavatars)-1;
@@ -481,12 +483,11 @@ default
         {
             if(lockedavatar == NULL_KEY && lastseenavatar != NULL_KEY)
             {
-                lockedavatar = lastseenavatar;
-                lockedname = lastseenavatarname;
+                llMessageLinked(LINK_SET, API_SET_LOCK, lastseenavatarname, lastseenavatar);
             }
             else if(lockedavatar != NULL_KEY)
             {
-                lockedavatar = NULL_KEY;
+                llMessageLinked(LINK_SET, API_SET_LOCK, "", NULL_KEY);
             }
         }
         else if(name == "sit")
@@ -508,6 +509,7 @@ default
 
     object_rez(key id)
     {
+        if(llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0) != "ball") return;
         lastrezzed = id;
         llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 10.0);
         llSetObjectName("RLV Capture");
@@ -587,13 +589,18 @@ default
             lastseenobject = id;
             lastseenobjectname = str;
         }
+        else if(num == API_SET_LOCK)
+        {
+            lockedavatar = id;
+            lockedname = str;
+        }
     }
 
     timer()
     {
         llSetTimerEvent(0.0);
 
-        if(lockedavatar != NULL_KEY && llGetAgentSize(lockedavatar) == ZERO_VECTOR) lockedavatar = NULL_KEY;
+        if(lockedavatar != NULL_KEY && llGetAgentSize(lockedavatar) == ZERO_VECTOR) llMessageLinked(LINK_SET, API_SET_LOCK, "", NULL_KEY);
 
         if(!intp)
         {

@@ -53,6 +53,7 @@ default
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(BALL_CHANNEL, "", NULL_KEY, "");
         llSitTarget(<0.0, 0.0, 0.001>, ZERO_ROTATION);
+        rezzer = llGetOwner();
     }
 
     on_rez(integer start_param)
