@@ -1,5 +1,6 @@
 #include <IT/globals.lsl>
 float fillfactor = 0.25;
+integer volumelink = 1;
 
 float finterp(float x, float y, float t) 
 {
@@ -10,12 +11,13 @@ calculateFill()
 {
     if(fillfactor < 0.0) fillfactor = 0.0;
     if(fillfactor > 1.0) fillfactor = 1.0;
-    vector rootsize = llList2Vector(llGetLinkPrimitiveParams(0, [PRIM_SIZE]), 0);
+    vector volumesize = llList2Vector(llGetLinkPrimitiveParams(volumelink, [PRIM_SIZE]), 0);
+    vector volumepos = llList2Vector(llGetLinkPrimitiveParams(volumelink, [PRIM_POS_LOCAL]), 0);
     vector thissize = llList2Vector(llGetLinkPrimitiveParams(LINK_THIS, [PRIM_SIZE]), 0);
-    float min = -(rootsize.z/2.0);
-    float max = 0.0;
+    float max = volumepos.z;
+    float min = max-(volumesize.z/2.0);
     float zvalue = finterp(min, max, fillfactor);
-    float zsize = finterp(max, rootsize.z, fillfactor);
+    float zsize = finterp(0, volumesize.z, fillfactor);
     vector mylocalpos = llGetLocalPos();
     vector localpos = <mylocalpos.x, mylocalpos.y, zvalue>;
     thissize.z = zsize;
@@ -32,6 +34,15 @@ default
         llSetTextureAnim(ANIM_ON | SMOOTH | LOOP, 2, 1, 1, 1.0, 0, 0.2);
         llSetTextureAnim(ANIM_ON | SMOOTH | LOOP, 3, 1, 1, 1.0, 0, 0.2);
         llSetTextureAnim(ANIM_ON | SMOOTH | LOOP, 4, 1, 1, 1.0, 0, 0.1);
+        integer i = llGetNumberOfPrims();
+        for (; i >= 0; --i)
+        {
+            if (llGetLinkName(i) == "volume")
+            {
+                volumelink = i;
+                llOwnerSay("Volume link found at link number " + (string)i + ".");
+            }
+        }
         llLoopSound("38510ac5-5338-ec76-1a6c-c2115538aa8d", 0.5);
         calculateFill();
     }

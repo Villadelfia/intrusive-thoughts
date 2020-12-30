@@ -38,8 +38,8 @@
 #define API_FILL_FACTOR         -23
 #define API_GIVE_VORE_MENU      -24
 #define API_SET_LOCK            -25
-string VERSION_S = "IT-Slave v1.5";
-string VERSION_C = "IT-Cntrl v1.5";
+string VERSION_S = "IT-Slave v1.6";
+string VERSION_C = "IT-Cntrl v1.6";
 
 integer startswith(string haystack, string needle)
 {

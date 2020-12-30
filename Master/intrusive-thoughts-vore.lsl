@@ -15,6 +15,7 @@ key target;
 string targetname;
 integer intp = FALSE;
 string await;
+integer fillfactor = 25;
 
 detachbelly()
 {
@@ -83,7 +84,7 @@ vore()
     llOwnerSay("Eating '" + lockedname + "'.");
     target = lockedavatar;
     targetname = lockedname;
-    llRezAtRoot("carrier", llGetPos() - <0.0, 0.0, 8.0>, ZERO_VECTOR, ZERO_ROTATION, 1);
+    llRezAtRoot("carrier", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, 1);
 }
 
 handletp()
@@ -118,7 +119,7 @@ handletp()
         }
         target = vorevictim;
         targetname = vorename;
-        llRezAtRoot("carrier", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, 1);
+        llRezAtRoot("carrier", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, 1);
     }
 }
 
@@ -242,6 +243,26 @@ default
         }
     }
 
+    touch_start(integer total_number)
+    {
+        if(vorecarrier == NULL_KEY) return;
+        string name = llGetLinkName(llDetectedLinkNumber(0));
+        if(name == "acid+")
+        {
+            fillfactor += 5;
+            if(fillfactor > 100) fillfactor = 100;
+            llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
+            llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
+        }
+        else if(name == "acid-")
+        {
+            fillfactor -= 5;
+            if(fillfactor < 0) fillfactor = 0;
+            llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
+            llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
+        }
+    }
+
     no_sensor()
     {
         llSensorRemove();
@@ -261,11 +282,14 @@ default
         llSetObjectName("RLV Capture");
         if(intp)
         {
+            llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
+            llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
             await = "rv";
             llRegionSayTo(target, RLVRC, "rv," + (string)target + ",@sit:" + (string)id + "=force");
         }
         else
         {
+            fillfactor = 25;
             await = "cv";
             llRegionSayTo(target, RLVRC, "cv," + (string)target + ",@sit:" + (string)id + "=force");
             vorename = targetname;
@@ -317,6 +341,7 @@ default
 
     timer()
     {
+        if(vorecarrier == NULL_KEY) return;
         llSetTimerEvent(0.0);
 
         if(!intp)
