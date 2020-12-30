@@ -366,7 +366,7 @@ default
                     {
                         llSensorRemove();
                         if(responses == []) intp = FALSE;
-                        llMessageLinked(LINK_SET, API_TPOK, "", NULL_KEY);
+                        llMessageLinked(LINK_SET, API_TPOK_G, "", NULL_KEY);
                     }
                 }
                 else if(await == "r")
@@ -454,7 +454,7 @@ default
             }
             await = "";
             if(responses == []) intp = FALSE;
-            llMessageLinked(LINK_SET, API_TPOK, "", NULL_KEY);
+            llMessageLinked(LINK_SET, API_TPOK_G, "", NULL_KEY);
         }
         else if(await == "r")
         {
@@ -548,7 +548,7 @@ default
         }
         else if(num == API_DOTP)
         {
-            if(objectifiedavatars == [] || (string)id == llGetRegionName()) llMessageLinked(LINK_SET, API_TPOK, "", NULL_KEY);
+            if(objectifiedavatars == [] || (string)id == llGetRegionName()) llMessageLinked(LINK_SET, API_TPOK_G, "", NULL_KEY);
             else
             {
                 intp = TRUE;

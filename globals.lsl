@@ -23,7 +23,7 @@
 #define API_MUTE_TOGGLE          -8
 #define API_FOCUS_TOGGLE         -9
 #define API_DOTP                -10
-#define API_TPOK                -11
+#define API_TPOK_G              -11
 #define API_DISABLE             -12
 #define API_ENABLE              -13
 #define API_STARTUP_DONE        -14
@@ -38,6 +38,7 @@
 #define API_FILL_FACTOR         -23
 #define API_GIVE_VORE_MENU      -24
 #define API_SET_LOCK            -25
+#define API_TPOK_V              -26
 string VERSION_S = "IT-Slave v1.6";
 string VERSION_C = "IT-Cntrl v1.6";
 

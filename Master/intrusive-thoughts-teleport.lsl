@@ -6,11 +6,15 @@ integer configured = FALSE;
 vector targetsimcorner;
 vector targetsimlocal;
 key ds;
+integer vok = FALSE;
+integer gok = FALSE;
 
 dotp(string region, string x, string y, string z)
 {
     llOwnerSay("Teleporting you and your slaves to: " + slurlp(region, x, y, z));
     llRegionSay(MANTRA_CHANNEL, "tpto " + region + "/" + x + "/" + y  + "/" + z);
+    gok = FALSE;
+    vok = FALSE;
     llMessageLinked(LINK_SET, API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", (key)region);
     tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
 }
@@ -18,6 +22,8 @@ dotp(string region, string x, string y, string z)
 tpme(string region, string x, string y, string z)
 {
     llOwnerSay("Teleporting you to: " + slurlp(region, x, y, z));
+    gok = FALSE;
+    vok = FALSE;
     llMessageLinked(LINK_SET, API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", (key)region);
     tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
 }
@@ -66,14 +72,23 @@ default
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_TPOK) llOwnerSay(tptarget);
-        if(num == API_STARTUP_DONE) 
+        if(num == API_TPOK_G) 
+        {
+            gok = TRUE;
+            if(gok == TRUE && vok == TRUE) llOwnerSay(tptarget);
+        }
+        else if(num == API_TPOK_V) 
+        {
+            vok = TRUE;
+            if(gok == TRUE && vok == TRUE) llOwnerSay(tptarget);
+        }
+        else if(num == API_STARTUP_DONE) 
         {
             llListen(1, "", llGetOwner(), "");
             configured = TRUE;
             llOwnerSay("[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
-        if(num == API_CONFIG_DATA && str == "tp")
+        else if(num == API_CONFIG_DATA && str == "tp")
         {
             if(configured)
             {
@@ -84,7 +99,7 @@ default
             llSetObjectName("");
             llOwnerSay(VERSION_C + ": Loaded teleport location " + llList2String(locations, -5));
         }
-        if(num == API_GIVE_TP_MENU) givemenu();
+        else if(num == API_GIVE_TP_MENU) givemenu();
     }
 
     listen(integer c, string n, key id, string m)

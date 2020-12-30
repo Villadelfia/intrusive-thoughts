@@ -192,7 +192,7 @@ default
                         intp = FALSE;
                     }
                     llSensorRemove();
-                    llMessageLinked(LINK_SET, API_TPOK, "", NULL_KEY);
+                    llMessageLinked(LINK_SET, API_TPOK_V, "", NULL_KEY);
                 }
                 else if(await == "rv")
                 {
@@ -270,7 +270,7 @@ default
         vorevictim = NULL_KEY;
         vorename = "";
         intp = FALSE;
-        if(await == "tpv") llMessageLinked(LINK_SET, API_TPOK, "", NULL_KEY);
+        if(await == "tpv") llMessageLinked(LINK_SET, API_TPOK_V, "", NULL_KEY);
         await = "";
     }
 
@@ -311,7 +311,7 @@ default
         }
         else if(num == API_DOTP)
         {
-            if(vorecarrier == NULL_KEY || (string)id == llGetRegionName()) llMessageLinked(LINK_SET, API_TPOK, "", NULL_KEY);
+            if(vorecarrier == NULL_KEY || (string)id == llGetRegionName()) llMessageLinked(LINK_SET, API_TPOK_V, "", NULL_KEY);
             else
             {
                 intp = TRUE;
