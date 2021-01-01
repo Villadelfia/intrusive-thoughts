@@ -109,6 +109,16 @@ integer settext(integer line, string text)
     return TRUE;
 }
 
+integer validatedisplayname(string name)
+{
+    integer l = llStringLength(name);
+    while(~--l)
+    {
+        if(!contains(fontmap, llGetSubString(name, l, l))) return FALSE;
+    }
+    return TRUE;
+}
+
 sethide()
 {
     if(ishidden) llSetLocalRot(<0.0, 0.0, -0.70711, 0.70711>);
@@ -208,20 +218,27 @@ default
     {
         if(num == M_API_CAM_AVATAR)
         {
-            seenavatarname = llGetUsername(id);
-            string outname = "";
-            list names = llParseString2List(seenavatarname, ["."], []);
-            integer i = 0;
-            integer l = llGetListLength(names);
-            while(i < l)
+            if(validatedisplayname(str))
             {
-                string word = llList2String(names, i);
-                word = llToUpper(llGetSubString(word, 0, 0)) + llGetSubString(word, 1, -1);
-                if(llToLower(word) != "resident") outname += word;
-                if(i != l-1) outname += " ";
-                ++i;
+                seenavatarname = str;
             }
-            seenavatarname = outname;
+            else
+            {
+                seenavatarname = llGetUsername(id);
+                string outname = "";
+                list names = llParseString2List(seenavatarname, ["."], []);
+                integer i = 0;
+                integer l = llGetListLength(names);
+                while(i < l)
+                {
+                    string word = llList2String(names, i);
+                    word = llToUpper(llGetSubString(word, 0, 0)) + llGetSubString(word, 1, -1);
+                    if(llToLower(word) != "resident") outname += word;
+                    if(i != l-1) outname += " ";
+                    ++i;
+                }
+                seenavatarname = outname;
+            }
             seenavatarkey = id;
             if(isstatus || islocked) return;
             settext(0, seenavatarname);
@@ -250,21 +267,27 @@ default
         }
         else if(num == M_API_LOCK)
         {
-            lockedavatarname = llGetUsername(id);
-            string outname = "";
-            list names = llParseString2List(lockedavatarname, ["."], []);
-            integer i = 0;
-            integer l = llGetListLength(names);
-            while(i < l)
+            if(validatedisplayname(str))
             {
-                string word = llList2String(names, i);
-                word = llToUpper(llGetSubString(word, 0, 0)) + llGetSubString(word, 1, -1);
-                if(llToLower(word) != "resident") outname += word;
-                if(i != l-1) outname += " ";
-                ++i;
+                lockedavatarname = str;
             }
-            lockedavatarname = outname;
-            lockedavatarkey = id;
+            else
+            {
+                lockedavatarname = llGetUsername(id);
+                string outname = "";
+                list names = llParseString2List(lockedavatarname, ["."], []);
+                integer i = 0;
+                integer l = llGetListLength(names);
+                while(i < l)
+                {
+                    string word = llList2String(names, i);
+                    word = llToUpper(llGetSubString(word, 0, 0)) + llGetSubString(word, 1, -1);
+                    if(llToLower(word) != "resident") outname += word;
+                    if(i != l-1) outname += " ";
+                    ++i;
+                }
+                lockedavatarname = outname;
+            }
             if(str == "")
             {
                 islocked = FALSE;
