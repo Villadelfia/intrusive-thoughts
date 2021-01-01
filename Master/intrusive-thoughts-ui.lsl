@@ -262,6 +262,7 @@ default
         }
         else if(num == M_API_LOCK)
         {
+            lockedavatarkey = id;
             if(validatedisplayname(str))
             {
                 lockedavatarname = str;
