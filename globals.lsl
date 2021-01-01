@@ -13,34 +13,44 @@
 #define COMMAND_CHANNEL           1
 #define GAZE_CHANNEL              1
 #define BALL_CHANNEL              8
-#define API_RESET                -1
-#define API_SELF_DESC            -2
-#define API_SELF_SAY             -3
-#define API_SAY                  -4
-#define API_ONLY_OTHERS_SAY      -5
-#define API_BLIND_TOGGLE         -6
-#define API_DEAF_TOGGLE          -7
-#define API_MUTE_TOGGLE          -8
-#define API_FOCUS_TOGGLE         -9
+
+#define S_API_RESET             -1000
+#define S_API_SELF_DESC         -1001
+#define S_API_SELF_SAY          -1002
+#define S_API_SAY               -1003
+#define S_API_ONLY_OTHERS_SAY   -1004
+#define S_API_BLIND_TOGGLE      -1005
+#define S_API_DEAF_TOGGLE       -1006
+#define S_API_MUTE_TOGGLE       -1007
+#define S_API_FOCUS_TOGGLE      -1008
+#define S_API_DISABLE           -1009
+#define S_API_ENABLE            -1010
+
+#define M_API_HUD_STARTED       -2000
+#define M_API_CONFIG_DATA       -2001
+#define M_API_CAM_AVATAR        -2002
+#define M_API_CAM_OBJECT        -2003
+#define M_API_LOCK              -2004
+#define M_API_BUTTON_PRESSED    -2005
+
+#define RLV_API_SET_SRC         -3000
+#define RLV_API_CLR_SRC         -3001
+#define RLV_API_HANDLE_CMD      -3002
+#define RLV_API_SAFEWORD        -3003
+
+/*#define API_HUD_READY            -1
 #define API_DOTP                -10
 #define API_TPOK_G              -11
-#define API_DISABLE             -12
-#define API_ENABLE              -13
 #define API_STARTUP_DONE        -14
 #define API_CONFIG_DATA         -15
 #define API_GIVE_TP_MENU        -16
 #define API_CLOSEST_TO_CAM      -17
-#define API_RLV_SET_SRC         -18
-#define API_RLV_CLR_SRC         -19
-#define API_RLV_HANDLE_CMD      -20
-#define API_RLV_SAFEWORD        -21
 #define API_CLOSEST_OBJ         -22
 #define API_FILL_FACTOR         -23
 #define API_GIVE_VORE_MENU      -24
-#define API_SET_LOCK            -25
-#define API_TPOK_V              -26
-string VERSION_S = "IT-Slave v1.6";
-string VERSION_C = "IT-Cntrl v1.6";
+#define API_TPOK_V              -26*/
+string VERSION_S = "IT-Slave v2.0";
+string VERSION_C = "IT-Cntrl v2.0";
 
 integer startswith(string haystack, string needle)
 {

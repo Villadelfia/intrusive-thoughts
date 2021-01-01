@@ -28,7 +28,7 @@ handleHear(key skey, string sender, string message)
                 if(contains(llToLower(message), llList2String(unmutecmd, l1)))
                 {
                     mute = FALSE;
-                    llMessageLinked(LINK_SET, API_SELF_DESC, unmutemsg, NULL_KEY);
+                    llMessageLinked(LINK_SET, S_API_SELF_DESC, unmutemsg, NULL_KEY);
                     llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can speak again.");
                 }
             }
@@ -44,7 +44,7 @@ handleHear(key skey, string sender, string message)
                 if(contains(llToLower(message), llList2String(mutecmd, l1)))
                 {
                     mute = TRUE;
-                    llMessageLinked(LINK_SET, API_SELF_DESC, mutemsg, NULL_KEY);
+                    llMessageLinked(LINK_SET, S_API_SELF_DESC, mutemsg, NULL_KEY);
                     llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer speak.");
                 }
             }
@@ -101,29 +101,29 @@ handleSay(string message)
     integer bypass = emote == TRUE && llToLower(llStringTrim(message, STRING_TRIM)) != "/me" && contains(message, "\"") == FALSE;
     if(mute == FALSE || bypass == TRUE) 
     {
-        llMessageLinked(LINK_SET, API_SAY, message, (key)name);
+        llMessageLinked(LINK_SET, S_API_SAY, message, (key)name);
     }
     else
     {
         if(mutetype == "DROP" || mutecensor == [])
         {
-            llMessageLinked(LINK_SET, API_SELF_SAY, message, (key)name);
+            llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
         }
         else if(mutetype == "REPLACE")
         {
             if(blindmute)
             {
-                llMessageLinked(LINK_SET, API_SELF_SAY, message, (key)name);
-                llMessageLinked(LINK_SET, API_ONLY_OTHERS_SAY, llList2String(mutecensor, llFloor(llFrand(llGetListLength(mutecensor)))), (key)name);
+                llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
+                llMessageLinked(LINK_SET, S_API_ONLY_OTHERS_SAY, llList2String(mutecensor, llFloor(llFrand(llGetListLength(mutecensor)))), (key)name);
             }
             else
             {
-                llMessageLinked(LINK_SET, API_SAY, llList2String(mutecensor, llFloor(llFrand(llGetListLength(mutecensor)))), (key)name);
+                llMessageLinked(LINK_SET, S_API_SAY, llList2String(mutecensor, llFloor(llFrand(llGetListLength(mutecensor)))), (key)name);
             }
         }
         else
         {
-            if(blindmute) llMessageLinked(LINK_SET, API_SELF_SAY, message, (key)name);
+            if(blindmute) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
             messagecopy = message;
             message = "";
             while(llStringLength(messagecopy) > 0)
@@ -156,8 +156,8 @@ handleSay(string message)
                 }
                 messagecopy = llDeleteSubString(messagecopy, 0, llStringLength(oldword));
             }
-            if(blindmute) llMessageLinked(LINK_SET, API_ONLY_OTHERS_SAY, message, (key)name);
-            else          llMessageLinked(LINK_SET, API_SAY, message, (key)name);
+            if(blindmute) llMessageLinked(LINK_SET, S_API_ONLY_OTHERS_SAY, message, (key)name);
+            else          llMessageLinked(LINK_SET, S_API_SAY, message, (key)name);
         }
     }
 }
@@ -172,13 +172,13 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_RESET && id == llGetOwner()) llResetScript();
-        if(num == API_MUTE_TOGGLE)
+        if(num == S_API_RESET && id == llGetOwner()) llResetScript();
+        if(num == S_API_MUTE_TOGGLE)
         {
             if(mute)
             {
                 mute = FALSE;
-                llMessageLinked(LINK_SET, API_SELF_DESC, unmutemsg, NULL_KEY);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, unmutemsg, NULL_KEY);
                 if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can speak again.");
                 else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.");
                 checkSetup();
@@ -186,7 +186,7 @@ default
             else
             {
                 mute = TRUE;
-                llMessageLinked(LINK_SET, API_SELF_DESC, mutemsg, NULL_KEY);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, mutemsg, NULL_KEY);
                 if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer speak.");
                 else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.");
                 checkSetup();

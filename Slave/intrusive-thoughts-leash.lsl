@@ -94,7 +94,7 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_RESET && id == llGetOwner()) llResetScript();
+        if(num == S_API_RESET && id == llGetOwner()) llResetScript();
     }
 
     changed(integer change)

@@ -89,7 +89,7 @@ default
             if(inlist != -1)
             {
                 // If we know the device, we just pass the message through.
-                llMessageLinked(LINK_SET, API_RLV_HANDLE_CMD, m, (key)((string)inlist));
+                llMessageLinked(LINK_SET, RLV_API_HANDLE_CMD, m, (key)((string)inlist));
             }
             else
             {
@@ -104,8 +104,8 @@ default
                 if(llGetOwnerKey(id) == owner || llGetOwnerKey(id) == llGetOwner() || llListFindList(whitelist, [id]) != -1)
                 {
                     rlvclients = llListReplaceList(rlvclients, [id], available, available);
-                    llMessageLinked(LINK_SET, API_RLV_SET_SRC, (string)available, id);
-                    llMessageLinked(LINK_SET, API_RLV_HANDLE_CMD, m, (key)((string)available));
+                    llMessageLinked(LINK_SET, RLV_API_SET_SRC, (string)available, id);
+                    llMessageLinked(LINK_SET, RLV_API_HANDLE_CMD, m, (key)((string)available));
                 }
                 else
                 {
@@ -141,8 +141,8 @@ default
                 if(llListFindList(whitelist, [handlingk]) == -1) whitelist += [handlingk];
                 if(llGetListLength(whitelist) > 10) whitelist = llDeleteSubList(whitelist, 1, -1);
                 rlvclients = llListReplaceList(rlvclients, [handlingk], handlingi, handlingi);
-                llMessageLinked(LINK_SET, API_RLV_SET_SRC, (string)handlingi, handlingk);
-                llMessageLinked(LINK_SET, API_RLV_HANDLE_CMD, handlingm, (key)((string)handlingi));
+                llMessageLinked(LINK_SET, RLV_API_SET_SRC, (string)handlingi, handlingk);
+                llMessageLinked(LINK_SET, RLV_API_HANDLE_CMD, handlingm, (key)((string)handlingi));
                 handlingk = NULL_KEY;
             }
             else if(m == "DENY")
@@ -165,12 +165,12 @@ default
             if(m == "CLEAR")
             {
                 if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared.");
-                llMessageLinked(LINK_SET, API_RLV_SAFEWORD, "", NULL_KEY);
+                llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
             }
             else if(m == "FORCECLEAR")    
             {
                 if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared and detached.");
-                llMessageLinked(LINK_SET, API_RLV_SAFEWORD, "", NULL_KEY);
+                llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 llOwnerSay("@clear,detachme=force");
             }
             else if(m == "RESETRELAY")    
@@ -184,7 +184,7 @@ default
             if(contains(llToLower(m), "((red))"))
             {
                 llOwnerSay("You've safeworded. You're free from all RLV devices that grabbed you.");
-                llMessageLinked(LINK_SET, API_RLV_SAFEWORD, "", NULL_KEY);
+                llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 string oldn = llGetObjectName();
                 llSetObjectName("");
                 if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay has been safeworded by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
@@ -198,7 +198,7 @@ default
             else if(contains(llToLower(m), "((forcered))"))
             {
                 llOwnerSay("You've used the hard safeword. Freeing you and detaching.");
-                llMessageLinked(LINK_SET, API_RLV_SAFEWORD, "", NULL_KEY);
+                llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 string oldn = llGetObjectName();
                 llSetObjectName("");
                 if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " been detached by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + " because of safeword.");
@@ -220,7 +220,7 @@ default
 
     link_message(integer sender_num, integer num, string str, key k)
     {
-        if(num == API_RLV_CLR_SRC) rlvclients = llListReplaceList(rlvclients, [(key)NULL_KEY], (integer)str, (integer)str);
+        if(num == RLV_API_CLR_SRC) rlvclients = llListReplaceList(rlvclients, [(key)NULL_KEY], (integer)str, (integer)str);
     }
 
     timer()

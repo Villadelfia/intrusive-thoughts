@@ -20,7 +20,7 @@ doSetup()
     playing = "";
     if(noim)
     {
-        llMessageLinked(LINK_SET, API_SAY, "/me can not IM with people within 20 meters of them.", (key)name);
+        llMessageLinked(LINK_SET, S_API_SAY, "/me can not IM with people within 20 meters of them.", (key)name);
         llOwnerSay("@recvim:20=n,sendim:20=n,sendim:" + (string)owner + "=add,recvim:" + (string)owner + "=add");
     }
     else
@@ -92,7 +92,7 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_RESET && id == llGetOwner()) llResetScript();
+        if(num == S_API_RESET && id == llGetOwner()) llResetScript();
     }
 
     changed(integer change)
@@ -293,13 +293,13 @@ default
         {
             if(noim)
             {
-                llMessageLinked(LINK_SET, API_SAY, "/me can IM with people within 20 meters of them again.", (key)name);
+                llMessageLinked(LINK_SET, S_API_SAY, "/me can IM with people within 20 meters of them again.", (key)name);
                 llOwnerSay("@recvim:20=y,sendim:20=y,sendim:" + (string)owner + "=rem,recvim:" + (string)owner + "=rem");
                 noim = FALSE;
             }
             else
             {
-                llMessageLinked(LINK_SET, API_SAY, "/me can no longer IM with people within 20 meters of them.", (key)name);
+                llMessageLinked(LINK_SET, S_API_SAY, "/me can no longer IM with people within 20 meters of them.", (key)name);
                 llOwnerSay("@recvim:20=n,sendim:20=n,sendim:" + (string)owner + "=add,recvim:" + (string)owner + "=add");
                 noim = TRUE;
             }
@@ -367,24 +367,24 @@ default
         else if(startswith(m, "think"))
         {
             m = llDeleteSubString(m, 0, llStringLength("think"));
-            llMessageLinked(LINK_SET, API_SELF_DESC, m, NULL_KEY);
+            llMessageLinked(LINK_SET, S_API_SELF_DESC, m, NULL_KEY);
         }
         else if(startswith(m, "say"))
         {
             m = llDeleteSubString(m, 0, llStringLength("say"));
-            llMessageLinked(LINK_SET, API_SAY, m, (key)name);
+            llMessageLinked(LINK_SET, S_API_SAY, m, (key)name);
         }
         else if(llToLower(m) == "deafen" || llToLower(m) == "deaf")
         {
-            llMessageLinked(LINK_SET, API_DEAF_TOGGLE, "", NULL_KEY);
+            llMessageLinked(LINK_SET, S_API_DEAF_TOGGLE, "", NULL_KEY);
         }
         else if(llToLower(m) == "blind")
         {
-            llMessageLinked(LINK_SET, API_BLIND_TOGGLE, "", NULL_KEY);
+            llMessageLinked(LINK_SET, S_API_BLIND_TOGGLE, "", NULL_KEY);
         }
         else if(llToLower(m) == "mute")
         {
-            llMessageLinked(LINK_SET, API_MUTE_TOGGLE, "", NULL_KEY);
+            llMessageLinked(LINK_SET, S_API_MUTE_TOGGLE, "", NULL_KEY);
         }
         else if(llToLower(m) == "daze")
         {
@@ -403,11 +403,11 @@ default
         }
         else if(llToLower(m) == "focus")
         {
-            llMessageLinked(LINK_SET, API_FOCUS_TOGGLE, "", NULL_KEY);
+            llMessageLinked(LINK_SET, S_API_FOCUS_TOGGLE, "", NULL_KEY);
         }
         else if(startswith(llToLower(m), "onball"))
         {
-            llMessageLinked(LINK_SET, API_DISABLE, "", NULL_KEY);
+            llMessageLinked(LINK_SET, S_API_DISABLE, "", NULL_KEY);
             onball = TRUE;
             ball = (key)llDeleteSubString(m, 0, llStringLength("onball"));
             llSetTimerEvent(5.0);
@@ -415,7 +415,7 @@ default
         else if(startswith(llToLower(m), "tpto"))
         {
             if(onball == TRUE && llList2Key(llGetObjectDetails(llGetOwner(), [OBJECT_ROOT]), 0) == ball) return;
-            llMessageLinked(LINK_SET, API_ENABLE, "", NULL_KEY);
+            llMessageLinked(LINK_SET, S_API_ENABLE, "", NULL_KEY);
             onball = FALSE;
             ball = NULL_KEY;
             llSetTimerEvent(0.0);
@@ -459,7 +459,7 @@ default
         key obj = llList2Key(llGetObjectDetails(llGetOwner(), [OBJECT_ROOT]), 0);
         if(obj != ball)
         {
-            llMessageLinked(LINK_SET, API_ENABLE, "", NULL_KEY);
+            llMessageLinked(LINK_SET, S_API_ENABLE, "", NULL_KEY);
             onball = FALSE;
             ball = NULL_KEY;
             llSetTimerEvent(0.0);

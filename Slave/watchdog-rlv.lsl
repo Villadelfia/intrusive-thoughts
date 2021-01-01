@@ -29,7 +29,7 @@ default
                         llSetScriptState(watchee, TRUE);
                         llInstantMessage((key)llGetObjectDesc(), "The script [" + watchee + "] owned by secondlife:///app/agent/" + (string)llGetOwner() + "/about has crashed and has been restarted. You will need to reconfigure the device in their vicinity.");
                         llDialog(llGetOwner(), "The script [" + watchee + "] has crashed and has been restarted. Your device has been reset and your owner will need to reconfigure or replace it.", ["OK"], -996543782);
-                        llMessageLinked(LINK_SET, API_RESET, "", llGetOwner());
+                        llMessageLinked(LINK_SET, S_API_RESET, "", llGetOwner());
                     }
                 }
             }

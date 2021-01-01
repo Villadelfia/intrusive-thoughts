@@ -20,7 +20,7 @@ release()
         llRegionSayTo(id, RLVRC, "release,"+(string)id+",!release,ok");
         llOwnerSay("RLV Device " + (string)(rlvid + 1) + ": Released restrictions from " + objectname + ".");
     }
-    llMessageLinked(LINK_SET, API_RLV_CLR_SRC, (string)rlvid, NULL_KEY);
+    llMessageLinked(LINK_SET, RLV_API_CLR_SRC, (string)rlvid, NULL_KEY);
     restrictions = [];
     id = NULL_KEY;
 }
@@ -120,17 +120,17 @@ default
 
     link_message(integer sender_num, integer num, string str, key k)
     {
-        if(num == API_RLV_HANDLE_CMD && (string)k == (string)rlvid && id != NULL_KEY)  
+        if(num == RLV_API_HANDLE_CMD && (string)k == (string)rlvid && id != NULL_KEY)  
         {
             handlerlvrc(str);
         }
-        else if(num == API_RLV_SET_SRC && str == (string)rlvid)                        
+        else if(num == RLV_API_SET_SRC && str == (string)rlvid)                        
         {
             if(id != NULL_KEY) release();
             id = k;
             objectname = llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0);
         }
-        else if(num == API_RLV_SAFEWORD)                                               
+        else if(num == RLV_API_SAFEWORD)                                               
         {
             release();
         }

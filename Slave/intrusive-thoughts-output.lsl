@@ -215,17 +215,17 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_RESET && id == llGetOwner())                    llResetScript();
-        else if(num == API_SELF_DESC && str != "")                    handleSelfDescribe(str);
-        else if(num == API_FOCUS_TOGGLE)                              focusToggle();
-        else if(num == API_ENABLE)                                    disabled = FALSE;
-        else if(num == API_DISABLE)                                   disabled = TRUE;
-        else if(num == API_SELF_SAY && str != "")                     handleSelfSay((string)id, str);
+        if(num == S_API_RESET && id == llGetOwner())                    llResetScript();
+        else if(num == S_API_SELF_DESC && str != "")                    handleSelfDescribe(str);
+        else if(num == S_API_FOCUS_TOGGLE)                              focusToggle();
+        else if(num == S_API_ENABLE)                                    disabled = FALSE;
+        else if(num == S_API_DISABLE)                                   disabled = TRUE;
+        else if(num == S_API_SELF_SAY && str != "")                     handleSelfSay((string)id, str);
         
         if(disabled) return;
 
-        if(num == API_SAY && str != "")                               handleSay((string)id, prefixfilter(str), FALSE);
-        else if(num == API_ONLY_OTHERS_SAY && str != "")              handleSay((string)id, prefixfilter(str), TRUE);
+        if(num == S_API_SAY && str != "")                               handleSay((string)id, prefixfilter(str), FALSE);
+        else if(num == S_API_ONLY_OTHERS_SAY && str != "")              handleSay((string)id, prefixfilter(str), TRUE);
     }
 
     changed(integer change)

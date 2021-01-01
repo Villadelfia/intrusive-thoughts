@@ -8,7 +8,7 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_RESET && id == llGetOwner()) llResetScript();
+        if(num == S_API_RESET && id == llGetOwner()) llResetScript();
     }
 
     changed(integer change)
@@ -118,6 +118,6 @@ default
             return;
         }
         if(statements == []) return;
-        llMessageLinked(LINK_SET, API_SELF_DESC, llList2String(statements, llFloor(llFrand(llGetListLength(statements)))), NULL_KEY);
+        llMessageLinked(LINK_SET, S_API_SELF_DESC, llList2String(statements, llFloor(llFrand(llGetListLength(statements)))), NULL_KEY);
     }
 }

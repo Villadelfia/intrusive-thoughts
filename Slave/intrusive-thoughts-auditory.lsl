@@ -44,7 +44,7 @@ handleHear(key skey, string sender, string message)
                 if(contains(llToLower(message), llList2String(undeafencmd, l1)))
                 {
                     deaf = FALSE;
-                    llMessageLinked(LINK_SET, API_SELF_DESC, undeafenmsg, NULL_KEY);
+                    llMessageLinked(LINK_SET, S_API_SELF_DESC, undeafenmsg, NULL_KEY);
                     llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can hear the conversation again.");
                     jump cont1;
                 }
@@ -57,7 +57,7 @@ handleHear(key skey, string sender, string message)
         {
             if(contains(llToLower(message), llList2String(deafenexcept, l1)))
             {
-                llMessageLinked(LINK_SET, API_SELF_DESC, undeafenmsg, NULL_KEY);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, undeafenmsg, NULL_KEY);
                 llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " heard that message because of exceptions.");
                 jump cont1;
             }
@@ -227,8 +227,8 @@ handleHear(key skey, string sender, string message)
     }
 
     message = prefix + message;
-    llMessageLinked(LINK_SET, API_SELF_SAY, message, "");
-    if(deaf) llMessageLinked(LINK_SET, API_SELF_DESC, deafenmsg, NULL_KEY);
+    llMessageLinked(LINK_SET, S_API_SELF_SAY, message, "");
+    if(deaf) llMessageLinked(LINK_SET, S_API_SELF_DESC, deafenmsg, NULL_KEY);
 }
 
 checkSetup()
@@ -254,13 +254,13 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_RESET && id == llGetOwner()) llResetScript();
-        if(num == API_DEAF_TOGGLE)
+        if(num == S_API_RESET && id == llGetOwner()) llResetScript();
+        if(num == S_API_DEAF_TOGGLE)
         {
             if(deaf)
             {
                 deaf = FALSE;
-                llMessageLinked(LINK_SET, API_SELF_DESC, undeafenmsg, NULL_KEY);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, undeafenmsg, NULL_KEY);
                 if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can hear the conversation again.");
                 else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can hear the conversation again.");
                 checkSetup();
@@ -268,7 +268,7 @@ default
             else
             {
                 deaf = TRUE;
-                llMessageLinked(LINK_SET, API_SELF_DESC, deafenmsg, NULL_KEY);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, deafenmsg, NULL_KEY);
                 if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer hear the conversation.");
                 else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer hear the conversation.");
                 checkSetup();

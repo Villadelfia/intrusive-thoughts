@@ -21,7 +21,7 @@ handleHear(key skey, string sender, string message)
                 if(contains(llToLower(message), llList2String(unblindcmd, l1)))
                 {
                     blind = FALSE;
-                    llMessageLinked(LINK_SET, API_SELF_DESC, unblindmsg, NULL_KEY);
+                    llMessageLinked(LINK_SET, S_API_SELF_DESC, unblindmsg, NULL_KEY);
                     llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can see again.");
                     checkSetup();
                 }
@@ -38,7 +38,7 @@ handleHear(key skey, string sender, string message)
                 if(contains(llToLower(message), llList2String(blindcmd, l1)))
                 {
                     blind = TRUE;
-                    llMessageLinked(LINK_SET, API_SELF_DESC, blindmsg, NULL_KEY);
+                    llMessageLinked(LINK_SET, S_API_SELF_DESC, blindmsg, NULL_KEY);
                     llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer see.");
                     checkSetup();
                 }
@@ -57,13 +57,13 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_RESET && id == llGetOwner()) llResetScript();
-        if(num == API_BLIND_TOGGLE)
+        if(num == S_API_RESET && id == llGetOwner()) llResetScript();
+        if(num == S_API_BLIND_TOGGLE)
         {
             if(blind)
             {
                 blind = FALSE;
-                llMessageLinked(LINK_SET, API_SELF_DESC, unblindmsg, NULL_KEY);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, unblindmsg, NULL_KEY);
                 if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can see again.");
                 else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can see again.");
                 checkSetup();
@@ -71,7 +71,7 @@ default
             else
             {
                 blind = TRUE;
-                llMessageLinked(LINK_SET, API_SELF_DESC, blindmsg, NULL_KEY);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, blindmsg, NULL_KEY);
                 if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer see.");
                 else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer see.");
                 checkSetup();

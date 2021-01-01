@@ -4,14 +4,9 @@ key closestobject;
 
 default
 {
-    state_entry()
-    {
-        llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA);
-    }
-
     attach(key id)
     {
-        if(id) llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA);
+        llSetTimerEvent(0.0);
     }
 
     run_time_permissions(integer perm)
@@ -21,53 +16,17 @@ default
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_CONFIG_DATA)
+        if(num == M_API_CONFIG_DATA)
         {
-            if(str == "name")
-            {
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set spoof name prefix to " + (string)id);
-            }
-            else if(str == "objectprefix")
-            {
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set spoof object prefix to " + (string)id);
-            }
-            else if(str == "capture")
-            {
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set capture phrase to '" + (string)id + "'");
-            }
-            else if(str == "release")
-            {
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set release phrase to '" + (string)id + "'");
-            }
-            else if(str == "puton")
-            {
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set put on phrase to '" + (string)id + "'");
-            }
-            else if(str == "putdown")
-            {
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set put down phrase to '" + (string)id + "'");
-            }
-            else if(str == "food")
-            {
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set food name to '" + (string)id + "'");
-            }
-            else if(str == "vore")
-            {
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set vore phrase to '" + (string)id + "'");
-            }
-            else if(str == "unvore")
-            {
-                llSetObjectName("");
-                llOwnerSay(VERSION_C + ": Set unvore phrase to '" + (string)id + "'");
-            }
+            if(str == "name") llOwnerSay(VERSION_C + ": Set spoof name prefix to " + (string)id);
+            else if(str == "objectprefix") llOwnerSay(VERSION_C + ": Set spoof object prefix to " + (string)id);
+            else if(str == "capture") llOwnerSay(VERSION_C + ": Set capture phrase to '" + (string)id + "'");
+            else if(str == "release") llOwnerSay(VERSION_C + ": Set release phrase to '" + (string)id + "'");
+            else if(str == "puton") llOwnerSay(VERSION_C + ": Set put on phrase to '" + (string)id + "'");
+            else if(str == "putdown") llOwnerSay(VERSION_C + ": Set put down phrase to '" + (string)id + "'");
+            else if(str == "food") llOwnerSay(VERSION_C + ": Set food name to '" + (string)id + "'");
+            else if(str == "vore") llOwnerSay(VERSION_C + ": Set vore phrase to '" + (string)id + "'");
+            else if(str == "unvore") llOwnerSay(VERSION_C + ": Set unvore phrase to '" + (string)id + "'");
             else if(str == "ball" && ((string)id == "1" || (string)id == "2")) 
             {
                 if((integer)((string)id) == 1)
@@ -79,6 +38,10 @@ default
                     llOwnerSay(VERSION_C + ": Objectifiying something will make it invisible.");
                 }
             }
+        }
+        else if(num == M_API_HUD_STARTED)
+        {
+            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA);
         }
     }
 
@@ -125,7 +88,7 @@ default
             if(target != NULL_KEY)
             {
                 closestavatar = target;
-                llMessageLinked(LINK_SET, API_CLOSEST_TO_CAM, llGetDisplayName(closestavatar), closestavatar);
+                llMessageLinked(LINK_SET, M_API_CAM_AVATAR, llGetUsername(closestavatar), closestavatar);
             }
         }
         else
@@ -133,7 +96,7 @@ default
             if(newclosest != NULL_KEY)
             {
                 closestavatar = newclosest;
-                llMessageLinked(LINK_SET, API_CLOSEST_TO_CAM, llGetDisplayName(closestavatar), closestavatar);
+                llMessageLinked(LINK_SET, M_API_CAM_AVATAR, llGetUsername(closestavatar), closestavatar);
             }
         }
 
@@ -150,7 +113,7 @@ default
             list data = llGetObjectDetails(target, [OBJECT_NAME]);
             string name = llList2String(data, 0);
             closestobject = target;
-            llMessageLinked(LINK_SET, API_CLOSEST_OBJ, name, target);
+            llMessageLinked(LINK_SET, M_API_CAM_OBJECT, name, target);
         }
 
         llSetTimerEvent(0.5);
