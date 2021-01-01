@@ -577,10 +577,6 @@ default
                     objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
                 }
             }
-            llOwnerSay(llDumpList2String(objectifiedballs, ", "));
-            llOwnerSay(llDumpList2String(objectifiedavatars, ", "));
-            llOwnerSay(llDumpList2String(objectifiednames, ", "));
-            llOwnerSay(llDumpList2String(objectifieddescriptions, ", "));
             if(objectifiedballs != []) llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)TRUE));
             else                       llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)FALSE));
         }

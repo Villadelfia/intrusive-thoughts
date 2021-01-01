@@ -230,7 +230,7 @@ default
         {
             seenobjectname = str;
             seenobjectkey = id;
-            if(isstatus || islocked) return;
+            if(isstatus) return;
             settext(1, str);
         }
         else if(num == M_API_STATUS_MESSAGE)
