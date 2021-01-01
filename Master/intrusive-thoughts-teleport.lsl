@@ -7,38 +7,29 @@ vector targetsimcorner;
 vector targetsimlocal;
 key ds;
 integer vok = FALSE;
-integer gok = FALSE;
+integer ook = FALSE;
 
 dotp(string region, string x, string y, string z)
 {
     llOwnerSay("Teleporting you and your slaves to: " + slurlp(region, x, y, z));
     llRegionSay(MANTRA_CHANNEL, "tpto " + region + "/" + x + "/" + y  + "/" + z);
-    gok = FALSE;
+    ook = FALSE;
     vok = FALSE;
-    llMessageLinked(LINK_SET, API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", (key)region);
+    llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", (key)region);
     tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
 }
 
 tpme(string region, string x, string y, string z)
 {
     llOwnerSay("Teleporting you to: " + slurlp(region, x, y, z));
-    gok = FALSE;
+    ook = FALSE;
     vok = FALSE;
-    llMessageLinked(LINK_SET, API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", (key)region);
+    llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", (key)region);
     tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
 }
 
 givemenu()
 {
-    llOwnerSay("Leash options:");
-    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/leashto Leash locked avatar to last seen object]");
-    llOwnerSay(" ");
-    llOwnerSay("RLV options:");
-    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/clear Clear RLV relay for locked avatar]");
-    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/forceclear Clear and detach RLV relay for locked avatar]");
-    llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/resetrelay Reset the RLV relay for locked avatar]");
-    llOwnerSay("You can click the RLV button to clear your own relay");
-    llOwnerSay(" ");
     llOwnerSay("Teleportation options:");
     integer i;
     integer l = llGetListLength(locations);
@@ -56,13 +47,13 @@ givemenu()
 
 default
 {
+    state_entry()
+    {
+        llListen(COMMAND_CHANNEL, "", llGetOwner(), "");
+    }
+
     changed(integer change)
     {
-        if(change & CHANGED_OWNER)
-        {
-            llResetScript();
-        }
-
         if(change & CHANGED_INVENTORY)
         {
             if(llGetInventoryNumber(INVENTORY_LANDMARK) == 0) return;
@@ -72,23 +63,12 @@ default
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_TPOK_G) 
+        if(num == M_API_CONFIG_DONE) 
         {
-            gok = TRUE;
-            if(gok == TRUE && vok == TRUE) llOwnerSay(tptarget);
-        }
-        else if(num == API_TPOK_V) 
-        {
-            vok = TRUE;
-            if(gok == TRUE && vok == TRUE) llOwnerSay(tptarget);
-        }
-        else if(num == API_STARTUP_DONE) 
-        {
-            llListen(1, "", llGetOwner(), "");
             configured = TRUE;
             llOwnerSay("[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
-        else if(num == API_CONFIG_DATA && str == "tp")
+        else if(num == M_API_CONFIG_DATA && str == "tp")
         {
             if(configured)
             {
@@ -96,10 +76,22 @@ default
                 configured = FALSE;
             }
             locations += llParseString2List((string)id, [","], []);
-            llSetObjectName("");
             llOwnerSay(VERSION_C + ": Loaded teleport location " + llList2String(locations, -5));
         }
-        else if(num == API_GIVE_TP_MENU) givemenu();
+        if(num == M_API_TPOK_O) 
+        {
+            ook = TRUE;
+            if(ook == TRUE && vok == TRUE) llOwnerSay(tptarget);
+        }
+        else if(num == M_API_TPOK_V) 
+        {
+            vok = TRUE;
+            if(ook == TRUE && vok == TRUE) llOwnerSay(tptarget);
+        }
+        if(num == M_API_BUTTON_PRESSED)
+        {
+            if(str == "tp") givemenu();
+        }
     }
 
     listen(integer c, string n, key id, string m)

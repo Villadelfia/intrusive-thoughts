@@ -1,18 +1,18 @@
-#define MANTRA_CHANNEL   -216684563
-#define PING_CHANNEL     -216684564
-#define DIALOG_CHANNEL   -219755312
-#define RLV_CHANNEL       166845630
-#define VOICE_CHANNEL     166845631
-#define HUD_SPEAK_CHANNEL 166845632
-#define RLV_CHECK_CHANNEL 166845633
-#define GAZE_CHAT_CHANNEL 166845634
-#define SPEAK_CHANNEL     166845635
-#define LEASH_CHANNEL     166845636
-#define HOME_HUD_CHANNEL  166845637
-#define RLVRC           -1812221819
-#define COMMAND_CHANNEL           1
-#define GAZE_CHANNEL              1
-#define BALL_CHANNEL              8
+#define MANTRA_CHANNEL     -216684563
+#define PING_CHANNEL       -216684564
+#define S_DIALOG_CHANNEL   -219755312
+#define O_DIALOG_CHANNEL   -219755313
+#define RLV_CHANNEL         166845630
+#define VOICE_CHANNEL       166845631
+#define HUD_SPEAK_CHANNEL   166845632
+#define RLV_CHECK_CHANNEL   166845633
+#define GAZE_CHAT_CHANNEL   166845634
+#define SPEAK_CHANNEL       166845635
+#define LEASH_CHANNEL       166845636
+#define HOME_HUD_CHANNEL    166845637
+#define RLVRC             -1812221819
+#define COMMAND_CHANNEL             1
+#define BALL_CHANNEL                8
 
 #define S_API_RESET             -1000
 #define S_API_SELF_DESC         -1001
@@ -28,29 +28,42 @@
 
 #define M_API_HUD_STARTED       -2000
 #define M_API_CONFIG_DATA       -2001
-#define M_API_CAM_AVATAR        -2002
-#define M_API_CAM_OBJECT        -2003
-#define M_API_LOCK              -2004
-#define M_API_BUTTON_PRESSED    -2005
+#define M_API_CONFIG_DONE       -2002
+#define M_API_CAM_AVATAR        -2003
+#define M_API_CAM_OBJECT        -2004
+#define M_API_LOCK              -2005
+#define M_API_BUTTON_PRESSED    -2006
+#define M_API_SET_FILTER        -2007
+#define M_API_DOTP              -2008
+#define M_API_TPOK_O            -2009
+#define M_API_TPOK_V            -2010
+#define M_API_STATUS_MESSAGE    -2011
+#define M_API_STATUS_DONE       -2012
 
 #define RLV_API_SET_SRC         -3000
 #define RLV_API_CLR_SRC         -3001
 #define RLV_API_HANDLE_CMD      -3002
 #define RLV_API_SAFEWORD        -3003
 
-/*#define API_HUD_READY            -1
-#define API_DOTP                -10
-#define API_TPOK_G              -11
-#define API_STARTUP_DONE        -14
-#define API_CONFIG_DATA         -15
-#define API_GIVE_TP_MENU        -16
-#define API_CLOSEST_TO_CAM      -17
-#define API_CLOSEST_OBJ         -22
-#define API_FILL_FACTOR         -23
-#define API_GIVE_VORE_MENU      -24
-#define API_TPOK_V              -26*/
 string VERSION_S = "IT-Slave v2.0";
-string VERSION_C = "IT-Cntrl v2.0";
+string VERSION_C = "IT-Master v2.0";
+
+resetscripts()
+{
+    resetother();
+    llResetScript();
+}
+
+resetother()
+{
+    integer count = llGetInventoryNumber(INVENTORY_SCRIPT);
+    string item;
+    while(count--)
+    {
+        item = llGetInventoryName(INVENTORY_SCRIPT, count);
+        if(item != llGetScriptName()) llResetOtherScript(item);
+    }
+}
 
 integer startswith(string haystack, string needle)
 {

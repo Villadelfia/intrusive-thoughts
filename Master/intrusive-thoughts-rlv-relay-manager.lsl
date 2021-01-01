@@ -8,6 +8,7 @@ string handlingm;
 integer handlingi;
 integer templisten = -1;
 integer tempchannel = DEBUG_CHANNEL;
+integer enabled = FALSE;
 
 makelisten(key who)
 {
@@ -45,15 +46,15 @@ buildclients()
         change = TRUE;
     }
 
-    if(change && rlvclients != []) llOwnerSay("RLV relay online with up to " + (string)handlers + " devices supported.");
-    if(rlvclients == [])           llOwnerSay("RLV relay offline. Add client scripts to my inventory.");
+    llSetObjectName("");
+    if(change && rlvclients != []) llOwnerSay("RLV relay available with up to " + (string)handlers + " devices supported.");
+    if(rlvclients == [])           llOwnerSay("RLV relay unavailable. Add client scripts to my inventory.");
 }
 
 default
 {
     changed(integer change)
     {
-        if(change & CHANGED_OWNER) llResetScript();
         if(change & CHANGED_INVENTORY) buildclients();
     }
 
@@ -68,6 +69,7 @@ default
 
     listen(integer c, string n, key id, string m)
     {
+        if(!enabled) return;
         if(c == RLVRC)
         {
             if(rlvclients == []) return;
@@ -89,7 +91,7 @@ default
             if(inlist != -1)
             {
                 // If we know the device, we just pass the message through.
-                llMessageLinked(LINK_SET, API_RLV_HANDLE_CMD, m, (key)((string)inlist));
+                llMessageLinked(LINK_SET, RLV_API_HANDLE_CMD, m, (key)((string)inlist));
             }
             else
             {
@@ -104,8 +106,8 @@ default
                 if(llGetOwnerKey(id) == owner || llListFindList(whitelist, [id]) != -1)
                 {
                     rlvclients = llListReplaceList(rlvclients, [id], available, available);
-                    llMessageLinked(LINK_SET, API_RLV_SET_SRC, (string)available, id);
-                    llMessageLinked(LINK_SET, API_RLV_HANDLE_CMD, m, (key)((string)available));
+                    llMessageLinked(LINK_SET, RLV_API_SET_SRC, (string)available, id);
+                    llMessageLinked(LINK_SET, RLV_API_HANDLE_CMD, m, (key)((string)available));
                 }
                 else
                 {
@@ -140,8 +142,8 @@ default
                 if(llListFindList(whitelist, [handlingk]) == -1) whitelist += [handlingk];
                 if(llGetListLength(whitelist) > 10) whitelist = llDeleteSubList(whitelist, 1, -1);
                 rlvclients = llListReplaceList(rlvclients, [handlingk], handlingi, handlingi);
-                llMessageLinked(LINK_SET, API_RLV_SET_SRC, (string)handlingi, handlingk);
-                llMessageLinked(LINK_SET, API_RLV_HANDLE_CMD, handlingm, (key)((string)handlingi));
+                llMessageLinked(LINK_SET, RLV_API_SET_SRC, (string)handlingi, handlingk);
+                llMessageLinked(LINK_SET, RLV_API_HANDLE_CMD, handlingm, (key)((string)handlingi));
                 handlingk = NULL_KEY;
             }
             else if(m == "DENY")
@@ -163,12 +165,12 @@ default
             if(contains(llToLower(m), "((red))"))
             {
                 llOwnerSay("You've safeworded. You're free from all RLV devices that grabbed you.");
-                llMessageLinked(LINK_SET, API_RLV_SAFEWORD, "", NULL_KEY);
+                llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
             }
             else if(contains(llToLower(m), "((forcered))"))
             {
                 llOwnerSay("You've used the hard safeword. Freeing you and detaching.");
-                llMessageLinked(LINK_SET, API_RLV_SAFEWORD, "", NULL_KEY);
+                llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 llOwnerSay("@clear,detachme=force");
             }
             else if(contains(llToLower(m), "((blocklist))"))
@@ -181,7 +183,23 @@ default
 
     link_message(integer sender_num, integer num, string str, key k)
     {
-        if(num == API_RLV_CLR_SRC) rlvclients = llListReplaceList(rlvclients, [(key)NULL_KEY], (integer)str, (integer)str);
+        if(num == RLV_API_CLR_SRC) rlvclients = llListReplaceList(rlvclients, [(key)NULL_KEY], (integer)str, (integer)str);
+        else if(num == M_API_BUTTON_PRESSED)
+        {
+            if(str == "relay")
+            {
+                enabled = !enabled;
+                if(enabled)
+                {
+                    llOwnerSay("Your RLV relay has been enabled.");
+                }
+                else
+                {
+                    llOwnerSay("Your RLV relay has been disabled. In addition, you have been freed from all RLV devices that may have had ongoing restrictions on you.");
+                    llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
+                }
+            }
+        }
     }
 
     timer()
@@ -189,15 +207,5 @@ default
         llSetTimerEvent(0.0);
         handlingk = NULL_KEY;
         clearlisten();
-    }
-
-    touch_start(integer total_number)
-    {
-        string name = llGetLinkName(llDetectedLinkNumber(0));
-        if(name == "relay")
-        {
-            llOwnerSay("You've safeworded. You're free from all RLV devices that grabbed you.");
-            llMessageLinked(LINK_SET, API_RLV_SAFEWORD, "", NULL_KEY);
-        }
     }
 }

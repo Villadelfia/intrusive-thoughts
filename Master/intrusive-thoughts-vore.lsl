@@ -1,6 +1,5 @@
 #include <IT/globals.lsl>
 
-integer ready = FALSE;
 string owner = "";
 string objectprefix = "";
 string foodname = "food";
@@ -38,15 +37,6 @@ integer canrez(vector pos)
     return(flags & PARCEL_FLAG_ALLOW_CREATE_GROUP_OBJECTS) && llSameGroup(llList2Key(details, 1));
 }
 
-givemenu()
-{
-    llOwnerSay("Vore options:");
-    if(vorecarrier == NULL_KEY) llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/vore Eat the locked avatar]");
-    if(vorecarrier) llOwnerSay("[secondlife:///app/chat/" + (string)GAZE_CHANNEL + "/unvore Release the eaten avatar]");
-    llOwnerSay(" ");
-    llMessageLinked(LINK_SET, API_GIVE_TP_MENU, "", NULL_KEY);
-}
-
 unvore()
 {
     if(vorecarrier == NULL_KEY) return;
@@ -66,7 +56,6 @@ unvore()
 vore()
 {
     if(lockedavatar == llGetOwner()) return;
-    if(lockedavatar == NULL_KEY) return;
     
     if(!canrez(llGetPos()))
     {
@@ -127,51 +116,26 @@ default
 {
     changed(integer change)
     {
-        if(change & CHANGED_OWNER) llResetScript();
         if(change & CHANGED_TELEPORT)
         {
             if(intp) handletp();
         }
     }
 
-    attach(key id)
-    {
-        if(id != NULL_KEY)
-        {
-            lockedavatar = NULL_KEY;
-            lockedname = "";
-            vorecarrier = NULL_KEY;
-            vorevictim = NULL_KEY;
-            vorename = "";
-            target;
-            intp = FALSE;
-            llSetTimerEvent(0.5);
-        }
-        else               
-        {
-            llSetTimerEvent(0.0);
-        }
-    }
-
     state_entry()
     {
-        llSetTimerEvent(0.5);
+        llListen(RLVRC, "", NULL_KEY, "");
+        llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
+    }
+
+    attach(key id)
+    {
+        if(id == NULL_KEY) llSetTimerEvent(0.0);
     }
 
     listen(integer c, string n, key id, string m)
     {
-        if(c == GAZE_CHANNEL)
-        {
-            if(m == "vore")
-            {
-                vore();
-            }
-            else if(m == "unvore")
-            {
-                unvore();
-            }
-        }
-        else if(c == RLVRC)
+        if(c == RLVRC)
         {
             list params = llParseString2List(m, [","], []);
             if(llGetListLength(params) != 4) return;
@@ -192,7 +156,7 @@ default
                         intp = FALSE;
                     }
                     llSensorRemove();
-                    llMessageLinked(LINK_SET, API_TPOK_V, "", NULL_KEY);
+                    llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
                 }
                 else if(await == "rv")
                 {
@@ -225,7 +189,7 @@ default
                             spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
                             llSay(0, spoof);
                             attachbelly();
-                            llMessageLinked(LINK_SET, API_SET_LOCK, "", NULL_KEY);
+                            llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
                         }
                         else llOwnerSay("Could not eat '" + lockedname + "'.");
                     }
@@ -243,26 +207,6 @@ default
         }
     }
 
-    touch_start(integer total_number)
-    {
-        if(vorecarrier == NULL_KEY) return;
-        string name = llGetLinkName(llDetectedLinkNumber(0));
-        if(name == "acid+")
-        {
-            fillfactor += 5;
-            if(fillfactor > 100) fillfactor = 100;
-            llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
-            llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
-        }
-        else if(name == "acid-")
-        {
-            fillfactor -= 5;
-            if(fillfactor < 0) fillfactor = 0;
-            llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
-            llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
-        }
-    }
-
     no_sensor()
     {
         llSensorRemove();
@@ -270,7 +214,8 @@ default
         vorevictim = NULL_KEY;
         vorename = "";
         intp = FALSE;
-        if(await == "tpv") llMessageLinked(LINK_SET, API_TPOK_V, "", NULL_KEY);
+        llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)FALSE));
+        if(await == "tpv") llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
         await = "";
     }
 
@@ -300,18 +245,25 @@ default
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == API_STARTUP_DONE) 
+        if(num == M_API_HUD_STARTED)
         {
-            llListen(GAZE_CHANNEL, "", llGetOwner(), "");
-            llListen(RLVRC, "", NULL_KEY, "");
-            llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
             llSetTimerEvent(0.5);
-            ready = TRUE;
+        }
+        if(num == M_API_CONFIG_DONE) 
+        {
             llOwnerSay("[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
-        else if(num == API_DOTP)
+        else if(num == M_API_CONFIG_DATA)
         {
-            if(vorecarrier == NULL_KEY || (string)id == llGetRegionName()) llMessageLinked(LINK_SET, API_TPOK_V, "", NULL_KEY);
+            if(str == "name") owner = (string)id;
+            else if(str == "objectprefix") objectprefix = (string)id + " ";
+            else if(str == "food") foodname = (string)id;
+            else if(str == "vore") vorespoof = (string)id;
+            else if(str == "unvore") unvorespoof = (string)id;
+        }
+        else if(num == M_API_DOTP)
+        {
+            if(vorecarrier == NULL_KEY || (string)id == llGetRegionName()) llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
             else
             {
                 intp = TRUE;
@@ -323,27 +275,41 @@ default
                 llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 10.0);
             }
         }
-        else if(num == API_CONFIG_DATA)
-        {
-            if(str == "name") owner = (string)id;
-            else if(str == "objectprefix") objectprefix = (string)id + " ";
-            else if(str == "food") foodname = (string)id;
-            else if(str == "vore") vorespoof = (string)id;
-            else if(str == "unvore") unvorespoof = (string)id;
-        }
-        else if(num == API_SET_LOCK)
+        else if(num == M_API_LOCK)
         {
             lockedavatar = id;
             lockedname = str;
         }
-        else if(num == API_GIVE_VORE_MENU) givemenu();
+        else if(num == M_API_BUTTON_PRESSED)
+        {
+            if(str == "vore")
+            {
+                vore();
+            }
+            else if(str == "unvore")
+            {
+                unvore();
+            }
+            else if(str == "acid+")
+            {
+                fillfactor += 5;
+                if(fillfactor > 100) fillfactor = 100;
+                llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
+                llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
+            }
+            else if(str == "acid-")
+            {
+                fillfactor -= 5;
+                if(fillfactor < 0) fillfactor = 0;
+                llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
+                llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
+            }
+        }
     }
 
     timer()
     {
-        if(vorecarrier == NULL_KEY) return;
         llSetTimerEvent(0.0);
-
         if(!intp)
         {
             list req = llGetObjectDetails(vorecarrier, [OBJECT_CREATOR]);
@@ -354,8 +320,9 @@ default
                 vorevictim = NULL_KEY;
                 vorename = NULL_KEY;
             }
+            if(vorecarrier != NULL_KEY) llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)TRUE));
+            else                        llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)FALSE));
         }
-
-        llSetTimerEvent(0.5);
+        llSetTimerEvent(5.0);
     }
 }

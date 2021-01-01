@@ -13,8 +13,22 @@ list textfieldtexts = [];
 
 integer islocked = FALSE;
 integer ishidden = FALSE;
+integer isstatus = FALSE;
+
+string lockedavatarname = "";
+key lockedavatarkey = NULL_KEY;
 string seenavatarname = "";
 key seenavatarkey = NULL_KEY;
+string seenobjectname = "";
+key seenobjectkey = NULL_KEY;
+
+float hoverheight = 0.0;
+
+setheight()
+{
+    llOwnerSay("Hover height set to " + (string)hoverheight + ".");
+    llOwnerSay("@adjustheight:" + (string)hoverheight + "=force");
+}
 
 setindicator(string name, integer active)
 {
@@ -97,7 +111,6 @@ integer settext(integer line, string text)
 
 sethide()
 {
-
     if(ishidden) llSetLocalRot(<0.0, 0.0, -0.70711, 0.70711>);
     else         llSetLocalRot(ZERO_ROTATION);
 }
@@ -148,25 +161,47 @@ dosetup()
     }
     i = 0;
     while(settext(i++, ""));
+    llSetObjectName("");
+    llListen(BALL_CHANNEL, "", llGetOwner(), "");
+    llMessageLinked(LINK_SET, M_API_HUD_STARTED, "", (key)"");
+}
+
+doquicksetup()
+{
+    integer i = 0;
+    while(settext(i++, ""));
+    islocked = FALSE;
+    isstatus = FALSE;
+    hoverheight = 0.0;
+    llSetObjectName("");
+    llMessageLinked(LINK_SET, M_API_HUD_STARTED, "", (key)"");
+    llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
 }
 
 default
 {
     changed(integer change)
     {
-        if(change & CHANGED_OWNER) llResetScript();
+        if(change & CHANGED_OWNER) resetscripts();
     }
 
     attach(key id)
     {
-        if(id) llResetScript();
+        if(id) doquicksetup();
     }
 
     state_entry()
     {
+        resetother();
         dosetup();
-        llSetObjectName("");
-        llMessageLinked(LINK_SET, M_API_HUD_STARTED, "", (key)"");
+    }
+
+    listen(integer channel, string name, key id, string message)
+    {
+        string oldn = llGetObjectName();
+        llSetObjectName("Your Thoughts");
+        llOwnerSay(message);
+        llSetObjectName(oldn);
     }
 
     link_message(integer sender_num, integer num, string str, key id)
@@ -175,14 +210,35 @@ default
         {
             seenavatarname = str;
             seenavatarkey = id;
-            if(!islocked) settext(0, seenavatarname);
+            if(isstatus || islocked) return;
+            settext(0, seenavatarname);
         }
         else if(num == M_API_CAM_OBJECT)
         {
+            seenobjectname = str;
+            seenobjectkey = id;
+            if(isstatus || islocked) return;
             settext(1, str);
+        }
+        else if(num == M_API_STATUS_MESSAGE)
+        {
+            isstatus = TRUE;
+            seenobjectname = str;
+            seenobjectkey = id;
+            settext(0, str);
+            settext(1, (string)id);
+        }
+        else if(num == M_API_STATUS_DONE)
+        {
+            isstatus = FALSE;
+            if(!islocked) settext(0, seenavatarname);
+            else          settext(0, lockedavatarname);
+            settext(1, seenobjectname);
         }
         else if(num == M_API_LOCK)
         {
+            lockedavatarname = str;
+            lockedavatarkey = id;
             if(str == "")
             {
                 islocked = FALSE;
@@ -195,8 +251,12 @@ default
                 islocked = TRUE;
                 setindicator("lock", TRUE);
                 setbuttonfilter("lock", TRUE);
-                settext(0, "< " + str + " >");
+                settext(0, ">" + str + "<");
             }
+        }
+        else if(num == M_API_SET_FILTER)
+        {
+            setbuttonfilter(str, (integer)((string)id));
         }
         else if(num == M_API_BUTTON_PRESSED)
         {
@@ -210,6 +270,58 @@ default
                 if(islocked) llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
                 else         llMessageLinked(LINK_SET, M_API_LOCK, seenavatarname, seenavatarkey);
             }
+            else if(str == "sit")
+            {
+                llOwnerSay("Sitting '" + lockedavatarname + "' on '" + seenobjectname + "'.");
+                if(lockedavatarkey == llGetOwner()) llOwnerSay("@sit:" + (string)seenobjectkey + "=force");
+                else
+                {
+                    llSetObjectName("RLV Sit");
+                    llRegionSayTo(lockedavatarkey, RLVRC, "s," + (string)lockedavatarkey + ",@sit:" + (string)seenobjectkey + "=force");
+                    llSetObjectName("");
+                }
+            }
+            else if(str == "leash")
+            {
+                llRegionSayTo(lockedavatarkey, MANTRA_CHANNEL, "leashto " + (string)seenobjectkey);
+            }
+            else if(str == "rclear")
+            {
+                llRegionSayTo(lockedavatarkey, MANTRA_CHANNEL, "CLEAR");
+            }
+            else if(str == "rdetach")
+            {
+                llRegionSayTo(lockedavatarkey, MANTRA_CHANNEL, "FORCECLEAR");
+            }
+            else if(str == "rreset")
+            {
+                llRegionSayTo(lockedavatarkey, MANTRA_CHANNEL, "RESETRELAY");
+            }
+            else if(str == "reset")
+            {
+                hoverheight = 0.0;
+                setheight();
+            }
+            else if(str == "++")
+            {
+                hoverheight += 3.0;
+                setheight();
+            }
+            else if(str == "+")
+            {
+                hoverheight += 0.5;
+                setheight();
+            }
+            else if(str == "--")
+            {
+                hoverheight -= 3.0;
+                setheight();
+            }
+            else if(str == "-")
+            {
+                hoverheight -= 0.5;
+                setheight();
+            }
         }
     }
 
@@ -221,6 +333,6 @@ default
         if(ishidden == TRUE && name != "hide") return;
         string filter = llList2String(buttonfilters, i);
         if(filter != "" && llList2Integer(buttonstates, i) == FALSE) return;
-        llMessageLinked(LINK_SET, M_API_BUTTON_PRESSED, name, (key)"");
+        llMessageLinked(LINK_SET, M_API_BUTTON_PRESSED, name, seenobjectkey);
     }
 }
