@@ -318,12 +318,12 @@ default
         if(!intp)
         {
             list req = llGetObjectDetails(vorecarrier, [OBJECT_CREATOR]);
-            if(req == [] || llList2Key(req, 0) != llGetCreator())
+            if(vorecarrier != NULL_KEY && (req == [] || llList2Key(req, 0) != llGetCreator()))
             {
                 detachbelly();
                 vorecarrier = NULL_KEY;
                 vorevictim = NULL_KEY;
-                vorename = NULL_KEY;
+                vorename = "";
             }
             if(vorecarrier != NULL_KEY)
             {

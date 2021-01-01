@@ -30,19 +30,10 @@ setheight()
     llOwnerSay("@adjustheight:" + (string)hoverheight + "=force");
 }
 
-setindicator(string name, integer active)
-{
-    integer i = llListFindList(indicators, [name]);
-    if(i == -1) return;
-    float alpha;
-    if(active) alpha = 0.0;
-    else       alpha = 1.0;
-    llSetLinkAlpha(llList2Integer(indicatorlinks, i), alpha, ALL_SIDES);
-}
-
 setbuttonfilter(string filter, integer active)
 {
     if(filter == "") return;
+    float alpha;
     integer i = llGetListLength(buttonfilters);
     while(~--i)
     {
@@ -50,12 +41,17 @@ setbuttonfilter(string filter, integer active)
         if(f == filter)
         {
             buttonstates = llListReplaceList(buttonstates, [active], i, i);
-            float alpha;
             if(active) alpha = 0.0;
             else       alpha = 0.7;
             llSetLinkAlpha(llList2Integer(buttonlinks, i), alpha, ALL_SIDES);
         }
     }
+
+    i = llListFindList(indicators, [filter]);
+    if(i == -1) return;
+    if(active) alpha = 0.0;
+    else       alpha = 1.0;
+    llSetLinkAlpha(llList2Integer(indicatorlinks, i), alpha, ALL_SIDES);
 }
 
 string fontmap = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~     ";
@@ -138,7 +134,6 @@ dosetup()
         {
             indicators += [name];
             indicatorlinks += [i];
-            setindicator(name, FALSE);
         }
         else if(desc == "text")
         {
@@ -291,14 +286,12 @@ default
             if(str == "")
             {
                 islocked = FALSE;
-                setindicator("lock", FALSE);
                 setbuttonfilter("lock", FALSE);
                 settext(0, seenavatarname);
             }
             else
             {
                 islocked = TRUE;
-                setindicator("lock", TRUE);
                 setbuttonfilter("lock", TRUE);
                 settext(0, ">" + str + "<");
             }

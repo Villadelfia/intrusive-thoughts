@@ -8,7 +8,8 @@ string handlingm;
 integer handlingi;
 integer templisten = -1;
 integer tempchannel = DEBUG_CHANNEL;
-integer enabled = FALSE;
+integer enabled = TRUE;
+integer scriptcount;
 
 makelisten(key who)
 {
@@ -26,6 +27,7 @@ clearlisten()
 buildclients()
 {
     integer ct = llGetInventoryNumber(INVENTORY_SCRIPT);
+    scriptcount = ct;
     integer i;
     integer handlers = 0;
     for(i = 0; i < ct; ++i)
@@ -55,7 +57,10 @@ default
 {
     changed(integer change)
     {
-        if(change & CHANGED_INVENTORY) buildclients();
+        if(change & CHANGED_INVENTORY) 
+        {
+            if(llGetInventoryNumber(INVENTORY_SCRIPT) != scriptcount) buildclients();
+        }
     }
 
     state_entry()
@@ -186,18 +191,37 @@ default
         if(num == RLV_API_CLR_SRC) rlvclients = llListReplaceList(rlvclients, [(key)NULL_KEY], (integer)str, (integer)str);
         else if(num == M_API_BUTTON_PRESSED)
         {
+            if(rlvclients == []) return;
             if(str == "relay")
             {
                 enabled = !enabled;
+                llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
                 if(enabled)
                 {
-                    llOwnerSay("Your RLV relay has been enabled.");
+                    llOwnerSay("Your RLV relay has been turned on.");
                 }
                 else
                 {
-                    llOwnerSay("Your RLV relay has been disabled. In addition, you have been freed from all RLV devices that may have had ongoing restrictions on you.");
+                    llOwnerSay("Your RLV relay has been turned off. In addition, you have been freed from all RLV devices that may have had ongoing restrictions on you.");
                     llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 }
+            }
+        }
+        else if(num == M_API_HUD_STARTED)
+        {
+            if(rlvclients == []) enabled = FALSE;
+            llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
+            if(enabled == TRUE)
+            {
+                llOwnerSay(VERSION_C + ": Your RLV relay is turned on, supporting up to " + (string)llGetListLength(rlvclients) + " devices.");
+            }
+            else if(rlvclients == [])
+            {
+                llOwnerSay(VERSION_C + ": Your RLV relay is disabled until you add some RLV Client scripts to the HUD.");
+            }
+            else
+            {
+                llOwnerSay(VERSION_C + ": Your RLV relay is turned off. It supports up to " + (string)llGetListLength(rlvclients) + " devices.");
             }
         }
     }
