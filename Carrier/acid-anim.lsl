@@ -49,7 +49,7 @@ default
 
     link_message(integer sender_num, integer num, string str, key id )
     {
-        if(num == API_FILL_FACTOR)
+        if(num == X_API_FILL_FACTOR)
         {
             fillfactor = (float)str;
             calculateFill();

@@ -15,6 +15,7 @@ string targetname;
 integer intp = FALSE;
 string await;
 integer fillfactor = 25;
+integer filter = FALSE;
 
 detachbelly()
 {
@@ -214,7 +215,11 @@ default
         vorevictim = NULL_KEY;
         vorename = "";
         intp = FALSE;
-        llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)FALSE));
+        if(filter)
+        {
+            filter = FALSE;
+            llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
+        }
         if(await == "tpv") llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
         await = "";
     }
@@ -320,8 +325,22 @@ default
                 vorevictim = NULL_KEY;
                 vorename = NULL_KEY;
             }
-            if(vorecarrier != NULL_KEY) llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)TRUE));
-            else                        llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)FALSE));
+            if(vorecarrier != NULL_KEY)
+            {
+                if(!filter)
+                {
+                    filter = TRUE;
+                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
+                }
+            }
+            else
+            {
+                if(filter)
+                {
+                    filter = FALSE;
+                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
+                }
+            }
         }
         llSetTimerEvent(0.5);
     }

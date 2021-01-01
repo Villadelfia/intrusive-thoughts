@@ -33,6 +33,7 @@ key lastrezzed;
 key lastseenobject;
 
 integer dialog = 0;
+integer filter = FALSE;
 
 detachobject(string o)
 {
@@ -432,7 +433,11 @@ default
             }
             await = "";
             if(responses == []) intp = FALSE;
-            llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)FALSE));
+            if(filter)
+            {
+                filter = FALSE;
+                llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
+            }
             llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
         }
         else if(await == "r")
@@ -577,8 +582,22 @@ default
                     objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
                 }
             }
-            if(objectifiedballs != []) llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)TRUE));
-            else                       llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)FALSE));
+            if(objectifiedballs != [])
+            {
+                if(!filter)
+                {
+                    filter = TRUE;
+                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
+                }
+            }
+            else
+            {
+                if(filter)
+                {
+                    filter = FALSE;
+                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
+                }
+            }
         }
         llSetTimerEvent(0.5);
     }

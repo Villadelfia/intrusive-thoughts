@@ -45,6 +45,8 @@
 #define RLV_API_HANDLE_CMD      -3002
 #define RLV_API_SAFEWORD        -3003
 
+#define X_API_FILL_FACTOR       -4000
+
 string VERSION_S = "IT-Slave v2.0";
 string VERSION_C = "IT-Master v2.0";
 

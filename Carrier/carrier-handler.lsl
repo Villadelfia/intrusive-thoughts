@@ -169,7 +169,7 @@ default
                 float height = (float)llDeleteSubString(m, 0, llStringLength("acidlevel"));
                 height /= 100.0;
                 fillfactor = height;
-                llMessageLinked(LINK_SET, API_FILL_FACTOR, (string)height, (key)"");
+                llMessageLinked(LINK_SET, X_API_FILL_FACTOR, (string)height, (key)"");
             }
         }
         else if(c == RLVRC)
