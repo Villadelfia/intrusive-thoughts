@@ -23,6 +23,7 @@ default
         else if(startswith(m, "puton"))
         {
             if(storedobject == NULL_KEY) return;
+            storedobject = NULL_KEY;
             llRegionSayTo(storedobject, MANTRA_CHANNEL, "puton " + (string)llGetOwnerKey(id) + "|||" + storedname);
             llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
             llSetTimerEvent(0.0);
