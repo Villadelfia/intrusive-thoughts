@@ -88,7 +88,7 @@ default
             if(target != NULL_KEY)
             {
                 closestavatar = target;
-                llMessageLinked(LINK_SET, M_API_CAM_AVATAR, llGetUsername(closestavatar), closestavatar);
+                llMessageLinked(LINK_SET, M_API_CAM_AVATAR, llGetDisplayName(closestavatar), closestavatar);
             }
         }
         else
@@ -96,7 +96,7 @@ default
             if(newclosest != NULL_KEY)
             {
                 closestavatar = newclosest;
-                llMessageLinked(LINK_SET, M_API_CAM_AVATAR, llGetUsername(closestavatar), closestavatar);
+                llMessageLinked(LINK_SET, M_API_CAM_AVATAR, llGetDisplayName(closestavatar), closestavatar);
             }
         }
 

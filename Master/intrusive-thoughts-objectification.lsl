@@ -32,6 +32,8 @@ key closestavatar = NULL_KEY;
 key lastrezzed;
 key lastseenobject;
 
+integer dialog = 0;
+
 detachobject(string o)
 {
     if(o == "") return;
@@ -53,17 +55,6 @@ integer canrez(vector pos)
     return(flags & PARCEL_FLAG_ALLOW_CREATE_GROUP_OBJECTS) && llSameGroup(llList2Key(details, 1));
 }
 
-giveeditmenu()
-{
-    integer l = llGetListLength(objectifiednames);
-    while(~--l)
-    {
-        llOwnerSay(llList2String(objectifiednames, l) + " (" + objectprefix + llList2String(objectifieddescriptions, l)+ ") " + 
-                   "[secondlife:///app/chat/" + (string)COMMAND_CHANNEL + "/ite%20" + (string)l + " (edit position)] " +
-                   "[secondlife:///app/chat/" + (string)COMMAND_CHANNEL + "/its%20" + (string)l + " (store object)]");
-    }
-}
-
 givereleasemenu()
 {
     integer l = llGetListLength(objectifiednames);
@@ -72,8 +63,67 @@ givereleasemenu()
         release(0);
         return;
     }
-    while(~--l) llOwnerSay("[secondlife:///app/chat/" + (string)COMMAND_CHANNEL + "/itr%20" + (string)l + " Release " + llList2String(objectifiednames, l) + " (" + objectprefix + llList2String(objectifieddescriptions, l)+ ")]");
-    llOwnerSay("[secondlife:///app/chat/" + (string)COMMAND_CHANNEL + "/itr Release everyone.]");
+
+    string prompt = "Who will you release?\n";
+    integer i;
+    if(l > 11) l = 11;
+    list buttons = [];
+    for(i = 0; i < l; ++i)
+    {
+        buttons += [(string)i];
+        prompt += "\n" + (string)i + ": " + llList2String(objectifiednames, i) + " (" + objectprefix + llList2String(objectifieddescriptions, i) + ")";
+    }
+    while(llGetListLength(buttons) < 11) buttons += [" "];
+    buttons += ["ALL"];
+    dialog = 1;
+    llDialog(llGetOwner(), prompt, orderbuttons(buttons), O_DIALOG_CHANNEL);
+}
+
+giveeditmenu()
+{
+    integer l = llGetListLength(objectifiednames);
+    if(l == 1)
+    {
+        llRegionSayTo(llList2Key(objectifiedballs, 0), MANTRA_CHANNEL, "edit");
+        return;
+    }
+
+    string prompt = "Whose position will you edit?\n";
+    integer i;
+    if(l > 12) l = 12;
+    list buttons = [];
+    for(i = 0; i < l; ++i)
+    {
+        buttons += [(string)i];
+        prompt += "\n" + (string)i + ": " + llList2String(objectifiednames, i) + " (" + objectprefix + llList2String(objectifieddescriptions, i)+ ")";
+    }
+    while(llGetListLength(buttons) < 12) buttons += [" "];
+    dialog = 2;
+    llDialog(llGetOwner(), prompt, orderbuttons(buttons), O_DIALOG_CHANNEL);
+}
+
+givestoremenu()
+{
+    integer l = llGetListLength(objectifiednames);
+    if(l == 1)
+    {
+        store = 0;
+        llRegionSayTo(lastseenobject, MANTRA_CHANNEL, "furniture");
+        return;
+    }
+
+    string prompt = "Who will you store in as '" + llList2String(llGetObjectDetails(lastseenobject, [OBJECT_NAME]), 0) + "'?\n";
+    integer i;
+    if(l > 12) l = 12;
+    list buttons = [];
+    for(i = 0; i < l; ++i)
+    {
+        buttons += [(string)i];
+        prompt += "\n" + (string)i + ": " + llList2String(objectifiednames, i) + " (" + objectprefix + llList2String(objectifieddescriptions, i)+ ")";
+    }
+    while(llGetListLength(buttons) < 12) buttons += [" "];
+    dialog = 3;
+    llDialog(llGetOwner(), prompt, orderbuttons(buttons), O_DIALOG_CHANNEL);
 }
 
 release(integer i)
@@ -183,7 +233,6 @@ default
 
     state_entry()
     {
-        llListen(COMMAND_CHANNEL, "", llGetOwner(), "");
         llListen(O_DIALOG_CHANNEL, "", llGetOwner(), "");
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
@@ -197,30 +246,29 @@ default
 
     listen(integer c, string n, key id, string m)
     {
-        if(c == COMMAND_CHANNEL)
+        if(c == O_DIALOG_CHANNEL)
         {
-            if(m == "itr")
+            if(dialog == 0)
             {
-                releaseall();
+                addobject(llStringTrim(m, STRING_TRIM));
             }
-            else if(startswith(llToLower(m), "itr"))
+            else if(dialog == 1)
             {
-                release((integer)llDeleteSubString(m, 0, llStringLength("itr")));
+                if(m == " ")        return;
+                else if(m == "ALL") releaseall();
+                else                release((integer)m);
             }
-            else if(startswith(llToLower(m), "ite"))
+            else if(dialog == 2)
             {
-                integer i = (integer)llDeleteSubString(m, 0, llStringLength("ite"));
-                llRegionSayTo(llList2Key(objectifiedballs, i), MANTRA_CHANNEL, "edit");
+                if(m == " ") return;
+                llRegionSayTo(llList2Key(objectifiedballs, (integer)m), MANTRA_CHANNEL, "edit");
             }
-            else if(startswith(llToLower(m), "its"))
+            else if(dialog == 3)
             {
-                store = (integer)llDeleteSubString(m, 0, llStringLength("its"));
+                if(m == " ") return;
+                store = (integer)m;
                 llRegionSayTo(lastseenobject, MANTRA_CHANNEL, "furniture");
             }
-        }
-        else if(c == O_DIALOG_CHANNEL)
-        {
-            addobject(llStringTrim(m, STRING_TRIM));
         }
         else if(c == MANTRA_CHANNEL)
         {
@@ -488,6 +536,11 @@ default
                 store = -1;
                 llRegionSayTo(id, MANTRA_CHANNEL, "furniture");
             }
+            else if(str == "store")
+            {
+                lastseenobject = id;
+                givestoremenu();
+            }
             else if(str == "edit")
             {
                 lastseenobject = id;
@@ -499,6 +552,7 @@ default
             }
             else if(str == "objectify")
             {
+                dialog = 0;
                 llTextBox(llGetOwner(), "As what do you wish to wear " + lockedname + "?", O_DIALOG_CHANNEL);
             }
         }
@@ -523,9 +577,13 @@ default
                     objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
                 }
             }
+            llOwnerSay(llDumpList2String(objectifiedballs, ", "));
+            llOwnerSay(llDumpList2String(objectifiedavatars, ", "));
+            llOwnerSay(llDumpList2String(objectifiednames, ", "));
+            llOwnerSay(llDumpList2String(objectifieddescriptions, ", "));
             if(objectifiedballs != []) llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)TRUE));
             else                       llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)FALSE));
         }
-        llSetTimerEvent(5.0);
+        llSetTimerEvent(0.5);
     }
 }

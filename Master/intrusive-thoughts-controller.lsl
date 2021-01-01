@@ -13,19 +13,10 @@ string prefix;
 integer menu = 0;
 key confignc;
 
-// TODO: Remove some cruft from the menus.
-list page1 = [
+list page = [
     "B.MUTE OFF", "BIMBO OFF",  "TIMER SET",
     "B.MUTE ON",  "BIMBO SET",  "NAME",
-    "(UN)LOCK",   "BIMBO ODDS", "MC SAY",
-    " ",          "BACK",       "-->"
-];
-
-list page2 = [
-    "MAN. CMD.", "RESET",    "THINK",
-    "LOCAL IM",  "RLV CMD.", "LIST ROOT",
-    "LIST PATH", "OUTFIT",   "STRIP",
-    "<--",       "BACK",     " "
+    "RESET",      "BIMBO ODDS", "BACK"
 ];
 
 settext()
@@ -161,32 +152,21 @@ default
         {
             if(m == "CANCEL") return;
             else if(m == "BACK" || m == " ") giveMenu();
-            else if(m == "MENU" || m == "<--") llDialog(llGetOwner(), "Select a command...", orderbuttons(page1), S_DIALOG_CHANNEL);
-            else if(m == "-->") llDialog(llGetOwner(), "Select a command...", orderbuttons(page2), S_DIALOG_CHANNEL);
+            else if(m == "MENU") llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
             else if(m == "B.MUTE OFF")
             {
                 llRegionSayTo(target, MANTRA_CHANNEL, "BLIND_MUTE 0");
-                llDialog(llGetOwner(), "Select a command...", orderbuttons(page1), S_DIALOG_CHANNEL);
+                llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
             }
             else if(m == "B.MUTE ON")
             {
                 llRegionSayTo(target, MANTRA_CHANNEL, "BLIND_MUTE 1");
-                llDialog(llGetOwner(), "Select a command...", orderbuttons(page1), S_DIALOG_CHANNEL);
-            }
-            else if(m == "(UN)LOCK")
-            {
-                llRegionSayTo(target, MANTRA_CHANNEL, "LOCK");
-                llDialog(llGetOwner(), "Select a command...", orderbuttons(page1), S_DIALOG_CHANNEL);
-            }
-            else if(m == "MAN. CMD.")
-            {
-                menu = 7;
-                llTextBox(llGetOwner(), "Enter a manual command.", S_DIALOG_CHANNEL);
+                llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
             }
             else if(m == "BIMBO OFF")
             {
                 llRegionSayTo(target, MANTRA_CHANNEL, "AUDITORY_BIMBO_LIMIT 0");
-                llDialog(llGetOwner(), "Select a command...", orderbuttons(page1), S_DIALOG_CHANNEL);
+                llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
             }
             else if(m == "BIMBO SET")
             {
@@ -201,7 +181,7 @@ default
             else if(m == "RESET")
             {
                 llRegionSayTo(target, MANTRA_CHANNEL, "RESET");
-                llDialog(llGetOwner(), "Select a command...", orderbuttons(page2), S_DIALOG_CHANNEL);
+                llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
             }
             else if(m == "TIMER SET")
             {
@@ -212,46 +192,6 @@ default
             {
                 menu = 4;
                 llTextBox(llGetOwner(), "Enter a new name.", S_DIALOG_CHANNEL);
-            }
-            else if(m == "MC SAY")
-            {
-                menu = 5;
-                llTextBox(llGetOwner(), "Enter a message for your submissive to say.", S_DIALOG_CHANNEL);
-            }
-            else if(m == "THINK")
-            {
-                menu = 6;
-                llTextBox(llGetOwner(), "Enter a thought to trigger.", S_DIALOG_CHANNEL);
-            }
-            else if(m == "LOCAL IM")
-            {
-                llRegionSayTo(target, MANTRA_CHANNEL, "NOIM");
-                llDialog(llGetOwner(), "Select a command...", orderbuttons(page2), S_DIALOG_CHANNEL);
-            }
-            else if(m == "RLV CMD.")
-            {
-                menu = 7;
-                llTextBox(llGetOwner(), "Enter a manual RLV command. Do not forget the @!", S_DIALOG_CHANNEL);
-            }
-            else if(m == "LIST ROOT")
-            {
-                llRegionSayTo(target, MANTRA_CHANNEL, "LIST");
-                llDialog(llGetOwner(), "Select a command...", orderbuttons(page2), S_DIALOG_CHANNEL);
-            }
-            else if(m == "LIST PATH")
-            {
-                menu = 8;
-                llTextBox(llGetOwner(), "Enter a subpath to list.", S_DIALOG_CHANNEL);
-            }
-            else if(m == "STRIP")
-            {
-                llRegionSayTo(target, MANTRA_CHANNEL, "STRIP");
-                llDialog(llGetOwner(), "Select a command...", orderbuttons(page2), S_DIALOG_CHANNEL);
-            }
-            else if(m == "OUTFIT")
-            {
-                menu = 9;
-                llTextBox(llGetOwner(), "Enter an outfit name.", S_DIALOG_CHANNEL);
             }
             else
             {
@@ -264,55 +204,25 @@ default
         {
             llRegionSayTo(target, MANTRA_CHANNEL, "AUDITORY_BIMBO_LIMIT " + m);
             menu = 0;
-            llDialog(llGetOwner(), "Select a command...", orderbuttons(page1), S_DIALOG_CHANNEL);
+            llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
         }
         else if(menu == 2)
         {
             llRegionSayTo(target, MANTRA_CHANNEL, "AUDITORY_BIMBO_ODDS " + m);
             menu = 0;
-            llDialog(llGetOwner(), "Select a command...", orderbuttons(page1), S_DIALOG_CHANNEL);
+            llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
         }
         else if(menu == 3)
         {
             llRegionSayTo(target, MANTRA_CHANNEL, "TIMER " + m);
             menu = 0;
-            llDialog(llGetOwner(), "Select a command...", orderbuttons(page1), S_DIALOG_CHANNEL);
+            llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
         }
         else if(menu == 4)
         {
             llRegionSayTo(target, MANTRA_CHANNEL, "NAME " + m);
             menu = 0;
-            llDialog(llGetOwner(), "Select a command...", orderbuttons(page1), S_DIALOG_CHANNEL);
-        }
-        else if(menu == 5)
-        {
-            llRegionSayTo(target, MANTRA_CHANNEL, "say " + m);
-            menu = 0;
-            llDialog(llGetOwner(), "Select a command...", orderbuttons(page1), S_DIALOG_CHANNEL);
-        }
-        else if(menu == 6)
-        {
-            llRegionSayTo(target, MANTRA_CHANNEL, "think " + m);
-            menu = 0;
-            llDialog(llGetOwner(), "Select a command...", orderbuttons(page2), S_DIALOG_CHANNEL);
-        }
-        else if(menu == 7)
-        {
-            llRegionSayTo(target, MANTRA_CHANNEL, m);
-            menu = 0;
-            llDialog(llGetOwner(), "Select a command...", orderbuttons(page2), S_DIALOG_CHANNEL);
-        }
-        else if(menu == 8)
-        {
-            llRegionSayTo(target, MANTRA_CHANNEL, "LIST " + m);
-            menu = 0;
-            llDialog(llGetOwner(), "Select a command...", orderbuttons(page2), S_DIALOG_CHANNEL);
-        }
-        else if(menu == 8)
-        {
-            llRegionSayTo(target, MANTRA_CHANNEL, "OUTFIT " + m);
-            menu = 0;
-            llDialog(llGetOwner(), "Select a command...", orderbuttons(page2), S_DIALOG_CHANNEL);
+            llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
         }
         else if(menu == -1)
         {

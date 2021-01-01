@@ -323,6 +323,6 @@ default
             if(vorecarrier != NULL_KEY) llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)TRUE));
             else                        llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)FALSE));
         }
-        llSetTimerEvent(5.0);
+        llSetTimerEvent(0.5);
     }
 }

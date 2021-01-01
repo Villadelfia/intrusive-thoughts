@@ -208,7 +208,20 @@ default
     {
         if(num == M_API_CAM_AVATAR)
         {
-            seenavatarname = str;
+            seenavatarname = llGetUsername(id);
+            string outname = "";
+            list names = llParseString2List(seenavatarname, ["."], []);
+            integer i = 0;
+            integer l = llGetListLength(names);
+            while(i < l)
+            {
+                string word = llList2String(names, i);
+                word = llToUpper(llGetSubString(word, 0, 0)) + llGetSubString(word, 1, -1);
+                if(llToLower(word) != "resident") outname += word;
+                if(i != l-1) outname += " ";
+                ++i;
+            }
+            seenavatarname = outname;
             seenavatarkey = id;
             if(isstatus || islocked) return;
             settext(0, seenavatarname);
@@ -237,7 +250,20 @@ default
         }
         else if(num == M_API_LOCK)
         {
-            lockedavatarname = str;
+            lockedavatarname = llGetUsername(id);
+            string outname = "";
+            list names = llParseString2List(lockedavatarname, ["."], []);
+            integer i = 0;
+            integer l = llGetListLength(names);
+            while(i < l)
+            {
+                string word = llList2String(names, i);
+                word = llToUpper(llGetSubString(word, 0, 0)) + llGetSubString(word, 1, -1);
+                if(llToLower(word) != "resident") outname += word;
+                if(i != l-1) outname += " ";
+                ++i;
+            }
+            lockedavatarname = outname;
             lockedavatarkey = id;
             if(str == "")
             {
