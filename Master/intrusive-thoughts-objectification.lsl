@@ -497,7 +497,7 @@ default
         }
         if(num == M_API_CONFIG_DONE) 
         {
-            llOwnerSay("[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            llOwnerSay(VERSION_M + " [Objectification controller]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         else if(num == M_API_CONFIG_DATA)
         {

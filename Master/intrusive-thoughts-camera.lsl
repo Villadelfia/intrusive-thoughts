@@ -18,24 +18,24 @@ default
     {
         if(num == M_API_CONFIG_DATA)
         {
-            if(str == "name") llOwnerSay(VERSION_C + ": Set spoof name prefix to " + (string)id);
-            else if(str == "objectprefix") llOwnerSay(VERSION_C + ": Set spoof object prefix to " + (string)id);
-            else if(str == "capture") llOwnerSay(VERSION_C + ": Set capture phrase to '" + (string)id + "'");
-            else if(str == "release") llOwnerSay(VERSION_C + ": Set release phrase to '" + (string)id + "'");
-            else if(str == "puton") llOwnerSay(VERSION_C + ": Set put on phrase to '" + (string)id + "'");
-            else if(str == "putdown") llOwnerSay(VERSION_C + ": Set put down phrase to '" + (string)id + "'");
-            else if(str == "food") llOwnerSay(VERSION_C + ": Set food name to '" + (string)id + "'");
-            else if(str == "vore") llOwnerSay(VERSION_C + ": Set vore phrase to '" + (string)id + "'");
-            else if(str == "unvore") llOwnerSay(VERSION_C + ": Set unvore phrase to '" + (string)id + "'");
+            if(str == "name") llOwnerSay(VERSION_M + ": Set spoof name prefix to " + (string)id);
+            else if(str == "objectprefix") llOwnerSay(VERSION_M + ": Set spoof object prefix to " + (string)id);
+            else if(str == "capture") llOwnerSay(VERSION_M + ": Set capture phrase to '" + (string)id + "'");
+            else if(str == "release") llOwnerSay(VERSION_M + ": Set release phrase to '" + (string)id + "'");
+            else if(str == "puton") llOwnerSay(VERSION_M + ": Set put on phrase to '" + (string)id + "'");
+            else if(str == "putdown") llOwnerSay(VERSION_M + ": Set put down phrase to '" + (string)id + "'");
+            else if(str == "food") llOwnerSay(VERSION_M + ": Set food name to '" + (string)id + "'");
+            else if(str == "vore") llOwnerSay(VERSION_M + ": Set vore phrase to '" + (string)id + "'");
+            else if(str == "unvore") llOwnerSay(VERSION_M + ": Set unvore phrase to '" + (string)id + "'");
             else if(str == "ball" && ((string)id == "1" || (string)id == "2")) 
             {
                 if((integer)((string)id) == 1)
                 {
-                    llOwnerSay(VERSION_C + ": Objectifiying something will put it below the floor.");
+                    llOwnerSay(VERSION_M + ": Objectifiying something will put it below the floor.");
                 }
                 else
                 {
-                    llOwnerSay(VERSION_C + ": Objectifiying something will make it invisible.");
+                    llOwnerSay(VERSION_M + ": Objectifiying something will make it invisible.");
                 }
             }
         }

@@ -34,12 +34,14 @@ doSetup()
     }
 }
 
-handleClick(key k)
+handlemenu(key k)
 {
-    if(k != owner && llGetOwnerKey(k) != owner && k != llGetOwner()) return;
+    if(llGetOwnerKey(k) != owner && llGetOwnerKey(k) != llGetOwner()) return;
     string oldn = llGetObjectName();
     llSetObjectName("");
-    if(k == owner || llGetOwnerKey(k) == owner)
+
+    // Greeting
+    if(llGetOwnerKey(k) == owner)
     {
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "List of available commands for " + name + ":");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
@@ -49,29 +51,22 @@ handleClick(key k)
         llOwnerSay("List of available commands for " + name + ":");
         llOwnerSay(" ");
     }
+
+    // Animations
     integer numinv = llGetInventoryNumber(INVENTORY_ANIMATION);
     integer i;
     for(i = 0; i < numinv; ++i)
     {
-        if(k == owner || llGetOwnerKey(k) == owner)
-        {
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + llEscapeURL(llGetInventoryName(INVENTORY_ANIMATION, i)) + " - Play " + llGetInventoryName(INVENTORY_ANIMATION, i) + " animation.]");
-        }
-        else
-        {
-            llOwnerSay("[secondlife:///app/chat/1/" + prefix + llEscapeURL(llGetInventoryName(INVENTORY_ANIMATION, i)) + " - Play " + llGetInventoryName(INVENTORY_ANIMATION, i) + " animation.]");
-        }
-    }
-    if(k == owner || llGetOwnerKey(k) == owner)
-    {
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "stop - Stop all animations.]");
-    }
-    else
-    {
-        llOwnerSay("[secondlife:///app/chat/1/" + prefix + "stop - Stop all animations.]");
+        if(llGetOwnerKey(k) == owner) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + llEscapeURL(llGetInventoryName(INVENTORY_ANIMATION, i)) + " - Play " + llGetInventoryName(INVENTORY_ANIMATION, i) + " animation.]");
+        else                          llOwnerSay("[secondlife:///app/chat/1/" + prefix + llEscapeURL(llGetInventoryName(INVENTORY_ANIMATION, i)) + " - Play " + llGetInventoryName(INVENTORY_ANIMATION, i) + " animation.]");
     }
 
-    if(k == owner || llGetOwnerKey(k) == owner)
+    // Stop animation
+    if(llGetOwnerKey(k) == owner) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "stop - Stop all animations.]");
+    else llOwnerSay("[secondlife:///app/chat/1/" + prefix + "stop - Stop all animations.]");
+
+    // Owner commands.
+    if(llGetOwnerKey(k) == owner)
     {
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "noim - Toggle local IMs.]");
@@ -85,6 +80,7 @@ handleClick(key k)
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- /1" + prefix + "say <message>: Say a message.");
         llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- /1" + prefix + "think <message>: Think a message.");
     }
+
     llSetObjectName(oldn);
 }
 
@@ -150,7 +146,7 @@ default
 
     touch_start(integer num)
     {
-        handleClick(llDetectedKey(0));
+        handlemenu(llDetectedKey(0));
     }
 
     state_entry()
@@ -161,8 +157,7 @@ default
         name = llGetDisplayName(llGetOwner());
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(RLV_CHANNEL, "", llGetOwner(), "");
-        llListen(1, "", owner, "");
-        if(owner != llGetOwner()) llListen(1, "", llGetOwner(), "");
+        llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
         llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);
     }
 
@@ -246,7 +241,12 @@ default
             llRegionSay(RLV_CHANNEL, m);
             return;
         }
-        if(c == 1)
+
+        // We only accept commands from the owner or the wearer.
+        if(llGetOwnerKey(k) != llGetOwner() && llGetOwnerKey(k) != owner) return;
+
+        // Detect prefix.
+        if(c == COMMAND_CHANNEL)
         {
             if(startswith(m, "#") && k == llGetOwner()) return;
             if(startswith(m, prefix))                         m = llDeleteSubString(m, 0, 1);
@@ -254,42 +254,51 @@ default
             else                                              return;
         }
         
-        if(c == 1 && llGetInventoryType(m) == INVENTORY_ANIMATION)
+        // Handle animation and menu commands.
+        if(c == COMMAND_CHANNEL)
         {
-            if(playing != "") llStopAnimation(playing);
-            playing = m;
-            llStartAnimation(playing);
-            return;
-        }
-        else if(c == 1 && llToLower(m) == "stop")
-        {
-            if(playing != "") llStopAnimation(playing);
-            playing = "";
-            return;
-        }
-        else if(c == 1 && (llToLower(m) == "!" || m == ""))
-        {
-            handleClick(k);
+            if(llGetInventoryType(m) == INVENTORY_ANIMATION)
+            {
+                if(playing != "") llStopAnimation(playing);
+                playing = m;
+                llStartAnimation(playing);
+                return;
+            }
+            else if(llToLower(m) == "stop")
+            {
+                if(playing != "") llStopAnimation(playing);
+                playing = "";
+                return;
+            }
+            else if(llToLower(m) == "!" || m == "" || llToLower(m) == "menu")
+            {
+                handlemenu(k);
+            }
         }
 
         // Starting here, only the Domme may give commands.
-        if(k != owner && llGetOwnerKey(k) != owner) return;
-        if(m == "RESET" && c == MANTRA_CHANNEL)
+        if(llGetOwnerKey(k) != owner) return;
+        if(c == MANTRA_CHANNEL)
         {
-            name = llGetDisplayName(llGetOwner());
-            noim = FALSE;
-            daze = FALSE;
+            if(m == "RESET")
+            {
+                name = llGetDisplayName(llGetOwner());
+                noim = FALSE;
+                daze = FALSE;
+            }
+            else if(startswith(m, "NAME"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("NAME"));
+                name = m;
+            }
+            else if(m == "END")
+            {
+                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            }
+            return;
         }
-        else if(startswith(m, "NAME") && c == MANTRA_CHANNEL)
-        {
-            m = llDeleteSubString(m, 0, llStringLength("NAME"));
-            name = m;
-        }
-        else if(m == "END" && c == MANTRA_CHANNEL)
-        {
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
-        }
-        else if(llToLower(m) == "noim")
+        
+        if(llToLower(m) == "noim")
         {
             if(noim)
             {
@@ -304,15 +313,15 @@ default
                 noim = TRUE;
             }
         }
-        else if(llToLower(m) == "list")
-        {
-            path = "";
-            llOwnerSay("@getinv=" + (string)RLV_CHANNEL);
-        }
         else if(llToLower(m) == "strip")
         {
             llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Stripping " + name + " of all clothes.");
             llOwnerSay("@detach=force,remoutfit=force");
+        }
+        else if(llToLower(m) == "list")
+        {
+            path = "";
+            llOwnerSay("@getinv=" + (string)RLV_CHANNEL);
         }
         else if(llToLower(m) == "listoutfit")
         {

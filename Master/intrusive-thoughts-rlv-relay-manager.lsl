@@ -8,7 +8,7 @@ string handlingm;
 integer handlingi;
 integer templisten = -1;
 integer tempchannel = DEBUG_CHANNEL;
-integer enabled = TRUE;
+integer enabled = FALSE;
 integer scriptcount;
 
 makelisten(key who)
@@ -35,22 +35,15 @@ buildclients()
         if(contains(llToLower(llGetInventoryName(INVENTORY_SCRIPT, i)), "client")) handlers++;
     }
 
-    integer change = FALSE;
     while(llGetListLength(rlvclients) < handlers) 
     {
         rlvclients += [(key)NULL_KEY];
-        change = TRUE;
     }
 
     while(llGetListLength(rlvclients) > handlers)
     {
         rlvclients = llDeleteSubList(rlvclients, -1, -1);
-        change = TRUE;
     }
-
-    llSetObjectName("");
-    if(change && rlvclients != []) llOwnerSay("RLV relay available with up to " + (string)handlers + " devices supported.");
-    if(rlvclients == [])           llOwnerSay("RLV relay unavailable. Add client scripts to my inventory.");
 }
 
 default
@@ -213,15 +206,15 @@ default
             llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
             if(enabled == TRUE)
             {
-                llOwnerSay(VERSION_C + ": Your RLV relay is turned on, supporting up to " + (string)llGetListLength(rlvclients) + " devices.");
+                llOwnerSay(VERSION_M + ": Your RLV relay is turned on, supporting up to " + (string)llGetListLength(rlvclients) + " devices.");
             }
             else if(rlvclients == [])
             {
-                llOwnerSay(VERSION_C + ": Your RLV relay is disabled until you add some RLV Client scripts to the HUD.");
+                llOwnerSay(VERSION_M + ": Your RLV relay is disabled until you add some RLV Client scripts to the HUD.");
             }
             else
             {
-                llOwnerSay(VERSION_C + ": Your RLV relay is turned off. It supports up to " + (string)llGetListLength(rlvclients) + " devices.");
+                llOwnerSay(VERSION_M + ": Your RLV relay is turned off. It supports up to " + (string)llGetListLength(rlvclients) + " devices.");
             }
         }
     }

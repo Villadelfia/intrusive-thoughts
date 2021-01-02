@@ -315,14 +315,20 @@ default
             }
             else if(str == "sit")
             {
-                llOwnerSay("Sitting '" + lockedavatarname + "' on '" + seenobjectname + "'.");
-                if(lockedavatarkey == llGetOwner()) llOwnerSay("@sit:" + (string)seenobjectkey + "=force");
+                llSetObjectName("RLV Sit");
+                if(llGetAgentInfo(lockedavatarkey) & AGENT_SITTING)
+                {
+                    llOwnerSay("Standing up '" + lockedavatarname + "'.");
+                    if(lockedavatarkey == llGetOwner()) llOwnerSay("@unsit=force");
+                    else                                llRegionSayTo(lockedavatarkey, RLVRC, "st," + (string)lockedavatarkey + ",@unsit=force");
+                }
                 else
                 {
-                    llSetObjectName("RLV Sit");
-                    llRegionSayTo(lockedavatarkey, RLVRC, "s," + (string)lockedavatarkey + ",@sit:" + (string)seenobjectkey + "=force");
-                    llSetObjectName("");
+                    llOwnerSay("Sitting '" + lockedavatarname + "' on '" + seenobjectname + "'.");
+                    if(lockedavatarkey == llGetOwner()) llOwnerSay("@sit:" + (string)seenobjectkey + "=force");
+                    else                                llRegionSayTo(lockedavatarkey, RLVRC, "si," + (string)lockedavatarkey + ",@sit:" + (string)seenobjectkey + "=force");
                 }
+                llSetObjectName("");
             }
             else if(str == "leash")
             {

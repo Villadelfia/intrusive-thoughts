@@ -12,6 +12,8 @@ string name;
 string prefix;
 integer menu = 0;
 key confignc;
+key lockedavatar = NULL_KEY;
+string lockedname = "";
 
 list page = [
     "B.MUTE OFF", "BIMBO OFF",  "TIMER SET",
@@ -85,7 +87,7 @@ default
         {
             if(ready)
             {
-                llOwnerSay(VERSION_C + ": Startup complete. Welcome to your Intrusive Thoughts system.");
+                llOwnerSay(VERSION_M + ": Startup complete. Welcome to your Intrusive Thoughts system.");
                 llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
             }
             else
@@ -99,8 +101,13 @@ default
         }
         else if(num == M_API_CONFIG_DONE)
         {
-            llOwnerSay(VERSION_C + ": Startup complete. Welcome to your Intrusive Thoughts system.");
+            llOwnerSay(VERSION_M + ": Startup complete. Welcome to your Intrusive Thoughts system.");
             if(llGetPermissions() & PERMISSION_TAKE_CONTROLS == 0) llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
+        }
+        else if(num == M_API_LOCK)
+        {
+            lockedavatar = id;
+            lockedname = str;
         }
 
         if(!ready) return;
@@ -114,11 +121,21 @@ default
                     llOwnerSay("Hold on. We're busy sending settings...");
                     return;
                 }
-                llOwnerSay("Pinging the region for Intrusive Thoughts slaves under your control...");
-                targets = [];
-                retry = FALSE;
-                llRegionSay(MANTRA_CHANNEL, "PING");
-                llSetTimerEvent(1.0);
+
+                if(lockedavatar)
+                {
+                    llOwnerSay("Displaying the menu for the Intrusive Thoughts slave worn by '" + lockedname + "'.");
+                    llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "PING");
+                    llRegionSayTo(lockedavatar, COMMAND_CHANNEL, "*");
+                }
+                else
+                {
+                    llOwnerSay("Pinging the region for Intrusive Thoughts slaves under your control...");
+                    targets = [];
+                    retry = FALSE;
+                    llRegionSay(MANTRA_CHANNEL, "PING");
+                    llSetTimerEvent(1.0);
+                }
             }
         }
     }
@@ -132,12 +149,13 @@ default
     {
         if(change & CHANGED_INVENTORY)
         {
-            if(llGetInventoryKey("!config") != confignc)
+            if(llGetInventoryKey("!config") != confignc || llGetInventoryType("!config 1") == INVENTORY_NOTECARD)
             {
                 ready = FALSE;
                 confignc = llGetInventoryKey("!config");
                 llMessageLinked(LINK_SET, M_API_STATUS_MESSAGE, "Loading config...", (string)"");
-                name = "!config";
+                if(llGetInventoryType("!config 1") == INVENTORY_NOTECARD) name = "!config 1";
+                else                                                      name = "!config";
                 line = 0;
                 getline = llGetNotecardLine(name, line);
             }
@@ -147,7 +165,18 @@ default
     listen(integer c, string n, key k, string m)
     {
         if(c == HUD_SPEAK_CHANNEL) llOwnerSay(m);
-        else if(c == PING_CHANNEL) targets += [llGetOwnerKey(k)];
+        else if(c == PING_CHANNEL)
+        {
+            if(lockedavatar)
+            {
+                target = llGetOwnerKey(k);
+                giveMenu();
+            }
+            else
+            {
+                targets += [llGetOwnerKey(k)];
+            }
+        }
         else if(menu == 0)
         {
             if(m == "CANCEL") return;
@@ -237,6 +266,7 @@ default
         {
             if(d == EOF)
             {
+                if(name == "!config 1") llRemoveInventory("!config 1");
                 llMessageLinked(LINK_SET, M_API_CONFIG_DONE, "", NULL_KEY);
                 llMessageLinked(LINK_SET, M_API_STATUS_DONE, "", (string)"");
                 ready = TRUE;
