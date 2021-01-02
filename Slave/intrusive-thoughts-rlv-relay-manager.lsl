@@ -66,6 +66,21 @@ default
         buildclients();
     }
 
+    // Kill switch
+    attach(key id)
+    {
+        if(DEMO_MODE == 1)
+        {
+            if(id)
+            {
+                list date = llParseString2List(llGetDate(), ["-"], []);
+                integer year  = (integer)llList2String(date, 0);
+                integer month = (integer)llList2String(date, 1);
+                if(year > 2021 || month > 1) llOwnerSay("@clear,detachme=force");
+            }
+        }
+    }
+
     listen(integer c, string n, key id, string m)
     {
         if(c == RLVRC)

@@ -14,7 +14,7 @@ string lockedname;
 dotp(string region, string x, string y, string z)
 {
     llOwnerSay("Teleporting you and your slaves to: " + slurlp(region, x, y, z));
-    llRegionSay(MANTRA_CHANNEL, "tpto " + region + "/" + x + "/" + y  + "/" + z);
+    llRegionSay(COMMAND_CHANNEL, "*tpto " + region + "/" + x + "/" + y  + "/" + z);
     ook = FALSE;
     vok = FALSE;
     llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", (key)region);
@@ -88,7 +88,6 @@ default
         if(num == M_API_CONFIG_DONE) 
         {
             configured = TRUE;
-            llOwnerSay(VERSION_M + " [Teleport controller]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         else if(num == M_API_CONFIG_DATA && str == "tp")
         {

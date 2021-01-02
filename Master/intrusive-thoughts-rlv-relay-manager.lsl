@@ -200,7 +200,7 @@ default
                 }
             }
         }
-        else if(num == M_API_HUD_STARTED)
+        else if(num == M_API_CONFIG_DONE)
         {
             if(rlvclients == []) enabled = FALSE;
             llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));

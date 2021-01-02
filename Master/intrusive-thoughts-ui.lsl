@@ -12,8 +12,9 @@ list textfields = [];
 list textfieldtexts = [];
 
 integer islocked = FALSE;
-integer ishidden = FALSE;
+integer ishidden = TRUE;
 integer isstatus = FALSE;
+integer started = FALSE;
 
 string lockedavatarname = "";
 key lockedavatarkey = NULL_KEY;
@@ -51,6 +52,32 @@ setbuttonfilter(string filter, integer active)
     if(i == -1) return;
     if(active) alpha = 0.0;
     else       alpha = 1.0;
+
+    // Vore/unvore are mutually incompatible.
+    i = llListFindList(buttons, ["unvore"]);
+    if(llList2Integer(buttonstates, i) == TRUE)
+    {
+        i = llListFindList(buttons, ["vore"]);
+        buttonstates = llListReplaceList(buttonstates, [FALSE], i, i);
+        llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, ALL_SIDES);
+    }
+    else
+    {
+        i = llListFindList(buttons, ["objectify"]);
+        if(llList2Integer(buttonstates, i) == TRUE)
+        {
+            i = llListFindList(buttons, ["vore"]);
+            buttonstates = llListReplaceList(buttonstates, [TRUE], i, i);
+            llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.0, ALL_SIDES);
+        }
+        else
+        {
+            i = llListFindList(buttons, ["vore"]);
+            buttonstates = llListReplaceList(buttonstates, [FALSE], i, i);
+            llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, ALL_SIDES);
+        }
+    }
+
     llSetLinkAlpha(llList2Integer(indicatorlinks, i), alpha, ALL_SIDES);
 }
 
@@ -168,6 +195,7 @@ dosetup()
     while(settext(i++, ""));
     llSetObjectName("");
     llListen(BALL_CHANNEL, "", llGetOwner(), "");
+    sethide();
     llMessageLinked(LINK_SET, M_API_HUD_STARTED, "", (key)"");
 }
 
@@ -175,12 +203,82 @@ doquicksetup()
 {
     integer i = 0;
     while(settext(i++, ""));
+    started = FALSE;
     islocked = FALSE;
     isstatus = FALSE;
     hoverheight = 0.0;
     llSetObjectName("");
     llMessageLinked(LINK_SET, M_API_HUD_STARTED, "", (key)"");
     llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
+}
+
+gethelp(string b)
+{
+    if(b == "-" || b == "--" || b == "reset" || b == "+" || b == "++")
+    {
+        llOwnerSay("This group of five buttons controls your hover height. Clicking the + button moves you up a little, while pressing the ++ button will move you up a lot. The opposite is true for the - and -- buttons. Clicking the RESET button will reset you back to 0 hover height. RLV is required for this function to work, and when you re-attach the HUD, you will be reset to 0 hover height.");
+    }
+    else if(b == "lock")
+    {
+        llOwnerSay("Click this button to lock the last seen avatar as a target for many functions of the HUD. Clicking the button with someone locked, will instead unlock the HUD target. The indicator in the upper right of the HUD will show whether or not you have a lock.");
+    }
+    else if(b == "sit")
+    {
+        llOwnerSay("This button will sit the locked avatar onto the object you are looking at, or make them stand up if they are sitting.");
+    }
+    else if(b == "leash")
+    {
+        llOwnerSay("This button will leash the locked avatar to the object you are looking at if they are wearing an IT Slave with you as an owner.");
+    }
+    else if(b == "relay")
+    {
+        llOwnerSay("This button will turn the embedded RLV relay on and off. If it is turned off, any and all RLV restrictions will also be removed.");
+    }
+    else if(b == "tp")
+    {
+        llOwnerSay("This button will give you a list of teleportation options.");
+    }
+    else if(b == "menu")
+    {
+        llOwnerSay("This button will give you the menu for programming IT Slaves with you set as an owner. Note that if you have a lock on an avatar, it will try to give you the menu belonging to their IT Slave first, if they are not wearing an IT Slave, it will continue to do a scan for slaves as normal.");
+    }
+    else if(b == "rclear" || b == "rdetach" || b == "rreset")
+    {
+        llOwnerSay("These three buttons will control the RLV relay in the locked avatar's IT Slave. The CLEAR button will remove all restrictions, the DETACH button will remove all restrictions and detach the IT Slave device, and the RESET button will remove all restrictions and do a hard reset on the RLV system. The RESET can be needed when dealing with badly programmed RLV toys.");
+    }
+    else if(b == "objectify")
+    {
+        llOwnerSay("This button will turn the locked avatar into an object you wear. It will give you a dialog to select a name for the object. It will also attempt to wear the RLV folder '#RLV/~IT/name', where name is the name you entered. There is no real limit to the amount of objects you can hold.");
+    }
+    else if(b == "release")
+    {
+        llOwnerSay("This button will release a held object. If you have only one object held, it will release that one. Otherwise you will get a menu.");
+    }
+    else if(b == "edit")
+    {
+        llOwnerSay("This button will edit a held object's name tag position if you are seated. If you have only one object held, it will edit that one. Otherwise you will get a menu.");
+    }
+    else if(b == "store")
+    {
+        llOwnerSay("This button will store a held object as the IT Furniture you are looking at. If you have only one object held, it will store that one. Otherwise you will get a menu.");
+    }
+    else if(b == "furniture")
+    {
+        llOwnerSay("This button will attempt to take an object from the IT Furniture you are looking at. If you have an avatar locked and the IT Furniture is not already occupied, it will instead try to store that avatar directly.");
+    }
+    else if(b == "vore" || b == "unvore")
+    {
+        llOwnerSay("These two buttons will eat, and release, the locked avatar. You can only have one avatar inside of you. When eating someone, the RLV folder #RLV/~IT/vore/on will be worn, and the folder #RLV/~IT/vore/off will be taken off. The opposite will be done when you release someone.");
+    }
+    else if(b == "acid+" || b == "acid-")
+    {
+        llOwnerSay("These buttons affect the acid level inside of your stomach. Random clothes will start dissolving if the acide level is at or above 40%.");
+    }
+    else if(b == "hide")
+    {
+        llOwnerSay("Clicking this button will minimize/maximize the HUD.");
+    }
+
 }
 
 default
@@ -211,7 +309,11 @@ default
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == M_API_CAM_AVATAR)
+        if(num == M_API_CONFIG_DONE)
+        {
+            started = TRUE;
+        }
+        else if(num == M_API_CAM_AVATAR)
         {
             if(validatedisplayname(str))
             {
@@ -265,7 +367,7 @@ default
             lockedavatarkey = id;
             if(validatedisplayname(str))
             {
-                lockedavatarname = str;
+                lockedavatarname = ">" + str + "<";
             }
             else
             {
@@ -282,7 +384,7 @@ default
                     if(i != l-1) outname += " ";
                     ++i;
                 }
-                lockedavatarname = outname;
+                lockedavatarname = ">" + outname + "<";
             }
             if(str == "")
             {
@@ -294,7 +396,7 @@ default
             {
                 islocked = TRUE;
                 setbuttonfilter("lock", TRUE);
-                settext(0, ">" + str + "<");
+                settext(0, lockedavatarname);
             }
         }
         else if(num == M_API_SET_FILTER)
@@ -374,14 +476,47 @@ default
         }
     }
 
-    touch_start(integer total_number)
+    touch_start(integer num)
     {
+        if(DEMO_MODE == 1)
+        {
+            list date = llParseString2List(llGetDate(), ["-"], []);
+            integer year  = (integer)llList2String(date, 0);
+            integer month = (integer)llList2String(date, 1);
+            if(year > 2021) return;
+            if(month > 1) return;
+        }
+        if(!started) return;
+        
+        llResetTime();
+    }
+
+    touch_end(integer num)
+    {
+        if(DEMO_MODE == 1)
+        {
+            list date = llParseString2List(llGetDate(), ["-"], []);
+            integer year  = (integer)llList2String(date, 0);
+            integer month = (integer)llList2String(date, 1);
+            if(year > 2021) return;
+            if(month > 1) return;
+        }
+        if(!started) return;
+
         string name = llGetLinkName(llDetectedLinkNumber(0));
         integer i = llListFindList(buttons, [name]);
         if(i == -1) return;
         if(ishidden == TRUE && name != "hide") return;
-        string filter = llList2String(buttonfilters, i);
-        if(filter != "" && llList2Integer(buttonstates, i) == FALSE) return;
-        llMessageLinked(LINK_SET, M_API_BUTTON_PRESSED, name, seenobjectkey);
+
+        if(llGetTime() > 1.0)
+        {
+            gethelp(name);
+        }
+        else
+        {
+            string filter = llList2String(buttonfilters, i);
+            if(filter != "" && llList2Integer(buttonstates, i) == FALSE) return;
+            llMessageLinked(LINK_SET, M_API_BUTTON_PRESSED, name, seenobjectkey);
+        }
     }
 }

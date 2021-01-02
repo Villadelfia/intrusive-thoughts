@@ -11,7 +11,6 @@ integer lines;
 string name;
 string prefix;
 integer menu = 0;
-key confignc;
 key lockedavatar = NULL_KEY;
 string lockedname = "";
 
@@ -43,7 +42,7 @@ giveMenu()
     list buttons = [];
     for(i = 0; i < l; ++i)
     {
-        if(llGetInventoryName(INVENTORY_NOTECARD, i) != "!config")
+        if(llGetInventoryName(INVENTORY_NOTECARD, i) != "Intrusive Thoughts Configuration")
         {
             buttons += [(string)i];
             prompt += "\n" + (string)i + ": " + llGetInventoryName(INVENTORY_NOTECARD, i);
@@ -87,21 +86,16 @@ default
         {
             if(ready)
             {
-                llOwnerSay(VERSION_M + ": Startup complete. Welcome to your Intrusive Thoughts system.");
-                llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
+                llMessageLinked(LINK_SET, M_API_CONFIG_DONE, "", NULL_KEY);
             }
             else
             {
-                confignc = llGetInventoryKey("!config");
-                llMessageLinked(LINK_SET, M_API_STATUS_MESSAGE, "Loading config...", (string)"");
-                name = "!config";
-                line = 0;
-                getline = llGetNotecardLine(name, line);
+                llOwnerSay(VERSION_M + ": Drop your 'Intrusive Thoughts Configuration' notecard onto the HUD to set it up.");
             }
         }
         else if(num == M_API_CONFIG_DONE)
         {
-            llOwnerSay(VERSION_M + ": Startup complete. Welcome to your Intrusive Thoughts system.");
+            llOwnerSay(VERSION_M + ": Startup complete. Welcome to your Intrusive Thoughts system. Click and hold any button for more than a second to get basic usage information. For more documentation read the included README notecard.");
             if(llGetPermissions() & PERMISSION_TAKE_CONTROLS == 0) llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
         }
         else if(num == M_API_LOCK)
@@ -149,13 +143,11 @@ default
     {
         if(change & CHANGED_INVENTORY)
         {
-            if(llGetInventoryKey("!config") != confignc || llGetInventoryType("!config 1") == INVENTORY_NOTECARD)
+            if(llGetInventoryType("Intrusive Thoughts Configuration") == INVENTORY_NOTECARD)
             {
-                ready = FALSE;
-                confignc = llGetInventoryKey("!config");
                 llMessageLinked(LINK_SET, M_API_STATUS_MESSAGE, "Loading config...", (string)"");
-                if(llGetInventoryType("!config 1") == INVENTORY_NOTECARD) name = "!config 1";
-                else                                                      name = "!config";
+                ready = FALSE;
+                name = "Intrusive Thoughts Configuration";
                 line = 0;
                 getline = llGetNotecardLine(name, line);
             }
@@ -266,7 +258,7 @@ default
         {
             if(d == EOF)
             {
-                if(name == "!config 1") llRemoveInventory("!config 1");
+                llRemoveInventory("Intrusive Thoughts Configuration");
                 llMessageLinked(LINK_SET, M_API_CONFIG_DONE, "", NULL_KEY);
                 llMessageLinked(LINK_SET, M_API_STATUS_DONE, "", (string)"");
                 ready = TRUE;

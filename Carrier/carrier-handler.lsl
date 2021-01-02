@@ -177,7 +177,7 @@ default
             if(endswith(m, (string)llGetKey()+",!release,ok"))
             {
                 llOwnerSay("Releasing captive...");
-                llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
+                llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + <0.0, 0.0, 10.0>);
                 llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(volumelink) + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnLinkSitTarget(volumelink));
@@ -189,7 +189,7 @@ default
 
     timer()
     {
-        if(llGetNumberOfPrims() == 1)
+        if(llAvatarOnLinkSitTarget(volumelink) == NULL_KEY)
         {
             die();
         }

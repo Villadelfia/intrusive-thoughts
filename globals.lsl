@@ -47,8 +47,10 @@
 
 #define X_API_FILL_FACTOR       -4000
 
-string VERSION_S = "IT-Slave v2.1";
-string VERSION_M = "IT-Master v2.1";
+#define DEMO_MODE                   0
+
+string VERSION_S = "IT-Slave v2.2";
+string VERSION_M = "IT-Master v2.2";
 
 resetscripts()
 {

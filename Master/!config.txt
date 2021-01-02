@@ -1,10 +1,5 @@
 # Tp lines configure pre-set locations for the tpto and tpme commands
 # The format is: tp|shortname,region,x,y,z
-tp|tflab,Bedos,97,99,291
-tp|tf,Bedos,97,99,291
-tp|home,Bedos,96,99,198
-tp|house,Bedos,96,99,198
-tp|dungeon,Bedos,95,104,235
 tp|mystwood,Quiet Riot,141,95,55
 tp|mw,Quiet Riot,141,95,55
 tp|silenced,San Fierro,218,15,2422
@@ -38,3 +33,11 @@ putdown|%ME% takes off her %OBJ% and morphs its form into a %TAR% as she puts it
 # need to teleport to another region to become visible again. If you are okay with
 # just pushing them beneath the ground, set it to 1.
 ball|2
+
+# This is what will show as name when your food tries to talk. In this case, it would show as "Hana's Prey"
+food|Prey
+
+# These are the phrases uttered when eating and releasing someone. %OBJ% in this case will be replaced with
+# the term defined above.
+vore|%ME% gulps up %VIC%, their fate consigned to being %ME%'s %OBJ%.
+unvore|%ME% releases her %OBJ% from her belly.

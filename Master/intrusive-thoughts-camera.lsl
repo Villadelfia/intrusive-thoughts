@@ -39,7 +39,7 @@ default
                 }
             }
         }
-        else if(num == M_API_HUD_STARTED)
+        else if(num == M_API_CONFIG_DONE)
         {
             llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA);
         }

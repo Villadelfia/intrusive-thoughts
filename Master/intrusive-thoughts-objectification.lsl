@@ -278,7 +278,15 @@ default
                 storingon = n;
                 if(store == -1)
                 {
-                    if(m == "furniture 0") llOwnerSay("No object is stored in '" + n + "'.");
+                    if(m == "furniture 0")
+                    {
+                        if(lockedavatar == NULL_KEY) llOwnerSay("No object is stored in " + n + ".");
+                        else
+                        {
+                            llRegionSayTo(id, MANTRA_CHANNEL, "capture " + (string)lockedavatar);
+                            llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
+                        }
+                    }
                     else
                     {
                         llOwnerSay("Taking object from '" + n + "'.");
@@ -488,16 +496,12 @@ default
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == M_API_HUD_STARTED)
+        if(num == M_API_CONFIG_DONE) 
         {
             lockedavatar = NULL_KEY;
             lockedname = "";
             intp = FALSE;
             llSetTimerEvent(0.5);
-        }
-        if(num == M_API_CONFIG_DONE) 
-        {
-            llOwnerSay(VERSION_M + " [Objectification controller]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         else if(num == M_API_CONFIG_DATA)
         {
@@ -536,7 +540,7 @@ default
         }
         else if(num == M_API_BUTTON_PRESSED)
         {
-            if(str == "take")
+            if(str == "furniture")
             {
                 store = -1;
                 llRegionSayTo(id, MANTRA_CHANNEL, "furniture");

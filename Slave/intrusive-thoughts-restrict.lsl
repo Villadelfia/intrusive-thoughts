@@ -295,7 +295,6 @@ default
             {
                 llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
             }
-            return;
         }
         
         if(llToLower(m) == "noim")

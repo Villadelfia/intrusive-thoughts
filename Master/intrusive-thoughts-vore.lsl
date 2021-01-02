@@ -250,13 +250,9 @@ default
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == M_API_HUD_STARTED)
-        {
-            llSetTimerEvent(0.5);
-        }
         if(num == M_API_CONFIG_DONE) 
         {
-            llOwnerSay(VERSION_M + " [Vore controller]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            llSetTimerEvent(0.5);
         }
         else if(num == M_API_CONFIG_DATA)
         {

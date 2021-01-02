@@ -58,30 +58,55 @@ default
 
     on_rez(integer start_param)
     {
-        rezzer = llGetOwnerKey((key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0));
+        // Sanitize all default parameters.
         firstavatar = NULL_KEY;
         keyisavatar = TRUE;
         saton = FALSE;
         editmode = FALSE;
         seatedoffset = ZERO_VECTOR;
         waitingstate = 0;
-        if(start_param & 1)      animation = "hide_a";
-        else if(start_param & 2) animation = "hide_b";
-        else                     return;
+        
+        // Set the rezzer and default animation.
+        rezzer = (key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0);
+        animation = "hide_a";
+
+        // Set certain settings based on the start parameter.
+        if(start_param & 2) animation = "hide_b";
+        if(start_param & 4) keyisavatar = FALSE;
+
+        // If the rezzer is an avatar, make sure we actually have the uuid of the avatar and not the hud.
+        // Otherwise set the name this object will use to talk.
+        if(keyisavatar) rezzer = llGetOwnerKey(rezzer);
+        else            name = llList2String(llGetObjectDetails(rezzer, [OBJECT_NAME]), 0);
+
+        // If we were rezzed without a start parameter or just normally, don't suicide in 60 seconds.
+        if(start_param == 0) return;
+
+        // Otherwise, start a suicide timer.
         llSetTimerEvent(60.0);
     }
 
     changed(integer change)
     {
+        // If we have been sat on.
         if(change & CHANGED_LINK)
         {
             if(llAvatarOnSitTarget() != NULL_KEY)
             {
+                // If it's the first time, remember who it was.
                 if(firstavatar == NULL_KEY) firstavatar = llAvatarOnSitTarget();
+
+                // Otherwise only allow the first sitter.
                 if(firstavatar != llAvatarOnSitTarget()) llUnSit(llAvatarOnSitTarget());
+
+                // Make sure to flag that we have been sat on.
                 saton = TRUE;
+
+                // Start listening to certain channels.
                 llListen(GAZE_CHAT_CHANNEL, "", llAvatarOnSitTarget(), "");
                 llListen(RLVRC, "", NULL_KEY, "");
+
+                // And animate the sat avatar.
                 llRequestPermissions(llAvatarOnSitTarget(), PERMISSION_TRIGGER_ANIMATION);
             }
         }
@@ -89,9 +114,16 @@ default
 
     run_time_permissions(integer perm)
     {
-        llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "onball " + (string)llGetKey());
+        // Let the IT slave know to turn off its garbler.
+        llRegionSayTo(llAvatarOnSitTarget(), COMMAND_CHANNEL, "*onball " + (string)llGetKey());
+
+        // Apply RLV restrictions.
         llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames_sec:" + (string)llGetOwnerKey(rezzer) + "=n|@shownametags=n|@shownearby=n|@showhovertextall=n|@showworldmap=n|@showminimap=n|@showloc=n|@setcam_focus:" + (string)rezzer + ";;1/0/0=force|@setcam_origindistmax:10=n|@buy=n|@pay=n|@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@showinv=n|@interact=n|@showself=n|@sendgesture=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add|@sendchannel_sec=n|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add|@recvim:10=n|@sendim:10=n");
+
+        // Start the animation.
         llStartAnimation(animation);
+
+        // And start a timer loop.
         llSetTimerEvent(0.5);
     }
 
