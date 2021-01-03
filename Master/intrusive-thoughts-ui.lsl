@@ -48,11 +48,6 @@ setbuttonfilter(string filter, integer active)
         }
     }
 
-    i = llListFindList(indicators, [filter]);
-    if(i == -1) return;
-    if(active) alpha = 0.0;
-    else       alpha = 1.0;
-
     // Vore/unvore are mutually incompatible.
     i = llListFindList(buttons, ["unvore"]);
     if(llList2Integer(buttonstates, i) == TRUE)
@@ -77,6 +72,11 @@ setbuttonfilter(string filter, integer active)
             llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, ALL_SIDES);
         }
     }
+
+    i = llListFindList(indicators, [filter]);
+    if(i == -1) return;
+    if(active) alpha = 0.0;
+    else       alpha = 1.0;
 
     llSetLinkAlpha(llList2Integer(indicatorlinks, i), alpha, ALL_SIDES);
 }
@@ -438,13 +438,13 @@ default
                 llSetObjectName("RLV Sit");
                 if(llGetAgentInfo(lockedavatarkey) & AGENT_SITTING)
                 {
-                    llOwnerSay("Standing up '" + lockedavatarname + "'.");
+                    llOwnerSay("Standing up '" + llGetSubString(lockedavatarname, 1, -2) + "'.");
                     if(lockedavatarkey == llGetOwner()) llOwnerSay("@unsit=force");
                     else                                llRegionSayTo(lockedavatarkey, RLVRC, "st," + (string)lockedavatarkey + ",@unsit=force");
                 }
                 else
                 {
-                    llOwnerSay("Sitting '" + lockedavatarname + "' on '" + seenobjectname + "'.");
+                    llOwnerSay("Sitting '" + llGetSubString(lockedavatarname, 1, -2) + "' on '" + seenobjectname + "'.");
                     if(lockedavatarkey == llGetOwner()) llOwnerSay("@sit:" + (string)seenobjectkey + "=force");
                     else                                llRegionSayTo(lockedavatarkey, RLVRC, "si," + (string)lockedavatarkey + ",@sit:" + (string)seenobjectkey + "=force");
                 }
