@@ -176,25 +176,19 @@ default
             if(!isowner(id)) return;
             if(m == "CLEAR")
             {
-                if(llGetAgentSize(id) != ZERO_VECTOR) llRegionSayTo(id, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared.");
+                if(llGetAgentSize(llGetOwnerKey(id)) != ZERO_VECTOR) llRegionSayTo(id, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
             }
             else if(m == "FORCECLEAR")    
             {
-                if(llGetAgentSize(id) != ZERO_VECTOR) llRegionSayTo(id, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared and detached.");
+                if(llGetAgentSize(llGetOwnerKey(id)) != ZERO_VECTOR) llRegionSayTo(id, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared and detached.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 llOwnerSay("@clear,detachme=force");
             }
             else if(m == "RESETRELAY")    
             {
-                if(llGetAgentSize(id) != ZERO_VECTOR) llRegionSayTo(id, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been reset and has been rebuilt.");
-                rlvclients = [];
-                blacklist = [];
-                whitelist = [];
-                handlingk = NULL_KEY;
-                handlingm = "";
-                handlingi = 0;
-                buildclients();
+                if(llGetAgentSize(llGetOwnerKey(id)) != ZERO_VECTOR) llRegionSayTo(id, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been reset and has been rebuilt.");
+                llMessageLinked(LINK_SET, S_API_HARD_RESET, "", "");
             }
         }
         else if(c == 0)

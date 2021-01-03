@@ -195,6 +195,7 @@ dosetup()
     while(settext(i++, ""));
     llSetObjectName("");
     llListen(BALL_CHANNEL, "", llGetOwner(), "");
+    llListen(COMMAND_CHANNEL, "", llGetOwner(), "");
     sethide();
     llMessageLinked(LINK_SET, M_API_HUD_STARTED, "", (key)"");
 }
@@ -244,7 +245,7 @@ gethelp(string b)
     }
     else if(b == "rclear" || b == "rdetach" || b == "rreset")
     {
-        llOwnerSay("These three buttons will control the RLV relay in the locked avatar's IT Slave. The CLEAR button will remove all restrictions, the DETACH button will remove all restrictions and detach the IT Slave device, and the RESET button will remove all restrictions and do a hard reset on the RLV system. The RESET can be needed when dealing with badly programmed RLV toys.");
+        llOwnerSay("These three buttons will control the RLV relay in the locked avatar's IT Slave. The CLEAR button will remove all restrictions, the DETACH button will remove all restrictions and detach the IT Slave device, and the RESET button will remove all restrictions and do a hard reset on the entire IT slave system, except for the owner list. The RESET can be needed when dealing with badly programmed RLV toys.");
     }
     else if(b == "objectify")
     {
@@ -292,20 +293,7 @@ default
     {
         if(id)
         {
-            if(DEMO_MODE == 1)
-            {
-                list date = llParseString2List(llGetDate(), ["-"], []);
-                integer year  = (integer)llList2String(date, 0);
-                integer month = (integer)llList2String(date, 1);
-                if(year > 2021 || month > 1)
-                {
-                    llOwnerSay("Demo period is over. Detaching.");
-                    llOwnerSay("@clear,detachme=force");
-                    llRequestPermissions(llGetOwner(), PERMISSION_ATTACH);
-                    return;
-                }
-            }
-
+            if(dodemocheck()) return;
             doquicksetup();
         }
     }
@@ -323,10 +311,18 @@ default
 
     listen(integer channel, string name, key id, string message)
     {
-        string oldn = llGetObjectName();
-        llSetObjectName("Your Thoughts");
-        llOwnerSay(message);
-        llSetObjectName(oldn);
+        if(channel == BALL_CHANNEL)
+        {
+            string oldn = llGetObjectName();
+            llSetObjectName("Your Thoughts");
+            llOwnerSay(message);
+            llSetObjectName(oldn);
+        }
+        else if(channel == COMMAND_CHANNEL && message == "hardreset")
+        {
+            llOwnerSay("Doing a hard reset of your Master HUD.");
+            resetscripts();
+        }
     }
 
     link_message(integer sender_num, integer num, string str, key id)

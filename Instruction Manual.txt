@@ -1,0 +1,100 @@
+Welcome to the Intrusive Thoughts system. This notecard will tell you all you need to know to use the system.
+
+1. What's inside
+Inside of your package you will find:
+ - > Intrusive Thoughts Furniture Contents: An unpacker for the tools needed to make objects 'furniture' for the IT system.
+ - > Intrusive Thoughts Leash Handles: An unpacker containing two leash handles compatible with the IT Slaves.
+ - > Intrusive Thoughts RLV Client Script: An unpacker containing an extra script if 10 supported RLV devices on the RLV relay is not enough.
+ - Instruction Manual: You're reading it right now.
+ - Intrusive Thoughts Applier Notecard Template: An example applier notecard. You will be using this to set up the voice and hearing restrictions featured in the IT Slaves.
+ - Intrusive Thoughts Configuration: You will be editing this notecard and dropping it onto the HUD to set it up before first usage and whenever you wish to change the settings.
+ - Intrusive Thoughts Master [v2.2]: The Master HUD, to be worn by you.
+ - Intrusive Thoughts Slave [v2.2]: The Slave HUD, to be given to your submissives.
+ - Intrusive Thoughts Tuned Translator [v2.2]: A translator to be worn by people if they wish to be able to understand an IT Slave with the DIALECT option enabled. This one listens only to the person that gave it to them. You would give this to your slave and they would have to try to get people to accept and wear it before they can understand them. Note that unless you enable the DIALECT option, this is unneeded.
+ - Intrusive Thoughts Universal Translator [v2.2]: A translator to be worn by people if they wish to be able to understand an IT Slave with the DIALECT option enabled. This one listens to every IT Slave. You would give this to your slave and they would have to try to get people to accept and wear it before they can understand them. Note that unless you enable the DIALECT option, this is unneeded.
+
+
+2. How do I use this Master HUD?
+To get started, edit the "Intrusive Thoughts Configuration". Now wear your Master HUD and as it requests, drop your notecard on it. It will begin reading the settings and flip open.
+
+The HUD has a built-in tutorial system: Click and hold down the mouse for more than a second on a button, and it will tell you what the button does and how it works.
+
+Except for the menu, leash to, and slave RLV options, all of the buttons work on a target regardless of whether or not they are wearing an IT Slave, assuming they have an active RLV relay and accept the requests.
+
+The RLV relay in the Master can be enabled by clicking on the RLV button, and disabled by clicking on it again. It will immediately and without notification release any RLV restrictions when turned off, since it is meant as an "RLV relay for Dominants".
+
+
+3. How do I get started with a Slave?
+To add a Slave, just give a Slave device to your submissive and have them put it on. You can then use the menu button on the HUD (the three dots) to program them with an applier if you want to add vocal or auditory restrictions. You can also type /1<prefix> to access the menu of a nearby Slave. Prefix is the first two letters of your slave's username. So, for Hana Nova, the menu command would be /1ha and for Sinryl Resident the menu command would be /1si. You can also just click the slave device.
+
+When freshly worn, the slave device will be visible as a magenta orb in front of the wearer's neck. They can then move it around so that the orb is in a suitable location for a leash to originate from. Once done, the Master should click on the magenta orb or type /1<prefix> to access the menu, and lock it. When locked it will become invisible, and bigger, so it is still easily clickable.
+
+Depending on who clicks it, different menus will be shown:
+ - The wearer will get options to change their playing animation. More animations can be added to the slave's inventory to expand this list.
+ - Any owner will get a list of options including the above, IM restrictions, stripping, forms, outfits, stuff, deafness, blindness, muting, dazing, focussing and locking, as well as instructions for some other features. These links are all clickable and will execute their stated function.
+ - In addition, the primary option will be given a command to add more secondary owners or to remove them.
+
+The RLV relay in the Slaves is a specific type of ASK mode relay: If the object is owned by any of the owners, it is allowed. If not, the request is sent to the primary owner if they are in the same region, and if not, the wearer will be asked.
+
+NOTE: THE IT SLAVE HAS AN RLV RELAY BUILT IN AND IS WHOLLY INCOMPATIBLE WITH OPENCOLLAR COLLARS UNLESS THE OPENCOLLAR RELAY IS DISABLED!
+
+
+4. What RLV folders are supported and how do they work?
+For the wearer of the Master HUD:
+ - #RLV/~IT/vore/on: This will be worn whenever you eat someone, and taken off when you let them go.
+ - #RLV/~IT/vore/off: This will be taken off whenever you eat someone, and worn when you let them go.
+ - #RLV/~IT/name: This, with 'name' replaced for whatever you named the object, will be worn whenever you objectify a person. It will be taken off when you let them go.
+
+For the wearer of a Slave device:
+ - #RLV/~form/...: The contents of the ~form folder can browsed by any owner of the slave. When worn, they will be fully stripped before putting on the chosen form. This is suitable for an entirely different avatars.
+ - #RLV/~outfit/...: The contents of the ~outfit folder can browsed by any owner of the slave. When worn, just the contents of the ~outfit folder will be stripped, and then the chosen outfit will be added. This is suitable for outfits on top of a base form.
+ - #RLV/~stuff/...: The contents of the ~stuff folder can browsed by any owner of the slave. Any subfolder can be worn or removed individually.
+ 
+ 
+5. About the Objectification system.
+There are a few nuances to the objectification system. When you objectify someone, they can still emote. But if they try to talk, or emote with spoken text in it, only they, the other objects worn by you, and yourself will be able to see that. In addition, you as a wearer may speak into channel /8 (think of it like a magic 8-ball) to 'think' to the objects you are wearing. When you store an object as furniture, you can no longer think to them, and they can no longer speak to anyone except themselves.
+
+When you wear an object and they escape or log off, no recapture attempt will be made. However, stored furniture will await the occupant for 24 hours before giving up and derezzing.
+
+If you wish for this wait period to be longer, rez your hud, take out the "ball" object and delete the original, change the description to a higher number, and put it back in .
+
+
+6. About the Vore system.
+The Vore system works similarly to the Objectification system, except your prey can still talk. One special feature here is the acid level. If the acid level is at or above 40%, clothes will begin dissolving. Like the worn Objectification system, there is no recapturing on the Vore system.
+
+
+7. How do I configure the vocal/auditory features of a Slave?
+Read the included Applier Notecard Template and edit it to your liking. Once done, rename it to whatever you want and drop it onto your HUD. You can now use the menu button to program any nearby Slaves with that notecard. Do note that you can leave out any section of the configuration notecard as desired. For example, a notecard that *only* renames the Slave would contain the following two lines and nothing else:
+
+█NAME
+Name Here
+
+
+8. How do I use the teleport system?
+You can click on the TP button to get a menu of programmed destinations. If you have an avatar locked, you will have the option to just send them. You can also drop a landmark onto the HUD to send off all Slaves and then yourself.
+
+If you are carrying someone, of if you have eaten someone, they will be sent along, and they will be recaptured if you can rez at the destination.
+
+
+9. My Slave is complaining that they get spammed with "..." in chat after being programmer with an applier notecard.
+Disable the "..." during auditory restrictions by disabling: RLVa -> Show Filtered Chat —or— CTRL+ALT+D to enable Advanced Menu, then CTRL+ALT+SHIFT+S to go into Debug Settings. Look for [RestrainedLoveShowEllipsis] and change it to FALSE.
+
+
+10. How do I create Furniture compatible with the Objectification system?
+Unpack the Furniture pack and drop the script and the ball object in anything to turn it into furniture. You can drop it alongside Immersivity HUD furniture scripts and it will work. The name of the object will be the name of the furniture when speaking.
+
+If you edit the object description to include the word "invisible", the captured avatar will be made entirely invisible rather than being pushed under the ground.
+
+
+11. How do I create a leash holder?
+Unpack the leash holder package and add the appropriate script to the linked prim of your leash holder where the leash should go to. If you want it to disappear when you are not leashing someone, use the "autohide" script. Otherwise use the normal script.
+
+
+12. Can I add support for more simultaneous RLV devices to the relay?
+Yes, just add more client scripts from the RLV Client Script package. One per device.
+
+
+13. Something really broke... Help!
+If a script crashes in your HUD, the watchdog script should take care of it. The same goes for the slaves.
+
+However, if something is broken and it doesn't involve a script crash, you can reset your hud by typing /1hardreset, and you can reset a slave by locking onto it and clicking the reset button.

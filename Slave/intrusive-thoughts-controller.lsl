@@ -12,19 +12,6 @@ default
     {
         if(id != NULL_KEY)
         {
-            if(DEMO_MODE == 1)
-            {
-                list date = llParseString2List(llGetDate(), ["-"], []);
-                integer year  = (integer)llList2String(date, 0);
-                integer month = (integer)llList2String(date, 1);
-                if(year > 2021 || month > 1)
-                {
-                    llOwnerSay("Demo period is over. Detaching.");
-                    llOwnerSay("@clear,detachme=force");
-                    llRequestPermissions(llGetOwner(), PERMISSION_ATTACH);
-                    return;
-                }
-            }
             if(wearer != llGetOwner()) resetscripts();
             else
             {
@@ -38,11 +25,6 @@ default
             if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, 0, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
             else llInstantMessage(primary, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
         }
-    }
-
-    run_time_permissions(integer perm)
-    {
-        if(perm & PERMISSION_ATTACH) llDetachFromAvatar();
     }
 
     // Set up the owner and prefix on first wear.
@@ -61,6 +43,14 @@ default
 
     link_message(integer sender_num, integer num, string str, key id )
     {
+        if(num == S_API_HARD_RESET)
+        {
+            llOwnerSay("@clear");
+            resetother();
+            llSleep(5.0);
+            llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
+            llMessageLinked(LINK_SET, S_API_STARTED, llDumpList2String(owners, ","), primary);
+        }
         if(started) return;
         if(num == S_API_OWNERS)
         {

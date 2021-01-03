@@ -14,7 +14,7 @@
 #define COMMAND_CHANNEL             1
 #define BALL_CHANNEL                8
 
-#define S_API_UNUSED            -1000
+#define S_API_HARD_RESET        -1000
 #define S_API_SELF_DESC         -1001
 #define S_API_SELF_SAY          -1002
 #define S_API_SAY               -1003
@@ -49,10 +49,37 @@
 
 #define X_API_FILL_FACTOR       -4000
 
-#define DEMO_MODE                   1
+//#define DEMO_MODE
+integer dodemocheck()
+{
+#ifdef DEMO_MODE
+    llOwnerSay(VERSION_M + ": Demo mode active until the end of January 2021.");
+    list date = llParseString2List(llGetDate(), ["-"], []);
+    integer year  = (integer)llList2String(date, 0);
+    integer month = (integer)llList2String(date, 1);
+    if(year > 2021 || month > 1)
+    {
+        llOwnerSay("Demo period is over. Detaching.");
+        llOwnerSay("@clear,detachme=force");
+        llRequestPermissions(llGetOwner(), PERMISSION_ATTACH);
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
+#else
+    return FALSE;
+#endif
+}
 
-string VERSION_S = "IT-Slave v2.2";
-string VERSION_M = "IT-Master v2.2";
+
+string VERSION_S = "IT-Slave v2.3";
+#ifdef DEMO_MODE
+string VERSION_M = "IT-Master v2.3 DEMO";
+#else
+string VERSION_M = "IT-Master v2.3";
+#endif
 
 resetscripts()
 {

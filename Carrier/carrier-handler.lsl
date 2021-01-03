@@ -176,7 +176,6 @@ default
         {
             if(endswith(m, (string)llGetKey()+",!release,ok"))
             {
-                llOwnerSay("Releasing captive...");
                 llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + <0.0, 0.0, 10.0>);
                 llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(volumelink) + ",!release");
                 llSleep(0.5);
