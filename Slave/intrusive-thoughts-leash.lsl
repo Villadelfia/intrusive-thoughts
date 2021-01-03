@@ -1,11 +1,15 @@
 #include <IT/globals.lsl>
+key primary = NULL_KEY;
+list owners = [];
+
+key primaryleashpoint = NULL_KEY;
+list secondaryleashpoints = [];
+
 integer leashinghandle;
 integer justmoved;
 vector leashtarget;
 integer leasherinrange;
 key leashedto;
-key owner = NULL_KEY;
-key leashpoint = NULL_KEY;
 integer awaycounter = -1;
 integer llength = 2;
 string prefix;
@@ -94,39 +98,41 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == S_API_RESET && id == llGetOwner()) llResetScript();
-    }
-
-    changed(integer change)
-    {
-        if(change & CHANGED_OWNER) llResetScript();
-    }
-
-    attach(key id)
-    {
-        unleash();
+        if(num == S_API_STARTED)
+        {
+            unleash();
+        }
+        else if(num == S_API_OWNERS)
+        {
+            owners = [];
+            secondaryleashpoints = [];
+            list new = llParseString2List(str, [","], []);
+            integer n = llGetListLength(new);
+            while(~--n)
+            {
+                owners += [(key)llList2String(new, n)];
+                secondaryleashpoints += [NULL_KEY];
+            }
+            primary = id;
+        }
     }
 
     state_entry()
     {
-        owner = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         name = llGetDisplayName(llGetOwner());
-        llListen(1, "", owner, "");
+        llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         unleash();
     }
 
     listen(integer c, string n, key k, string m)
     {
-        if(k != owner && llGetOwnerKey(k) != owner) return;
+        if(!isowner(k)) return;
         if(c == MANTRA_CHANNEL)
         {
-            if(m == "END")
-            {
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
-            }
-            else if(startswith(m, "leashto"))
+            
+            if(startswith(m, "leashto"))
             {
                 m = llDeleteSubString(m, 0, llStringLength("leashto"));
                 leash((key)m);
@@ -141,45 +147,82 @@ default
             }
             else if(m == "leashpoint")
             {
-                if(k != leashpoint) 
+                integer c = FALSE;
+                if(llGetOwnerKey(k) == primary)
                 {
-                    leashpoint = k;
-                    if(leashedto) 
+                    if(k != primaryleashpoint)
                     {
-                        unleash();
-                        leash(leashpoint);
+                        primaryleashpoint = k;
+                        c = TRUE;
                     }
+                }
+                else
+                {
+                    integer i = llListFindList(owners, [llGetOwnerKey(k)]);
+                    if(llList2Key(secondaryleashpoints, i) != k)
+                    {
+                        secondaryleashpoints = llListReplaceList(secondaryleashpoints, [k], i, i);
+                        c = TRUE;
+                    }
+                }
+
+                if(llGetOwnerKey(leashedto) == llGetOwnerKey(k) && c == TRUE)
+                {
+                    unleash();
+                    leash(k);
                 }
             }
         }
-        else if(c == 1)
+        else if(c == COMMAND_CHANNEL)
         {
             if(startswith(m, "#") && k == llGetOwner())       return;
             if(startswith(m, prefix))                         m = llDeleteSubString(m, 0, 1);
             else if(startswith(m, "*") || startswith(m, "#")) m = llDeleteSubString(m, 0, 0);
             else                                              return;
             if(llToLower(m) == "leash")
-            {   
-                if(leashpoint != NULL_KEY)
+            {
+                if(llGetOwnerKey(k) == primary)
                 {
-                    if(llList2Vector(llGetObjectDetails(leashpoint, [OBJECT_POS]), 0) == ZERO_VECTOR)
+                    if(primaryleashpoint)
                     {
-                        leashpoint = NULL_KEY;
-                        leash(owner);
-                    }
-                    else
-                    {
-                        leash(leashpoint);
+                        vector handlepos = llList2Vector(llGetObjectDetails(primaryleashpoint, [OBJECT_POS]), 0);
+                        if(handlepos == ZERO_VECTOR)
+                        {
+                            primaryleashpoint = NULL_KEY;
+                        }
+                        else
+                        {
+                            leash(primaryleashpoint);
+                            return;
+                        }
                     }
                 }
                 else
                 {
-                    leash(owner);
+                    integer i = llListFindList(owners, [llGetOwnerKey(k)]);
+                    if(llList2Key(secondaryleashpoints, i))
+                    {
+                        vector handlepos = llList2Vector(llGetObjectDetails(llList2Key(secondaryleashpoints, i), [OBJECT_POS]), 0);
+                        if(handlepos == ZERO_VECTOR)
+                        {
+                            secondaryleashpoints = llListReplaceList(secondaryleashpoints, [NULL_KEY], i, i);
+                        }
+                        else
+                        {
+                            leash(llList2Key(secondaryleashpoints, i));
+                            return;
+                        }
+                    }
                 }
+                leash(llGetOwnerKey(k));
+                llOwnerSay("Your leash has been grabbed by secondlife:///app/agent/" + (string)llGetOwnerKey(k) + "/about.");
+                llRegionSayTo(llGetOwnerKey(k), 0, "You've grabbed the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
             }
             else if(llToLower(m) == "unleash")
             {
                 unleash();
+                llOwnerSay("Your leash has been released by secondlife:///app/agent/" + (string)llGetOwnerKey(k) + "/about.");
+                llRegionSayTo(llGetOwnerKey(k), 0, "You've released the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
             }
             else if(llToLower(m) == "yank")
             {

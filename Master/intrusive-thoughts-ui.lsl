@@ -290,7 +290,29 @@ default
 
     attach(key id)
     {
-        if(id) doquicksetup();
+        if(id)
+        {
+            if(DEMO_MODE == 1)
+            {
+                list date = llParseString2List(llGetDate(), ["-"], []);
+                integer year  = (integer)llList2String(date, 0);
+                integer month = (integer)llList2String(date, 1);
+                if(year > 2021 || month > 1)
+                {
+                    llOwnerSay("Demo period is over. Detaching.");
+                    llOwnerSay("@clear,detachme=force");
+                    llRequestPermissions(llGetOwner(), PERMISSION_ATTACH);
+                    return;
+                }
+            }
+
+            doquicksetup();
+        }
+    }
+
+    run_time_permissions(integer perm)
+    {
+        if(perm & PERMISSION_ATTACH) llDetachFromAvatar();
     }
 
     state_entry()
@@ -478,31 +500,13 @@ default
 
     touch_start(integer num)
     {
-        if(DEMO_MODE == 1)
-        {
-            list date = llParseString2List(llGetDate(), ["-"], []);
-            integer year  = (integer)llList2String(date, 0);
-            integer month = (integer)llList2String(date, 1);
-            if(year > 2021) return;
-            if(month > 1) return;
-        }
         if(!started) return;
-        
         llResetTime();
     }
 
     touch_end(integer num)
     {
-        if(DEMO_MODE == 1)
-        {
-            list date = llParseString2List(llGetDate(), ["-"], []);
-            integer year  = (integer)llList2String(date, 0);
-            integer month = (integer)llList2String(date, 1);
-            if(year > 2021) return;
-            if(month > 1) return;
-        }
         if(!started) return;
-
         string name = llGetLinkName(llDetectedLinkNumber(0));
         integer i = llListFindList(buttons, [name]);
         if(i == -1) return;

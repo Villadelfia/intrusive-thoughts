@@ -1,5 +1,7 @@
 #include <IT/globals.lsl>
-key owner;
+key primary = NULL_KEY;
+list owners = [];
+
 list rlvclients = [];
 list blacklist = [];
 list whitelist = [];
@@ -32,53 +34,49 @@ buildclients()
         if(contains(llToLower(llGetInventoryName(INVENTORY_SCRIPT, i)), "client")) handlers++;
     }
 
-    integer change = FALSE;
     while(llGetListLength(rlvclients) < handlers) 
     {
         rlvclients += [(key)NULL_KEY];
-        change = TRUE;
     }
 
     while(llGetListLength(rlvclients) > handlers)
     {
         rlvclients = llDeleteSubList(rlvclients, -1, -1);
-        change = TRUE;
     }
-
-    if(change && rlvclients != []) llOwnerSay("RLV relay online with up to " + (string)handlers + " devices supported.");
-    if(rlvclients == [])           llOwnerSay("RLV relay offline. Add client scripts to my inventory.");
 }
 
 default
 {
     changed(integer change)
     {
-        if(change & CHANGED_OWNER) llResetScript();
         if(change & CHANGED_INVENTORY) buildclients();
+    }
+
+    link_message(integer sender_num, integer num, string str, key k)
+    {
+        if(num == S_API_OWNERS)
+        {
+            owners = [];
+            list new = llParseString2List(str, [","], []);
+            integer n = llGetListLength(new);
+            while(~--n)
+            {
+                owners += [(key)llList2String(new, n)];
+            }
+            primary = k;
+        }
+        else if(num == RLV_API_CLR_SRC) 
+        {
+            rlvclients = llListReplaceList(rlvclients, [(key)NULL_KEY], (integer)str, (integer)str);
+        }
     }
 
     state_entry()
     {
-        owner = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(0, "", llGetOwner(), "");
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         buildclients();
-    }
-
-    // Kill switch
-    attach(key id)
-    {
-        if(DEMO_MODE == 1)
-        {
-            if(id)
-            {
-                list date = llParseString2List(llGetDate(), ["-"], []);
-                integer year  = (integer)llList2String(date, 0);
-                integer month = (integer)llList2String(date, 1);
-                if(year > 2021 || month > 1) llOwnerSay("@clear,detachme=force");
-            }
-        }
     }
 
     listen(integer c, string n, key id, string m)
@@ -115,8 +113,8 @@ default
                 integer available = llListFindList(rlvclients, [(key)NULL_KEY]);
                 if(available == -1) return;
 
-                // If the device is owned by the owner, by us, or it is in the whitelist, allow it.
-                if(llGetOwnerKey(id) == owner || llGetOwnerKey(id) == llGetOwner() || llListFindList(whitelist, [id]) != -1)
+                // If the device is owned by the owners, by us, or it is in the whitelist, allow it.
+                if(llGetOwnerKey(id) == primary || llListFindList(owners, [llGetOwnerKey(id)]) != -1 || llGetOwnerKey(id) == llGetOwner() || llListFindList(whitelist, [id]) != -1)
                 {
                     rlvclients = llListReplaceList(rlvclients, [id], available, available);
                     llMessageLinked(LINK_SET, RLV_API_SET_SRC, (string)available, id);
@@ -135,7 +133,7 @@ default
                     else
                     {
                         key target = llGetOwner();
-                        if(llGetAgentSize(owner) != ZERO_VECTOR) target = owner;
+                        if(llGetAgentSize(primary) != ZERO_VECTOR) target = primary;
                         handlingk = id;
                         handlingm = m;
                         handlingi = available;
@@ -149,7 +147,6 @@ default
         else if(c == tempchannel && templisten != -1)
         {
             if(handlingk == NULL_KEY) return;
-            if(llGetOwnerKey(id) != owner && llGetOwnerKey(id) != llGetOwner()) return;
             if(m == "ALLOW")
             {
                 llSetTimerEvent(0.0);
@@ -176,22 +173,28 @@ default
         }
         else if(c == MANTRA_CHANNEL)
         {
-            if(llGetOwnerKey(id) != owner) return;
+            if(!isowner(id)) return;
             if(m == "CLEAR")
             {
-                if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared.");
+                if(llGetAgentSize(id) != ZERO_VECTOR) llRegionSayTo(id, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
             }
             else if(m == "FORCECLEAR")    
             {
-                if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared and detached.");
+                if(llGetAgentSize(id) != ZERO_VECTOR) llRegionSayTo(id, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared and detached.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 llOwnerSay("@clear,detachme=force");
             }
             else if(m == "RESETRELAY")    
             {
-                if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been reset and has been rebuilt.");
-                llResetScript();
+                if(llGetAgentSize(id) != ZERO_VECTOR) llRegionSayTo(id, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been reset and has been rebuilt.");
+                rlvclients = [];
+                blacklist = [];
+                whitelist = [];
+                handlingk = NULL_KEY;
+                handlingm = "";
+                handlingi = 0;
+                buildclients();
             }
         }
         else if(c == 0)
@@ -202,11 +205,11 @@ default
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 string oldn = llGetObjectName();
                 llSetObjectName("");
-                if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay has been safeworded by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay has been safeworded by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
                 else
                 {
                     llSetObjectName(oldn);
-                    llInstantMessage(owner, "The " + VERSION_S + " relay has been safeworded by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                    llInstantMessage(primary, "The " + VERSION_S + " relay has been safeworded by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
                 }
                 llSetObjectName(oldn);
             }
@@ -216,11 +219,11 @@ default
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 string oldn = llGetObjectName();
                 llSetObjectName("");
-                if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " been detached by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + " because of safeword.");
+                if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " been detached by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + " because of safeword.");
                 else
                 {
                     llSetObjectName(oldn);
-                    llInstantMessage(owner, "The " + VERSION_S + " been detached by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + " because of safeword.");
+                    llInstantMessage(primary, "The " + VERSION_S + " been detached by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + " because of safeword.");
                 }
                 llSetObjectName(oldn);
                 llOwnerSay("@clear,detachme=force");
@@ -231,11 +234,6 @@ default
                 blacklist = [];
             }
         }
-    }
-
-    link_message(integer sender_num, integer num, string str, key k)
-    {
-        if(num == RLV_API_CLR_SRC) rlvclients = llListReplaceList(rlvclients, [(key)NULL_KEY], (integer)str, (integer)str);
     }
 
     timer()

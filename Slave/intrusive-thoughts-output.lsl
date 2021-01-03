@@ -1,5 +1,7 @@
 #include <IT/globals.lsl>
-key owner = NULL_KEY;
+key primary = NULL_KEY;
+list owners = [];
+
 integer blindmute = FALSE;
 integer focus = FALSE;
 integer disabled = FALSE;
@@ -7,6 +9,7 @@ integer speakon = 0;
 string name;
 float randomprefixchance = 0.0;
 list randomprefixwords = [];
+key focustarget = NULL_KEY;
 
 handleSelfDescribe(string message)
 {
@@ -155,18 +158,13 @@ handleSay(string name, string message, integer excludeSelf)
     llSetObjectName(currentObjectName);
 }
 
-focusToggle()
+focusToggle(key target)
 {
-    if(focus)
-    {
-        focus = FALSE;
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " is no longer forced to look at you.");
-    }
-    else
-    {
-        focus = TRUE;
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " is now forced to look at you.");
-    }
+    target = llGetOwnerKey(target);
+    focustarget = target;
+    focus = !focus;
+    if(focus) llRegionSayTo(target, HUD_SPEAK_CHANNEL, name + " is now forced to look at you.");
+    else      llRegionSayTo(target, HUD_SPEAK_CHANNEL, name + " is no longer forced to look at you.");
     llSetTimerEvent(0.1);
 }
 
@@ -215,30 +213,38 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == S_API_RESET && id == llGetOwner())                    llResetScript();
-        else if(num == S_API_SELF_DESC && str != "")                    handleSelfDescribe(str);
-        else if(num == S_API_FOCUS_TOGGLE)                              focusToggle();
-        else if(num == S_API_ENABLE)                                    disabled = FALSE;
-        else if(num == S_API_DISABLE)                                   disabled = TRUE;
-        else if(num == S_API_SELF_SAY && str != "")                     handleSelfSay((string)id, str);
+        if(num == S_API_STARTED)
+        {
+            if(focus) llSetTimerEvent(0.1);
+        }
+        else if(num == S_API_OWNERS)
+        {
+            owners = [];
+            list new = llParseString2List(str, [","], []);
+            integer n = llGetListLength(new);
+            while(~--n)
+            {
+                owners += [(key)llList2String(new, n)];
+            }
+            primary = id;
+        }
+
+        if(num == S_API_SELF_DESC && str != "")     handleSelfDescribe(str);
+        else if(num == S_API_FOCUS_TOGGLE)          focusToggle(id);
+        else if(num == S_API_ENABLE)                disabled = FALSE;
+        else if(num == S_API_DISABLE)               disabled = TRUE;
+        else if(num == S_API_SELF_SAY && str != "") handleSelfSay((string)id, str);
         
         if(disabled) return;
 
-        if(num == S_API_SAY && str != "")                               handleSay((string)id, prefixfilter(str), FALSE);
-        else if(num == S_API_ONLY_OTHERS_SAY && str != "")              handleSay((string)id, prefixfilter(str), TRUE);
-    }
-
-    changed(integer change)
-    {
-        if(change & CHANGED_OWNER) llResetScript();
+        if(num == S_API_SAY && str != "")                  handleSay((string)id, prefixfilter(str), FALSE);
+        else if(num == S_API_ONLY_OTHERS_SAY && str != "") handleSay((string)id, prefixfilter(str), TRUE);
     }
 
     state_entry()
     {
-        owner = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
         name = llGetDisplayName(llGetOwner());
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
-        llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_CONTROL_CAMERA);
     }
 
     timer()
@@ -246,10 +252,10 @@ default
         llSetTimerEvent(0.0);
         if(!focus) return;
 
-        vector pos = llList2Vector(llGetObjectDetails(owner, [OBJECT_POS]), 0);
+        vector pos = llList2Vector(llGetObjectDetails(focustarget, [OBJECT_POS]), 0);
         if(pos != ZERO_VECTOR)
         {
-            llOwnerSay("@setcam_focus:" + (string)owner + ";2;=force");
+            llOwnerSay("@setcam_focus:" + (string)focustarget + ";2;=force");
             llSetTimerEvent(0.1);
         }
         else
@@ -260,19 +266,12 @@ default
 
     attach(key id)
     {
-        if(id != NULL_KEY) 
-        {
-            if(focus) llSetTimerEvent(0.1);
-        }
-        else
-        {
-            llSetTimerEvent(0.0);
-        }
+        llSetTimerEvent(0.0);
     }
 
     listen(integer c, string n, key k, string m)
     {
-        if(k != owner && llGetOwnerKey(k) != owner) return;
+        if(!isowner(k)) return;
         if(m == "RESET")
         {
             blindmute = FALSE;
@@ -308,7 +307,7 @@ default
         }
         else if(m == "END")
         {
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[output]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
     }
 }

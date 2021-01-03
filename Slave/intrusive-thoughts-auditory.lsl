@@ -1,5 +1,7 @@
 #include <IT/globals.lsl>
-key owner = NULL_KEY;
+key primary = NULL_KEY;
+list owners = [];
+
 integer deaf = FALSE;
 string name = "";
 list auditoryfilterfrom = [];
@@ -36,7 +38,7 @@ handleHear(key skey, string sender, string message)
     if(deaf)
     {
         // Handle undeafening by owner.
-        if(skey == owner || llGetOwnerKey(skey) == owner)
+        if(isowner(skey))
         {
             l1 = llGetListLength(undeafencmd)-1;
             for(;l1 >= 0; --l1)
@@ -45,7 +47,7 @@ handleHear(key skey, string sender, string message)
                 {
                     deaf = FALSE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, undeafenmsg, NULL_KEY);
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can hear the conversation again.");
+                    llRegionSayTo(llGetOwnerKey(skey), HUD_SPEAK_CHANNEL, name + " can hear the conversation again.");
                     jump cont1;
                 }
             }
@@ -58,7 +60,7 @@ handleHear(key skey, string sender, string message)
             if(contains(llToLower(message), llList2String(deafenexcept, l1)))
             {
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, undeafenmsg, NULL_KEY);
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " heard that message because of exceptions.");
+                llRegionSayTo(llGetOwnerKey(skey), HUD_SPEAK_CHANNEL, name + " heard that message because of exceptions.");
                 jump cont1;
             }
         }
@@ -99,7 +101,7 @@ handleHear(key skey, string sender, string message)
     }
 
     // Handle deafening by owner.
-    if((skey == owner || llGetOwnerKey(skey) == owner) && deaf == FALSE)
+    if(isowner(skey) && deaf == FALSE)
     {
         l1 = llGetListLength(deafencmd)-1;
         for(;l1 >= 0; --l1)
@@ -107,7 +109,7 @@ handleHear(key skey, string sender, string message)
             if(contains(llToLower(message), llList2String(deafencmd, l1)))
             {
                 deaf = TRUE;
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer hear the conversation.");
+                llRegionSayTo(llGetOwnerKey(skey), HUD_SPEAK_CHANNEL, name + " can no longer hear the conversation.");
                 jump cont2;
             }
         }
@@ -254,41 +256,44 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == S_API_RESET && id == llGetOwner()) llResetScript();
-        if(num == S_API_DEAF_TOGGLE)
+        if(num == S_API_STARTED)
+        {
+            checkSetup();
+        }
+        else if(num == S_API_OWNERS)
+        {
+            owners = [];
+            list new = llParseString2List(str, [","], []);
+            integer n = llGetListLength(new);
+            while(~--n)
+            {
+                owners += [(key)llList2String(new, n)];
+            }
+            primary = id;
+        }
+        else if(num == S_API_DEAF_TOGGLE)
         {
             if(deaf)
             {
                 deaf = FALSE;
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, undeafenmsg, NULL_KEY);
-                if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can hear the conversation again.");
-                else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can hear the conversation again.");
+                if(name != "") llRegionSayTo(id, HUD_SPEAK_CHANNEL, name + " can hear the conversation again.");
+                else           llRegionSayTo(id, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can hear the conversation again.");
                 checkSetup();
             }
             else
             {
                 deaf = TRUE;
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, deafenmsg, NULL_KEY);
-                if(name != "") llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " can no longer hear the conversation.");
-                else           llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer hear the conversation.");
+                if(name != "") llRegionSayTo(id, HUD_SPEAK_CHANNEL, name + " can no longer hear the conversation.");
+                else           llRegionSayTo(id, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer hear the conversation.");
                 checkSetup();
             }
         }
     }
 
-    changed(integer change)
-    {
-        if(change & CHANGED_OWNER) llResetScript();
-    }
-
-    attach(key id)
-    {
-        if(id != NULL_KEY) checkSetup();
-    }
-
     state_entry()
     {
-        owner = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(0, "", NULL_KEY, "");
     }
@@ -296,7 +301,7 @@ default
     listen(integer c, string n, key k, string m)
     {
         if(c == 0) handleHear(k, n, m);
-        if(k != owner && llGetOwnerKey(k) != owner) return;
+        if(!isowner(k)) return;
         if(m == "RESET")
         {
             deaf = FALSE;
@@ -383,7 +388,7 @@ default
         }
         else if(m == "END")
         {
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            llRegionSayTo(llGetOwnerKey(k), HUD_SPEAK_CHANNEL, "[auditory]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         checkSetup();
     }

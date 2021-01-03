@@ -14,7 +14,7 @@
 #define COMMAND_CHANNEL             1
 #define BALL_CHANNEL                8
 
-#define S_API_RESET             -1000
+#define S_API_UNUSED            -1000
 #define S_API_SELF_DESC         -1001
 #define S_API_SELF_SAY          -1002
 #define S_API_SAY               -1003
@@ -25,6 +25,8 @@
 #define S_API_FOCUS_TOGGLE      -1008
 #define S_API_DISABLE           -1009
 #define S_API_ENABLE            -1010
+#define S_API_STARTED           -1011
+#define S_API_OWNERS            -1012
 
 #define M_API_HUD_STARTED       -2000
 #define M_API_CONFIG_DATA       -2001
@@ -47,7 +49,7 @@
 
 #define X_API_FILL_FACTOR       -4000
 
-#define DEMO_MODE                   0
+#define DEMO_MODE                   1
 
 string VERSION_S = "IT-Slave v2.2";
 string VERSION_M = "IT-Master v2.2";
@@ -183,4 +185,9 @@ string attachpointtotext(integer p)
     else if(p == ATTACH_HUD_BOTTOM)       return "HUD Bottom";
     else if(p == ATTACH_HUD_BOTTOM_RIGHT) return "HUD Bottom Right";
     else                                  return "Unknown";
+}
+
+integer isowner(key k)
+{
+    return primary == llGetOwnerKey(k) || llListFindList(owners, [llGetOwnerKey(k)]) != -1;
 }

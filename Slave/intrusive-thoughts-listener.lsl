@@ -1,6 +1,8 @@
 #include <IT/globals.lsl>
+key primary = NULL_KEY;
+list owners = [];
+
 list statements = [];
-key owner = NULL_KEY;
 integer timerMin = 0;
 integer timerMax = 0;
 
@@ -8,44 +10,26 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == S_API_RESET && id == llGetOwner()) llResetScript();
-    }
-
-    changed(integer change)
-    {
-        if(change & CHANGED_OWNER) llResetScript();
-    }
-
-    attach(key id)
-    {
-        if(id == NULL_KEY)
+        if(num == S_API_STARTED)
         {
-            llOwnerSay("@clear");
+            llRegionSayTo(llGetOwner(), MANTRA_CHANNEL, "CHECKPOS " + (string)llGetAttached());
         }
-        else
+        else if(num == S_API_OWNERS)
         {
-            llRegionSayTo(id, MANTRA_CHANNEL, "CHECKPOS " + (string)llGetAttached());
-        }
-    }
-
-    on_rez(integer start)
-    {
-        if(llGetAttached() == 0)
-        {
-            llDie();
-        }
-        else
-        {
-            llSetObjectDesc((string)owner);
+            owners = [];
+            list new = llParseString2List(str, [","], []);
+            integer n = llGetListLength(new);
+            while(~--n)
+            {
+                owners += [(key)llList2String(new, n)];
+            }
+            primary = id;
         }
     }
 
     state_entry()
     {
-        owner = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
-        llOwnerSay("Your owner has been detected as secondlife:///app/agent/" + (string)owner + "/about. If this is incorrect, detach me immediately because this person can configure me.");
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
-        llSetTimerEvent(0.0);
     }
 
     listen(integer c, string n, key k, string m)
@@ -78,19 +62,19 @@ default
             llOwnerSay("@clear,detachme=force");
         }
 
-        if(k != owner && llGetOwnerKey(k) != owner) return;
+        if(!isowner(k)) return;
         if(m == "RESET")
         {
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is resetting configuration and listening to new programming...");
+            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is resetting configuration and listening to new programming...");
             statements = [];
         }
         else if(m == "END")
         {
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[mantra]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         else if(m == "PING")
         {
-            llRegionSayTo(owner, PING_CHANNEL, "PING");
+            llRegionSayTo(k, PING_CHANNEL, "PING");
         }
         else if(startswith(m, "TIMER"))
         {
@@ -101,22 +85,18 @@ default
         }
         else if(startswith(m, "PHRASES"))
         {
-            m = llDeleteSubString(m, 0, llStringLength("PHRASES"));
-            statements += [m];
+            statements += [llDeleteSubString(m, 0, llStringLength("PHRASES"))];
         }
     }
 
     timer()
     {
-        if(timerMax != 0) 
-        {
-            llSetTimerEvent(random(timerMin * 60, timerMax * 60));
-        }
-        else
+        if(timerMax == 0)
         {
             llSetTimerEvent(0.0);
             return;
         }
+        llSetTimerEvent(random(timerMin * 60, timerMax * 60));
         if(statements == []) return;
         llMessageLinked(LINK_SET, S_API_SELF_DESC, llList2String(statements, llFloor(llFrand(llGetListLength(statements)))), NULL_KEY);
     }

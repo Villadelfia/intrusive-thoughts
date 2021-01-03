@@ -145,7 +145,8 @@ default
         {
             if(llGetInventoryType("Intrusive Thoughts Configuration") == INVENTORY_NOTECARD)
             {
-                llMessageLinked(LINK_SET, M_API_STATUS_MESSAGE, "Loading config...", (string)"");
+                if(!ready) llMessageLinked(LINK_SET, M_API_BUTTON_PRESSED, "hide", "");
+                llMessageLinked(LINK_SET, M_API_STATUS_MESSAGE, "Loading config...", "");
                 ready = FALSE;
                 name = "Intrusive Thoughts Configuration";
                 line = 0;

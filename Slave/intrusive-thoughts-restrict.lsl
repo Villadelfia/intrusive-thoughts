@@ -1,11 +1,13 @@
 #include <IT/globals.lsl>
-key owner = NULL_KEY;
+key requester;
+key primary = NULL_KEY;
+list owners = [];
+
 integer noim = FALSE;
 integer onball = FALSE;
 key ball;
 string name = "";
 string prefix = "xx";
-list nearby = [];
 string path = "";
 string playing = "";
 integer daze = FALSE;
@@ -13,20 +15,21 @@ integer locked = FALSE;
 
 doSetup()
 {
-    llOwnerSay("@accepttp:" + (string)owner + "=add,accepttprequest:" + (string) owner + "=add,acceptpermission=add");
+    llOwnerSay("@accepttp:" + (string)primary + "=add,accepttprequest:" + (string)primary + "=add,acceptpermission=add");
+
     if(daze) llOwnerSay("@shownames_sec=n,showhovertextworld=n,showworldmap=n,showminimap=n,showloc=n,fartouch=n,camunlock=n,alwaysrun=n,temprun=n");
     else     llOwnerSay("@shownames_sec=y,showhovertextworld=y,showworldmap=y,showminimap=y,showloc=y,fartouch=y,camunlock=y,alwaysrun=y,temprun=y");
-    nearby = [];
     playing = "";
     if(noim)
     {
         llMessageLinked(LINK_SET, S_API_SAY, "/me can not IM with people within 20 meters of them.", (key)name);
-        llOwnerSay("@recvim:20=n,sendim:20=n,sendim:" + (string)owner + "=add,recvim:" + (string)owner + "=add");
+        llOwnerSay("@recvim:20=n,sendim:20=n,sendim:" + (string)primary + "=add,recvim:" + (string)primary + "=add");
     }
     else
     {
-        llOwnerSay("@recvim:20=y,sendim:20=y,sendim:" + (string)owner + "=rem,recvim:" + (string)owner + "=rem");
+        llOwnerSay("@recvim:20=y,sendim:20=y,sendim:" + (string)primary + "=rem,recvim:" + (string)primary + "=rem");
     }
+
     if(locked)
     {
         llOwnerSay("@detach=n");
@@ -36,15 +39,15 @@ doSetup()
 
 handlemenu(key k)
 {
-    if(llGetOwnerKey(k) != owner && llGetOwnerKey(k) != llGetOwner()) return;
+    if(isowner(k) == FALSE && llGetOwnerKey(k) != llGetOwner()) return;
     string oldn = llGetObjectName();
     llSetObjectName("");
 
     // Greeting
-    if(llGetOwnerKey(k) == owner)
+    if(isowner(k))
     {
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "List of available commands for " + name + ":");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, "List of available commands for " + name + ":");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, " ");
     }
     else
     {
@@ -57,28 +60,29 @@ handlemenu(key k)
     integer i;
     for(i = 0; i < numinv; ++i)
     {
-        if(llGetOwnerKey(k) == owner) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + llEscapeURL(llGetInventoryName(INVENTORY_ANIMATION, i)) + " - Play " + llGetInventoryName(INVENTORY_ANIMATION, i) + " animation.]");
+        if(isowner(k)) llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + llEscapeURL(llGetInventoryName(INVENTORY_ANIMATION, i)) + " - Play " + llGetInventoryName(INVENTORY_ANIMATION, i) + " animation.]");
         else                          llOwnerSay("[secondlife:///app/chat/1/" + prefix + llEscapeURL(llGetInventoryName(INVENTORY_ANIMATION, i)) + " - Play " + llGetInventoryName(INVENTORY_ANIMATION, i) + " animation.]");
     }
 
     // Stop animation
-    if(llGetOwnerKey(k) == owner) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "stop - Stop all animations.]");
+    if(isowner(k)) llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "stop - Stop all animations.]");
     else llOwnerSay("[secondlife:///app/chat/1/" + prefix + "stop - Stop all animations.]");
 
     // Owner commands.
-    if(llGetOwnerKey(k) == owner)
+    if(isowner(k))
     {
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "noim - Toggle local IMs.]");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "strip - Strip all clothes.]");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "listform - List all forms.]");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "listoutfit - List all outfits.]");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "liststuff - List all stuff.]");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing]/[secondlife:///app/chat/1/" + prefix + "lock lock].");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- /1" + prefix + "say <message>: Say a message.");
-        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "- /1" + prefix + "think <message>: Think a message.");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, " ");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "noim - Toggle local IMs.]");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "strip - Strip all clothes.]");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "listform - List all forms.]");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "listoutfit - List all outfits.]");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "liststuff - List all stuff.]");
+        if(llGetOwnerKey(k) == primary) llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "ownerinfo - Add/remove secondary owners.]");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, " ");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing]/[secondlife:///app/chat/1/" + prefix + "lock lock].");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, " ");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, "- /1" + prefix + "say <message>: Say a message.");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, "- /1" + prefix + "think <message>: Think a message.");
     }
 
     llSetObjectName(oldn);
@@ -88,21 +92,36 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == S_API_RESET && id == llGetOwner()) llResetScript();
+        if(num == S_API_STARTED)
+        {
+            doSetup();
+            llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);
+        }
+        else if(num == S_API_OWNERS)
+        {
+            owners = [];
+            list new = llParseString2List(str, [","], []);
+            integer n = llGetListLength(new);
+            while(~--n)
+            {
+                owners += [(key)llList2String(new, n)];
+            }
+            primary = id;
+        }
+        
     }
 
     changed(integer change)
     {
-        if(change & CHANGED_OWNER) llResetScript();
         if(change & CHANGED_TELEPORT) 
         {
             string oldn = llGetObjectName();
             llSetObjectName("");
-            if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
+            if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
             else
             {
                 llSetObjectName(oldn);
-                llInstantMessage(owner, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
+                llInstantMessage(primary, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
             }
             llSetObjectName(oldn);
         }
@@ -110,33 +129,7 @@ default
 
     attach(key id)
     {
-        if(id != NULL_KEY) 
-        {
-            doSetup();
-            llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);
-            string oldn = llGetObjectName();
-            llSetObjectName("");
-            if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-            else
-            {
-                llSetObjectName(oldn);
-                llInstantMessage(owner, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-            }
-            llSetObjectName(oldn);
-        }
-        else
-        {
-            onball = FALSE;
-            string oldn = llGetObjectName();
-            llSetObjectName("");
-            if(llGetAgentSize(owner) != ZERO_VECTOR) llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-            else
-            {
-                llSetObjectName(oldn);
-                llInstantMessage(owner, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-            }
-            llSetObjectName(oldn);
-        }
+        if(id == NULL_KEY) onball = FALSE;
     }
 
     run_time_permissions(integer perm)
@@ -152,7 +145,6 @@ default
     state_entry()
     {
         llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
-        owner = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         name = llGetDisplayName(llGetOwner());
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
@@ -175,36 +167,36 @@ default
                 integer i;
                 if(path == "~form")
                 {
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Available forms for " + name + ":");
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, "Available forms for " + name + ":");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, " ");
                     l = llGetListLength(stuff);
                     for(i = 0; i < l; ++i)
                     {
                         thing = llList2String(stuff, i);
-                        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + llEscapeURL("form " + thing) + " " + thing + "]");
+                        llRegionSayTo(requester, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + llEscapeURL("form " + thing) + " " + thing + "]");
                     }
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "! Back to command list...]");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, " ");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "! Back to command list...]");
                 }
                 else if(path == "~outfit")
                 {
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Available outfits for " + name + ":");
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, "Available outfits for " + name + ":");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, " ");
                     l = llGetListLength(stuff);
                     for(i = 0; i < l; ++i)
                     {
                         thing = llList2String(stuff, i);
                         message  = "[secondlife:///app/chat/1/" + prefix + llEscapeURL("outfit " + thing) + " " + thing + "] ";
                         message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("outfitstrip " + thing) + " (strip first)]";
-                        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, message);
+                        llRegionSayTo(requester, HUD_SPEAK_CHANNEL, message);
                     }
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "! Back to command list...]");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, " ");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "! Back to command list...]");
                 }
                 else if(path == "~stuff")
                 {
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Available stuff for " + name + ":");
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, "Available stuff for " + name + ":");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, " ");
                     l = llGetListLength(stuff);
                     for(i = 0; i < l; ++i)
                     {
@@ -212,16 +204,16 @@ default
                         message =  thing + " ";
                         message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("add " + thing) + " (+) ]";
                         message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("remove " + thing) + " (-)]";
-                        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, message);
+                        llRegionSayTo(requester, HUD_SPEAK_CHANNEL, message);
                     }
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "! Back to command list...]");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, " ");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "! Back to command list...]");
                 }
                 else
                 {
                     if(path != "") path += "/";
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "RLV folders in #RLV/" + path + " for " + name + ":");
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, "RLV folders in #RLV/" + path + " for " + name + ":");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, " ");
                     l = llGetListLength(stuff);
                     for(i = 0; i < l; ++i)
                     {
@@ -229,21 +221,21 @@ default
                         message =  "[secondlife:///app/chat/1/" + prefix + llEscapeURL("list " + path + thing) + " " + thing + "] ";
                         message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("+ " + path + thing) + " (+)] ";
                         message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("- " + path + thing) + " (-)]";
-                        llRegionSayTo(owner, HUD_SPEAK_CHANNEL, message);
+                        llRegionSayTo(requester, HUD_SPEAK_CHANNEL, message);
                     }
-                    llRegionSayTo(owner, HUD_SPEAK_CHANNEL, " ");
+                    llRegionSayTo(requester, HUD_SPEAK_CHANNEL, " ");
                 }
             }
             else
             {
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "RLV command response for " + name + ":\n" + m);
+                llRegionSayTo(requester, HUD_SPEAK_CHANNEL, "RLV command response for " + name + ":\n" + m);
             }
             llRegionSay(RLV_CHANNEL, m);
             return;
         }
 
         // We only accept commands from the owner or the wearer.
-        if(llGetOwnerKey(k) != llGetOwner() && llGetOwnerKey(k) != owner) return;
+        if(llGetOwnerKey(k) != llGetOwner() && isowner(k) == FALSE) return;
 
         // Detect prefix.
         if(c == COMMAND_CHANNEL)
@@ -277,7 +269,9 @@ default
         }
 
         // Starting here, only the Domme may give commands.
-        if(llGetOwnerKey(k) != owner) return;
+        if(!isowner(k)) return;
+        requester = k;
+
         if(c == MANTRA_CHANNEL)
         {
             if(m == "RESET")
@@ -293,7 +287,7 @@ default
             }
             else if(m == "END")
             {
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "[" + llGetScriptName() + "]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+                llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[restrict]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
             }
         }
         
@@ -302,19 +296,19 @@ default
             if(noim)
             {
                 llMessageLinked(LINK_SET, S_API_SAY, "/me can IM with people within 20 meters of them again.", (key)name);
-                llOwnerSay("@recvim:20=y,sendim:20=y,sendim:" + (string)owner + "=rem,recvim:" + (string)owner + "=rem");
+                llOwnerSay("@recvim:20=y,sendim:20=y,sendim:" + (string)primary + "=rem,recvim:" + (string)primary + "=rem");
                 noim = FALSE;
             }
             else
             {
                 llMessageLinked(LINK_SET, S_API_SAY, "/me can no longer IM with people within 20 meters of them.", (key)name);
-                llOwnerSay("@recvim:20=n,sendim:20=n,sendim:" + (string)owner + "=add,recvim:" + (string)owner + "=add");
+                llOwnerSay("@recvim:20=n,sendim:20=n,sendim:" + (string)primary + "=add,recvim:" + (string)primary + "=add");
                 noim = TRUE;
             }
         }
         else if(llToLower(m) == "strip")
         {
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Stripping " + name + " of all clothes.");
+            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Stripping " + name + " of all clothes.");
             llOwnerSay("@detach=force,remoutfit=force");
         }
         else if(llToLower(m) == "list")
@@ -345,31 +339,31 @@ default
         else if(startswith(llToLower(m), "outfitstrip"))
         {
             path = llDeleteSubString(m, 0, llStringLength("outfitstrip"));
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Stripping " + name + " of everything, then wearing outfit '" + path + "'.");
+            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Stripping " + name + " of everything, then wearing outfit '" + path + "'.");
             llOwnerSay("@detach=force,remoutfit=force,attachover:~outfit/" + path + "=force");
         }
         else if(startswith(llToLower(m), "outfit"))
         {
             path = llDeleteSubString(m, 0, llStringLength("outfit"));
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Stripping " + name + " of her outfits, then wearing outfit '" + path + "'.");
+            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Stripping " + name + " of her outfits, then wearing outfit '" + path + "'.");
             llOwnerSay("@detachall:~outfit=force,attachover:~outfit/" + path + "=force");
         }
         else if(startswith(llToLower(m), "form"))
         {
             path = llDeleteSubString(m, 0, llStringLength("form"));
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Stripping " + name + " of all clothes, then wearing form '" + path + "'.");
+            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Stripping " + name + " of all clothes, then wearing form '" + path + "'.");
             llOwnerSay("@detach=force,attachover:~form/" + path + "=force");
         }
         else if(startswith(llToLower(m), "add"))
         {
             path = llDeleteSubString(m, 0, llStringLength("add"));
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Wearing '~stuff/" + path + "' on " + name + ".");
+            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Wearing '~stuff/" + path + "' on " + name + ".");
             llOwnerSay("@attachover:~stuff/" + path + "=force");
         }
         else if(startswith(llToLower(m), "remove"))
         {
             path = llDeleteSubString(m, 0, llStringLength("remove"));
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Removing '~stuff/" + path + "' from " + name + ".");
+            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Removing '~stuff/" + path + "' from " + name + ".");
             llOwnerSay("@detachall:~stuff/" + path + "=force");
         }
         else if(startswith(m, "think"))
@@ -384,34 +378,34 @@ default
         }
         else if(llToLower(m) == "deafen" || llToLower(m) == "deaf")
         {
-            llMessageLinked(LINK_SET, S_API_DEAF_TOGGLE, "", NULL_KEY);
+            llMessageLinked(LINK_SET, S_API_DEAF_TOGGLE, "", k);
         }
         else if(llToLower(m) == "blind")
         {
-            llMessageLinked(LINK_SET, S_API_BLIND_TOGGLE, "", NULL_KEY);
+            llMessageLinked(LINK_SET, S_API_BLIND_TOGGLE, "", k);
         }
         else if(llToLower(m) == "mute")
         {
-            llMessageLinked(LINK_SET, S_API_MUTE_TOGGLE, "", NULL_KEY);
+            llMessageLinked(LINK_SET, S_API_MUTE_TOGGLE, "", k);
         }
         else if(llToLower(m) == "daze")
         {
             if(daze)
             {
                 daze = FALSE;
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " is no longer dazed.");
+                llRegionSayTo(k, HUD_SPEAK_CHANNEL, name + " is no longer dazed.");
                 llOwnerSay("@shownames_sec=y,showhovertextworld=y,showworldmap=y,showminimap=y,showloc=y,fartouch=y,camunlock=y,alwaysrun=y,temprun=y");
             }
             else
             {
                 daze = TRUE;
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, name + " is now dazed.");
+                llRegionSayTo(k, HUD_SPEAK_CHANNEL, name + " is now dazed.");
                 llOwnerSay("@shownames_sec=n,showhovertextworld=n,showworldmap=n,showminimap=n,showloc=n,fartouch=n,camunlock=n,alwaysrun=n,temprun=n");
             }
         }
         else if(llToLower(m) == "focus")
         {
-            llMessageLinked(LINK_SET, S_API_FOCUS_TOGGLE, "", NULL_KEY);
+            llMessageLinked(LINK_SET, S_API_FOCUS_TOGGLE, "", k);
         }
         else if(startswith(llToLower(m), "onball"))
         {
@@ -434,7 +428,7 @@ default
         {
             if(locked)
             {
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.");
+                llRegionSayTo(k, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.");
                 locked = FALSE;
                 llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
                 llSetScale(<0.01, 0.01, 0.01>);
@@ -442,7 +436,7 @@ default
             }
             else
             {
-                llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.");
+                llRegionSayTo(k, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.");
                 locked = TRUE;
                 llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
                 llSetScale(<0.4, 0.4, 0.4>);
@@ -457,7 +451,7 @@ default
         {
             m = strreplace(m, "RLV_CHANNEL", (string)RLV_CHANNEL);
             path = "~";
-            llRegionSayTo(owner, HUD_SPEAK_CHANNEL, "Executing RLV command '" + m + "' on " + name + ".");
+            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Executing RLV command '" + m + "' on " + name + ".");
             llOwnerSay(m);
         }
     }
