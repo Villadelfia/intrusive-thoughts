@@ -1,6 +1,8 @@
 #include <IT/globals.lsl>
 key primary = NULL_KEY;
 list owners = [];
+integer publicaccess = FALSE;
+integer groupaccess = FALSE;
 
 string name = "";
 list speechblacklistfrom = [];
@@ -188,6 +190,11 @@ default
                 owners += [(key)llList2String(new, n)];
             }
             primary = id;
+        }
+        else if(num == S_API_OTHER_ACCESS)
+        {
+            publicaccess = (integer)str;
+            groupaccess = (integer)((string)id);
         }
         else if(num == S_API_MUTE_TOGGLE)
         {

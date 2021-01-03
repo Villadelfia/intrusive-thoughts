@@ -2,6 +2,8 @@
 key requester;
 key primary = NULL_KEY;
 list owners = [];
+integer publicaccess = FALSE;
+integer groupaccess = FALSE;
 
 integer noim = FALSE;
 integer onball = FALSE;
@@ -101,7 +103,11 @@ default
             }
             primary = id;
         }
-        
+        else if(num == S_API_OTHER_ACCESS)
+        {
+            publicaccess = (integer)str;
+            groupaccess = (integer)((string)id);
+        }
     }
 
     changed(integer change)

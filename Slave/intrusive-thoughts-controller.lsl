@@ -3,22 +3,26 @@ integer started = FALSE;
 key wearer;
 key primary;
 list owners;
+integer publicaccess = FALSE;
+integer groupaccess = FALSE;
 string prefix;
 
 default
 {
+    changed(integer change)
+    {
+        if(change & CHANGED_OWNER) resetscripts();
+    }
+
     // This script bootstraps the entire IT Slave system.
     attach(key id)
     {
         if(id != NULL_KEY)
         {
-            if(wearer != llGetOwner()) resetscripts();
-            else
-            {
-                llMessageLinked(LINK_SET, S_API_STARTED, llDumpList2String(owners, ","), primary);
-                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-                else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-            }
+            if(wearer != llGetOwner()) return;
+            llMessageLinked(LINK_SET, S_API_STARTED, llDumpList2String(owners, ","), primary);
+            if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
         }
         else
         {
@@ -31,6 +35,9 @@ default
     state_entry()
     {
         primary = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
+#ifdef RETAIL_MODE
+        if(primary == llGetCreator()) primary = llGetOwner();
+#endif
         owners = [];
         wearer = llGetOwner();
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
@@ -67,6 +74,10 @@ default
         // Only allow prefixed access.
         if(startswith(m, prefix)) m = llDeleteSubString(m, 0, 1);
         else                      return;
+        
+        string oldn = llGetObjectName();
+        llSetObjectName("");
+
         k = llGetOwnerKey(k);
 
         // Owner info
@@ -83,6 +94,12 @@ default
             ownersay(k, " ");
             ownersay(k, "To add a secondary owner, type /1" + prefix + "owneradd username. The user MUST be present on the same region.");
             if(n != 0) ownersay(k, "To remove a secondary owner, type /1" + prefix + "ownerdel number.");
+            string groupstatus = "DISABLED";
+            string publicstatus = "DISABLED";
+            if(groupaccess) groupstatus = "ENABLED";
+            if(publicaccess) publicstatus = "ENABLED";
+            ownersay(k, "Group access " + groupstatus + ". Click [secondlife:///app/chat/1/" + prefix + "groupaccess here] to toggle.");
+            ownersay(k, "Public access " + publicstatus + ". Click [secondlife:///app/chat/1/" + prefix + "publicaccess here] to toggle.");
         }
         else if(startswith(m, "owneradd"))
         {
@@ -120,5 +137,23 @@ default
                 llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
             }
         }
+        else if(m == "groupaccess")
+        {
+            groupaccess = !groupaccess;
+            string groupstatus = "DISABLED";
+            if(groupaccess) groupstatus = "ENABLED";
+            ownersay(k, "Group access " + groupstatus + ". Click [secondlife:///app/chat/1/" + prefix + "groupaccess here] to toggle.");
+            llMessageLinked(LINK_SET, S_API_OTHER_ACCESS, (string)publicaccess, (key)((string)groupaccess));
+        }
+        else if(m == "publicaccess")
+        {
+            publicaccess = !publicaccess;
+            string publicstatus = "DISABLED";
+            if(publicaccess) publicstatus = "ENABLED";
+            ownersay(k, "Public access " + publicstatus + ". Click [secondlife:///app/chat/1/" + prefix + "publicaccess here] to toggle.");
+            llMessageLinked(LINK_SET, S_API_OTHER_ACCESS, (string)publicaccess, (key)((string)groupaccess));
+        }
+
+        llSetObjectName(oldn);
     }
 }

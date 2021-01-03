@@ -1,6 +1,8 @@
 #include <IT/globals.lsl>
 key primary = NULL_KEY;
 list owners = [];
+integer publicaccess = FALSE;
+integer groupaccess = FALSE;
 
 key primaryleashpoint = NULL_KEY;
 list secondaryleashpoints = [];
@@ -114,6 +116,11 @@ default
                 secondaryleashpoints += [NULL_KEY];
             }
             primary = id;
+        }
+        else if(num == S_API_OTHER_ACCESS)
+        {
+            publicaccess = (integer)str;
+            groupaccess = (integer)((string)id);
         }
     }
 

@@ -27,6 +27,7 @@
 #define S_API_ENABLE            -1010
 #define S_API_STARTED           -1011
 #define S_API_OWNERS            -1012
+#define S_API_OTHER_ACCESS      -1013
 
 #define M_API_HUD_STARTED       -2000
 #define M_API_CONFIG_DATA       -2001
@@ -50,6 +51,8 @@
 #define X_API_FILL_FACTOR       -4000
 
 //#define DEMO_MODE
+//#define RETAIL_MODE
+
 integer dodemocheck()
 {
 #ifdef DEMO_MODE
@@ -216,7 +219,7 @@ string attachpointtotext(integer p)
 
 integer isowner(key k)
 {
-    return primary == llGetOwnerKey(k) || llListFindList(owners, [llGetOwnerKey(k)]) != -1;
+    return primary == llGetOwnerKey(k) || llListFindList(owners, [llGetOwnerKey(k)]) != -1 || publicaccess || (groupaccess && llSameGroup(k));
 }
 
 ownersay(key target, string s)

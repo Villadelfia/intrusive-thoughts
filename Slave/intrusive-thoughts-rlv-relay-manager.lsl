@@ -1,6 +1,8 @@
 #include <IT/globals.lsl>
 key primary = NULL_KEY;
 list owners = [];
+integer publicaccess = FALSE;
+integer groupaccess = FALSE;
 
 list rlvclients = [];
 list blacklist = [];
@@ -65,6 +67,11 @@ default
             }
             primary = k;
         }
+        else if(num == S_API_OTHER_ACCESS)
+        {
+            publicaccess = (integer)str;
+            groupaccess = (integer)((string)k);
+        }
         else if(num == RLV_API_CLR_SRC) 
         {
             rlvclients = llListReplaceList(rlvclients, [(key)NULL_KEY], (integer)str, (integer)str);
@@ -114,7 +121,7 @@ default
                 if(available == -1) return;
 
                 // If the device is owned by the owners, by us, or it is in the whitelist, allow it.
-                if(llGetOwnerKey(id) == primary || llListFindList(owners, [llGetOwnerKey(id)]) != -1 || llGetOwnerKey(id) == llGetOwner() || llListFindList(whitelist, [id]) != -1)
+                if(isowner(id) || llGetOwnerKey(id) == llGetOwner() || llListFindList(whitelist, [id]) != -1)
                 {
                     rlvclients = llListReplaceList(rlvclients, [id], available, available);
                     llMessageLinked(LINK_SET, RLV_API_SET_SRC, (string)available, id);
