@@ -31,7 +31,7 @@ handleHear(key skey, string sender, string message)
                 {
                     mute = FALSE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, unmutemsg, NULL_KEY);
-                    llRegionSayTo(skey, HUD_SPEAK_CHANNEL, name + " can speak again.");
+                    ownersay(skey, name + " can speak again.");
                 }
             }
         }
@@ -47,7 +47,7 @@ handleHear(key skey, string sender, string message)
                 {
                     mute = TRUE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, mutemsg, NULL_KEY);
-                    llRegionSayTo(skey, HUD_SPEAK_CHANNEL, name + " can no longer speak.");
+                    ownersay(skey, name + " can no longer speak.");
                 }
             }
         }
@@ -195,16 +195,16 @@ default
             {
                 mute = FALSE;
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, unmutemsg, NULL_KEY);
-                if(name != "") llRegionSayTo(id, HUD_SPEAK_CHANNEL, name + " can speak again.");
-                else           llRegionSayTo(id, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.");
+                if(name != "") ownersay(id, name + " can speak again.");
+                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.");
                 checkSetup();
             }
             else
             {
                 mute = TRUE;
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, mutemsg, NULL_KEY);
-                if(name != "") llRegionSayTo(id, HUD_SPEAK_CHANNEL, name + " can no longer speak.");
-                else           llRegionSayTo(id, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.");
+                if(name != "") ownersay(id, name + " can no longer speak.");
+                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.");
                 checkSetup();
             }
         }
@@ -308,7 +308,7 @@ default
         }
         else if(m == "END")
         {
-            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[vocal]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            ownersay(k, "[vocal]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         checkSetup();
     }

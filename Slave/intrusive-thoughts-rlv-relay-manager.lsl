@@ -176,18 +176,18 @@ default
             if(!isowner(id)) return;
             if(m == "CLEAR")
             {
-                if(llGetAgentSize(llGetOwnerKey(id)) != ZERO_VECTOR) llRegionSayTo(id, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared.");
+                if(llGetAgentSize(llGetOwnerKey(id)) != ZERO_VECTOR) ownersay(id, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
             }
             else if(m == "FORCECLEAR")    
             {
-                if(llGetAgentSize(llGetOwnerKey(id)) != ZERO_VECTOR) llRegionSayTo(id, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared and detached.");
+                if(llGetAgentSize(llGetOwnerKey(id)) != ZERO_VECTOR) ownersay(id, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared and detached.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 llOwnerSay("@clear,detachme=force");
             }
             else if(m == "RESETRELAY")    
             {
-                if(llGetAgentSize(llGetOwnerKey(id)) != ZERO_VECTOR) llRegionSayTo(id, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been reset and has been rebuilt.");
+                if(llGetAgentSize(llGetOwnerKey(id)) != ZERO_VECTOR) ownersay(id, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been reset and has been rebuilt.");
                 llMessageLinked(LINK_SET, S_API_HARD_RESET, "", "");
             }
         }
@@ -199,7 +199,7 @@ default
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 string oldn = llGetObjectName();
                 llSetObjectName("");
-                if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " relay has been safeworded by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " relay has been safeworded by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
                 else
                 {
                     llSetObjectName(oldn);
@@ -213,7 +213,7 @@ default
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 string oldn = llGetObjectName();
                 llSetObjectName("");
-                if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " been detached by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + " because of safeword.");
+                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " been detached by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + " because of safeword.");
                 else
                 {
                     llSetObjectName(oldn);

@@ -163,8 +163,8 @@ focusToggle(key target)
     target = llGetOwnerKey(target);
     focustarget = target;
     focus = !focus;
-    if(focus) llRegionSayTo(target, HUD_SPEAK_CHANNEL, name + " is now forced to look at you.");
-    else      llRegionSayTo(target, HUD_SPEAK_CHANNEL, name + " is no longer forced to look at you.");
+    if(focus) ownersay(target, name + " is now forced to look at you.");
+    else      ownersay(target, name + " is no longer forced to look at you.");
     llSetTimerEvent(0.1);
 }
 
@@ -307,7 +307,7 @@ default
         }
         else if(m == "END")
         {
-            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[output]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            ownersay(k, "[output]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
     }
 }

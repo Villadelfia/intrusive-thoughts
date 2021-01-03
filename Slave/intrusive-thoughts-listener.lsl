@@ -39,14 +39,14 @@ default
             integer attachedto = (integer)llDeleteSubString(m, 0, llStringLength("CHECKPOS"));
             if(attachedto == llGetAttached())
             {
-                llRegionSayTo(k, MANTRA_CHANNEL, "POSMATCH " + (string)llGetLocalPos());
+                ownersay(k, "POSMATCH " + (string)llGetLocalPos());
                 llOwnerSay("Detected new IT Slave on this attachment point. Moving it in place and detaching myself.");
                 llOwnerSay("@clear,detachme=force");
             }
             else
             {
                 llOwnerSay("Detected new IT Slave on another attachment point. Detaching it.");
-                llRegionSayTo(k, MANTRA_CHANNEL, "POSNOMATCH " + (string)llGetAttached());
+                ownersay(k, "POSNOMATCH " + (string)llGetAttached());
             }
         }
         else if(startswith(m, "POSMATCH") == TRUE && llGetOwnerKey(k) == llGetOwner())
@@ -65,12 +65,12 @@ default
         if(!isowner(k)) return;
         if(m == "RESET")
         {
-            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is resetting configuration and listening to new programming...");
+            ownersay(k, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is resetting configuration and listening to new programming...");
             statements = [];
         }
         else if(m == "END")
         {
-            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[mantra]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            ownersay(k, "[mantra]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
         else if(m == "PING")
         {

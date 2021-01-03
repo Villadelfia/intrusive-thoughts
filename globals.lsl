@@ -218,3 +218,10 @@ integer isowner(key k)
 {
     return primary == llGetOwnerKey(k) || llListFindList(owners, [llGetOwnerKey(k)]) != -1;
 }
+
+ownersay(key target, string s)
+{
+    if(target != llGetOwnerKey(target) && llList2Integer(llGetObjectDetails(target, [OBJECT_ATTACHED_POINT]), 0) != 0) target = llGetOwnerKey(target);
+    if(target == llGetOwner()) llOwnerSay(s);
+    else                       llRegionSayTo(target, HUD_SPEAK_CHANNEL, s);
+}

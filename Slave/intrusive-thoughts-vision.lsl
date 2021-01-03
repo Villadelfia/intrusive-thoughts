@@ -24,7 +24,7 @@ handleHear(key skey, string sender, string message)
                 {
                     blind = FALSE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, unblindmsg, NULL_KEY);
-                    llRegionSayTo(skey, HUD_SPEAK_CHANNEL, name + " can see again.");
+                    ownersay(skey, name + " can see again.");
                     checkSetup();
                 }
             }
@@ -41,7 +41,7 @@ handleHear(key skey, string sender, string message)
                 {
                     blind = TRUE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, blindmsg, NULL_KEY);
-                    llRegionSayTo(skey, HUD_SPEAK_CHANNEL, name + " can no longer see.");
+                    ownersay(skey, name + " can no longer see.");
                     checkSetup();
                 }
             }
@@ -83,16 +83,16 @@ default
             {
                 blind = FALSE;
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, unblindmsg, NULL_KEY);
-                if(name != "") llRegionSayTo(id, HUD_SPEAK_CHANNEL, name + " can see again.");
-                else           llRegionSayTo(id, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can see again.");
+                if(name != "") ownersay(id, name + " can see again.");
+                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can see again.");
                 checkSetup();
             }
             else
             {
                 blind = TRUE;
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, blindmsg, NULL_KEY);
-                if(name != "") llRegionSayTo(id, HUD_SPEAK_CHANNEL, name + " can no longer see.");
-                else           llRegionSayTo(id, HUD_SPEAK_CHANNEL, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer see.");
+                if(name != "") ownersay(id, name + " can no longer see.");
+                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer see.");
                 checkSetup();
             }
         }
@@ -117,7 +117,7 @@ default
         {
             string oldn = llGetObjectName();
             llSetObjectName("");
-            if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, HUD_SPEAK_CHANNEL, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
+            if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
             else                                       llInstantMessage(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
             llSetObjectName(oldn);
             llOwnerSay("Hey! Your RLV is (probably) turned off and I won't work properly until you turn it on and relog. If it is on, you're just experiencing some lag and you shouldn't worry about it.");
@@ -171,7 +171,7 @@ default
         }
         else if(m == "END")
         {
-            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[vision]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            ownersay(k, "[vision]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
     }
 }

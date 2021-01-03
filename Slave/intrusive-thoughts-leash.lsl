@@ -216,13 +216,13 @@ default
                 }
                 leash(llGetOwnerKey(k));
                 llOwnerSay("Your leash has been grabbed by secondlife:///app/agent/" + (string)llGetOwnerKey(k) + "/about.");
-                llRegionSayTo(llGetOwnerKey(k), 0, "You've grabbed the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
+                ownersay(k, "You've grabbed the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
             }
             else if(llToLower(m) == "unleash")
             {
                 unleash();
                 llOwnerSay("Your leash has been released by secondlife:///app/agent/" + (string)llGetOwnerKey(k) + "/about.");
-                llRegionSayTo(llGetOwnerKey(k), 0, "You've released the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
+                ownersay(k, "You've released the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
             }
             else if(llToLower(m) == "yank")
             {

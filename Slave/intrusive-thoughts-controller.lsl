@@ -16,13 +16,13 @@ default
             else
             {
                 llMessageLinked(LINK_SET, S_API_STARTED, llDumpList2String(owners, ","), primary);
-                if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, 0, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
                 else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
             }
         }
         else
         {
-            if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, 0, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
             else llInstantMessage(primary, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
         }
     }
@@ -35,7 +35,7 @@ default
         wearer = llGetOwner();
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
-        if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, 0, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+        if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
         else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
         llOwnerSay("Your primary owner has been detected as secondlife:///app/agent/" + (string)primary + "/about. If this is incorrect, detach me immediately because this person can configure me and add additional owners.");
         llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
@@ -72,17 +72,17 @@ default
         // Owner info
         if(m == "ownerinfo")
         {
-            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Owner information for " + llGetDisplayName(wearer) + ".");
-            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Primary owner: secondlife:///app/agent/" + (string)primary + "/about");
+            ownersay(k, "Owner information for " + llGetDisplayName(wearer) + ".");
+            ownersay(k, "Primary owner: secondlife:///app/agent/" + (string)primary + "/about");
             integer n = llGetListLength(owners);
             integer i;
             for(i = 0; i < n; ++i)
             {
-                llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Secondary owner " + (string)i + ": secondlife:///app/agent/" + (string)llList2Key(owners, i) + "/about");
+                ownersay(k, "Secondary owner " + (string)i + ": secondlife:///app/agent/" + (string)llList2Key(owners, i) + "/about");
             }
-            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "");
-            llRegionSayTo(k, HUD_SPEAK_CHANNEL, "To add a secondary owner, type /1" + prefix + "owneradd username. The user MUST be present on the same region.");
-            if(n != 0) llRegionSayTo(k, HUD_SPEAK_CHANNEL, "To remove a secondary owner, type /1" + prefix + "ownerdel number.");
+            ownersay(k, " ");
+            ownersay(k, "To add a secondary owner, type /1" + prefix + "owneradd username. The user MUST be present on the same region.");
+            if(n != 0) ownersay(k, "To remove a secondary owner, type /1" + prefix + "ownerdel number.");
         }
         else if(startswith(m, "owneradd"))
         {
@@ -90,7 +90,7 @@ default
             key new = llName2Key(m);
             if(new)
             {
-                llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Added secondary owner secondlife:///app/agent/" + (string)new + "/about.");
+                ownersay(k, "Added secondary owner secondlife:///app/agent/" + (string)new + "/about.");
                 llRegionSayTo(new, 0, "I am sending you a device that you must wear to be able to see the messages sent to owners by the Intrusive Thoughts Slave. If you have multiple slaves, you only need one of these.");
                 llGiveInventory(new, "Intrusive Thoughts Listener");
                 owners += [new];
@@ -98,7 +98,7 @@ default
             }
             else
             {
-                llRegionSayTo(k, HUD_SPEAK_CHANNEL, "There is no user in the same region with the username " + m + ".");
+                ownersay(k, "There is no user in the same region with the username " + m + ".");
             }
         }
         else if(startswith(m, "ownerdel"))
@@ -106,12 +106,12 @@ default
             integer n = (integer)llDeleteSubString(m, 0, llStringLength("ownerdel"));
             if(n < 0 || n >= llGetListLength(owners))
             {
-                llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Invalid number given for secondary owner deletion: " + (string)n + ".");
+                ownersay(k, "Invalid number given for secondary owner deletion: " + (string)n + ".");
                 return;
             }
             else
             {
-                llRegionSayTo(k, HUD_SPEAK_CHANNEL, "Deleting secondary owner secondlife:///app/agent/" + (string)llList2Key(owners, n) + "/about.");
+                ownersay(k, "Deleting secondary owner secondlife:///app/agent/" + (string)llList2Key(owners, n) + "/about.");
                 owners = llDeleteSubList(owners, n, n);
                 llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
             }
