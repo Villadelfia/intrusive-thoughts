@@ -1,16 +1,16 @@
 # Tp lines configure pre-set locations for the tpto and tpme commands
-# The format is: tp|shortname,region,x,y,z
-tp|mystwood,Quiet Riot,141,95,55
-tp|mw,Quiet Riot,141,95,55
-tp|silenced,San Fierro,218,15,2422
-tp|hbc,Myanimo,96,20,903
+# The format is: tp = shortname,region,x,y,z
+tp = mystwood,Quiet Riot,141,95,55
+tp = mw,Quiet Riot,141,95,55
+tp = silenced,San Fierro,218,15,2422
+tp = hbc,Myanimo,96,20,903
 
 # The name that will be used in place of %ME% in spoofs.
-name|Avatar
+name = Avatar
 
 # The prefix for your objects when they emote, in the following example
 # an emote would look like: "Hana's shoes wiggle a little"
-objectprefix|Avatar's
+objectprefix = Avatar's
 
 # Spoof configuration:
 # %ME% is replaced with the name set above
@@ -20,24 +20,24 @@ objectprefix|Avatar's
 
 # The capture and release phrases used when someone is turned into an object
 # and when they're released again.
-capture|%ME% turns %VIC% into their %OBJ%.
-release|%ME% releases their %OBJ% and turns it back into %VIC%.
+capture = %ME% turns %VIC% into their %OBJ%.
+release = %ME% releases their %OBJ% and turns it back into %VIC%.
 
 # The pick up and put down phrases used when an object is transferred to rezzed
 # furniture. Note that you have the freedom for these to be different kinds of
 # objects.
-puton|%ME% picks up the %TAR% and turns it into their %OBJ%.
-putdown|%ME% puts down their %OBJ% and turns it into a %TAR%.
+puton = %ME% picks up the %TAR% and turns it into their %OBJ%.
+putdown = %ME% puts down their %OBJ% and turns it into a %TAR%.
 
 # Set the following to 2 if you want to fully hide the captured avatars, but they may
 # need to teleport to another region to become visible again. If you are okay with
 # just pushing them beneath the ground, set it to 1.
-ball|1
+ball = 1
 
 # This is what will show as name when your food tries to talk. In this case, it would show as "Hana's Prey"
-food|Prey
+food = Prey
 
 # These are the phrases uttered when eating and releasing someone. %OBJ% in this case will be replaced with
 # the term defined above.
-vore|%ME% eats %VIC%, now their %OBJ%.
-unvore|%ME% releases their %OBJ%.
+vore = %ME% eats %VIC%, now their %OBJ%.
+unvore = %ME% releases their %OBJ%.

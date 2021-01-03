@@ -270,8 +270,8 @@ default
             else if(startswith(d, "#"));
             else
             {
-                list tokens = llParseString2List(d, ["|"], []);
-                llMessageLinked(LINK_SET, M_API_CONFIG_DATA, llList2String(tokens, 0), (key)llList2String(tokens, 1));
+                list tokens = llParseStringKeepNulls(d, ["="], []);
+                llMessageLinked(LINK_SET, M_API_CONFIG_DATA, llStringTrim(llList2String(tokens, 0), STRING_TRIM), (key)llStringTrim(llList2String(tokens, 1), STRING_TRIM));
             }
             ++line;
             getline = llGetNotecardLine(name, line);
