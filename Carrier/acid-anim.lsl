@@ -29,11 +29,7 @@ default
 {
     state_entry()
     {
-        llSetTextureAnim(ANIM_ON | PING_PONG | SCALE | SMOOTH | LOOP, 0, 0, 0, 0.975, .05, 0.05);
-        llSetTextureAnim(ANIM_ON | SMOOTH | LOOP, 1, 1, 1, 1.0, 0, 0.1);
-        llSetTextureAnim(ANIM_ON | SMOOTH | LOOP, 2, 1, 1, 1.0, 0, 0.2);
-        llSetTextureAnim(ANIM_ON | SMOOTH | LOOP, 3, 1, 1, 1.0, 0, 0.2);
-        llSetTextureAnim(ANIM_ON | SMOOTH | LOOP, 4, 1, 1, 1.0, 0, 0.1);
+        llSetTextureAnim(ANIM_ON | PING_PONG | SCALE | SMOOTH | LOOP, ALL_SIDES, 0, 0, 0.975, .05, 0.05);
         integer i = llGetNumberOfPrims();
         for (; i >= 0; --i)
         {

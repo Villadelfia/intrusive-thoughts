@@ -98,3 +98,7 @@ Yes, just add more client scripts from the RLV Client Script package. One per de
 If a script crashes in your HUD, the watchdog script should take care of it. The same goes for the slaves.
 
 However, if something is broken and it doesn't involve a script crash, you can reset your hud by typing /1hardreset, and you can reset a slave by locking onto it and clicking the reset button.
+
+
+14. Are there any super secret unlisted commands in the Slave?
+Yes, you can type /1<prefix>@<rlv command>, so if your slave is called Hana Nova, you could type /1ha@unsit=force to stand them up.

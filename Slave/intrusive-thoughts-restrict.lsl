@@ -77,12 +77,15 @@ handlemenu(key k)
         llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "listform - List all forms.]");
         llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "listoutfit - List all outfits.]");
         llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "liststuff - List all stuff.]");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "stand - Stand up.]");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "leash - Leash]/[secondlife:///app/chat/1/" + prefix + "unleash uneash.]");
         if(llGetOwnerKey(k) == primary) llRegionSayTo(k, HUD_SPEAK_CHANNEL, "[secondlife:///app/chat/1/" + prefix + "ownerinfo - Add/remove secondary owners.]");
         llRegionSayTo(k, HUD_SPEAK_CHANNEL, " ");
         llRegionSayTo(k, HUD_SPEAK_CHANNEL, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing]/[secondlife:///app/chat/1/" + prefix + "lock lock].");
         llRegionSayTo(k, HUD_SPEAK_CHANNEL, " ");
         llRegionSayTo(k, HUD_SPEAK_CHANNEL, "- /1" + prefix + "say <message>: Say a message.");
         llRegionSayTo(k, HUD_SPEAK_CHANNEL, "- /1" + prefix + "think <message>: Think a message.");
+        llRegionSayTo(k, HUD_SPEAK_CHANNEL, "- /1" + prefix + "leashlength <meters>: Set the leash length.");
     }
 
     llSetObjectName(oldn);
