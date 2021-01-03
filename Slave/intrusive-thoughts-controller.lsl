@@ -91,8 +91,12 @@ default
             if(new)
             {
                 ownersay(k, "Added secondary owner secondlife:///app/agent/" + (string)new + "/about.");
-                llRegionSayTo(new, 0, "I am sending you a device that you must wear to be able to see the messages sent to owners by the Intrusive Thoughts Slave. If you have multiple slaves, you only need one of these.");
-                llGiveInventory(new, "Intrusive Thoughts Listener");
+                llRegionSayTo(new, 0, "You've been added as a secondary owner to the Intrusive Thoughts Slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
+                if(new != llGetOwner())
+                {
+                    llRegionSayTo(new, 0, "I am sending you a device that you must wear to be able to see the messages sent to owners by the Intrusive Thoughts Slave. If you have multiple slaves, you only need one of these.");
+                    llGiveInventory(new, "Intrusive Thoughts Listener");
+                }
                 owners += [new];
                 llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
             }
