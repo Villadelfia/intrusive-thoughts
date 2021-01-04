@@ -401,6 +401,7 @@ default
                         else llOwnerSay("Could not capture '" + lockedname + "'.");
                     }
                     else llOwnerSay("Could not capture '" + lockedname + "'.");
+                    await = "";
                     llRegionSayTo(lastrezzed, MANTRA_CHANNEL, "check");
                 }
             }

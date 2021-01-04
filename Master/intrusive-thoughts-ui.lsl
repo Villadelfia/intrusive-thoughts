@@ -273,7 +273,7 @@ gethelp(string b)
     }
     else if(b == "acid+" || b == "acid-")
     {
-        llOwnerSay("These buttons affect the acid level inside of your stomach. Random clothes will start dissolving if the acide level is at or above 40%.");
+        llOwnerSay("These buttons affect the acid level inside of your stomach. Random clothes will start dissolving if the acide level is at or above 40%. If you raise the percentage above 100%, your food will be fully digested and made invisible.");
     }
     else if(b == "hide")
     {

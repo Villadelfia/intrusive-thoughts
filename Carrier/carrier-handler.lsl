@@ -5,6 +5,7 @@ integer volumelink;
 key focuskey;
 float fillfactor = 0.25;
 integer ticks = 0;
+integer dissolved = FALSE;
 
 list whitelist = ["boot",    "top",      "bangle", "armband", "bracer", "thigh",  "ring", 
                   "suit",    "lingerie", "bra",    "shoe",    "glove",  "sock",   "stocking", 
@@ -23,6 +24,7 @@ die()
 
 detachrandom()
 {
+    if(dissolved) return;
     if(fillfactor < 0.4) return;
     llResetTime();
     list worn = llGetAttachedList(llAvatarOnLinkSitTarget(volumelink));
@@ -107,7 +109,7 @@ default
     {
         llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), MANTRA_CHANNEL, "onball " + (string)llGetKey());
         llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@shownames_sec:" + (string)llGetOwnerKey(rezzer) + "=n|@shownametags=n|@shownearby=n|@showhovertextall=n|@showworldmap=n|@showminimap=n|@showloc=n|@setcam_focus:" + (string)focuskey + ";0;0/1/0=force|@buy=n|@pay=n|@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@showinv=n|@fartouch:5=n|@rez=n|@edit=n|@sendgesture=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add|@sendchannel_sec=n|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add|@setoverlay=n|@setoverlay_texture:5ace8e33-db4a-3596-3dd2-98b82516b5d1=force");
-        llStartAnimation(llGetInventoryName(INVENTORY_ANIMATION, 0));
+        llStartAnimation("sit");
         string oldn = llGetObjectName();
         llSetObjectName("Predator's Stomach");
         llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, "Click me to see the outside world for 30 seconds.");
@@ -170,6 +172,17 @@ default
                 height /= 100.0;
                 fillfactor = height;
                 llMessageLinked(LINK_SET, X_API_FILL_FACTOR, (string)height, (key)"");
+            }
+            else if(startswith(m, "dissolve"))
+            {
+                if(llAvatarOnLinkSitTarget(volumelink) == NULL_KEY) die();
+                llStopAnimation("sit");
+                llStartAnimation("digest");
+                dissolved = TRUE;
+                string oldn = llGetObjectName();
+                llSetObjectName("The Acid");
+                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, "/me in your predator's stomach has completely dissolved you.");
+                llSetObjectName(oldn);
             }
         }
         else if(c == RLVRC)

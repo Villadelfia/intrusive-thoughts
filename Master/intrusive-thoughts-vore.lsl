@@ -196,6 +196,7 @@ default
                     }
                     else llOwnerSay("Could not eat '" + lockedname + "'.");
                     llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "check");
+                    await = "";
                 }
             }
         }
@@ -294,9 +295,17 @@ default
             else if(str == "acid+")
             {
                 fillfactor += 5;
-                if(fillfactor > 100) fillfactor = 100;
-                llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
-                llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
+                if(fillfactor > 100)
+                {
+                    fillfactor = 100;
+                    llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "dissolve");
+                    llOwnerSay("Your " + foodname + " has been fully digested.");
+                }
+                else
+                {
+                    llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
+                    llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
+                }
             }
             else if(str == "acid-")
             {
