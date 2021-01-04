@@ -50,6 +50,16 @@
 
 #define X_API_FILL_FACTOR       -4000
 
+#define IT_PLUGIN_REGISTER      -8000
+#define IT_PLUGIN_RESPONSE      -8001
+#define IT_PLUGIN_OWNERSAY      -8002
+#define IT_PLUGIN_INFOREQUEST   -8003
+#define IT_PLUGIN_COMMAND       -8004
+#define IT_PLUGIN_ALLOWSLAVE    -8005
+#define IT_PLUGIN_ACK           -8006
+#define IT_PLUGIN_LOCK          -8007
+#define IT_PLUGIN_OBJECT        -8008
+
 //#define DEMO_MODE
 //#define RETAIL_MODE
 

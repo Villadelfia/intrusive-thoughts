@@ -4,6 +4,7 @@ Welcome to the Intrusive Thoughts system. This notecard will tell you all you ne
 Inside of your package you will find:
  - > Intrusive Thoughts Furniture Contents: An unpacker for the tools needed to make objects 'furniture' for the IT system.
  - > Intrusive Thoughts Leash Handles: An unpacker containing two leash handles compatible with the IT Slaves.
+ - > Intrusive Thoughts Plugin API: An unpacker containing instructions for writing plugins, and a script to activate plugin support.
  - > Intrusive Thoughts RLV Client Script: An unpacker containing an extra script if 10 supported RLV devices on the RLV relay is not enough.
  - Instruction Manual: You're reading it right now.
  - Intrusive Thoughts Applier Notecard Template: An example applier notecard. You will be using this to set up the voice and hearing restrictions featured in the IT Slaves.
@@ -98,7 +99,3 @@ Yes, just add more client scripts from the RLV Client Script package. One per de
 If a script crashes in your HUD, the watchdog script should take care of it. The same goes for the slaves.
 
 However, if something is broken and it doesn't involve a script crash, you can reset your hud by typing /1hardreset, and you can reset a slave by locking onto it and clicking the reset button.
-
-
-14. Are there any super secret unlisted commands in the Slave?
-Yes, you can type /1<prefix>@<rlv command>, so if your slave is called Hana Nova, you could type /1ha@unsit=force to stand them up.
