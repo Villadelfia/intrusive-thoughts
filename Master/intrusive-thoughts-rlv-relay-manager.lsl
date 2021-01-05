@@ -9,7 +9,10 @@ integer handlingi;
 integer templisten = -1;
 integer tempchannel = DEBUG_CHANNEL;
 integer enabled = FALSE;
+integer configured = FALSE;
 integer scriptcount;
+integer relaymode = 0;
+list allowed = [];
 
 makelisten(key who)
 {
@@ -100,8 +103,12 @@ default
                 integer available = llListFindList(rlvclients, [(key)NULL_KEY]);
                 if(available == -1) return;
 
-                // If the device is owned by the owner or it is in the whitelist, allow it.
-                if(llGetOwnerKey(id) == owner || llListFindList(whitelist, [id]) != -1)
+                // Check if allowed.
+                if(relaymode == 2 ||                                    // Auto mode?
+                   llGetOwnerKey(id) == owner ||                        // Owned by the owner?
+                   llListFindList(whitelist, [id]) != -1 ||             // On the whitelist?
+                   llListFindList(allowed, [llGetOwnerKey(id)]) != -1 || // On the allowed list?
+                   (relaymode == 1 && llSameGroup(id)))                 // Or in group mode and in the same group?
                 {
                     rlvclients = llListReplaceList(rlvclients, [id], available, available);
                     llMessageLinked(LINK_SET, RLV_API_SET_SRC, (string)available, id);
@@ -158,14 +165,22 @@ default
                 handlingk = NULL_KEY;
             }
         }
-        else if(c == 0 && enabled == TRUE)
+        else if(c == 0)
         {
-            if(contains(llToLower(m), "((red))"))
+            integer hasrestrictions = FALSE;
+            integer n = llGetListLength(rlvclients);
+            while(~--n)
+            {
+                if(llList2Key(rlvclients, n) != NULL_KEY) hasrestrictions = TRUE;
+                if(hasrestrictions) jump skipcheck;
+            }
+            @skipcheck;
+            if(contains(llToLower(m), "((red))") && hasrestrictions && enabled)
             {
                 llOwnerSay("You've safeworded. You're free from all RLV devices that grabbed you.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
             }
-            else if(contains(llToLower(m), "((forcered))"))
+            else if(contains(llToLower(m), "((forcered))") && hasrestrictions && enabled)
             {
                 llOwnerSay("You've used the hard safeword. Freeing you and detaching.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
@@ -215,6 +230,40 @@ default
             else
             {
                 llOwnerSay(VERSION_M + ": Your RLV relay is turned off. It supports up to " + (string)llGetListLength(rlvclients) + " devices.");
+            }
+            configured = TRUE;
+        }
+        else if(num == M_API_CONFIG_DATA)
+        {
+            if(configured)
+            {
+                allowed = [];
+                configured = FALSE;
+            }
+
+            if(str == "relaymode")
+            {
+                string mode = llToLower((string)k);
+                if(mode == "ask")
+                {
+                    llOwnerSay(VERSION_M + ": RLV Relay will ask permission for devices not owned by yourself or other avatars on the exception list.");
+                    relaymode = 0;
+                }
+                else if(mode == "group")
+                {
+                    llOwnerSay(VERSION_M + ": RLV Relay will ask permission for devices not in the same group as you. Devices owned by yourself and those owned by other avatars on the exception list will be granted permission automatically.");
+                    relaymode = 1;
+                }
+                else if(mode == "auto")
+                {
+                    llOwnerSay(VERSION_M + ": RLV Relay will grant permission automatically to everything.");
+                    relaymode = 2;
+                }
+            }
+            else if(str == "relayallowed")
+            {
+                allowed += [k];
+                llOwnerSay(VERSION_M + ": RLV Relay will automatically allow devices owned by secondlife:///app/agent/" + (string)k + "/about.");
             }
         }
     }

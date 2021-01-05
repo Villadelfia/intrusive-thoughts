@@ -2,7 +2,7 @@
 
 string owner = "";
 string objectprefix = "";
-string foodname = "food";
+string foodname = "Food";
 string vorespoof = "";
 string unvorespoof = "";
 key lockedavatar = NULL_KEY;
@@ -16,6 +16,7 @@ integer intp = FALSE;
 string await;
 integer fillfactor = 25;
 integer filter = FALSE;
+integer configured = FALSE;
 
 detachbelly()
 {
@@ -254,9 +255,19 @@ default
         if(num == M_API_CONFIG_DONE) 
         {
             llSetTimerEvent(0.5);
+            configured = TRUE;
         }
         else if(num == M_API_CONFIG_DATA)
         {
+            if(configured)
+            {
+                configured = FALSE;
+                owner = "";
+                objectprefix = "";
+                foodname = "Food";
+                vorespoof = "";
+                unvorespoof = "";
+            }
             if(str == "name") owner = (string)id;
             else if(str == "objectprefix") objectprefix = (string)id + " ";
             else if(str == "food") foodname = (string)id;

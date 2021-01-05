@@ -34,6 +34,7 @@ key lastseenobject;
 
 integer dialog = 0;
 integer filter = FALSE;
+integer configured = FALSE;
 
 detachobject(string o)
 {
@@ -503,9 +504,22 @@ default
             lockedname = "";
             intp = FALSE;
             llSetTimerEvent(0.5);
+            configured = TRUE;
         }
         else if(num == M_API_CONFIG_DATA)
         {
+            if(configured)
+            {
+                configured = FALSE;
+                owner = "";
+                objectprefix = "";
+                capturespoof = "";
+                releasespoof = "";
+                putonspoof = "";
+                putdownspoof = "";
+                hideopt = 1;
+            }
+
             if(str == "name") owner = (string)id;
             else if(str == "objectprefix") objectprefix = (string)id + " ";
             else if(str == "capture") capturespoof = (string)id;

@@ -88,11 +88,11 @@ integer dodemocheck()
 }
 
 
-string VERSION_S = "IT-Slave v2.3";
+string VERSION_S = "IT-Slave v2.4";
 #ifdef DEMO_MODE
-string VERSION_M = "IT-Master v2.3 DEMO";
+string VERSION_M = "IT-Master v2.4 DEMO";
 #else
-string VERSION_M = "IT-Master v2.3";
+string VERSION_M = "IT-Master v2.4";
 #endif
 
 resetscripts()
