@@ -158,7 +158,7 @@ default
                 handlingk = NULL_KEY;
             }
         }
-        else if(c == 0)
+        else if(c == 0 && enabled == TRUE)
         {
             if(contains(llToLower(m), "((red))"))
             {
