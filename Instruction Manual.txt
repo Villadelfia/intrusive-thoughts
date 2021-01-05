@@ -4,6 +4,7 @@ Welcome to the Intrusive Thoughts system. This notecard will tell you all you ne
 Inside of your package you will find:
  - > Intrusive Thoughts Furniture Contents: An unpacker for the tools needed to make objects 'furniture' for the IT system.
  - > Intrusive Thoughts Leash Handles: An unpacker containing two leash handles compatible with the IT Slaves.
+ - > Intrusive Thoughts Plugin API: An unpacker for the Plugin API instructions and Demo Plugin script.
  - > Intrusive Thoughts RLV Client Script: An unpacker containing an extra script if 10 supported RLV devices on the RLV relay is not enough.
  - Instruction Manual: You're reading it right now.
  - Intrusive Thoughts Applier Notecard Template: An example applier notecard. You will be using this to set up the voice and hearing restrictions featured in the IT Slaves.
@@ -12,7 +13,6 @@ Inside of your package you will find:
  - Intrusive Thoughts Slave [v2.2]: The Slave HUD, to be given to your submissives.
  - Intrusive Thoughts Tuned Translator [v2.2]: A translator to be worn by people if they wish to be able to understand an IT Slave with the DIALECT option enabled. This one listens only to the person that gave it to them. You would give this to your slave and they would have to try to get people to accept and wear it before they can understand them. Note that unless you enable the DIALECT option, this is unneeded.
  - Intrusive Thoughts Universal Translator [v2.2]: A translator to be worn by people if they wish to be able to understand an IT Slave with the DIALECT option enabled. This one listens to every IT Slave. You would give this to your slave and they would have to try to get people to accept and wear it before they can understand them. Note that unless you enable the DIALECT option, this is unneeded.
- - Plugin API Instruction Manual: Instructions on how to write plugins.
 
 
 2. How do I use this Master HUD?

@@ -10,6 +10,7 @@ Before you get started writing IT plugins, it's vital that you turn on the Fires
 #define IT_PLUGIN_ACK         -8006 // IT -> PLUGIN
 #define IT_PLUGIN_LOCK        -8007 // IT -> PLUGIN
 #define IT_PLUGIN_OBJECT      -8008 // IT -> PLUGIN
+#define IT_PLUGIN_DESCRIPTION -8009 // PLUGIN -> IT
 /////////////////////////////////////////////////////////////////////
 
 
@@ -30,6 +31,10 @@ Assigneduuid is an assigneduuid is a uuid you should save since it is your refer
 NOTE: If your chat command is already taken, the assigned UUID will be NULL_KEY and you should re-register with a number appended to your chat command.
 
 At this point, your plugin(s) will be listed in the /1plugin command on the Master, or /1<prefix>plugin command on the slave for the Owners.
+
+You may, if you want, add a short description to be listed in front of the command. If not, the script name will be shown. It is done as such:
+
+        llMessageLinked(LINK_SET, IT_PLUGIN_DESCRIPTION, description, assigneduuid);
 
 
 2. Interacting with the user.
@@ -54,7 +59,7 @@ While on a slave it might become:
         
 In addition to %COMMAND%, there is also %APPCOMMAND%. This will be replaced with a clickable link, which might be useful if you do not require extra parameters in the command for ease of use. It is used like this. Note the extra spaces:
 
-        "Click [%APPCOMMAND%" + llEscapeURL("nothing 5") + " here] to do nothing five times."
+        "Click [%APPCOMMAND%" + llEscapeURL(" nothing 5") + " here] to do nothing five times."
         
 When you have compiled the text, reply as such:
 
@@ -84,7 +89,7 @@ With allow being either "1" for yes, or "0" for no. On an IT Master, this comman
 
 
 5. Getting feedback.
-Correctly executed OWNERSAY and ALLOWSLAVE will get the following response:
+Correctly executed OWNERSAY, ALLOWSLAVE and DESCRIPTION will get the following response:
 
         llMessageLinked(LINK_SET, IT_PLUGIN_ACK, "OK", assigneduuid);
         

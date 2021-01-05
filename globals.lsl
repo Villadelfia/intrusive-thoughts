@@ -59,6 +59,7 @@
 #define IT_PLUGIN_ACK           -8006
 #define IT_PLUGIN_LOCK          -8007
 #define IT_PLUGIN_OBJECT        -8008
+#define IT_PLUGIN_DESCRIPTION   -8009
 
 //#define DEMO_MODE
 //#define RETAIL_MODE

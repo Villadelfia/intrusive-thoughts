@@ -7,6 +7,7 @@ integer groupaccess = FALSE;
 string mode = "";
 string prefix = "";
 list commands = [];
+list commanddescription = [];
 list commandscript = [];
 list commanduuids = [];
 list commandslaveallowed = [];
@@ -48,6 +49,7 @@ default
             {
                 new = llGenerateKey();
                 commands += [command];
+                commanddescription += [str];
                 commandscript += [str];
                 commanduuids += [new];
                 commandslaveallowed += [FALSE];
@@ -55,6 +57,15 @@ default
                 else                 commandinteractor += [primary];
             }
             llMessageLinked(LINK_SET, IT_PLUGIN_RESPONSE, mode + "," + str + "," + command, new);
+        }
+        else if(num == IT_PLUGIN_DESCRIPTION)
+        {
+            integer idx = llListFindList(commanduuids, [id]);
+            if(idx != -1)
+            {
+                commanddescription = llListReplaceList(commanddescription, [str], idx, idx);
+                llMessageLinked(LINK_SET, IT_PLUGIN_ACK, "OK", id);
+            }
         }
         else if(num == IT_PLUGIN_OWNERSAY)
         {
@@ -65,7 +76,10 @@ default
                 if(mode == "slave") command = prefix + command;
                 str = strreplace(str, "%COMMAND%", "/1" + command);
                 str = strreplace(str, "%APPCOMMAND%", "secondlife:///app/chat/1/" + command);
+                string old = llGetObjectName();
+                llSetObjectName("");
                 ownersay(llList2Key(commandinteractor, idx), str);
+                llSetObjectName(old);
                 llMessageLinked(LINK_SET, IT_PLUGIN_ACK, "OK", id);
             }
         }
@@ -127,24 +141,28 @@ default
 
         if(m == "plugin" || m == "plugins")
         {
+            string old = llGetObjectName();
+            llSetObjectName("");
             ownersay(id, "List of plugins:");
             ownersay(id, " ");
             integer n = llGetListLength(commands);
             while(~--n)
             {
                 string c = llList2String(commands, n);
+                string d = llList2String(commanddescription, n);
                 if(mode == "slave")
                 {
                     if(id != llGetOwner() || isowner(id) == TRUE || llList2Integer(commandslaveallowed, n) == TRUE)
                     {
-                        ownersay(id, "[secondlife:///app/chat/1/" + prefix + llEscapeURL(c) + " " + c + "]");
+                        ownersay(id, d + ": [secondlife:///app/chat/1/" + prefix + llEscapeURL(c) + " " + c + "]");
                     }
                 }
                 else
                 {
-                    ownersay(id, "[secondlife:///app/chat/1/" + llEscapeURL(c) + " " + c + "]");
+                    ownersay(id, d + ": [secondlife:///app/chat/1/" + llEscapeURL(c) + " " + c + "]");
                 }
             }
+            llSetObjectName(old);
             return;
         }
 
@@ -184,6 +202,7 @@ default
                 if(llGetInventoryType(llList2String(commandscript, n)) != INVENTORY_SCRIPT)
                 {
                     commands = llDeleteSubList(commands, n, n);
+                    commanddescription = llDeleteSubList(commanddescription, n, n);
                     commandscript = llDeleteSubList(commandscript, n, n);
                     commanduuids = llDeleteSubList(commanduuids, n, n);
                     commandslaveallowed = llDeleteSubList(commandslaveallowed, n, n);
