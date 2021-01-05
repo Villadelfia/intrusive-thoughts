@@ -2,7 +2,8 @@ Welcome to the Intrusive Thoughts system. This notecard will tell you all you ne
 
 1. What's inside
 Inside of your package you will find:
- - > Intrusive Thoughts Furniture Contents: An unpacker for the tools needed to make objects 'furniture' for the IT system.
+ - > Intrusive Thoughts Furniture Contents (Can Speak): An unpacker for the tools needed to make objects 'furniture' for the IT system. This version is meant for objects like radios or speakers, things that could feasibly speak.
+ - > Intrusive Thoughts Furniture Contents (Mute): An unpacker for the tools needed to make objects 'furniture' for the IT system. This version is meant for objects that would not be able to speak.
  - > Intrusive Thoughts Leash Handles: An unpacker containing two leash handles compatible with the IT Slaves.
  - > Intrusive Thoughts Plugin API: An unpacker for the Plugin API instructions and Demo Plugin script.
  - > Intrusive Thoughts RLV Client Script: An unpacker containing an extra script if 10 supported RLV devices on the RLV relay is not enough.
@@ -53,7 +54,7 @@ For the wearer of a Slave device:
  
  
 5. About the Objectification system.
-There are a few nuances to the objectification system. When you objectify someone, they can still emote. But if they try to talk, or emote with spoken text in it, only they, the other objects worn by you, and yourself will be able to see that. In addition, you as a wearer may speak into channel /8 (think of it like a magic 8-ball) to 'think' to the objects you are wearing. When you store an object as furniture, you can no longer think to them, and they can no longer speak to anyone except themselves.
+There are a few nuances to the objectification system. When you objectify someone, they can still emote. But if they try to talk, or emote with spoken text in it, only they, the other objects worn by you, and yourself will be able to see that. In addition, you as a wearer may speak into channel /8 (think of it like a magic 8-ball) to 'think' to the objects you are wearing. When you store an object as furniture, you can no longer think to them, and they can no longer speak to anyone except themselves, or with other furniture in the region that has the same description.
 
 When you wear an object and they escape or log off, no recapture attempt will be made. However, stored furniture will await the occupant for 24 hours before giving up and derezzing.
 
@@ -82,9 +83,11 @@ Disable the "..." during auditory restrictions by disabling: RLVa -> Show Filter
 
 
 10. How do I create Furniture compatible with the Objectification system?
-Unpack the Furniture pack and drop the script and the ball object in anything to turn it into furniture. You can drop it alongside Immersivity HUD furniture scripts and it will work. The name of the object will be the name of the furniture when speaking.
+Unpack a Furniture pack and drop the script and the ball object in anything to turn it into furniture. You can drop it alongside Immersivity HUD furniture scripts and it will work. The name of the object will be the name of the furniture when speaking.
 
-If you edit the object description to include the word "invisible", the captured avatar will be made entirely invisible rather than being pushed under the ground.
+If you edit the object description to include the word "invis", the captured avatar will be made entirely invisible rather than being pushed under the ground.
+
+If two pieces of furniture in the same region share the same object description, they will be mentally linked and they will be able to talk to each other, no matter the distance between the two pieces of furniture. This allows you, for example, to split up a statue into multiple pieces, each capable of containing a stored object, and each able to talk to each other.
 
 
 11. How do I create a leash holder?
@@ -99,3 +102,9 @@ Yes, just add more client scripts from the RLV Client Script package. One per de
 If a script crashes in your HUD, the watchdog script should take care of it. The same goes for the slaves.
 
 However, if something is broken and it doesn't involve a script crash, you can reset your hud by typing /1hardreset, and you can reset a slave by locking onto it and clicking the reset button.
+
+
+14. Are there any super secret unlisted commands in the Slave/Master?
+Yes, for the Slave, you can type /1<prefix>@<rlv command>. So if your slave is called Hana Nova, you could type /1ha@unsit=force to stand them up.
+
+You can also type /1<prefix>plugin to get a list of installed API plugins. For the Master, this command is /1plugin.

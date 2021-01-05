@@ -171,7 +171,7 @@ default
                 {
                     string oldn = llGetObjectName();
                     llSetObjectName("");
-                    llRegionSayTo(llAvatarOnSitTarget(), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, try undeforming yourself via the Avatar -> Avatar Health menu. If that doesn't work, teleport to a different region, and as a last resort, you can relog.");
+                    llRegionSayTo(llAvatarOnSitTarget(), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, put on something and then take it off again. If this doesn't help, relog.");
                     llSetObjectName(oldn);
                 }
                 llSleep(10.0);

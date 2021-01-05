@@ -113,6 +113,7 @@ Upon attaching, you must clear both the locked avatar and the looked at object.
 
 6. Other rules and guidelines:
         - Do not listen on channel 1. The API will handle this for you.
+        - Do not use channel 8.
         - If you need a listener, use a number from -2147483648 to -2000000000 or a number from 2000000000 to 2147483646.
         - Do not llOwnerSay().
         - Link messages for plugins to react to are only in the range -8000 to -8999.
