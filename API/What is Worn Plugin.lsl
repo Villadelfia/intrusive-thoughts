@@ -21,6 +21,7 @@ default
 {
     state_entry()
     {
+        llSleep(5.0);
         llMessageLinked(LINK_SET, IT_PLUGIN_REGISTER, llGetScriptName(), chatcommand);
     }
 

@@ -279,7 +279,27 @@ gethelp(string b)
     {
         llOwnerSay("Clicking this button will minimize/maximize the HUD.");
     }
+}
 
+integer validlock(key k)
+{
+    if(k)
+    {
+        if(llGetAgentSize(k) == ZERO_VECTOR) return FALSE;
+        if(llGetAgentInfo(k) & AGENT_SITTING)
+        {
+            key saton = llList2Key(llGetObjectDetails(k, [OBJECT_ROOT]), 0);
+            list dets = llGetObjectDetails(saton, [OBJECT_NAME, OBJECT_CREATOR]);
+            string sname = llList2String(dets, 0);
+            string screa = (string)llList2Key(dets, 1);
+            if((sname == "ball" || sname == "carrier") && IT_CREATOR == screa) return FALSE;
+        }
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
 }
 
 default
@@ -415,6 +435,8 @@ default
                 islocked = TRUE;
                 setbuttonfilter("lock", TRUE);
                 settext(0, lockedavatarname);
+                if(!validlock(lockedavatarkey)) llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
+                else                            llSetTimerEvent(0.5);
             }
         }
         else if(num == M_API_SET_FILTER)
@@ -518,5 +540,16 @@ default
             if(filter != "" && llList2Integer(buttonstates, i) == FALSE) return;
             llMessageLinked(LINK_SET, M_API_BUTTON_PRESSED, name, seenobjectkey);
         }
+    }
+
+    timer()
+    {
+        llSetTimerEvent(0.0);
+        if(!validlock(lockedavatarkey))
+        {
+            llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
+            return;
+        }
+        llSetTimerEvent(0.5);
     }
 }

@@ -191,7 +191,6 @@ default
                             spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
                             llSay(0, spoof);
                             attachbelly();
-                            llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
                         }
                         else llOwnerSay("Could not eat '" + lockedname + "'.");
                     }

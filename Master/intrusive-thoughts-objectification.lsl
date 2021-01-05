@@ -285,7 +285,6 @@ default
                         else
                         {
                             llRegionSayTo(id, MANTRA_CHANNEL, "capture " + (string)lockedavatar);
-                            llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
                         }
                     }
                     else
@@ -397,7 +396,6 @@ default
                             spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
                             llSay(0, spoof);
                             attachobject(targetdescription);
-                            llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
                         }
                         else llOwnerSay("Could not capture '" + lockedname + "'.");
                     }
@@ -585,7 +583,6 @@ default
     timer()
     {
         llSetTimerEvent(0.0);
-        if(lockedavatar != NULL_KEY && llGetAgentSize(lockedavatar) == ZERO_VECTOR) llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
         if(!intp)
         {
             integer l = llGetListLength(objectifiedballs);
