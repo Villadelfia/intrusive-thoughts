@@ -16,7 +16,6 @@ default
 {
     state_entry()
     {
-        if(llGetScriptName() != "Intrusive Thoughts Plugin Handler") llRemoveInventory(llGetScriptName());
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
     }
@@ -44,23 +43,28 @@ default
         else if(num == IT_PLUGIN_REGISTER)
         {
             key new = NULL_KEY;
+            string command = llList2String(llParseString2List((string)id, [" "], []), 0);
             if(llListFindList(commands, [(string)id]) == -1)
             {
                 new = llGenerateKey();
-                commands += [(string)id];
+                commands += [command];
                 commandscript += [str];
                 commanduuids += [new];
                 commandslaveallowed += [FALSE];
                 if(mode == "master") commandinteractor += [llGetOwner()];
                 else                 commandinteractor += [primary];
             }
-            llMessageLinked(LINK_SET, IT_PLUGIN_RESPONSE, mode + "," + str + "," + (string)id, new);
+            llMessageLinked(LINK_SET, IT_PLUGIN_RESPONSE, mode + "," + str + "," + command, new);
         }
         else if(num == IT_PLUGIN_OWNERSAY)
         {
             integer idx = llListFindList(commanduuids, [id]);
             if(idx != -1)
             {
+                string command = llList2String(commands, idx);
+                if(mode == "slave") command = prefix + command;
+                str = strreplace(str, "%COMMAND%", "/1" + command);
+                str = strreplace(str, "%APPCOMMAND%", "secondlife:///app/chat/1/" + command);
                 ownersay(llList2Key(commandinteractor, idx), str);
                 llMessageLinked(LINK_SET, IT_PLUGIN_ACK, "OK", id);
             }
@@ -105,6 +109,7 @@ default
     {
         // We haven't started up yet.
         if(mode == "") return;
+        if(llGetListLength(commands) == 0) return;
 
         // Filter on allowed users.
         id = llGetOwnerKey(id);

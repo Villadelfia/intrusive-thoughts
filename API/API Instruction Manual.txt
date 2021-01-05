@@ -12,8 +12,6 @@ Before you get started writing IT plugins, it's vital that you turn on the Fires
 #define IT_PLUGIN_OBJECT      -8008 // IT -> PLUGIN
 /////////////////////////////////////////////////////////////////////
 
-Note that without the "Intrusive Thoughts Plugin Handler" script, plugins won't work. So insert that into your Master/Slave.
-
 
 1. Getting started.
 In your state_entry, and only then, you should call the following function once per desired chat command:
