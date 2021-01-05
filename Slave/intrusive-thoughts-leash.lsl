@@ -188,6 +188,8 @@ default
             else                                              return;
             if(llToLower(m) == "leash")
             {
+                llOwnerSay("Your leash has been grabbed by secondlife:///app/agent/" + (string)llGetOwnerKey(k) + "/about.");
+                ownersay(k, "You've grabbed the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
                 if(llGetOwnerKey(k) == primary)
                 {
                     if(primaryleashpoint)
@@ -222,8 +224,6 @@ default
                     }
                 }
                 leash(llGetOwnerKey(k));
-                llOwnerSay("Your leash has been grabbed by secondlife:///app/agent/" + (string)llGetOwnerKey(k) + "/about.");
-                ownersay(k, "You've grabbed the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
             }
             else if(llToLower(m) == "unleash")
             {
@@ -238,6 +238,7 @@ default
             else if(startswith(llToLower(m), "leashlength"))
             {
                 integer leashlength = (integer)llDeleteSubString(m, 0, llStringLength("leashlength"));
+                if(leashlength < 1) leashlength = 1;
                 if(llength != leashlength)
                 {
                     llength = leashlength;
