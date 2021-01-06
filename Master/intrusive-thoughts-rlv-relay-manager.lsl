@@ -1,4 +1,5 @@
 #include <IT/globals.lsl>
+
 key owner;
 list rlvclients = [];
 list blacklist = [];
@@ -10,9 +11,11 @@ integer templisten = -1;
 integer tempchannel = DEBUG_CHANNEL;
 integer enabled = FALSE;
 integer configured = FALSE;
-integer scriptcount;
 integer relaymode = 0;
 list allowed = [];
+
+integer nridisable = FALSE;
+string region = "";
 
 makelisten(key who)
 {
@@ -30,7 +33,6 @@ clearlisten()
 buildclients()
 {
     integer ct = llGetInventoryNumber(INVENTORY_SCRIPT);
-    scriptcount = ct;
     integer i;
     integer handlers = 0;
     for(i = 0; i < ct; ++i)
@@ -49,14 +51,21 @@ buildclients()
     }
 }
 
+checktp()
+{
+    if(llGetRegionName() != region)
+    {
+        region = llGetRegionName();
+        nridisable = FALSE;
+    }
+}
+
 default
 {
     changed(integer change)
     {
-        if(change & CHANGED_INVENTORY) 
-        {
-            if(llGetInventoryNumber(INVENTORY_SCRIPT) != scriptcount) buildclients();
-        }
+        if(change & CHANGED_INVENTORY) buildclients();
+        if(change & CHANGED_TELEPORT) checktp();
     }
 
     state_entry()
@@ -64,12 +73,13 @@ default
         owner = llGetOwner();
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(0, "", llGetOwner(), "");
-        llListen(MANTRA_CHANNEL, "", llGetOwner(), "");
+        llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         buildclients();
     }
 
     listen(integer c, string n, key id, string m)
     {
+        if(nridisable) return;
         if(!enabled) return;
         if(c == RLVRC)
         {
@@ -163,6 +173,15 @@ default
                 llSetTimerEvent(0.0);
                 if(llListFindList(blacklist, [handlingk]) == -1) blacklist += [handlingk];
                 handlingk = NULL_KEY;
+            }
+        }
+        else if(c == MANTRA_CHANNEL)
+        {
+            if(m == "NRIREGION")
+            {
+                if(llGetCreator() != llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0)) return;
+                nridisable = TRUE;
+                region = llGetRegionName();
             }
         }
         else if(c == 0)

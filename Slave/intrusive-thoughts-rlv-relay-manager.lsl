@@ -1,9 +1,9 @@
 #include <IT/globals.lsl>
+
 key primary = NULL_KEY;
 list owners = [];
 integer publicaccess = FALSE;
 integer groupaccess = FALSE;
-
 list rlvclients = [];
 list blacklist = [];
 list whitelist = [];
@@ -12,6 +12,9 @@ string handlingm;
 integer handlingi;
 integer templisten = -1;
 integer tempchannel = DEBUG_CHANNEL;
+
+integer nridisable = FALSE;
+string region = "";
 
 makelisten(key who)
 {
@@ -47,11 +50,21 @@ buildclients()
     }
 }
 
+checktp()
+{
+    if(llGetRegionName() != region)
+    {
+        region = llGetRegionName();
+        nridisable = FALSE;
+    }
+}
+
 default
 {
     changed(integer change)
     {
         if(change & CHANGED_INVENTORY) buildclients();
+        if(change & CHANGED_TELEPORT) checktp();
     }
 
     link_message(integer sender_num, integer num, string str, key k)
@@ -88,6 +101,7 @@ default
 
     listen(integer c, string n, key id, string m)
     {
+        if(nridisable) return;
         if(c == RLVRC)
         {
             if(rlvclients == []) return;
@@ -180,6 +194,13 @@ default
         }
         else if(c == MANTRA_CHANNEL)
         {
+            if(m == "NRIREGION")
+            {
+                if(llGetCreator() != llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0)) return;
+                nridisable = TRUE;
+                region = llGetRegionName();
+            }
+
             if(!isowner(id)) return;
             if(m == "CLEAR")
             {
