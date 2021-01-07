@@ -113,7 +113,7 @@ handlerlvrc(string msg)
         else if(startswith(command, "!x-handover"))
         {
             list args = llParseString2List(command, ["/"], []);
-            dohandover((key)llList2String(args, 0), (integer)llList2String(args, 1));
+            dohandover((key)llList2String(args, 1), (integer)llList2String(args, 2));
             return;
         }
         else if(command == "!release")
