@@ -330,7 +330,7 @@ default
                 responses += [id];
                 if(llGetListLength(responses) == llGetListLength(objectifiedavatars))
                 {
-                    llSensorRemove();
+                    sensortimer(0.0);
                     if(responses == []) intp = FALSE;
                     llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
                 }
@@ -366,12 +366,13 @@ default
                     if(llGetListLength(responses) == llGetListLength(objectifiedavatars))
                     {
                         llOwnerSay("Done recapturing.");
-                        llSensorRemove();
+                        sensortimer(0.0);
                         intp = FALSE;
                     }
                 }
                 else if(await == "c")
                 {
+                    sensortimer(0.0);
                     if(accept == TRUE)
                     {
                         llSleep(1.0);
@@ -412,7 +413,7 @@ default
 
     no_sensor()
     {
-        llSensorRemove();
+        sensortimer(0.0);
         if(await == "r")
         {
             llOwnerSay("Done recapturing.");
@@ -458,7 +459,7 @@ default
     {
         if(llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0) != "ball") return;
         lastrezzed = id;
-        llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 10.0);
+        sensortimer(10.0);
         llSetObjectName("RLV Capture");
         if(intp)
         {
@@ -523,7 +524,7 @@ default
                 integer l = llGetListLength(objectifiedavatars);
                 await = "";
                 while(~--l) llRegionSayTo(llList2Key(objectifiedballs, l), MANTRA_CHANNEL, "rlvforward " + str);
-                llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 10.0);
+                sensortimer(10.0);
             }
         }
         else if(num == M_API_LOCK)

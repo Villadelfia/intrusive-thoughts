@@ -64,6 +64,7 @@
 
 #define IT_CREATOR              "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9"
 
+#define DEBUG
 //#define DEMO_MODE
 //#define RETAIL_MODE
 
@@ -77,6 +78,18 @@
 #define VERSION_MINOR 5
 #define VERSION_PATCH 0
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
+
+#ifdef DEBUG
+debug(string m) {llOwnerSay("[" + llGetScriptName() + "]: " + m);}
+#else
+#define debug(dummy)
+#endif
+
+sensortimer(float t)
+{
+    if(t == 0.0) llSensorRemove();
+    else         llSensorRepeat("", llGetKey(), PASSIVE, 0.1, PI, t);
+}
 
 integer dodemocheck()
 {

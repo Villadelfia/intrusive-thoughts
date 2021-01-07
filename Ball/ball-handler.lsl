@@ -114,6 +114,8 @@ default
 
     run_time_permissions(integer perm)
     {
+        llSleep(1.0);
+
         // Let the IT slave know to turn off its garbler.
         llRegionSayTo(llAvatarOnSitTarget(), COMMAND_CHANNEL, "*onball " + (string)llGetKey());
 

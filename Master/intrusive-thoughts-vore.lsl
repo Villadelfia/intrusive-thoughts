@@ -139,6 +139,7 @@ default
     {
         if(c == RLVRC)
         {
+            
             list params = llParseString2List(m, [","], []);
             if(llGetListLength(params) != 4) return;
             if((key)llList2String(params, 1) != llGetKey()) return;
@@ -154,7 +155,7 @@ default
                     if(accept)
                     {
                         llOwnerSay("Done re-eating.");
-                        llSensorRemove();
+                        sensortimer(0.0);
                         intp = FALSE;
                     }
                     else
@@ -168,6 +169,7 @@ default
                 }
                 else if(await == "cv")
                 {
+                    sensortimer(0.0);
                     if(accept == TRUE)
                     {
                         llSleep(1.0);
@@ -192,7 +194,7 @@ default
         {
             if(startswith(m, "rlvresponse") && id == vorecarrier)
             {
-                llSensorRemove();
+                sensortimer(0.0);
                 llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
             }
         }
@@ -207,7 +209,7 @@ default
 
     no_sensor()
     {
-        llSensorRemove();
+        sensortimer(0.0);
         vorecarrier = NULL_KEY;
         vorevictim = NULL_KEY;
         vorename = "";
@@ -225,7 +227,7 @@ default
     {
         if(llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0) != "carrier") return;
         vorecarrier = id;
-        llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 10.0);
+        sensortimer(10.0);
         llSetObjectName("RLV Capture");
         if(intp)
         {
@@ -277,7 +279,7 @@ default
                 intp = TRUE;
                 await = "";
                 llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "rlvforward " + str);
-                llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 10.0);
+                sensortimer(10.0);
             }
         }
         else if(num == M_API_LOCK)
