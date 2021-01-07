@@ -163,10 +163,6 @@ default
             {
                 if(llAvatarOnSitTarget() == NULL_KEY) die();
                 llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
-                llSleep(0.5);
-                llUnSit(llAvatarOnSitTarget());
                 if(animation == "hide_b")
                 {
                     string oldn = llGetObjectName();
@@ -174,18 +170,18 @@ default
                     llRegionSayTo(llAvatarOnSitTarget(), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, put on something and then take it off again. If this doesn't help, relog.");
                     llSetObjectName(oldn);
                 }
-                llSleep(10.0);
-                die();
-            }
-            else if(m == "abouttotp")
-            {
-                if(llAvatarOnSitTarget() == NULL_KEY) die();
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
                 llSleep(10.0);
                 die();
+            }
+            else if(startswith(m, "rlvforward"))
+            {
+                if(llAvatarOnSitTarget() == NULL_KEY) die();
+                m = llDeleteSubString(m, 0, llStringLength("rlvforward"));
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "cmd," + (string)llAvatarOnSitTarget() + "," + m);
+                llRegionSayTo(rezzer, MANTRA_CHANNEL, "rlvresponse ok");
             }
             else if(m == "check")
             {

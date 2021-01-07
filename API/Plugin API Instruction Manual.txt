@@ -15,7 +15,7 @@ Before you get started writing IT plugins, it's vital that you turn on the Fires
 
 
 1. Getting started.
-In your state_entry, and only then, you should call the following function once per desired chat command:
+In your state_entry, you should first sleep for about 10 seconds, and only then, you should call the following function once per desired chat command:
 
         llMessageLinked(LINK_SET, IT_PLUGIN_REGISTER, llGetScriptName(), "chatcommand");
 
@@ -114,7 +114,7 @@ Upon attaching, you must clear both the locked avatar and the looked at object.
 6. Other rules and guidelines:
         - Do not listen on channel 1. The API will handle this for you.
         - Do not use channel 8.
-        - If you need a listener, use a number from -2147483648 to -2000000000 or a number from 2000000000 to 2147483646.
+        - If you need a listener, use a number from -2147483648 to -2000000000 or a number from 500000000 to 1000000000.
         - Do not llOwnerSay().
         - Link messages for plugins to react to are only in the range -8000 to -8999.
         - Plugins may use link message numbers above 1. Negative numbers are reserved for the IT system.

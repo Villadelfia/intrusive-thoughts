@@ -17,7 +17,7 @@ dotp(string region, string x, string y, string z)
     llRegionSay(COMMAND_CHANNEL, "*tpto " + region + "/" + x + "/" + y  + "/" + z);
     ook = FALSE;
     vok = FALSE;
-    llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", (key)region);
+    llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force|!release", (key)region);
     tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
 }
 
@@ -26,7 +26,7 @@ tpme(string region, string x, string y, string z)
     llOwnerSay("Teleporting you to: " + slurlp(region, x, y, z));
     ook = FALSE;
     vok = FALSE;
-    llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", (key)region);
+    llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force|!release", (key)region);
     tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
 }
 

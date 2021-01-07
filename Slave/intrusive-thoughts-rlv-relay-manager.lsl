@@ -38,16 +38,8 @@ buildclients()
     {
         if(contains(llToLower(llGetInventoryName(INVENTORY_SCRIPT, i)), "client")) handlers++;
     }
-
-    while(llGetListLength(rlvclients) < handlers) 
-    {
-        rlvclients += [(key)NULL_KEY];
-    }
-
-    while(llGetListLength(rlvclients) > handlers)
-    {
-        rlvclients = llDeleteSubList(rlvclients, -1, -1);
-    }
+    while(llGetListLength(rlvclients) < handlers) rlvclients += [(key)NULL_KEY];
+    while(llGetListLength(rlvclients) > handlers) rlvclients = llDeleteSubList(rlvclients, -1, -1);
 }
 
 checktp()
@@ -85,10 +77,8 @@ default
             publicaccess = (integer)str;
             groupaccess = (integer)((string)k);
         }
-        else if(num == RLV_API_CLR_SRC) 
-        {
-            rlvclients = llListReplaceList(rlvclients, [(key)NULL_KEY], (integer)str, (integer)str);
-        }
+        else if(num == RLV_API_CLR_SRC) rlvclients = llListReplaceList(rlvclients, [(key)NULL_KEY], (integer)str, (integer)str);
+        else if(num == RLV_API_HANDOVER) rlvclients = llListReplaceList(rlvclients, [k], (integer)str, (integer)str);
     }
 
     state_entry()
@@ -146,7 +136,7 @@ default
                     // If it's not owned by the owner or us, we check if it's one of the allowed commands.
                     if(command == "!version") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!version,1100");
                     else if(command == "!implversion") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!implversion,ORG=0004/Hana's Relay");
-                    else if(command == "!x-orgversions") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!x-orgversions,ORG=0004");
+                    else if(command == "!x-orgversions") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!x-orgversions,ORG=0004/handover=001");
                     else if((behavior == "@version" || behavior == "@versionnew" || behavior == "@versionnum" || behavior == "@versionnumbl") && command == behavior + "=" + value) llOwnerSay(command);
 
                     // If not, we ask the owner for permission if they're available, or the

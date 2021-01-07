@@ -6,6 +6,7 @@ list owners;
 integer publicaccess = FALSE;
 integer groupaccess = FALSE;
 string prefix;
+key http;
 
 default
 {
@@ -23,6 +24,7 @@ default
             llMessageLinked(LINK_SET, S_API_STARTED, llDumpList2String(owners, ","), primary);
             if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
             else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            http = llHTTPRequest(UPDATE_URL, [], "");
         }
         else
         {
@@ -46,6 +48,7 @@ default
         else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
         llOwnerSay("Your primary owner has been detected as secondlife:///app/agent/" + (string)primary + "/about. If this is incorrect, detach me immediately because this person can configure me and add additional owners.");
         llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
+        http = llHTTPRequest(UPDATE_URL, [], "");
     }
 
     link_message(integer sender_num, integer num, string str, key id )
@@ -155,5 +158,10 @@ default
         }
 
         llSetObjectName(oldn);
+    }
+
+    http_response(key id, integer status, list metadata, string body)
+    {
+        if(id == http && status == 200) versioncheck(body, FALSE);
     }
 }

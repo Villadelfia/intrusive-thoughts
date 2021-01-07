@@ -11,7 +11,7 @@ list whitelist = ["boot",    "top",      "bangle", "armband", "bracer", "thigh",
                   "suit",    "lingerie", "bra",    "shoe",    "glove",  "sock",   "stocking", 
                   "leotard", "tight",    "skirt",  "warmers", "robe",   "kimono", "pant",
                   "sandal",  "jean",     "string", "bikini",  "heel",   "dress",  "sarong",
-                  "glasses", "corset",   "tube"];
+                  "glasses", "corset",   "tube",   "dress"];
 
 die()
 {
@@ -138,28 +138,31 @@ default
         }
         else if(c == MANTRA_CHANNEL)
         {
-            if(llGetOwnerKey(id) != rezzer) return;
+            if(llGetOwnerKey(id) != rezzer)
             if(m == "unsit")
             {
                 if(llAvatarOnLinkSitTarget(volumelink) == NULL_KEY) die();
                 llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
                 llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + <0.0, 0.0, 10.0>);
+                if(dissolved)
+                {
+                    string oldn = llGetObjectName();
+                    llSetObjectName("");
+                    llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, put on something and then take it off again. If this doesn't help, relog.");
+                    llSetObjectName(oldn);
+                }
                 llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(volumelink) + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnLinkSitTarget(volumelink));
                 llSleep(0.5);
                 die();
             }
-            else if(m == "abouttotp")
+            else if(startswith(m, "rlvforward"))
             {
                 if(llAvatarOnLinkSitTarget(volumelink) == NULL_KEY) die();
-                llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
-                llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + <0.0, 0.0, 10.0>);
-                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(volumelink) + ",!release");
-                llSleep(0.5);
-                llUnSit(llAvatarOnLinkSitTarget(volumelink));
-                llSleep(0.5);
-                die();
+                m = llDeleteSubString(m, 0, llStringLength("rlvforward"));
+                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "cmd," + (string)llAvatarOnLinkSitTarget(volumelink) + "," + m);
+                llRegionSayTo(rezzer, MANTRA_CHANNEL, "rlvresponse ok");
             }
             else if(m == "check")
             {

@@ -1,12 +1,12 @@
-#define MANTRA_CHANNEL     -216684563
-#define PING_CHANNEL       -216684564
-#define S_DIALOG_CHANNEL   -219755312
-#define O_DIALOG_CHANNEL   -219755313
-#define RLV_CHANNEL         166845630
-#define VOICE_CHANNEL       166845631
-#define HUD_SPEAK_CHANNEL   166845632
-#define RLV_CHECK_CHANNEL   166845633
-#define GAZE_CHAT_CHANNEL   166845634
+#define MANTRA_CHANNEL    -2033649842
+#define PING_CHANNEL      -1766324201
+#define S_DIALOG_CHANNEL  -1246653822
+#define O_DIALOG_CHANNEL  -1438864911
+#define RLV_CHANNEL        1324689755
+#define VOICE_CHANNEL      1997346185
+#define HUD_SPEAK_CHANNEL  2003469558
+#define RLV_CHECK_CHANNEL  2033461987
+#define GAZE_CHAT_CHANNEL  2102234356
 #define SPEAK_CHANNEL       166845635
 #define LEASH_CHANNEL       166845636
 #define HOME_HUD_CHANNEL    166845637
@@ -47,6 +47,7 @@
 #define RLV_API_CLR_SRC         -3001
 #define RLV_API_HANDLE_CMD      -3002
 #define RLV_API_SAFEWORD        -3003
+#define RLV_API_HANDOVER        -3004
 
 #define X_API_FILL_FACTOR       -4000
 
@@ -65,6 +66,17 @@
 
 //#define DEMO_MODE
 //#define RETAIL_MODE
+
+#define VERSION_S "IT-Slave v2.5"
+#ifdef DEMO_MODE
+#define VERSION_M "IT-Master v2.5 DEMO"
+#else
+#define VERSION_M "IT-Master v2.5"
+#endif
+#define VERSION_MAJOR 2
+#define VERSION_MINOR 5
+#define VERSION_PATCH 0
+#define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 integer dodemocheck()
 {
@@ -88,14 +100,6 @@ integer dodemocheck()
     return FALSE;
 #endif
 }
-
-
-string VERSION_S = "IT-Slave v2.4";
-#ifdef DEMO_MODE
-string VERSION_M = "IT-Master v2.4 DEMO";
-#else
-string VERSION_M = "IT-Master v2.4";
-#endif
 
 resetscripts()
 {
@@ -240,4 +244,22 @@ ownersay(key target, string s)
     if(target != llGetOwnerKey(target) && llList2Integer(llGetObjectDetails(target, [OBJECT_ATTACHED_POINT]), 0) != 0) target = llGetOwnerKey(target);
     if(target == llGetOwner()) llOwnerSay(s);
     else                       llRegionSayTo(target, HUD_SPEAK_CHANNEL, s);
+}
+
+versioncheck(string report, integer master)
+{
+    list dets = llParseString2List(report, ["."], []);
+    integer ma = (integer)llList2String(dets, 0);
+    integer mi = (integer)llList2String(dets, 1);
+    integer pa = (integer)llList2String(dets, 2);
+    string msg = "";
+    if(ma > VERSION_MAJOR)      msg = ": There is a major version update available to the Intrusive Thoughts System. ";
+    else if(mi > VERSION_MINOR) msg = ": There is a minor version update available to the Intrusive Thoughts System. ";
+    else if(pa > VERSION_PATCH) msg = ": There is a patch available for the Intrusive Thoughts System. ";
+    if(msg != "")
+    {
+        if(master) msg = VERSION_M + msg + "Please update the system and that of your slaves at your earliest convenience.";
+        else       msg = VERSION_S + msg + "Please request a new slave device from your primary owner at your earliest convenience.";
+        llOwnerSay(msg);
+    }
 }

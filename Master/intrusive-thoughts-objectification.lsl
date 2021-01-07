@@ -137,7 +137,6 @@ release(integer i)
     spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), llList2String(objectifiednames, i));
     llSay(0, spoof);
     llRegionSayTo(llList2Key(objectifiedballs, i), MANTRA_CHANNEL, "unsit");
-    llRegionSayTo(llList2Key(objectifiedavatars, i), RLVRC, "release," + (string)llList2Key(objectifiedavatars, i) + ",!release");
     objectifiednames = llDeleteSubList(objectifiednames, i, i);
     objectifiedavatars = llDeleteSubList(objectifiedavatars, i, i);
     objectifiedballs = llDeleteSubList(objectifiedballs, i, i);
@@ -326,6 +325,16 @@ default
                 objectifiednames += [llGetDisplayName(av)];
                 objectifieddescriptions += [desc];
             }
+            else if(startswith(m, "rlvresponse"))
+            {
+                responses += [id];
+                if(llGetListLength(responses) == llGetListLength(objectifiedavatars))
+                {
+                    llSensorRemove();
+                    if(responses == []) intp = FALSE;
+                    llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
+                }
+            }
         }
         else if(c == RLVRC)
         {
@@ -338,29 +347,7 @@ default
 
             if(identifier == await)
             {
-                if(await == "dotp" && startswith(command, "@tpto"))
-                {
-                    key av = llGetOwnerKey(id);
-                    if(accept)
-                    {
-                        responses += [id];
-                    }
-                    else
-                    {
-                        integer i = llListFindList(objectifiedavatars, [av]);
-                        objectifiednames = llDeleteSubList(objectifiednames, i, i);
-                        objectifiedavatars = llDeleteSubList(objectifiedavatars, i, i);
-                        objectifiedballs = llDeleteSubList(objectifiedballs, i, i);
-                        objectifieddescriptions = llDeleteSubList(objectifieddescriptions, i, i);
-                    }
-                    if(llGetListLength(responses) == llGetListLength(objectifiedavatars))
-                    {
-                        llSensorRemove();
-                        if(responses == []) intp = FALSE;
-                        llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
-                    }
-                }
-                else if(await == "r")
+                if(await == "r")
                 {
                     key av = llGetOwnerKey(id);
                     integer i = llListFindList(objectifiedavatars, [av]);
@@ -426,29 +413,7 @@ default
     no_sensor()
     {
         llSensorRemove();
-        if(await == "dotp")
-        {
-            integer l = llGetListLength(objectifiedavatars);
-            while(~--l)
-            {
-                if(llListFindList(responses, [llList2Key(objectifiedavatars, l)]) == -1)
-                {
-                    objectifiednames = llDeleteSubList(objectifiednames, l, l);
-                    objectifiedavatars = llDeleteSubList(objectifiedavatars, l, l);
-                    objectifiedballs = llDeleteSubList(objectifiedballs, l, l);
-                    objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
-                }
-            }
-            await = "";
-            if(responses == []) intp = FALSE;
-            if(filter)
-            {
-                filter = FALSE;
-                llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
-            }
-            llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
-        }
-        else if(await == "r")
+        if(await == "r")
         {
             llOwnerSay("Done recapturing.");
             integer l = llGetListLength(objectifiedavatars);
@@ -465,6 +430,28 @@ default
             await = "";
             intp = FALSE;
         }
+        else
+        {
+            integer l = llGetListLength(objectifiedballs);
+            while(~--l)
+            {
+                if(llListFindList(responses, [llList2Key(objectifiedballs, l)]) == -1)
+                {
+                    objectifiednames = llDeleteSubList(objectifiednames, l, l);
+                    objectifiedavatars = llDeleteSubList(objectifiedavatars, l, l);
+                    objectifiedballs = llDeleteSubList(objectifiedballs, l, l);
+                    objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
+                }
+            }
+            await = "";
+            if(responses == []) intp = FALSE;
+            if(filter)
+            {
+                filter = FALSE;
+                llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
+            }
+            llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
+        }
     }
 
     object_rez(key id)
@@ -477,7 +464,7 @@ default
         {
             llOwnerSay("Recapturing " + llList2String(objectifiednames, handling-1) + ".");
             await = "r";
-            llRegionSayTo(target, RLVRC, "r," + (string)target + ",@sit:" + (string)id + "=force");
+            llRegionSayTo(target, RLVRC, "r," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
             objectifiedballs += [id];
             handling++;
             handletp();
@@ -485,7 +472,7 @@ default
         else
         {
             await = "c";
-            llRegionSayTo(target, RLVRC, "c," + (string)target + ",@sit:" + (string)id + "=force");
+            llRegionSayTo(target, RLVRC, "c," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
             objectifiedballs += [id];
             objectifiedavatars += [target];
             objectifiednames += [targetname];
@@ -534,15 +521,8 @@ default
                 intp = TRUE;
                 responses = [];
                 integer l = llGetListLength(objectifiedavatars);
-                while(~--l)
-                {
-                    key av = llList2Key(objectifiedavatars, l);
-                    llRegionSayTo(llList2Key(objectifiedballs, l), MANTRA_CHANNEL, "abouttotp");
-                    await = "dotp";
-                    llRegionSayTo(av, RLVRC, "release," + (string)av + ",!release");
-                    llSleep(0.25);
-                    llRegionSayTo(av, RLVRC, "dotp," + (string)av + "," + str);
-                }
+                await = "";
+                while(~--l) llRegionSayTo(llList2Key(objectifiedballs, l), MANTRA_CHANNEL, "rlvforward " + str);
                 llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 10.0);
             }
         }

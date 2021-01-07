@@ -24,6 +24,7 @@ string seenobjectname = "";
 key seenobjectkey = NULL_KEY;
 
 float hoverheight = 0.0;
+key http;
 
 setheight()
 {
@@ -198,6 +199,7 @@ dosetup()
     llListen(COMMAND_CHANNEL, "", llGetOwner(), "");
     sethide();
     llMessageLinked(LINK_SET, M_API_HUD_STARTED, "", (key)"");
+    http = llHTTPRequest(UPDATE_URL, [], "");
 }
 
 doquicksetup()
@@ -211,6 +213,7 @@ doquicksetup()
     llSetObjectName("");
     llMessageLinked(LINK_SET, M_API_HUD_STARTED, "", (key)"");
     llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
+    http = llHTTPRequest(UPDATE_URL, [], "");
 }
 
 gethelp(string b)
@@ -551,5 +554,10 @@ default
             return;
         }
         llSetTimerEvent(0.5);
+    }
+
+    http_response(key id, integer status, list metadata, string body)
+    {
+        if(id == http && status == 200) versioncheck(body, TRUE);
     }
 }

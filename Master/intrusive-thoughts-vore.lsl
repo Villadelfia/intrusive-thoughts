@@ -49,7 +49,6 @@ unvore()
     spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), vorename);
     llSay(0, spoof);
     llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "unsit");
-    llRegionSayTo(vorevictim, RLVRC, "release," + (string)vorevictim + ",!release");
     vorecarrier = NULL_KEY;
     vorevictim = NULL_KEY;
     vorename = "";
@@ -128,6 +127,7 @@ default
     {
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
+        llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
     }
 
     attach(key id)
@@ -148,19 +148,7 @@ default
 
             if(identifier == await)
             {
-                if(await == "tpv")
-                {
-                    if(!accept)
-                    {
-                        vorecarrier = NULL_KEY;
-                        vorevictim = NULL_KEY;
-                        vorename = "";
-                        intp = FALSE;
-                    }
-                    llSensorRemove();
-                    llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
-                }
-                else if(await == "rv")
+                if(await == "rv")
                 {
                     key av = llGetOwnerKey(id);
                     if(accept)
@@ -200,6 +188,14 @@ default
                 }
             }
         }
+        else if(c == MANTRA_CHANNEL)
+        {
+            if(startswith(m, "rlvresponse") && id == vorecarrier)
+            {
+                llSensorRemove();
+                llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
+            }
+        }
         else if(c == GAZE_CHAT_CHANNEL)
         {
             if(llGetOwnerKey(id) != vorevictim) return;
@@ -221,7 +217,7 @@ default
             filter = FALSE;
             llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
         }
-        if(await == "tpv") llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
+        if(await != "rv" && await != "cv") llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
         await = "";
     }
 
@@ -236,13 +232,13 @@ default
             llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
             llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
             await = "rv";
-            llRegionSayTo(target, RLVRC, "rv," + (string)target + ",@sit:" + (string)id + "=force");
+            llRegionSayTo(target, RLVRC, "rv," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
         }
         else
         {
             fillfactor = 25;
             await = "cv";
-            llRegionSayTo(target, RLVRC, "cv," + (string)target + ",@sit:" + (string)id + "=force");
+            llRegionSayTo(target, RLVRC, "cv," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
             vorename = targetname;
             vorevictim = target;
         }
@@ -279,11 +275,8 @@ default
             else
             {
                 intp = TRUE;
-                llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "abouttotp");
-                await = "tpv";
-                llRegionSayTo(vorevictim, RLVRC, "release," + (string)vorevictim + ",!release");
-                llSleep(0.25);
-                llRegionSayTo(vorevictim, RLVRC, "tpv," + (string)vorevictim + "," + str);
+                await = "";
+                llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "rlvforward " + str);
                 llSensorRepeat("", "3d6181b0-6a4b-97ef-18d8-722652995cf1", PASSIVE, 0.0, PI, 10.0);
             }
         }

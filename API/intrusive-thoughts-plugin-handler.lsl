@@ -41,7 +41,9 @@ default
             publicaccess = (integer)str;
             groupaccess = (integer)((string)id);
         }
-        else if(num == IT_PLUGIN_REGISTER)
+
+        if(mode == "") return;
+        if(num == IT_PLUGIN_REGISTER)
         {
             key new = NULL_KEY;
             string command = llList2String(llParseString2List((string)id, [" "], []), 0);
