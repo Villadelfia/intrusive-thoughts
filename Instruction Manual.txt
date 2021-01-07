@@ -10,10 +10,10 @@ Inside of your package you will find:
  - Instruction Manual: You're reading it right now.
  - Intrusive Thoughts Applier Notecard Template: An example applier notecard. You will be using this to set up the voice and hearing restrictions featured in the IT Slaves.
  - Intrusive Thoughts Configuration: You will be editing this notecard and dropping it onto the HUD to set it up before first usage and whenever you wish to change the settings.
- - Intrusive Thoughts Master [v2.2]: The Master HUD, to be worn by you.
- - Intrusive Thoughts Slave [v2.2]: The Slave HUD, to be given to your submissives.
- - Intrusive Thoughts Tuned Translator [v2.2]: A translator to be worn by people if they wish to be able to understand an IT Slave with the DIALECT option enabled. This one listens only to the person that gave it to them. You would give this to your slave and they would have to try to get people to accept and wear it before they can understand them. Note that unless you enable the DIALECT option, this is unneeded.
- - Intrusive Thoughts Universal Translator [v2.2]: A translator to be worn by people if they wish to be able to understand an IT Slave with the DIALECT option enabled. This one listens to every IT Slave. You would give this to your slave and they would have to try to get people to accept and wear it before they can understand them. Note that unless you enable the DIALECT option, this is unneeded.
+ - Intrusive Thoughts Master: The Master HUD, to be worn by you.
+ - Intrusive Thoughts Slave: The Slave HUD, to be given to your submissives.
+ - Intrusive Thoughts Tuned Translator: A translator to be worn by people if they wish to be able to understand an IT Slave with the DIALECT option enabled. This one listens only to the person that gave it to them. You would give this to your slave and they would have to try to get people to accept and wear it before they can understand them. Note that unless you enable the DIALECT option, this is unneeded.
+ - Intrusive Thoughts Universal Translator: A translator to be worn by people if they wish to be able to understand an IT Slave with the DIALECT option enabled. This one listens to every IT Slave. You would give this to your slave and they would have to try to get people to accept and wear it before they can understand them. Note that unless you enable the DIALECT option, this is unneeded.
 
 
 2. How do I use this Master HUD?

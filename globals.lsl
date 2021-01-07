@@ -64,7 +64,7 @@
 
 #define IT_CREATOR              "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9"
 
-#define DEBUG
+//#define DEBUG
 //#define DEMO_MODE
 //#define RETAIL_MODE
 

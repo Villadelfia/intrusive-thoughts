@@ -46,14 +46,14 @@ default
             integer attachedto = (integer)llDeleteSubString(m, 0, llStringLength("CHECKPOS"));
             if(attachedto == llGetAttached())
             {
-                ownersay(k, "POSMATCH " + (string)llGetLocalPos());
+                llRegionSayTo(k, MANTRA_CHANNEL, "POSMATCH " + (string)llGetLocalPos());
                 llOwnerSay("Detected new IT Slave on this attachment point. Moving it in place and detaching myself.");
                 llOwnerSay("@clear,detachme=force");
             }
             else
             {
                 llOwnerSay("Detected new IT Slave on another attachment point. Detaching it.");
-                ownersay(k, "POSNOMATCH " + (string)llGetAttached());
+                llRegionSayTo(k, MANTRA_CHANNEL, "POSNOMATCH " + (string)llGetAttached());
             }
         }
         else if(startswith(m, "POSMATCH") == TRUE && llGetOwnerKey(k) == llGetOwner())
