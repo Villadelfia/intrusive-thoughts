@@ -48,7 +48,7 @@ default
         else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
         llOwnerSay("Your primary owner has been detected as secondlife:///app/agent/" + (string)primary + "/about. If this is incorrect, detach me immediately because this person can configure me and add additional owners.");
         llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
-        http = llHTTPRequest(UPDATE_URL, [], "");
+        http = llHTTPRequest(UPDATE_URL, [], ""); 
     }
 
     link_message(integer sender_num, integer num, string str, key id )

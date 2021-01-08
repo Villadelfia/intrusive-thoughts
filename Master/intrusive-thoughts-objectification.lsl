@@ -459,7 +459,7 @@ default
     {
         if(llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0) != "ball") return;
         lastrezzed = id;
-        sensortimer(10.0);
+        sensortimer(60.0);
         llSetObjectName("RLV Capture");
         if(intp)
         {

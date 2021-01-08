@@ -183,10 +183,16 @@ string prefixfilter(string m)
     string word;
     string oldword;
     string mcpy = m;
-    m = "";
+    m = llList2String(llParseStringKeepNulls(mcpy, [" ", ",", "\"", ".", "!", "?"], []), 0);
+    if(llStringLength(mcpy) != llStringLength(m))
+    {
+        m += llGetSubString(mcpy, llStringLength(m), llStringLength(m));
+        if(llGetSubString(m, -1, -1) == "\"") quotecnt++;
+    }
+    mcpy = llDeleteSubString(mcpy, 0, llStringLength(m)-1);
     while(llStringLength(mcpy) > 0)
     {
-        word = llList2String(llParseStringKeepNulls(mcpy, [" ", ",", "\"", ";", ":", ".", "!", "?"], []), 0);
+        word = llList2String(llParseStringKeepNulls(mcpy, [" ", ",", "\"", ".", "!", "?"], []), 0);
         oldword = word;
 
         if(word != "")

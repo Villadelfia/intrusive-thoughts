@@ -135,7 +135,7 @@ handleSay(string message)
                 word = llList2String(llParseStringKeepNulls(messagecopy, [" ", ",", "\"", ";", ":", ".", "!", "?"], []), 0);
                 oldword = word;
 
-                if(emote == FALSE || quotecnt % 2 != 0)
+                if((emote == FALSE || quotecnt % 2 != 0) && word != "")
                 {
                     newword = llList2String(mutecensor, llFloor(llFrand(llGetListLength(mutecensor))));
                     if(llToUpper(word) == word)

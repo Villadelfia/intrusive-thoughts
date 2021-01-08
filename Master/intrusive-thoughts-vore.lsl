@@ -227,7 +227,7 @@ default
     {
         if(llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0) != "carrier") return;
         vorecarrier = id;
-        sensortimer(10.0);
+        sensortimer(60.0);
         llSetObjectName("RLV Capture");
         if(intp)
         {

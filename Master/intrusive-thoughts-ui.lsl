@@ -34,7 +34,7 @@ setheight()
 
 setbuttonfilter(string filter, integer active)
 {
-    if(filter == "") return;
+    if(filter == "") return; 
     float alpha;
     integer i = llGetListLength(buttonfilters);
     while(~--i)

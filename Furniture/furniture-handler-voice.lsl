@@ -120,7 +120,7 @@ default
         storedobject = id;
         storedavatar = capturing;
         storedname = llGetObjectName();
-        llRegionSayTo(capturing, RLVRC, "c," + (string)capturing + ",@sit:" + (string)id + "=force");
+        llRegionSayTo(capturing, RLVRC, "c," + (string)capturing + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
         llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
         llSay(0, "A magical force begins acting on the body of " + llGetDisplayName(capturing) + " as they find themselves being transformed into the form of a " + llGetObjectName() + ".");
         llSetTimerEvent(15.0);
