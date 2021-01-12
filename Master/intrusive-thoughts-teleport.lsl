@@ -17,8 +17,8 @@ dotp(string region, string x, string y, string z)
     llRegionSay(COMMAND_CHANNEL, "*tpto " + region + "/" + x + "/" + y  + "/" + z);
     ook = FALSE;
     vok = FALSE;
-    llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force|!release", (key)region);
     tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
+    llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force|!release", (key)region);
 }
 
 tpme(string region, string x, string y, string z)
@@ -26,8 +26,8 @@ tpme(string region, string x, string y, string z)
     llOwnerSay("Teleporting you to: " + slurlp(region, x, y, z));
     ook = FALSE;
     vok = FALSE;
-    llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force|!release", (key)region);
     tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
+    llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force|!release", (key)region);
 }
 
 send(string region, string x, string y, string z)
@@ -99,15 +99,23 @@ default
             locations += llParseString2List((string)id, [","], []);
             llOwnerSay(VERSION_M + ": Loaded teleport location " + llList2String(locations, -5));
         }
-        if(num == M_API_TPOK_O) 
+        if(num == M_API_TPOK_O && tptarget != "") 
         {
             ook = TRUE;
-            if(ook == TRUE && vok == TRUE) llOwnerSay(tptarget);
+            if(ook == TRUE && vok == TRUE)
+            {
+                llOwnerSay(tptarget);
+                tptarget = "";
+            }
         }
-        else if(num == M_API_TPOK_V) 
+        else if(num == M_API_TPOK_V && tptarget != "") 
         {
             vok = TRUE;
-            if(ook == TRUE && vok == TRUE) llOwnerSay(tptarget);
+            if(ook == TRUE && vok == TRUE)
+            {
+                llOwnerSay(tptarget);
+                tptarget = "";
+            }
         }
         if(num == M_API_BUTTON_PRESSED)
         {

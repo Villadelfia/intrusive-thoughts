@@ -45,7 +45,7 @@ checkSetup()
 {
     if(leasherinrange != FALSE && leashedto != NULL_KEY)
     {
-        llOwnerSay("@fly=n,tplm=n,tplure=n,tploc=n,tplure:" + (string)leashedto + "=add");
+        llOwnerSay("@fly=n,tplm=n,tplure=n,tploc=n,tplure:" + (string)llGetOwnerKey(leashedto) + "=add");
     }
     else
     {

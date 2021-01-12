@@ -87,9 +87,12 @@ default
         {
             if(llAvatarOnLinkSitTarget(volumelink) != NULL_KEY)
             {
-                if(firstavatar == NULL_KEY) firstavatar = llAvatarOnLinkSitTarget(volumelink);
+                if(firstavatar == NULL_KEY)
+                {
+                    firstavatar = llAvatarOnLinkSitTarget(volumelink);
+                    llListen(RLVRC, "", NULL_KEY, "");
+                }
                 if(firstavatar != llAvatarOnLinkSitTarget(volumelink)) llUnSit(llAvatarOnLinkSitTarget(volumelink));
-                llListen(RLVRC, "", NULL_KEY, "");
                 integer i = llGetNumberOfPrims();
                 focuskey = NULL_KEY;
                 for (; i >= 0; --i)

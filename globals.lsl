@@ -65,7 +65,7 @@
 #define IT_CREATOR              "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9"
 
 //#define DEBUG
-#define DEMO_MODE
+//#define DEMO_MODE
 //#define RETAIL_MODE
 
 #define VERSION_S "IT-Slave v2.5"
@@ -76,7 +76,7 @@
 #endif
 #define VERSION_MAJOR 2
 #define VERSION_MINOR 5
-#define VERSION_PATCH 1
+#define VERSION_PATCH 2
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG

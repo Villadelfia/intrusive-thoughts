@@ -431,7 +431,7 @@ default
             await = "";
             intp = FALSE;
         }
-        else
+        else if(await == "")
         {
             integer l = llGetListLength(objectifiedballs);
             while(~--l)
@@ -446,11 +446,6 @@ default
             }
             await = "";
             if(responses == []) intp = FALSE;
-            if(filter)
-            {
-                filter = FALSE;
-                llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
-            }
             llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
         }
     }
@@ -459,10 +454,10 @@ default
     {
         if(llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0) != "ball") return;
         lastrezzed = id;
-        sensortimer(60.0);
         llSetObjectName("RLV Capture");
         if(intp)
         {
+            sensortimer(60.0);
             llOwnerSay("Recapturing " + llList2String(objectifiednames, handling-1) + ".");
             await = "r";
             llRegionSayTo(target, RLVRC, "r," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");

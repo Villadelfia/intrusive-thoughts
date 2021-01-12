@@ -93,18 +93,19 @@ default
         {
             if(llAvatarOnSitTarget() != NULL_KEY)
             {
-                // If it's the first time, remember who it was.
-                if(firstavatar == NULL_KEY) firstavatar = llAvatarOnSitTarget();
+                // If it's the first time, remember who it was and start listening to certain channels.
+                if(firstavatar == NULL_KEY)
+                {
+                    firstavatar = llAvatarOnSitTarget();
+                    llListen(GAZE_CHAT_CHANNEL, "", llAvatarOnSitTarget(), "");
+                    llListen(RLVRC, "", NULL_KEY, "");
+                }
 
                 // Otherwise only allow the first sitter.
                 if(firstavatar != llAvatarOnSitTarget()) llUnSit(llAvatarOnSitTarget());
 
                 // Make sure to flag that we have been sat on.
                 saton = TRUE;
-
-                // Start listening to certain channels.
-                llListen(GAZE_CHAT_CHANNEL, "", llAvatarOnSitTarget(), "");
-                llListen(RLVRC, "", NULL_KEY, "");
 
                 // And animate the sat avatar.
                 llRequestPermissions(llAvatarOnSitTarget(), PERMISSION_TRIGGER_ANIMATION);
