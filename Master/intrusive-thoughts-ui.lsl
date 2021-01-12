@@ -16,6 +16,9 @@ integer ishidden = TRUE;
 integer isstatus = FALSE;
 integer started = FALSE;
 
+integer hasobject = FALSE;
+integer hasprey   = FALSE;
+
 string lockedavatarname = "";
 key lockedavatarkey = NULL_KEY;
 string seenavatarname = "";
@@ -391,8 +394,6 @@ default
         else if(num == M_API_STATUS_MESSAGE)
         {
             isstatus = TRUE;
-            seenobjectname = str;
-            seenobjectkey = id;
             settext(0, str);
             settext(1, (string)id);
         }
@@ -445,6 +446,12 @@ default
         else if(num == M_API_SET_FILTER)
         {
             setbuttonfilter(str, (integer)((string)id));
+
+            // Prevent accidental detach while having prey or objects.
+            if(str == "vore") hasprey = (integer)((string)id);
+            if(str == "object") hasobject = (integer)((string)id);
+            if(hasprey || hasobject) llOwnerSay("@detach=n");
+            else                     llOwnerSay("@detach=y");
         }
         else if(num == M_API_BUTTON_PRESSED)
         {

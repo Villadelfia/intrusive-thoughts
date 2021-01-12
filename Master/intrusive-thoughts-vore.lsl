@@ -12,7 +12,6 @@ key vorevictim = NULL_KEY;
 string vorename = "";
 key target;
 string targetname;
-integer intp = FALSE;
 string await;
 integer fillfactor = 25;
 integer filter = FALSE;
@@ -77,57 +76,12 @@ vore()
     llRezAtRoot("carrier", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, 1);
 }
 
-handletp()
-{
-    integer delayed = FALSE;
-    if(!canrez(llGetPos()))
-    {
-        llOwnerSay("Can't rez here, trying to set land group.");
-        llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
-        llSleep(10.0);
-        delayed = TRUE;
-    }
-
-    if(!canrez(llGetPos()))
-    {
-        llOwnerSay("Can't rez here. Not recapturing.");
-        vorecarrier = NULL_KEY;
-        vorevictim = NULL_KEY;
-        vorename = "";
-        intp = FALSE;
-    }
-    else
-    {
-        if(delayed)
-        {
-            llOwnerSay("Re-eating your prey.");
-        }
-        else
-        {
-            llOwnerSay("Re-eating your prey in 10 seconds.");
-            llSleep(10.0);
-        }
-        target = vorevictim;
-        targetname = vorename;
-        llRezAtRoot("carrier", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, 1);
-    }
-}
-
 default
 {
-    changed(integer change)
-    {
-        if(change & CHANGED_TELEPORT)
-        {
-            if(intp) handletp();
-        }
-    }
-
     state_entry()
     {
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
-        llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
     }
 
     attach(key id)
@@ -139,7 +93,6 @@ default
     {
         if(c == RLVRC)
         {
-            
             list params = llParseString2List(m, [","], []);
             if(llGetListLength(params) != 4) return;
             if((key)llList2String(params, 1) != llGetKey()) return;
@@ -147,55 +100,25 @@ default
             string identifier = llList2String(params, 0);
             string command = llList2String(params, 2);
 
-            if(identifier == await)
+            if(identifier == await && await == "cv")
             {
-                if(await == "rv")
+                if(accept == TRUE)
                 {
-                    key av = llGetOwnerKey(id);
-                    if(accept)
+                    llSleep(1.0);
+                    if((llGetAgentInfo(target) & AGENT_SITTING) != 0)
                     {
-                        llOwnerSay("Done re-eating.");
-                        sensortimer(0.0);
-                        intp = FALSE;
-                    }
-                    else
-                    {
-                        llOwnerSay("Could not re-eat.");
-                        vorecarrier = NULL_KEY;
-                        vorevictim = NULL_KEY;
-                        vorename = "";
-                        intp = FALSE;
-                    }
-                }
-                else if(await == "cv")
-                {
-                    sensortimer(0.0);
-                    if(accept == TRUE)
-                    {
-                        llSleep(1.0);
-                        if((llGetAgentInfo(target) & AGENT_SITTING) != 0)
-                        {
-                            string spoof;
-                            spoof = llDumpList2String(llParseStringKeepNulls(vorespoof, ["%ME%"], []), owner);
-                            spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), foodname);
-                            spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
-                            llSay(0, spoof);
-                            attachbelly();
-                        }
-                        else llOwnerSay("Could not eat '" + lockedname + "'.");
+                        string spoof;
+                        spoof = llDumpList2String(llParseStringKeepNulls(vorespoof, ["%ME%"], []), owner);
+                        spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), foodname);
+                        spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
+                        llSay(0, spoof);
+                        attachbelly();
                     }
                     else llOwnerSay("Could not eat '" + lockedname + "'.");
-                    llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "check");
-                    await = "";
                 }
-            }
-        }
-        else if(c == MANTRA_CHANNEL)
-        {
-            if(startswith(m, "rlvresponse") && id == vorecarrier)
-            {
-                sensortimer(0.0);
-                llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
+                else llOwnerSay("Could not eat '" + lockedname + "'.");
+                llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "check");
+                await = "";
             }
         }
         else if(c == GAZE_CHAT_CHANNEL)
@@ -207,43 +130,16 @@ default
         }
     }
 
-    no_sensor()
-    {
-        sensortimer(0.0);
-        vorecarrier = NULL_KEY;
-        vorevictim = NULL_KEY;
-        vorename = "";
-        intp = FALSE;
-        if(filter)
-        {
-            filter = FALSE;
-            llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
-        }
-        if(await != "rv" && await != "cv") llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
-        await = "";
-    }
-
     object_rez(key id)
     {
         if(llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0) != "carrier") return;
         vorecarrier = id;
-        sensortimer(60.0);
         llSetObjectName("RLV Capture");
-        if(intp)
-        {
-            llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
-            llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
-            await = "rv";
-            llRegionSayTo(target, RLVRC, "rv," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
-        }
-        else
-        {
-            fillfactor = 25;
-            await = "cv";
-            llRegionSayTo(target, RLVRC, "cv," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
-            vorename = targetname;
-            vorevictim = target;
-        }
+        fillfactor = 25;
+        await = "cv";
+        llRegionSayTo(target, RLVRC, "cv," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
+        vorename = targetname;
+        vorevictim = target;
         llSetObjectName("");
     }
 
@@ -276,10 +172,9 @@ default
             if(vorecarrier == NULL_KEY || (string)id == llGetRegionName()) llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
             else
             {
-                intp = TRUE;
                 await = "";
                 llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "rlvforward " + str);
-                sensortimer(10.0);
+                llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
             }
         }
         else if(num == M_API_LOCK)
@@ -325,31 +220,30 @@ default
     timer()
     {
         llSetTimerEvent(0.0);
-        if(!intp)
+        
+        list req = llGetObjectDetails(vorecarrier, [OBJECT_CREATOR]);
+        if(vorecarrier != NULL_KEY && (req == [] || llList2Key(req, 0) != llGetCreator()))
         {
-            list req = llGetObjectDetails(vorecarrier, [OBJECT_CREATOR]);
-            if(vorecarrier != NULL_KEY && (req == [] || llList2Key(req, 0) != llGetCreator()))
+            detachbelly();
+            vorecarrier = NULL_KEY;
+            vorevictim = NULL_KEY;
+            vorename = "";
+        }
+
+        if(vorecarrier != NULL_KEY)
+        {
+            if(!filter)
             {
-                detachbelly();
-                vorecarrier = NULL_KEY;
-                vorevictim = NULL_KEY;
-                vorename = "";
+                filter = TRUE;
+                llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
             }
-            if(vorecarrier != NULL_KEY)
+        }
+        else
+        {
+            if(filter)
             {
-                if(!filter)
-                {
-                    filter = TRUE;
-                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
-                }
-            }
-            else
-            {
-                if(filter)
-                {
-                    filter = FALSE;
-                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
-                }
+                filter = FALSE;
+                llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
             }
         }
         llSetTimerEvent(0.5);

@@ -24,7 +24,7 @@ default
     link_message(integer sender_num, integer num, string str, key id)
     {
         if(num == S_API_STARTED) mode = "slave";
-        else if(num == M_API_CONFIG_DONE) mode = "master";
+        else if(num == M_API_HUD_STARTED) mode = "master";
         else if(num == S_API_OWNERS)
         {
             owners = [];

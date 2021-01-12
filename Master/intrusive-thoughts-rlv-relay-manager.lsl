@@ -219,6 +219,7 @@ default
                 if(enabled)
                 {
                     llOwnerSay("Your RLV relay has been turned on.");
+                    llOwnerSay("@detach=n,permissive=n,touchme=add,sendchannel:1=add,sendchannel:8=add");
                 }
                 else
                 {

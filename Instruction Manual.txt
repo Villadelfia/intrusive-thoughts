@@ -5,13 +5,14 @@ Inside of your package you will find:
  - > Intrusive Thoughts Furniture Contents (Can Speak): An unpacker for the tools needed to make objects 'furniture' for the IT system. This version is meant for objects like radios or speakers, things that could feasibly speak.
  - > Intrusive Thoughts Furniture Contents (Mute): An unpacker for the tools needed to make objects 'furniture' for the IT system. This version is meant for objects that would not be able to speak.
  - > Intrusive Thoughts Leash Handles: An unpacker containing two leash handles compatible with the IT Slaves.
- - > Intrusive Thoughts Plugin API: An unpacker for the Plugin API instructions and Demo Plugin script.
+ - > Intrusive Thoughts Plugin API: An unpacker for the Plugin API instructions and Demo Plugin scripts.
  - > Intrusive Thoughts RLV Client Script: An unpacker containing an extra script if 10 supported RLV devices on the RLV relay is not enough.
  - Instruction Manual: You're reading it right now.
  - Intrusive Thoughts Applier Notecard Template: An example applier notecard. You will be using this to set up the voice and hearing restrictions featured in the IT Slaves.
  - Intrusive Thoughts Configuration: You will be editing this notecard and dropping it onto the HUD to set it up before first usage and whenever you wish to change the settings.
  - Intrusive Thoughts Master: The Master HUD, to be worn by you.
  - Intrusive Thoughts Slave: The Slave HUD, to be given to your submissives.
+ - Intrusive Thoughts Slave NORELAY: The Slave HUD, to be given to your submissives. This version without an RLV relay built in.
  - Intrusive Thoughts Tuned Translator: A translator to be worn by people if they wish to be able to understand an IT Slave with the DIALECT option enabled. This one listens only to the person that gave it to them. You would give this to your slave and they would have to try to get people to accept and wear it before they can understand them. Note that unless you enable the DIALECT option, this is unneeded.
  - Intrusive Thoughts Universal Translator: A translator to be worn by people if they wish to be able to understand an IT Slave with the DIALECT option enabled. This one listens to every IT Slave. You would give this to your slave and they would have to try to get people to accept and wear it before they can understand them. Note that unless you enable the DIALECT option, this is unneeded.
 
@@ -24,6 +25,8 @@ The HUD has a built-in tutorial system: Click and hold down the mouse for more t
 Except for the menu, leash to, and slave RLV options, all of the buttons work on a target regardless of whether or not they are wearing an IT Slave, assuming they have an active RLV relay and accept the requests.
 
 The RLV relay in the Master can be enabled by clicking on the RLV button, and disabled by clicking on it again. It will immediately and without notification release any RLV restrictions when turned off, since it is meant as an "RLV relay for Dominants".
+
+Keep in mind that while having RLV enabled is not required for use of the Master HUD, the teleportation feature relies on RLV to function and if you do not have RLV enabled, at times you will see messages starting with an @ symbol appearing in your chat. This is not a bug, and it will not be changed. It just means you do not have RLV enabled. Since the RLV relay in the Master HUD can be turned on and off by the click of a button, it is assumed that you have RLV turned on.
 
 
 3. How do I get started with a Slave?
@@ -38,7 +41,7 @@ Depending on who clicks it, different menus will be shown:
 
 The RLV relay in the Slaves is a specific type of ASK mode relay: If the object is owned by any of the owners, it is allowed. If not, the request is sent to the primary owner if they are in the same region, and if not, the wearer will be asked.
 
-NOTE: THE IT SLAVE HAS AN RLV RELAY BUILT IN AND IS WHOLLY INCOMPATIBLE WITH OPENCOLLAR COLLARS UNLESS THE OPENCOLLAR RELAY IS DISABLED!
+NOTE: THE IT SLAVE HAS AN RLV RELAY BUILT IN AND IS WHOLLY INCOMPATIBLE WITH OPENCOLLAR COLLARS UNLESS THE OPENCOLLAR RELAY IS DISABLED! IF YOU INSIST ON USING A DIFFERENT RELAY, YOU MUST USE THE NORELAY VERSION OF THE SLAVE.
 
 
 4. What RLV folders are supported and how do they work?
@@ -62,7 +65,7 @@ If you wish for this wait period to be longer, rez your hud, take out the "ball"
 
 
 6. About the Vore system.
-The Vore system works similarly to the Objectification system, except your prey can still talk. One special feature here is the acid level. If the acid level is at or above 40%, clothes will begin dissolving. Like the worn Objectification system, there is no recapturing on the Vore system.
+The Vore system works similarly to the Objectification system, except your prey can still talk. One special feature here is the acid level. If the acid level is at or above 40%, clothes will begin dissolving. If you go above 100% acid level, your prey will be fully dissolved. Like the worn Objectification system, there is no recapturing on the Vore system.
 
 
 7. How do I configure the vocal/auditory features of a Slave?
@@ -75,7 +78,7 @@ Name Here
 8. How do I use the teleport system?
 You can click on the TP button to get a menu of programmed destinations. If you have an avatar locked, you will have the option to just send them. You can also drop a landmark onto the HUD to send off all Slaves and then yourself.
 
-If you are carrying someone, of if you have eaten someone, they will be sent along, and they will be recaptured if you can rez at the destination.
+If you are carrying someone, of if you have eaten someone, an attempt will be made to teleport them along with you. Because of SL limitations and issues when rezzing into a new region, you must recapture them yourself at the destination.
 
 
 9. My Slave is complaining that they get spammed with "..." in chat after being programmer with an applier notecard.

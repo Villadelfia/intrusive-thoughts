@@ -19,12 +19,7 @@ list objectifiedavatars = [];
 list objectifiednames = [];
 list objectifieddescriptions = [];
 list objectifiedballs = [];
-
-list responses = [];
 string await = "";
-
-integer intp = FALSE;
-integer handling;
 
 integer store = -1;
 string storingon;
@@ -174,63 +169,8 @@ addobject(string desc)
     llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, hideopt);
 }
 
-handletp()
-{
-    integer delayed = FALSE;
-    if(!canrez(llGetPos()))
-    {
-        llOwnerSay("Can't rez here, trying to set land group.");
-        llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
-        llSleep(10.0);
-        delayed = TRUE;
-    }
-
-    if(!canrez(llGetPos()))
-    {
-        llOwnerSay("Can't rez here. Not recapturing.");
-        objectifiedavatars = [];
-        objectifiednames = [];
-        objectifiedballs = [];
-        objectifieddescriptions = [];
-        intp = FALSE;
-    }
-    else
-    {
-        if(handling == 0)
-        {
-            if(delayed)
-            {
-                llOwnerSay("Recapturing everyone.");
-            }
-            else
-            {
-                llOwnerSay("Recapturing everyone in 10 seconds.");
-                llSleep(10.0);
-            }
-        }
-        if(handling < llGetListLength(objectifiedavatars))
-        {
-            target = llList2Key(objectifiedavatars, handling);
-            llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, hideopt);
-        }
-    }
-}
-
 default
 {
-    changed(integer change)
-    {
-        if(change & CHANGED_TELEPORT)
-        {
-            if(intp)
-            {
-                handling = 0;
-                objectifiedballs = [];
-                responses = [];
-                handletp();
-            }
-        }
-    }
 
     state_entry()
     {
@@ -325,16 +265,6 @@ default
                 objectifiednames += [llGetDisplayName(av)];
                 objectifieddescriptions += [desc];
             }
-            else if(startswith(m, "rlvresponse"))
-            {
-                responses += [id];
-                if(llGetListLength(responses) == llGetListLength(objectifiedavatars))
-                {
-                    sensortimer(0.0);
-                    if(responses == []) intp = FALSE;
-                    llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
-                }
-            }
         }
         else if(c == RLVRC)
         {
@@ -345,52 +275,25 @@ default
             string identifier = llList2String(params, 0);
             string command = llList2String(params, 2);
 
-            if(identifier == await)
+            if(identifier == await && await == "c")
             {
-                if(await == "r")
+                if(accept == TRUE)
                 {
-                    key av = llGetOwnerKey(id);
-                    integer i = llListFindList(objectifiedavatars, [av]);
-                    if(accept)
+                    llSleep(1.0);
+                    if((llGetAgentInfo(target) & AGENT_SITTING) != 0)
                     {
-                        responses += [0];
-                        llRegionSayTo(llList2Key(objectifiedballs, i), MANTRA_CHANNEL, "check");
-                    }
-                    else
-                    {
-                        objectifiednames = llDeleteSubList(objectifiednames, i, i);
-                        objectifiedavatars = llDeleteSubList(objectifiedavatars, i, i);
-                        objectifiedballs = llDeleteSubList(objectifiedballs, i, i);
-                        objectifieddescriptions = llDeleteSubList(objectifieddescriptions, i, i);
-                    }
-                    if(llGetListLength(responses) == llGetListLength(objectifiedavatars))
-                    {
-                        llOwnerSay("Done recapturing.");
-                        sensortimer(0.0);
-                        intp = FALSE;
-                    }
-                }
-                else if(await == "c")
-                {
-                    sensortimer(0.0);
-                    if(accept == TRUE)
-                    {
-                        llSleep(1.0);
-                        if((llGetAgentInfo(target) & AGENT_SITTING) != 0)
-                        {
-                            string spoof;
-                            spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["%ME%"], []), owner);
-                            spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), targetdescription);
-                            spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
-                            llSay(0, spoof);
-                            attachobject(targetdescription);
-                        }
-                        else llOwnerSay("Could not capture '" + lockedname + "'.");
+                        string spoof;
+                        spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["%ME%"], []), owner);
+                        spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), targetdescription);
+                        spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
+                        llSay(0, spoof);
+                        attachobject(targetdescription);
                     }
                     else llOwnerSay("Could not capture '" + lockedname + "'.");
-                    await = "";
-                    llRegionSayTo(lastrezzed, MANTRA_CHANNEL, "check");
                 }
+                else llOwnerSay("Could not capture '" + lockedname + "'.");
+                await = "";
+                llRegionSayTo(lastrezzed, MANTRA_CHANNEL, "check");
             }
         }
         else if(c == GAZE_CHAT_CHANNEL)
@@ -411,69 +314,17 @@ default
         }
     }
 
-    no_sensor()
-    {
-        sensortimer(0.0);
-        if(await == "r")
-        {
-            llOwnerSay("Done recapturing.");
-            integer l = llGetListLength(objectifiedavatars);
-            while(~--l)
-            {
-                if(llListFindList(responses, [llList2Key(objectifiedavatars, l)]) == -1)
-                {
-                    objectifiednames = llDeleteSubList(objectifiednames, l, l);
-                    objectifiedavatars = llDeleteSubList(objectifiedavatars, l, l);
-                    objectifiedballs = llDeleteSubList(objectifiedballs, l, l);
-                    objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
-                }
-            }
-            await = "";
-            intp = FALSE;
-        }
-        else if(await == "")
-        {
-            integer l = llGetListLength(objectifiedballs);
-            while(~--l)
-            {
-                if(llListFindList(responses, [llList2Key(objectifiedballs, l)]) == -1)
-                {
-                    objectifiednames = llDeleteSubList(objectifiednames, l, l);
-                    objectifiedavatars = llDeleteSubList(objectifiedavatars, l, l);
-                    objectifiedballs = llDeleteSubList(objectifiedballs, l, l);
-                    objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
-                }
-            }
-            await = "";
-            if(responses == []) intp = FALSE;
-            llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
-        }
-    }
-
     object_rez(key id)
     {
         if(llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0) != "ball") return;
         lastrezzed = id;
         llSetObjectName("RLV Capture");
-        if(intp)
-        {
-            sensortimer(60.0);
-            llOwnerSay("Recapturing " + llList2String(objectifiednames, handling-1) + ".");
-            await = "r";
-            llRegionSayTo(target, RLVRC, "r," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
-            objectifiedballs += [id];
-            handling++;
-            handletp();
-        }
-        else
-        {
-            await = "c";
-            llRegionSayTo(target, RLVRC, "c," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
-            objectifiedballs += [id];
-            objectifiedavatars += [target];
-            objectifiednames += [targetname];
-            objectifieddescriptions += [targetdescription];
-        }
+        await = "c";
+        llRegionSayTo(target, RLVRC, "c," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
+        objectifiedballs += [id];
+        objectifiedavatars += [target];
+        objectifiednames += [targetname];
+        objectifieddescriptions += [targetdescription];
         llSetObjectName("");
     }
 
@@ -483,7 +334,6 @@ default
         {
             lockedavatar = NULL_KEY;
             lockedname = "";
-            intp = FALSE;
             llSetTimerEvent(0.5);
             configured = TRUE;
         }
@@ -514,12 +364,10 @@ default
             if(objectifiedavatars == [] || (string)id == llGetRegionName()) llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
             else
             {
-                intp = TRUE;
-                responses = [];
-                integer l = llGetListLength(objectifiedavatars);
                 await = "";
+                integer l = llGetListLength(objectifiedballs);
                 while(~--l) llRegionSayTo(llList2Key(objectifiedballs, l), MANTRA_CHANNEL, "rlvforward " + str);
-                sensortimer(10.0);
+                llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
             }
         }
         else if(num == M_API_LOCK)
@@ -559,36 +407,34 @@ default
     timer()
     {
         llSetTimerEvent(0.0);
-        if(!intp)
+        integer l = llGetListLength(objectifiedballs);
+        while(~--l)
         {
-            integer l = llGetListLength(objectifiedballs);
-            while(~--l)
+            list req = llGetObjectDetails(llList2Key(objectifiedballs, l), [OBJECT_CREATOR]);
+            if(req == [] || llList2Key(req, 0) != llGetCreator())
             {
-                list req = llGetObjectDetails(llList2Key(objectifiedballs, l), [OBJECT_CREATOR]);
-                if(req == [] || llList2Key(req, 0) != llGetCreator())
-                {
-                    detachobject(llList2String(objectifieddescriptions, l));
-                    objectifiednames = llDeleteSubList(objectifiednames, l, l);
-                    objectifiedavatars = llDeleteSubList(objectifiedavatars, l, l);
-                    objectifiedballs = llDeleteSubList(objectifiedballs, l, l);
-                    objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
-                }
+                detachobject(llList2String(objectifieddescriptions, l));
+                objectifiednames = llDeleteSubList(objectifiednames, l, l);
+                objectifiedavatars = llDeleteSubList(objectifiedavatars, l, l);
+                objectifiedballs = llDeleteSubList(objectifiedballs, l, l);
+                objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
             }
-            if(objectifiedballs != [])
+        }
+
+        if(objectifiedballs != [])
+        {
+            if(!filter)
             {
-                if(!filter)
-                {
-                    filter = TRUE;
-                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
-                }
+                filter = TRUE;
+                llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
             }
-            else
+        }
+        else
+        {
+            if(filter)
             {
-                if(filter)
-                {
-                    filter = FALSE;
-                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
-                }
+                filter = FALSE;
+                llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
             }
         }
         llSetTimerEvent(0.5);

@@ -10,6 +10,7 @@ name = Avatar
 
 # The prefix for your objects when they emote, in the following example
 # an emote would look like: "Hana's shoes wiggle a little"
+# Note: Basic ASCII only.
 objectprefix = Avatar's
 
 # Spoof configuration:
