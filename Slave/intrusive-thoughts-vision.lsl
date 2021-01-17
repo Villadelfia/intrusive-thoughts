@@ -139,7 +139,11 @@ default
             llOwnerSay("Intrusive thoughts is good to go! Type /1" + prefix + " or click [secondlife:///app/chat/1/" + prefix + " here] to see your available actions.\nNote that, if present, you can type ((RED)) to clear the RLV relay, or ((FORCERED)) to clear and detach it.");
             gotreply = TRUE;
         }
-        if(c == 0) handleHear(k, n, m);
+        if(c == 0) 
+        {
+            handleHear(k, n, m);
+            return;
+        }
         if(!isowner(k)) return;
         if(m == "RESET")
         {

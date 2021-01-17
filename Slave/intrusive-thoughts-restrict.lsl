@@ -73,7 +73,7 @@ handlemenu(key k)
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "leash - Leash]/[secondlife:///app/chat/1/" + prefix + "unleash unleash.]");
         if(llGetOwnerKey(k) == primary) ownersay(k, "[secondlife:///app/chat/1/" + prefix + "ownerinfo - Add/remove secondary owners.]");
         ownersay(k, " ");
-        ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing]/[secondlife:///app/chat/1/" + prefix + "lock lock].");
+        ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "mind mindlessness]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing]/[secondlife:///app/chat/1/" + prefix + "lock lock].");
         ownersay(k, " ");
         ownersay(k, "- /1" + prefix + "say <message>: Say a message.");
         ownersay(k, "- /1" + prefix + "think <message>: Think a message.");
@@ -328,7 +328,7 @@ default
         else if(llToLower(m) == "listform")
         {
             path = "~form";
-            llOwnerSay("@getinv:~stuff=" + (string)RLV_CHANNEL);
+            llOwnerSay("@getinv:~form=" + (string)RLV_CHANNEL);
         }
         else if(startswith(llToLower(m), "list"))
         {
@@ -386,6 +386,10 @@ default
         else if(llToLower(m) == "mute")
         {
             llMessageLinked(LINK_SET, S_API_MUTE_TOGGLE, "", k);
+        }
+        else if(llToLower(m) == "mind")
+        {
+            llMessageLinked(LINK_SET, S_API_MIND_TOGGLE, "", k);
         }
         else if(llToLower(m) == "daze")
         {

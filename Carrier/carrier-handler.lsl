@@ -11,7 +11,7 @@ list whitelist = ["boot",    "top",      "bangle", "armband", "bracer", "thigh",
                   "suit",    "lingerie", "bra",    "shoe",    "glove",  "sock",   "stocking", 
                   "leotard", "tight",    "skirt",  "warmers", "robe",   "kimono", "pant",
                   "sandal",  "jean",     "string", "bikini",  "heel",   "dress",  "sarong",
-                  "glasses", "corset",   "tube",   "dress"];
+                  "glasses", "corset",   "tube",   "dress",   "legging"];
 
 die()
 {

@@ -28,6 +28,9 @@
 #define S_API_STARTED           -1011
 #define S_API_OWNERS            -1012
 #define S_API_OTHER_ACCESS      -1013
+#define S_API_MIND_TOGGLE       -1014
+#define S_API_MIND_SYNC         -1015
+#define S_API_MUTE_SYNC         -1016
 
 #define M_API_HUD_STARTED       -2000
 #define M_API_CONFIG_DATA       -2001
@@ -66,17 +69,17 @@
 
 //#define DEBUG
 //#define DEMO_MODE
-//#define RETAIL_MODE
+#define RETAIL_MODE
 
-#define VERSION_S "IT-Slave v2.5"
+#define VERSION_S "IT-Slave v2.6"
 #ifdef DEMO_MODE
-#define VERSION_M "IT-Master v2.5 DEMO"
+#define VERSION_M "IT-Master v2.6 DEMO"
 #else
-#define VERSION_M "IT-Master v2.5"
+#define VERSION_M "IT-Master v2.6"
 #endif
 #define VERSION_MAJOR 2
-#define VERSION_MINOR 5
-#define VERSION_PATCH 2
+#define VERSION_MINOR 6
+#define VERSION_PATCH 0
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG
@@ -266,9 +269,16 @@ versioncheck(string report, integer master)
     integer mi = (integer)llList2String(dets, 1);
     integer pa = (integer)llList2String(dets, 2);
     string msg = "";
-    if(ma > VERSION_MAJOR)      msg = ": There is a major version update available to the Intrusive Thoughts System. ";
-    else if(mi > VERSION_MINOR) msg = ": There is a minor version update available to the Intrusive Thoughts System. ";
-    else if(pa > VERSION_PATCH) msg = ": There is a patch available for the Intrusive Thoughts System. ";
+    if(ma > VERSION_MAJOR) msg = ": There is a major version update available to the Intrusive Thoughts System. ";
+    else if(ma == VERSION_MAJOR)
+    {
+        if(mi > VERSION_MINOR) msg = ": There is a minor version update available to the Intrusive Thoughts System. ";
+        else if(mi == VERSION_MINOR)
+        {
+            if(pa > VERSION_PATCH) msg = ": There is a patch available for the Intrusive Thoughts System. ";
+        }
+    }
+    
     if(msg != "")
     {
         if(master) msg = VERSION_M + msg + "Please update the system and that of your slaves at your earliest convenience.";

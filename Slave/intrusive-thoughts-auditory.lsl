@@ -13,6 +13,7 @@ float auditorybimboodds = 1.0;
 list auditorybimbocensor = ["_"];
 list auditorybimboreplace = ["blah"];
 list auditorybimboexcept = [];
+list auditorybimbooverride = [];
 string deafenmsg = "";
 string undeafenmsg = "";
 list deafencmd = [];
@@ -42,8 +43,8 @@ handleHear(key skey, string sender, string message)
         // Handle undeafening by owner.
         if(isowner(skey))
         {
-            l1 = llGetListLength(undeafencmd)-1;
-            for(;l1 >= 0; --l1)
+            l1 = llGetListLength(undeafencmd);
+            while(~--l1)
             {
                 if(contains(llToLower(message), llList2String(undeafencmd, l1)))
                 {
@@ -56,8 +57,8 @@ handleHear(key skey, string sender, string message)
         }
         
         // Handle deafen exceptions.
-        l1 = llGetListLength(deafenexcept)-1;
-        for(;l1 >= 0; --l1)
+        l1 = llGetListLength(deafenexcept);
+        while(~--l1)
         {
             if(contains(llToLower(message), llList2String(deafenexcept, l1)))
             {
@@ -105,8 +106,8 @@ handleHear(key skey, string sender, string message)
     // Handle deafening by owner.
     if(isowner(skey) && deaf == FALSE)
     {
-        l1 = llGetListLength(deafencmd)-1;
-        for(;l1 >= 0; --l1)
+        l1 = llGetListLength(deafencmd);
+        while(~--l1)
         {
             if(contains(llToLower(message), llList2String(deafencmd, l1)))
             {
@@ -149,6 +150,18 @@ handleHear(key skey, string sender, string message)
     messagecopy = message;
     message = "";
     inurl = 0;
+
+    integer tryBimbofy = TRUE;
+    l1 = llGetListLength(auditorybimbooverride);
+    while(~--l1)
+    {
+        if(contains(llToLower(message), llList2String(auditorybimbooverride, l1))) 
+        {
+            tryBimbofy = FALSE;
+            jump goOn;
+        }
+    }
+    @goOn;
     while(llStringLength(messagecopy) > 0)
     {
         word = llList2String(llParseStringKeepNulls(messagecopy, [" ", ",", "\"", ";", ":", ".", "?", "!"], []), 0);
@@ -169,7 +182,8 @@ handleHear(key skey, string sender, string message)
         }
 
         // Then we bimbofy if the word is unchanged, too long and not in the exception list.
-        else if(auditorybimbolimit > 0 && 
+        else if(tryBimbofy &&
+                auditorybimbolimit > 0 && 
                 llStringLength(word) >= auditorybimbolimit && 
                 llListFindList(auditorybimboexcept, [llToLower(word)]) == -1 &&
                 (emote == FALSE || quotecnt % 2 != 0))
@@ -319,6 +333,7 @@ default
             auditorybimboodds = 1.0;
             auditorybimbocensor = ["_"];
             auditorybimboexcept = [];
+            auditorybimbooverride = [];
             auditorybimboreplace = ["blah"];
             deafenmsg = "";
             undeafenmsg = "";
@@ -361,6 +376,11 @@ default
         {
             m = llDeleteSubString(m, 0, llStringLength("AUDITORY_BIMBO_EXCEPT"));
             auditorybimboexcept += [llToLower(m)];
+        }
+        else if(startswith(m, "AUDITORY_BIMBO_OVERRIDE"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("AUDITORY_BIMBO_OVERRIDE"));
+            auditorybimbooverride += [llToLower(m)];
         }
         else if(startswith(m, "AUDITORY_BIMBO_REPLACE"))
         {

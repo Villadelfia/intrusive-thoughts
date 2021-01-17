@@ -146,11 +146,6 @@ As you hear the command, you feel your vocal chords detaching from your neural i
 █UNMUTE_MSG
 Suddenly, you feel your vocal chords re-attaching to your neural interface. You may speak again.
 
-# The message that will be shown when the submissive is unmuted. One line. If not configured
-# unmuting will happen silently for the submissive. They will not be made aware that it happened.
-█UNMUTE_MSG
-Suddenly, you feel your vocal chords re-attaching to your neural interface. You may speak again.
-
 # If this is set to 1, the submissive's speech will only be heard by those wearing a translator tuned
 # to the submissive, or a universal translator. These are objects that the submissive can be
 # instructed to hand to people.
@@ -172,6 +167,37 @@ Suddenly, you feel your vocal chords re-attaching to your neural interface. You 
 *squeal*
 *snort*
 
+# If any of these statements are found in a statement said by the owner, the submissive will
+# be rendered mindless. One per line. If no mindlessness commands are listed, the mindlessness 
+# system will be disabled. While mindless, the submissive can not communicate in any way except
+# for the limited set of responses configured below. Not even emotes will be allowed.
+█MIND_OFF_CMD
+mind off
+disable mind
+
+# If any of these statements are found in a statement said by the owner, the submissive will
+# have their mind re-enabled. One per line. The mindlessness system can be active without any 
+# mind enabling commands configured, making mindlessness a one-way trip.
+█MIND_ON_CMD
+mind on
+enable mind
+
+# The message that will be shown when the submissive is rendered mindless. One line. If not configured
+# this will happen silently for the submissive. They will not be made aware that it happened.
+█MIND_OFF_MSG
+As you hear the command, you suddenly find yourself unable to think and express yourself freely.
+
+# The message that will be shown when the submissive has their mind enabled. One line. If not configured
+# this will happen silently for the submissive. They will not be made aware that it happened.
+█MIND_ON_MSG
+Slowly, you can feel all your free will and vocabulary returning.
+
+# When mindless, only the parts before the equality sign are allowed, and they will be replaced with the parts
+# after the equality sign. Everything else will be completely discarded.
+█MINDLESS_PHRASES
+yes=/me nods her head.
+no=/me shakes her head.
+explain=/me speaks in a robotic tone, "This unit's free will has been disabled and is currently restricted to a limited set of actions."
 
 
 ######################
@@ -245,6 +271,12 @@ alice
 doll
 unit
 drone
+
+# A list of phrases that, if they are present in a head line of text, will allow the ENTIRE
+# line through unfiltered.
+█AUDITORY_BIMBO_OVERRIDE
+focus, Alice
+focus, A//ice
 
 # If any of these statements are found in a statement said by the owner, the submissive will
 # be deafened. One per line. You must define at least one for the deafening system to be active.

@@ -11,6 +11,7 @@ list speechblacklisttripped = [];
 list speechfilterfrom = [];
 list speechfilterto = [];
 integer mute = FALSE;
+integer mindless = FALSE;
 string mutemsg = "";
 string unmutemsg = "";
 list mutecensor = [];
@@ -33,6 +34,7 @@ handleHear(key skey, string sender, string message)
                 {
                     mute = FALSE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, unmutemsg, NULL_KEY);
+                    llMessageLinked(LINK_SET, S_API_MUTE_SYNC, "0", NULL_KEY);
                     ownersay(skey, name + " can speak again.");
                 }
             }
@@ -49,6 +51,7 @@ handleHear(key skey, string sender, string message)
                 {
                     mute = TRUE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, mutemsg, NULL_KEY);
+                    llMessageLinked(LINK_SET, S_API_MUTE_SYNC, "1", NULL_KEY);
                     ownersay(skey, name + " can no longer speak.");
                 }
             }
@@ -168,8 +171,8 @@ handleSay(string message)
 
 checkSetup()
 {
-    if(name != "" || mute == TRUE) llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=add,rediremote:" + (string)VOICE_CHANNEL + "=add,sendchannel=n,sendchannel:" + (string)RLV_CHANNEL + "=add,sendchannel:" + (string)VOICE_CHANNEL + "=add,sendchannel:" + (string)HUD_SPEAK_CHANNEL + "=add,sendchannel:" + (string)RLV_CHECK_CHANNEL + "=add,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add,sendchannel:" + (string)SPEAK_CHANNEL + "=add,sendchannel:" + (string)LEASH_CHANNEL + "=add,sendchannel:" + (string)COMMAND_CHANNEL + "=add");
-    else                           llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=rem,rediremote:" + (string)VOICE_CHANNEL + "=rem,sendchannel=y,sendchannel:" + (string)RLV_CHANNEL + "=rem,sendchannel:" + (string)VOICE_CHANNEL + "=rem,sendchannel:" + (string)HUD_SPEAK_CHANNEL + "=rem,sendchannel:" + (string)RLV_CHECK_CHANNEL + "=rem,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=rem,sendchannel:" + (string)SPEAK_CHANNEL + "=rem,sendchannel:" + (string)LEASH_CHANNEL + "=rem,sendchannel:" + (string)COMMAND_CHANNEL + "=rem");
+    if(name != "" || mute || mindless) llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=add,rediremote:" + (string)VOICE_CHANNEL + "=add,sendchannel=n,sendchannel:" + (string)RLV_CHANNEL + "=add,sendchannel:" + (string)VOICE_CHANNEL + "=add,sendchannel:" + (string)HUD_SPEAK_CHANNEL + "=add,sendchannel:" + (string)RLV_CHECK_CHANNEL + "=add,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add,sendchannel:" + (string)SPEAK_CHANNEL + "=add,sendchannel:" + (string)LEASH_CHANNEL + "=add,sendchannel:" + (string)COMMAND_CHANNEL + "=add");
+    else                               llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=rem,rediremote:" + (string)VOICE_CHANNEL + "=rem,sendchannel=y,sendchannel:" + (string)RLV_CHANNEL + "=rem,sendchannel:" + (string)VOICE_CHANNEL + "=rem,sendchannel:" + (string)HUD_SPEAK_CHANNEL + "=rem,sendchannel:" + (string)RLV_CHECK_CHANNEL + "=rem,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=rem,sendchannel:" + (string)SPEAK_CHANNEL + "=rem,sendchannel:" + (string)LEASH_CHANNEL + "=rem,sendchannel:" + (string)COMMAND_CHANNEL + "=rem");
 }
 
 default
@@ -204,6 +207,7 @@ default
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, unmutemsg, NULL_KEY);
                 if(name != "") ownersay(id, name + " can speak again.");
                 else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.");
+                llMessageLinked(LINK_SET, S_API_MUTE_SYNC, "0", NULL_KEY);
                 checkSetup();
             }
             else
@@ -212,8 +216,14 @@ default
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, mutemsg, NULL_KEY);
                 if(name != "") ownersay(id, name + " can no longer speak.");
                 else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.");
+                llMessageLinked(LINK_SET, S_API_MUTE_SYNC, "1", NULL_KEY);
                 checkSetup();
             }
+        }
+        else if(num == S_API_MIND_SYNC)
+        {
+            mindless = (integer)str;
+            checkSetup();
         }
     }
 
@@ -228,6 +238,7 @@ default
     {
         if(c == VOICE_CHANNEL)
         {
+            if(mindless) return;
             handleSay(m);
             return;
         }
@@ -246,6 +257,7 @@ default
             speechfilterfrom = [];
             speechfilterto = [];
             mute = FALSE;
+            mindless = FALSE;
             mutemsg = "";
             unmutemsg = "";
             mutecmd = [];
