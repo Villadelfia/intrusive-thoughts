@@ -269,6 +269,7 @@ default
         {
             m = llDeleteSubString(m, 0, llStringLength("NAME"));
             name = m;
+            checkSetup();
         }
         else if(startswith(m, "SPEECH_BLACKLIST_ENTRY"))
         {
@@ -329,6 +330,5 @@ default
         {
             ownersay(k, "[vocal]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
-        checkSetup();
     }
 }

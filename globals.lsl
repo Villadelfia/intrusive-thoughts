@@ -68,18 +68,13 @@
 #define IT_CREATOR              "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9"
 
 //#define DEBUG
-//#define DEMO_MODE
-#define RETAIL_MODE
+//#define RETAIL_MODE
 
 #define VERSION_S "IT-Slave v2.6"
-#ifdef DEMO_MODE
-#define VERSION_M "IT-Master v2.6 DEMO"
-#else
 #define VERSION_M "IT-Master v2.6"
-#endif
 #define VERSION_MAJOR 2
 #define VERSION_MINOR 6
-#define VERSION_PATCH 0
+#define VERSION_PATCH 1
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG
@@ -92,29 +87,6 @@ sensortimer(float t)
 {
     if(t == 0.0) llSensorRemove();
     else         llSensorRepeat("", llGetKey(), PASSIVE, 0.1, PI, t);
-}
-
-integer dodemocheck()
-{
-#ifdef DEMO_MODE
-    llOwnerSay(VERSION_M + ": Demo mode active until the end of January 2021.");
-    list date = llParseString2List(llGetDate(), ["-"], []);
-    integer year  = (integer)llList2String(date, 0);
-    integer month = (integer)llList2String(date, 1);
-    if(year > 2021 || month > 1)
-    {
-        llOwnerSay("Demo period is over. Detaching.");
-        llOwnerSay("@clear,detachme=force");
-        llRequestPermissions(llGetOwner(), PERMISSION_ATTACH);
-        return TRUE;
-    }
-    else
-    {
-        return FALSE;
-    }
-#else
-    return FALSE;
-#endif
 }
 
 resetscripts()
@@ -264,10 +236,12 @@ ownersay(key target, string s)
 
 versioncheck(string report, integer master)
 {
-    list dets = llParseString2List(report, ["."], []);
+    list dets = llParseString2List(report, [".", "\n"], []);
     integer ma = (integer)llList2String(dets, 0);
     integer mi = (integer)llList2String(dets, 1);
     integer pa = (integer)llList2String(dets, 2);
+    string notes = llDumpList2String(llDeleteSubList(dets, 0, 2), "\n");
+    string prettyversion = (string)ma + "." + (string)mi + "." + (string)pa;
     string msg = "";
     if(ma > VERSION_MAJOR) msg = ": There is a major version update available to the Intrusive Thoughts System. ";
     else if(ma == VERSION_MAJOR)
@@ -281,8 +255,9 @@ versioncheck(string report, integer master)
     
     if(msg != "")
     {
-        if(master) msg = VERSION_M + msg + "Please update the system and that of your slaves at your earliest convenience.";
+        if(master) msg = VERSION_M + msg + "Please update the system and that of your slaves at your earliest convenience. A permanent redelivery terminal can be found at http://maps.secondlife.com/secondlife/Bedos/96/106/901.";
         else       msg = VERSION_S + msg + "Please request a new slave device from your primary owner at your earliest convenience.";
+        msg += "\n\nRelease notes for version " + prettyversion + ":\n" + notes;
         llOwnerSay(msg);
     }
 }

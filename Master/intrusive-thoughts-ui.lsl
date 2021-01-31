@@ -317,11 +317,7 @@ default
 
     attach(key id)
     {
-        if(id)
-        {
-            if(dodemocheck()) return;
-            doquicksetup();
-        }
+        if(id) doquicksetup();
     }
 
     run_time_permissions(integer perm)

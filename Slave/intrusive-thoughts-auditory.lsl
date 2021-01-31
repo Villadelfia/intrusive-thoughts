@@ -353,16 +353,19 @@ default
             list split = llParseString2List(m, ["="], []);
             auditoryfilterfrom += [llToLower(llList2String(split, 0))];
             auditoryfilterto += [llList2String(split, 1)];
+            checkSetup();
         }
         else if(startswith(m, "AUDITORY_BIMBO_LIMIT"))
         {
             m = llDeleteSubString(m, 0, llStringLength("AUDITORY_BIMBO_LIMIT"));
             auditorybimbolimit = (integer)m;
+            checkSetup();
         }
         else if(startswith(m, "AUDITORY_BIMBO_ODDS"))
         {
             m = llDeleteSubString(m, 0, llStringLength("AUDITORY_BIMBO_ODDS"));
             auditorybimboodds = (float)m;
+            checkSetup();
         }
         else if(startswith(m, "AUDITORY_BIMBO_CENSOR"))
         {
@@ -402,6 +405,7 @@ default
         {
             m = llDeleteSubString(m, 0, llStringLength("DEAFEN_CMD"));
             deafencmd += [llToLower(m)];
+            checkSetup();
         }
         else if(startswith(m, "UNDEAFEN_CMD"))
         {
@@ -417,6 +421,5 @@ default
         {
             ownersay(k, "[auditory]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
         }
-        checkSetup();
     }
 }

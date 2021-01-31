@@ -1,0 +1,7 @@
+Version 2.6.0:
+ - Initial Retail release.
+ 
+Version 2.6.1:
+ - Fix performance degradation in certain regions.
+ - Add release notes to update notice.
+ - Add reference to redelivery terminal location in update notice.
