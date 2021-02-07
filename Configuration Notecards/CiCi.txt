@@ -1,0 +1,129 @@
+█NAME
+CiCi
+█SPEECH_BLACKLIST_ENTRY
+hana=0
+hiffi=0
+alice=0
+█SPEECH_BLACKLIST_TRIPPED
+/me tried to say something she shouldn't, but decided not to.
+█SPEECH_FILTER
+omg=// 𝑟𝑒𝑙𝑖𝑔𝑖𝑜𝑢𝑠 𝑜𝑢𝑡𝑐𝑟𝑦 //
+█MUTE_CMD
+silence, CiCi
+silence, Celeste
+█UNMUTE_CMD
+speak, CiCi
+speak, Celeste
+yes, CiCi?
+yes, Celeste?
+█BLIND_MUTE
+1
+█MUTE_TYPE
+DROP
+█MUTE_CENSOR
+blah
+blaah
+blaaah
+█MUTE_MSG
+As your Mistress commands it, you feel an overwhelming urge not to speak.
+█UNMUTE_MSG
+As your Mistress commands your attention, you may speak once more.
+█DIALECT
+0
+█MIND_OFF_CMD
+mind off
+disable mind
+█MIND_ON_CMD
+mind on
+enable mind
+█MIND_OFF_MSG
+As you hear the command, you suddenly find yourself unable to think and express yourself freely.
+█MIND_ON_MSG
+Slowly, you can feel all your free will and vocabulary returning.
+█MINDLESS_PHRASES
+yes=/me nods her head.
+no=/me shakes her head.
+explain=/me speaks in a neutral tone, "My free will has been disabled and is currently restricted to a limited set of actions."
+█AUDITORY_FILTER
+hana=«Mistress»
+'hana=«Mistress»
+hana'=«Mistress»
+'hana'=«Mistress»
+hana's=«Mistress'»
+alice=«CiCi»
+'alice=«CiCi»
+alice'=«CiCi»
+'alice'=«CiCi»
+alice's=«CiCi's»
+hiffster=«Big Sister»
+hiffi=«Big Sister»
+'hiffi=«Big Sister»
+hiffi'=«Big Sister»
+'hiffi'=«Big Sister»
+hiffi's=«Big Sister's»
+█AUDITORY_BIMBO_LIMIT
+5
+█AUDITORY_BIMBO_ODDS
+0.75
+█AUDITORY_BIMBO_CENSOR
+•
+█AUDITORY_BIMBO_REPLACE
+bront
+ronk
+twi
+yas
+rok
+moast
+wantle
+bitle
+stirt
+strok
+sorin
+strak
+mur
+yan
+boden
+rickle
+trink
+ferd
+prip
+bik
+yam
+bil
+boke
+█AUDITORY_BIMBO_EXCEPT
+princess
+operator
+mistress
+creator
+villadelfia
+hiffi
+alice
+doll
+unit
+drone
+cici
+celeste
+maid
+clean
+pleasure
+█AUDITORY_BIMBO_OVERRIDE
+focus, CiCi
+focus, Celeste
+█DEAFEN_CMD
+stop listening, CiCi
+stop listening, Celeste
+█UNDEAFEN_CMD
+pay attention, CiCi
+pay attention, Celeste
+█DEAFEN_MSG
+As your Mistress commands it, you let your mind wander and drift, not paying attention to the conversation.
+█UNDEAFEN_MSG
+As your Mistress commands it, you suddenly snap to attention, the conversation clear as day.
+█DEAFEN_EXCEPT
+, CiCi?
+, Celeste?
+, CiCi.
+, Celeste.
+CiCi:
+Celeste:

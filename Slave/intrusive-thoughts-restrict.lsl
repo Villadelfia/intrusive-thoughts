@@ -87,7 +87,7 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == S_API_STARTED)
+        if(num == S_API_RLV_CHECK)
         {
             doSetup();
             llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);

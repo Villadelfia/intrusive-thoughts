@@ -1,0 +1,131 @@
+█NAME
+Luna
+█SPEECH_BLACKLIST_ENTRY
+hana=0
+hiffi=0
+alice=0
+█SPEECH_BLACKLIST_TRIPPED
+/me tried to say something she shouldn't, but decided not to.
+█SPEECH_FILTER
+omg=// 𝑟𝑒𝑙𝑖𝑔𝑖𝑜𝑢𝑠 𝑜𝑢𝑡𝑐𝑟𝑦 //
+█MUTE_CMD
+silence, Luna
+█UNMUTE_CMD
+speak, Luna
+█BLIND_MUTE
+1
+█MUTE_TYPE
+CENSOR
+█MUTE_CENSOR
+mew
+meew
+meeew
+meeeew
+meeeewww
+meeeeewwww
+mrrrrowwwwww
+mrow
+purr
+nya
+█MUTE_MSG
+As you hear the command, you feel like you should be a good kitty and remain silent.
+█UNMUTE_MSG
+Suddenly, you feel your owner's attention on you, requesting you to speak.
+█MIND_OFF_CMD
+mind off
+disable mind
+█MIND_ON_CMD
+mind on
+enable mind
+█MIND_OFF_MSG
+You find yourself slipping into the role of a good kitty. And a good kitty does not need to think for herself.
+█MIND_ON_MSG
+Slowly, you can feel all your free will returning.
+█MINDLESS_PHRASES
+yes=/me nods her head.
+no=/me shakes her head.
+purr=/me gently purrs.
+mew=/me looks up at you and lets out a mew for attention...
+█AUDITORY_FILTER
+hana=«Owner»
+'hana=«Owner»
+hana'=«Owner»
+'hana'=«Owner»
+hana's=«Owner's»
+alice=«Luna»
+'alice=«Luna»
+alice'=«Luna»
+'alice'=«Luna»
+alice's=«Luna's»
+hiffster=«Puppy»
+hiffi=«Puppy»
+'hiffi=«Puppy»
+hiffi'=«Puppy»
+'hiffi'=«Puppy»
+hiffi's=«Puppy's»
+█AUDITORY_BIMBO_LIMIT
+3
+█AUDITORY_BIMBO_ODDS
+0.0
+█AUDITORY_BIMBO_CENSOR
+•
+█AUDITORY_BIMBO_REPLACE
+bront
+ronk
+twi
+yas
+rok
+moast
+wantle
+bitle
+stirt
+strok
+sorin
+strak
+mur
+yan
+boden
+rickle
+trink
+ferd
+prip
+bik
+yam
+bil
+boke
+█AUDITORY_BIMBO_EXCEPT
+princess
+operator
+mistress
+creator
+villadelfia
+hiffi
+alice
+luna
+doll
+unit
+drone
+pet
+petting
+pets
+pat
+patting
+pats
+scratches
+scratchies
+scritchies
+scritches
+█AUDITORY_BIMBO_OVERRIDE
+focus, Luna
+█DEAFEN_MSG
+As your owner wills it, you feel the world plumet into silence.
+█UNDEAFEN_MSG
+You blink slowly as the noises of the world slowly return to you once more.
+█DEAFEN_EXCEPT
+, Luna?
+, Luna.
+Luna:
+█BLIND_MSG
+You feel blindness overtake you quickly at your Owner's command.
+█UNBLIND_MSG
+You blink slowly as your vision returns at your Owner's command and you see clearly once more.

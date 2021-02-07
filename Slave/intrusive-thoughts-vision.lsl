@@ -11,6 +11,7 @@ string unblindmsg = "";
 string blindmsg = "";
 list blindcmd = [];
 list unblindcmd = [];
+integer rlvtries = 0;
 
 handleHear(key skey, string sender, string message)
 {
@@ -63,10 +64,14 @@ default
     {
         if(num == S_API_STARTED)
         {
-            checkSetup();
+            rlvtries = 0;
             gotreply = FALSE;
             llOwnerSay("@version=" + (string)RLV_CHECK_CHANNEL);
-            llSetTimerEvent(30.0);
+            llSetTimerEvent(10.0);
+        }
+        else if(num == S_API_RLV_CHECK)
+        {
+            checkSetup();
         }
         else if(num == S_API_OWNERS)
         {
@@ -119,15 +124,28 @@ default
 
     timer()
     {
-        llSetTimerEvent(0.0);
         if(!gotreply)
         {
-            string oldn = llGetObjectName();
-            llSetObjectName("");
-            if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
-            else                                       llInstantMessage(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
-            llSetObjectName(oldn);
-            llOwnerSay("Hey! Your RLV is (probably) turned off and I won't work properly until you turn it on and relog. If it is on, you're just experiencing some lag and you shouldn't worry about it.");
+            if(rlvtries < 6)
+            {
+                rlvtries++;
+                llOwnerSay("@version=" + (string)RLV_CHECK_CHANNEL);
+            }
+            else
+            {
+                llSetTimerEvent(0.0);
+                string oldn = llGetObjectName();
+                llSetObjectName("");
+                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
+                else                                       llInstantMessage(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
+                llSetObjectName(oldn);
+                llOwnerSay("Hey! Your RLV is (probably) turned off and I won't work properly until you turn it on and relog. If it is on, you're just experiencing some lag and you shouldn't worry about it.");
+                llMessageLinked(LINK_THIS, S_API_RLV_CHECK, "", "");
+            }
+        }
+        else
+        {
+            llSetTimerEvent(0.0);
         }
     }
 
@@ -138,6 +156,9 @@ default
             string prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
             llOwnerSay("Intrusive thoughts is good to go! Type /1" + prefix + " or click [secondlife:///app/chat/1/" + prefix + " here] to see your available actions.\nNote that, if present, you can type ((RED)) to clear the RLV relay, or ((FORCERED)) to clear and detach it.");
             gotreply = TRUE;
+            rlvtries = 0;
+            llSetTimerEvent(0.0);
+            llMessageLinked(LINK_THIS, S_API_RLV_CHECK, "", "");
         }
         if(c == 0) 
         {

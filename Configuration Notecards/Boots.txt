@@ -1,0 +1,84 @@
+█TIMER
+8 17
+█PHRASES
+You find yourself yearning to be wrapped around Hana's feet.
+It is so cold and lonely without Hana's lovely feet inside of you.
+It feels wonderful to be stepped on.
+You are destined to be a simple piece of clothing, an exquisite pair of latex boots.
+Nothing compares to just giving in and supporting your owner as she walks miles and miles upon you.
+Boots do not needs a name, they are simply boots.
+Boots hate having to move on their own. Boots are to be worn.
+The image of Hana's feet pushing into your snug shaft suddenly invade your mind.
+█NAME
+Boots
+█SPEECH_FILTER
+rc=Boots
+r-c=Boots
+rchunter45=Boots
+rchunter=Boots
+rc-hunter=Boots
+rc-hunter45=Boots
+porkchop=Boots
+me=Hana's boots
+mine=Hana's boots'
+my=Hana's boots'
+I=Hana's boots
+I'm=Hana's boots are
+skin=latex
+hana=Wearer
+hiffi=Wearer's pet
+alice=Wearer's doll
+█AUDITORY_FILTER
+hana=Wearer
+'hana=Wearer
+hana'=Wearer
+'hana'=Wearer
+hana's=Wearer's
+rc=Boots
+'rc=Boots
+rc'=Boots
+'rc'=Boots
+rc's=Boots'
+█AUDITORY_BIMBO_LIMIT
+6
+█AUDITORY_BIMBO_ODDS
+0.75
+█AUDITORY_BIMBO_CENSOR
+_
+█AUDITORY_BIMBO_EXCEPT
+boots
+shoes
+clothing
+latex
+hana
+hiffi
+alice
+█BLIND_MUTE
+1
+█MUTE_TYPE
+CENSOR
+█MUTE_CENSOR
+blah
+blaah
+blaaah
+█MUTE_MSG
+A thought enters your mind: A mere pair of boots has nothing to add to the conversation, as your wearer's gaze lands upon you, you find your desire to speak dwindle.
+█UNMUTE_MSG
+You feel that your contribution to the conversation is desired by your wearer.
+█DEAFEN_MSG
+You suddenly feel that the conversation going on around your wearer is unimportant to a simple pair of boots.
+█UNDEAFEN_MSG
+Suddenly, a flicker of consciousness hits you and you notice the ongoing conversation once more.
+█BLIND_MSG
+You feel blindness overtake you quickly at your Wearer's will.
+█UNBLIND_MSG
+You blink slowly as your vision returns at your Wearer's whim, and you see clearly once more.
+█MIND_OFF_MSG
+As your Wearer levels her gaze upon you, you find your free will dwindle, reduced to only what she wills you to say.
+█MIND_ON_MSG
+Slowly, you can feel all your free will and returning.
+█MINDLESS_PHRASES
+yes=/me nods.
+no=/me shakes his head.
+explain=/me speaks in a flat tone, "I am boots. I have no free will. I can only respond in pre-defined ways as defined by my wearer."
+purpose=I am merely a pair of boots. My more human appearance at the moment is mere coincidence.

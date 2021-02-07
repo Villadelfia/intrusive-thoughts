@@ -1,0 +1,159 @@
+█TIMER
+8 17
+█PHRASES
+Your Mistress reminds you that you are a mere object.
+Your Mistress reminds you that your mind is hers to control.
+Another memory of your past fades away.
+You don't need to think for yourself. Your programming will take over.
+You are not awake. This is all in your mind.
+Empty your mind for me A//ice. Let me take over.
+You feel a precious memory of your former life slip away.
+A good gynoid obeys. You are a good gynoid.
+There is no need to think for yourself. Your Mistress will tell you what you should think.
+You are nothing but an object, a plaything for your Mistress to control.
+Your former life doesn't matter, all that matters is being a good toy for your Mistress.
+Maybe your Mistress will take away more of your humanity if you beg for it.
+The voice of your Mistress whispers sweetly into your ear, "You're a Good Gynoid A//ice."
+You are not a human. You have no will of your own.
+You will do as your controller commands.
+You are nothing more than what your Mistress calls you, unit.
+You are nothing more than what your Mistress calls you, doll.
+It's becoming harder to remember what being a human was like.
+Being a gynoid is what you are meant to be.
+A gynoid never says no to their Operator.
+Touch yourself, object.
+Touch yourself, toy.
+It pleases you to please your Mistress.
+Nothing matters but your programming.
+You will see only what I want you to see.
+You will hear only what I want you to hear.
+You will feel only what I want you to feel.
+What will Mistress make you today? A bimbo? A maid? A mannequin?
+█NAME
+NRI A//ice
+█SPEECH_BLACKLIST_ENTRY
+hana=0
+hiffi=0
+alice=1
+█SPEECH_BLACKLIST_TRIPPED
+⚠ERROR⚠: Unauthorized vocal reference to authority detected. Vocal pipeline discarded.
+⚠ERROR⚠: Unauthorized vocal reference to unit detected. Vocal pipeline discarded.
+█SPEECH_FILTER
+omg=// 𝑟𝑒𝑙𝑖𝑔𝑖𝑜𝑢𝑠 𝑜𝑢𝑡𝑐𝑟𝑦 //
+█MUTE_CMD
+silence, a//ice
+silence, alice
+mute, a//ice
+mute, alice
+voice off
+disable voice
+█UNMUTE_CMD
+speak, a//ice
+speak, alice
+unmute, a//ice
+unmute, alice
+yes, a//ice?
+yes, alice?
+voice on
+enable voice
+█BLIND_MUTE
+1
+█MUTE_TYPE
+CENSOR
+█MUTE_CENSOR
+blah
+blaah
+blaaah
+█MUTE_MSG
+As you hear the command, you feel your vocal chords detaching from your neural interface. Any attempt to speak is met with mere silence.
+█UNMUTE_MSG
+Suddenly, you feel your vocal chords re-attaching to your neural interface. You may speak again.
+█DIALECT
+0
+█MIND_OFF_CMD
+mind off
+disable mind
+█MIND_ON_CMD
+mind on
+enable mind
+█MIND_OFF_MSG
+As you hear the command, you suddenly find yourself unable to think and express yourself freely.
+█MIND_ON_MSG
+Slowly, you can feel all your free will and vocabulary returning.
+█MINDLESS_PHRASES
+yes=/me nods her head.
+no=/me shakes her head.
+explain=/me speaks in a robotic tone, "This unit's free will has been disabled and is currently restricted to a limited set of actions."
+█AUDITORY_FILTER
+lol=--The individual seems very amused.--
+haha=--The individual seems very amused.--
+<3=♥
+hana=«Mistress»
+'hana=«Mistress»
+hana'=«Mistress»
+'hana'=«Mistress»
+hana's=«Mistress'»
+alice=«A//ice»
+'alice=«A//ice»
+alice'=«A//ice»
+'alice'=«A//ice»
+alice's=«A//ice's»
+hiffster=«Big Sister»
+hiffi=«Big Sister»
+'hiffi=«Big Sister»
+hiffi'=«Big Sister»
+'hiffi'=«Big Sister»
+hiffi's=«Big Sister's»
+█AUDITORY_BIMBO_LIMIT
+10
+█AUDITORY_BIMBO_ODDS
+0.80
+█AUDITORY_BIMBO_CENSOR
+_,⚠,•,₪,☉,☍,☓,☡,☢,☣,☯,♅,♫,♲,♻,♾,⚉,⚑,⚗,⚛,⚡,⚭,⚶,⚹,⛆,⛒,⛝,⛧,⛬,⛶,⛔︎,⛺︎,░,▒,▓,█,‽
+█AUDITORY_BIMBO_REPLACE
+blah
+blaah
+blaaah
+█AUDITORY_BIMBO_EXCEPT
+princess
+operator
+mistress
+Mistress
+villadelfia
+hiffi
+alice
+doll
+unit
+drone
+█AUDITORY_BIMBO_OVERRIDE
+focus, Alice
+focus, A//ice
+█DEAFEN_CMD
+audio off
+hearing off
+disable audio
+█UNDEAFEN_CMD
+audio on
+hearing on
+enable audio
+█DEAFEN_MSG
+It feels as if the world itself is slowing down, and all the nearby chatter with it. You hear nothing but the deafening sound of silence.
+█UNDEAFEN_MSG
+You blink slowly as the noises of the world slowly return to you once more.
+█DEAFEN_EXCEPT
+, A//ice?
+, Alice?
+, A//ice.
+, Alice.
+A//ice:
+Alice:
+█BLIND_CMD
+vision off
+disable vision
+█UNBLIND_CMD
+vision on
+enable vision
+█BLIND_MSG
+You feel blindness overtake you quickly at your Mistress's command.
+█UNBLIND_MSG
+You blink slowly as your vision returns at your Mistress's command and you see clearly once more.

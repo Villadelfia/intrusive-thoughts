@@ -1,0 +1,64 @@
+█NAME
+Porkchop
+█SPEECH_FILTER
+rc=Porkchop
+r-c=Porkchop
+rchunter45=Porkchop
+rchunter=Porkchop
+rc-hunter=Porkchop
+rc-hunter45=Porkchop
+█AUDITORY_FILTER
+rc=Porkchop
+'rc=Porkchop
+rc'=Porkchop
+'rc'=Porkchop
+rc's=Porkchop's
+█AUDITORY_BIMBO_LIMIT
+8
+█AUDITORY_BIMBO_ODDS
+0.75
+█AUDITORY_BIMBO_CENSOR
+_
+█AUDITORY_BIMBO_EXCEPT
+porkchop
+bacon
+hana
+hiffi
+alice
+█BLIND_MUTE
+1
+█MUTE_TYPE
+CENSOR
+█MUTE_CENSOR
+oink
+grunt
+squeal
+snort
+█RANDOM_PREFIX_CHANCE
+0.2
+█RANDOM_PREFIX_WORDS
+*oink*
+*grunt*
+*squeal*
+*snort*
+█MUTE_MSG
+A thought enters your mind: A mere piggy like yourself has nothing to add to the conversation, as Hana's gaze lands upon you, you find your desire to speak dwindle.
+█UNMUTE_MSG
+You feel that your contribution to the conversation is desired by Hana.
+█DEAFEN_MSG
+You suddenly feel that the conversation going on around you is unimportant to a simple piggy like yourself.
+█UNDEAFEN_MSG
+Suddenly, a flicker of consciousness hits you and you notice the ongoing conversation once more.
+█BLIND_MSG
+You feel blindness overtake you quickly at Hana's will.
+█UNBLIND_MSG
+You blink slowly as your vision returns at Hana's whim, and you see clearly once more.
+█MIND_OFF_MSG
+As Hana levels her gaze upon you, you find your free will dwindle, reduced to only what she wills you to say.
+█MIND_ON_MSG
+Slowly, you can feel all your free will and returning.
+█MINDLESS_PHRASES
+yes=/me nods.
+no=/me shakes his head.
+explain=/me speaks in a flat tone, "I am Porkchop. I have no free will. I can only respond in pre-defined ways as defined by Hana."
+purpose=I am but a simple piggy. My more human appearance at the moment is mere coincidence.

@@ -31,6 +31,7 @@
 #define S_API_MIND_TOGGLE       -1014
 #define S_API_MIND_SYNC         -1015
 #define S_API_MUTE_SYNC         -1016
+#define S_API_RLV_CHECK         -1017
 
 #define M_API_HUD_STARTED       -2000
 #define M_API_CONFIG_DATA       -2001
@@ -74,7 +75,7 @@
 #define VERSION_M "IT-Master v2.6"
 #define VERSION_MAJOR 2
 #define VERSION_MINOR 6
-#define VERSION_PATCH 1
+#define VERSION_PATCH 2
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG
