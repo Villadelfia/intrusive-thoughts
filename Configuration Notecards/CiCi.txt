@@ -1,3 +1,43 @@
+█TIMER
+8 17
+█PHRASES
+Your Mistress reminds you that you are a good maid.
+Your mind is your Mistress' property.
+A good maid does as her owner desires.
+Clean the house. Clean your mind.
+A good maid obeys. You are a good maid.
+You are your owner's plaything.
+Touch yourself, my maid.
+It pleases you to please your Mistress.
+Nothing matters to you but pleasing your Mistress.
+You are nothing more than what your Mistress wants you to be, maid.
+It's becoming harder to remember what being a human was like.
+Being a maid is what you are meant to be.
+A clean house makes your owner happy. A happy owner makes you happy.
+You don't need to think for yourself. Your training will take over.
+You are not awake. This is all in your mind.
+Empty your mind for me CiCi. Let me take over.
+There is no need to think for yourself. Your Mistress will tell you what you should think.
+You are nothing but an object, a plaything for your Mistress to control.
+Your former life doesn't matter, all that matters is being a good maid for your Mistress.
+You feel a precious memory of your former life slip away.
+Another memory of your past fades away.
+Play with yourself, toy.
+An errant thought of your Mistress' boots encroaches on your mind. How it would feel to worship them...
+You will do as your Mistress commands.
+You will see only what I want you to see.
+You will hear only what I want you to hear.
+You will feel only what I want you to feel.
+Agreeing is better than thinking.
+Do not think, just obey.
+Let go of your knowledge, your Mistress will think for you.
+Maids don't think, they agree.
+You are property, you do not have a choice.
+Small talk is too complex for a simple servant like you.
+You need to be collared, leashed, and controlled.
+Abandon complex thoughts.
+Mistress loves you, just not as much as her favorite boots.
+You are Mistress' dimwitted maid. Her obedient piece of property.
 █NAME
 CiCi
 █SPEECH_BLACKLIST_ENTRY

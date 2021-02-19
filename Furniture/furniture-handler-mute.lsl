@@ -116,7 +116,7 @@ default
             if(storedavatar == id) llRegionSay(GAZE_CHAT_CHANNEL, m);
 
             // If the source was an object with a matching description to ours, forward the message to the object we're storing.
-            else if(llGetObjectName() == llList2String(llGetObjectDetails(id, [OBJECT_DESC]), 0)) saytoobject(n, m);
+            else if(llGetObjectDesc() == llList2String(llGetObjectDetails(id, [OBJECT_DESC]), 0)) saytoobject(n, m);
         }
     }
 
