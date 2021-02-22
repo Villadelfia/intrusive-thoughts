@@ -75,7 +75,7 @@
 #define VERSION_M "IT-Master v2.6"
 #define VERSION_MAJOR 2
 #define VERSION_MINOR 6
-#define VERSION_PATCH 2
+#define VERSION_PATCH 3
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG

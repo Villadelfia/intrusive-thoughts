@@ -1,5 +1,4 @@
 #include <IT/globals.lsl>
-#define avataroffset <0.0, 0.0, -3.0>
 string animation = "";
 key rezzer;
 key firstavatar;
@@ -54,6 +53,9 @@ default
         llListen(BALL_CHANNEL, "", NULL_KEY, "");
         llSitTarget(<0.0, 0.0, 0.001>, ZERO_ROTATION);
         rezzer = llGetOwner();
+        llVolumeDetect(TRUE);
+        llSetStatus(STATUS_ROTATE_X | STATUS_ROTATE_Y | STATUS_ROTATE_Z, FALSE);
+        llSetStatus(STATUS_PHYSICS, FALSE);
     }
 
     on_rez(integer start_param)
@@ -320,11 +322,7 @@ default
             waitingstate = 0;
             vector my = llGetPos();
             vector offset = ZERO_VECTOR;
-            if(keyisavatar == TRUE)
-            {
-                if((llGetAgentInfo(rezzer) & AGENT_SITTING) == 0) offset = avataroffset;
-                else                                              offset = seatedoffset;
-            }
+            if(keyisavatar) offset = seatedoffset;
 
             if(keyisavatar == TRUE && llGetAgentSize(rezzer) == ZERO_VECTOR)
             {
@@ -339,9 +337,12 @@ default
             }
 
             vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + offset;
+            float dist = llVecDist(my, pos);
             my.z = pos.z;
-            if(llVecDist(my, pos) > 365 || pos == ZERO_VECTOR)
+            float xydist = llVecDist(my, pos);
+            if(xydist > 365.0 || pos == ZERO_VECTOR)
             {
+                // More than a region away on a flat plane. This should never happen. Die.
                 llSetRegionPos(llGetPos() - offset);
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
@@ -351,7 +352,24 @@ default
                 die();
                 return;
             }
-            llSetRegionPos(pos);
+            
+            if(dist > 60.0)
+            {
+                llStopMoveToTarget();
+                llSetStatus(STATUS_PHYSICS, FALSE);
+                llSetRegionPos(pos);
+            }
+            else if(dist > 0.05)
+            {
+                llSetStatus(STATUS_PHYSICS, TRUE);
+                llMoveToTarget(pos, 0.1);
+            }
+            else if(llGetStatus(STATUS_PHYSICS))
+            {
+                llStopMoveToTarget();
+                llSetStatus(STATUS_PHYSICS, FALSE);
+            }
+
             llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)rezzer + ";;=force");
         }
     }

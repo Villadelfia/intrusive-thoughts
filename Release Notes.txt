@@ -8,3 +8,6 @@ Version 2.6.1:
 
 Version 2.6.2:
  - Make RLV check for IT Slave more robust.
+
+Version 2.6.3:
+ - Improved objectification and vore movement and nametag positioning. Thanks go to Qetesh of Tailor HUD fame for the tips on this.

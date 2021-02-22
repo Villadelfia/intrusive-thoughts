@@ -71,6 +71,9 @@ default
             }
         }
         rezzer = llGetOwner();
+        llVolumeDetect(TRUE);
+        llSetStatus(STATUS_ROTATE_X | STATUS_ROTATE_Y | STATUS_ROTATE_Z, FALSE);
+        llSetStatus(STATUS_PHYSICS, FALSE);
     }
 
     on_rez(integer start_param)
@@ -229,7 +232,10 @@ default
             }
 
             vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0);
-            if(llVecDist(my, pos) > 365 || pos == ZERO_VECTOR)
+            float dist = llVecDist(my, pos);
+            my.z = pos.z;
+            float xydist = llVecDist(my, pos);
+            if(xydist > 365.0 || pos == ZERO_VECTOR)
             {
                 llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
                 llSetRegionPos(my + <0.0, 0.0, 10.0>);
@@ -240,7 +246,24 @@ default
                 die();
                 return;
             }
-            if(my != pos) llSetRegionPos(pos);
+
+            if(dist > 60.0)
+            {
+                llStopMoveToTarget();
+                llSetStatus(STATUS_PHYSICS, FALSE);
+                llSetRegionPos(pos);
+            }
+            else if(dist > 0.05)
+            {
+                llSetStatus(STATUS_PHYSICS, TRUE);
+                llMoveToTarget(pos, 0.1);
+            }
+            else if(llGetStatus(STATUS_PHYSICS))
+            {
+                llStopMoveToTarget();
+                llSetStatus(STATUS_PHYSICS, FALSE);
+            }
+
             ticks++;
             if(ticks > 60) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "focus," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@setcam_focus:" + (string)focuskey + ";0;0/1/0=force");
             if(llGetTime() > 60.0) detachrandom();
