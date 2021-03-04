@@ -47,7 +47,8 @@ checktp()
     if(llGetRegionName() != region)
     {
         region = llGetRegionName();
-        nridisable = FALSE;
+        if(region == "NRI") nridisable = TRUE;
+        else                nridisable = FALSE;
     }
 }
 
@@ -57,6 +58,13 @@ default
     {
         if(change & CHANGED_INVENTORY) buildclients();
         if(change & CHANGED_TELEPORT) checktp();
+    }
+
+    on_rez(integer start_param)
+    {
+        region = llGetRegionName();
+        if(region == "NRI") nridisable = TRUE;
+        else                nridisable = FALSE;
     }
 
     link_message(integer sender_num, integer num, string str, key k)
@@ -188,6 +196,12 @@ default
             {
                 if(llGetCreator() != llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0)) return;
                 nridisable = TRUE;
+                region = llGetRegionName();
+            }
+            else if(m == "NRINORLV")
+            {
+                if(llGetCreator() != llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0)) return;
+                nridisable = FALSE;
                 region = llGetRegionName();
             }
 
