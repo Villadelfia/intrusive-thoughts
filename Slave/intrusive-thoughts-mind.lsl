@@ -15,6 +15,20 @@ list mindfrom = [];
 list mindto = [];
 integer blindmute = FALSE;
 
+hardReset(string n)
+{
+    mindless = FALSE;
+    mute = FALSE;
+    mindonmsg = "";
+    mindoffmsg = "";
+    mindoffcmd = [];
+    mindoncmd = [];
+    mindfrom = [];
+    mindto = [];
+    name = n;
+    blindmute = FALSE;
+}
+
 handleHear(key skey, string sender, string message)
 {
     integer l1;
@@ -119,6 +133,10 @@ default
         {
             mute = (integer)str;
         }
+        else if(num == S_API_EMERGENCY)
+        {
+            hardReset(name);
+        }
     }
 
     state_entry()
@@ -143,16 +161,7 @@ default
         if(!isowner(k)) return;
         if(m == "RESET")
         {
-            mindless = FALSE;
-            mute = FALSE;
-            mindonmsg = "";
-            mindoffmsg = "";
-            mindoffcmd = [];
-            mindoncmd = [];
-            mindfrom = [];
-            mindto = [];
-            name = "";
-            blindmute = FALSE;
+            hardReset("");
         }
         else if(startswith(m, "NAME"))
         {

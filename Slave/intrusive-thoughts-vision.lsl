@@ -13,6 +13,17 @@ list blindcmd = [];
 list unblindcmd = [];
 integer rlvtries = 0;
 
+hardReset(string n)
+{
+    blind = FALSE;
+    unblindmsg = "";
+    blindmsg = "";
+    blindcmd = [];
+    unblindcmd = [];
+    name = n;
+    checkSetup();
+}
+
 handleHear(key skey, string sender, string message)
 {
     integer l1;
@@ -54,8 +65,8 @@ handleHear(key skey, string sender, string message)
 
 checkSetup()
 {
-    if(blind) llOwnerSay("@setoverlay=n,setoverlay_texture:1210e690-3eb8-239d-ceb9-3db4eb1a3fca=force,setoverlay_alpha:0=force,setoverlay_tween:1;;5=force");
-    else      llOwnerSay("@setoverlay=y");
+    if(blind) llOwnerSay("@clear=setsphere,setsphere=n,,setsphere_distmin:0.25=force,setsphere_valuemin:0=force,setsphere_distmax:128=force,setsphere_tween:5=force,setsphere_distmax:4=force,setsphere_tween=force");
+    else      llOwnerSay("@clear=setsphere");
 }
 
 default
@@ -107,6 +118,10 @@ default
                 else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer see.");
                 checkSetup();
             }
+        }
+        else if(num == S_API_EMERGENCY)
+        {
+            hardReset(name);
         }
     }
 
@@ -168,13 +183,7 @@ default
         if(!isowner(k)) return;
         if(m == "RESET")
         {
-            blind = FALSE;
-            unblindmsg = "";
-            blindmsg = "";
-            blindcmd = [];
-            unblindcmd = [];
-            name = "";
-            checkSetup();
+            hardReset("");
         }
         else if(startswith(m, "NAME"))
         {

@@ -15,6 +15,17 @@ string playing = "";
 integer daze = FALSE;
 integer locked = FALSE;
 
+hardReset(string n)
+{
+    name = llGetDisplayName(llGetOwner());
+    noim = FALSE;
+    daze = FALSE;
+
+    if(n != "") name = n;
+    if(playing != "") llStopAnimation(playing);
+    doSetup();
+}
+
 doSetup()
 {
     llOwnerSay("@accepttp:" + (string)primary + "=add,accepttprequest:" + (string)primary + "=add,acceptpermission=add");
@@ -59,6 +70,10 @@ handlemenu(key k)
 
     // Stop animation
     ownersay(k, "[secondlife:///app/chat/1/" + prefix + "stop - Stop all animations.]");
+    ownersay(k, " ");
+    
+    // Emergency release.
+    ownersay(k, "[secondlife:///app/chat/1/" + prefix + "emergency - Remove all restrictions in case of emergency.]");
 
     // Owner commands.
     if(isowner(k))
@@ -261,6 +276,14 @@ default
                 playing = "";
                 return;
             }
+            else if(llToLower(m) == "emergency")
+            {
+                ownersay(k, "Removing all restrictions and notifying your primary owner...");
+                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been emergency reset by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                else llInstantMessage(primary, "The " + VERSION_S + " has been emergency reset by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                hardReset(name);
+                llMessageLinked(LINK_SET, S_API_EMERGENCY, name, "");
+            }
             else if(llToLower(m) == "!" || m == "" || llToLower(m) == "menu")
             {
                 handlemenu(k);
@@ -275,9 +298,7 @@ default
         {
             if(m == "RESET")
             {
-                name = llGetDisplayName(llGetOwner());
-                noim = FALSE;
-                daze = FALSE;
+                hardReset("");
             }
             else if(startswith(m, "NAME"))
             {

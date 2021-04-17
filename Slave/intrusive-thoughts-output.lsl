@@ -13,6 +13,16 @@ float randomprefixchance = 0.0;
 list randomprefixwords = [];
 key focustarget = NULL_KEY;
 
+hardReset(string n)
+{
+    blindmute = FALSE;
+    focus = FALSE;
+    randomprefixchance = 0.0;
+    randomprefixwords = [];
+    name = llGetDisplayName(llGetOwner());
+    if(n != "") name = n;
+}
+
 handleSelfDescribe(string message)
 {
     integer firstSpace = llSubStringIndex(message, " ");
@@ -241,6 +251,10 @@ default
             publicaccess = (integer)str;
             groupaccess = (integer)((string)id);
         }
+        else if(num == S_API_EMERGENCY)
+        {
+            hardReset(name);
+        }
 
         if(num == S_API_SELF_DESC && str != "")     handleSelfDescribe(str);
         else if(num == S_API_FOCUS_TOGGLE)          focusToggle(id);
@@ -287,11 +301,7 @@ default
         if(!isowner(k)) return;
         if(m == "RESET")
         {
-            blindmute = FALSE;
-            focus = FALSE;
-            randomprefixchance = 0.0;
-            randomprefixwords = [];
-            name = llGetDisplayName(llGetOwner());
+            hardReset("");
         }
         else if(startswith(m, "NAME") && c == MANTRA_CHANNEL)
         {

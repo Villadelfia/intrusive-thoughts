@@ -20,6 +20,25 @@ list unmutecmd = [];
 string mutetype = "DROP";
 integer blindmute = FALSE;
 
+hardReset(string n)
+{
+    name = n;
+    speechblacklistfrom = [];
+    speechblacklistto = [];
+    speechblacklisttripped = [];
+    speechfilterfrom = [];
+    speechfilterto = [];
+    mute = FALSE;
+    mindless = FALSE;
+    mutemsg = "";
+    unmutemsg = "";
+    mutecmd = [];
+    unmutecmd = [];
+    mutecensor = [];
+    blindmute = FALSE;
+    checkSetup();
+}
+
 handleHear(key skey, string sender, string message)
 {
     integer l1;
@@ -225,6 +244,10 @@ default
             mindless = (integer)str;
             checkSetup();
         }
+        else if(num == S_API_EMERGENCY)
+        {
+            hardReset(name);
+        }
     }
 
     state_entry()
@@ -250,20 +273,7 @@ default
         if(!isowner(k)) return;
         if(m == "RESET")
         {
-            name = "";
-            speechblacklistfrom = [];
-            speechblacklistto = [];
-            speechblacklisttripped = [];
-            speechfilterfrom = [];
-            speechfilterto = [];
-            mute = FALSE;
-            mindless = FALSE;
-            mutemsg = "";
-            unmutemsg = "";
-            mutecmd = [];
-            unmutecmd = [];
-            mutecensor = [];
-            blindmute = FALSE;
+            hardReset("");
         }
         else if(startswith(m, "NAME"))
         {

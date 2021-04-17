@@ -21,6 +21,27 @@ list undeafencmd = [];
 list deafenexcept = [];
 integer setup = FALSE;
 
+hardReset(string n)
+{
+    deaf = FALSE;
+    name = n;
+    auditoryfilterfrom = [];
+    auditoryfilterto = [];
+    auditorybimbolimit = 0;
+    auditorybimboodds = 1.0;
+    auditorybimbocensor = ["_"];
+    auditorybimboexcept = [];
+    auditorybimbooverride = [];
+    auditorybimboreplace = ["blah"];
+    deafenmsg = "";
+    undeafenmsg = "";
+    deafencmd = [];
+    undeafencmd = [];
+    deafenexcept = [];
+    setup = FALSE;
+    checkSetup();
+}
+
 handleHear(key skey, string sender, string message)
 {
     if(!setup) return;
@@ -311,6 +332,10 @@ default
                 checkSetup();
             }
         }
+        else if(num == S_API_EMERGENCY)
+        {
+            hardReset(name);
+        }
     }
 
     state_entry()
@@ -325,22 +350,7 @@ default
         if(!isowner(k)) return;
         if(m == "RESET")
         {
-            deaf = FALSE;
-            name = "";
-            auditoryfilterfrom = [];
-            auditoryfilterto = [];
-            auditorybimbolimit = 0;
-            auditorybimboodds = 1.0;
-            auditorybimbocensor = ["_"];
-            auditorybimboexcept = [];
-            auditorybimbooverride = [];
-            auditorybimboreplace = ["blah"];
-            deafenmsg = "";
-            undeafenmsg = "";
-            deafencmd = [];
-            undeafencmd = [];
-            deafenexcept = [];
-            setup = FALSE;
+            hardReset("");
         }
         else if(startswith(m, "NAME"))
         {
