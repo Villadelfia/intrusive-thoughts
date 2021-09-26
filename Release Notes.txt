@@ -11,3 +11,12 @@ Version 2.6.2:
 
 Version 2.6.3:
  - Improved objectification and vore movement and nametag positioning. Thanks go to Qetesh of Tailor HUD fame for the tips on this.
+
+Version 2.6.4:
+ - Skipped version, internal.
+
+Version 2.6.5:
+ - Bugfixes regarding master relay.
+ - Vision spheres.
+ - Improved reset logic.
+ - Add emergency button to slave.

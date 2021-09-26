@@ -219,7 +219,7 @@ default
                 if(enabled)
                 {
                     llOwnerSay("Your RLV relay has been turned on.");
-                    llOwnerSay("@detach=n,permissive=n,touchme=add,sendchannel:1=add,sendchannel:8=add");
+                    llOwnerSay("@permissive=n,touchme=add,sendchannel:1=add,sendchannel:8=add");
                 }
                 else
                 {
@@ -235,6 +235,7 @@ default
             if(enabled == TRUE)
             {
                 llOwnerSay(VERSION_M + ": Your RLV relay is turned on, supporting up to " + (string)llGetListLength(rlvclients) + " devices.");
+                llOwnerSay("@permissive=n,touchme=add,sendchannel:1=add,sendchannel:8=add");
             }
             else if(rlvclients == [])
             {

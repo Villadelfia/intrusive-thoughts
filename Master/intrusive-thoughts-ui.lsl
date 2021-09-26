@@ -18,6 +18,7 @@ integer started = FALSE;
 
 integer hasobject = FALSE;
 integer hasprey   = FALSE;
+integer hasrelay  = FALSE;
 
 string lockedavatarname = "";
 key lockedavatarkey = NULL_KEY;
@@ -443,11 +444,12 @@ default
         {
             setbuttonfilter(str, (integer)((string)id));
 
-            // Prevent accidental detach while having prey or objects.
+            // Prevent accidental detach while having prey, objects, or the relay.
             if(str == "vore") hasprey = (integer)((string)id);
             if(str == "object") hasobject = (integer)((string)id);
-            if(hasprey || hasobject) llOwnerSay("@detach=n");
-            else                     llOwnerSay("@detach=y");
+            if(str == "relay") hasrelay = (integer)((string)id);
+            if(hasprey || hasobject || hasrelay) llOwnerSay("@detach=n");
+            else                                 llOwnerSay("@detach=y");
         }
         else if(num == M_API_BUTTON_PRESSED)
         {
