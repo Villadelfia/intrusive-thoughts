@@ -9,8 +9,10 @@ key getlines;
 integer line;
 integer lines;
 string name;
+string todel;
 string prefix;
 integer menu = 0;
+integer ncpage = 0;
 key lockedavatar = NULL_KEY;
 string lockedname = "";
 
@@ -38,20 +40,79 @@ giveMenu()
     string prompt = "Controlling secondlife:///app/agent/" + (string)target + "/about. Choose a notecard to send, or select another option.\n";
     integer i;
     integer l = llGetInventoryNumber(INVENTORY_NOTECARD);
-    if(l > 11) l = 11;
-    list buttons = [];
-    for(i = 0; i < l; ++i)
+    // If we have 9 or fewer notecards, we do not paginate:
+    if(l <= 9)
     {
-        if(llGetInventoryName(INVENTORY_NOTECARD, i) != "Intrusive Thoughts Configuration")
+        list buttons = [];
+        for(i = 0; i < l; ++i)
         {
             buttons += [(string)i];
             prompt += "\n" + (string)i + ": " + llGetInventoryName(INVENTORY_NOTECARD, i);
         }
+        while(llGetListLength(buttons) < 9) buttons += [" "];
+        buttons += ["MENU", "DELETE", "CANCEL"];
+        menu = 0;
+        llDialog(llGetOwner(), prompt, orderbuttons(buttons), S_DIALOG_CHANNEL);
     }
-    while(llGetListLength(buttons) < 10) buttons += [" "];
-    buttons += ["MENU", "CANCEL"];
-    menu = 0;
-    llDialog(llGetOwner(), prompt, orderbuttons(buttons), S_DIALOG_CHANNEL);
+    // Otherwise we show them 6 at a time.
+    else
+    {
+        list buttons = [];
+        for(i = 6 * ncpage; i < l && i < (6 * (ncpage+1)); ++i)
+        {
+            buttons += [(string)i];
+            prompt += "\n" + (string)i + ": " + llGetInventoryName(INVENTORY_NOTECARD, i);
+        }
+        while(llGetListLength(buttons) < 6) buttons += [" "];
+        if(ncpage > 0) buttons += ["←"];
+        else           buttons += [" "];
+        buttons += [" "];
+        if((6 * (ncpage+1)) >= l) buttons += [" "];
+        else                      buttons += ["→"];
+        buttons += ["MENU", "DELETE", "CANCEL"];
+        menu = 0;
+        llDialog(llGetOwner(), prompt, orderbuttons(buttons), S_DIALOG_CHANNEL);
+    }
+}
+
+giveDelete()
+{
+    string prompt = "Choose a notecard to delete, or click back to return.\n";
+    integer i;
+    integer l = llGetInventoryNumber(INVENTORY_NOTECARD);
+    // If we have 9 or fewer notecards, we do not paginate:
+    if(l <= 9)
+    {
+        list buttons = [];
+        for(i = 0; i < l; ++i)
+        {
+            buttons += [(string)i];
+            prompt += "\n" + (string)i + ": " + llGetInventoryName(INVENTORY_NOTECARD, i);
+        }
+        while(llGetListLength(buttons) < 9) buttons += [" "];
+        buttons += [" ", "BACK", "CANCEL"];
+        menu = 5;
+        llDialog(llGetOwner(), prompt, orderbuttons(buttons), S_DIALOG_CHANNEL);
+    }
+    // Otherwise we show them 6 at a time.
+    else
+    {
+        list buttons = [];
+        for(i = 6 * ncpage; i < l && i < (6 * (ncpage+1)); ++i)
+        {
+            buttons += [(string)i];
+            prompt += "\n" + (string)i + ": " + llGetInventoryName(INVENTORY_NOTECARD, i);
+        }
+        while(llGetListLength(buttons) < 6) buttons += [" "];
+        if(ncpage > 0) buttons += ["←"];
+        else           buttons += [" "];
+        buttons += [" "];
+        if((6 * (ncpage+1)) >= l) buttons += [" "];
+        else                      buttons += ["→"];
+        buttons += [" ", "BACK", "CANCEL"];
+        menu = 5;
+        llDialog(llGetOwner(), prompt, orderbuttons(buttons), S_DIALOG_CHANNEL);
+    }
 }
 
 giveTargets()
@@ -95,7 +156,7 @@ default
         }
         else if(num == M_API_CONFIG_DONE)
         {
-            llOwnerSay(VERSION_M + ": Startup complete. Welcome to your Intrusive Thoughts system. Click and hold any button for more than a second to get basic usage information. For more documentation read the included README notecard.");
+            llOwnerSay(VERSION_M + ": Startup complete. Welcome to your Intrusive Thoughts system. Click and hold any button for more than a second to get basic usage information. For more documentation read the included Instruction Manual notecard.");
             if(llGetPermissions() & PERMISSION_TAKE_CONTROLS == 0) llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
         }
         else if(num == M_API_LOCK)
@@ -163,6 +224,7 @@ default
             if(lockedavatar)
             {
                 target = llGetOwnerKey(k);
+                ncpage = 0;
                 giveMenu();
             }
             else
@@ -175,6 +237,17 @@ default
             if(m == "CANCEL") return;
             else if(m == "BACK" || m == " ") giveMenu();
             else if(m == "MENU") llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
+            else if(m == "DELETE") giveDelete();
+            else if(m == "→")
+            {
+                ncpage++;
+                giveMenu();
+            }
+            else if(m == "←")
+            {
+                ncpage--;
+                giveMenu();
+            }
             else if(m == "B.MUTE OFF")
             {
                 llRegionSayTo(target, MANTRA_CHANNEL, "BLIND_MUTE 0");
@@ -246,9 +319,47 @@ default
             menu = 0;
             llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
         }
+        else if(menu == 5)
+        {
+            if(m == "CANCEL") return;
+            else if(m == "OK")
+            {
+                ncpage = 0;
+                giveDelete();
+            }
+            else if(m == "BACK" || m == " ")
+            {
+                giveMenu();
+            }
+            else if(m == "→")
+            {
+                ncpage++;
+                giveDelete();
+            }
+            else if(m == "←")
+            {
+                ncpage--;
+                giveDelete();
+            }
+            else if(m == "YES")
+            {
+                llRemoveInventory(todel);
+                llDialog(llGetOwner(), "The notecard " + todel + " has been deleted.", ["OK"], S_DIALOG_CHANNEL);
+            }
+            else if(m == "NO")
+            {
+                giveDelete();
+            }
+            else
+            {
+                todel = llGetInventoryName(INVENTORY_NOTECARD, (integer)m);
+                llDialog(llGetOwner(), "Are you certain you wish to delete " + todel + "?", ["YES", "NO"], S_DIALOG_CHANNEL);
+            }
+        }
         else if(menu == -1)
         {
             target = llList2Key(targets, (integer)m);
+            ncpage = 0;
             giveMenu();
         }
     }
@@ -318,6 +429,7 @@ default
         else if(llGetListLength(targets) == 1)
         {
             target = llList2Key(targets, 0);
+            ncpage = 0;
             giveMenu();
             return;
         }
