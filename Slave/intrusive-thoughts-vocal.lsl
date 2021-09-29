@@ -165,12 +165,12 @@ handleSay(string message)
         else if(vocalbimbolimit > 0 && 
                 llStringLength(word) >= vocalbimbolimit && 
                 word != "" &&
-                llFrand(1.0) >= auditorybimboodds &&
+                llFrand(1.0) >= vocalbimboodds &&
                 (emote == FALSE || quotecnt % 2 != 0))
         {
             letters = [];
-            l2 = llStringLength(s)-1;
-            for(l1 = 1; l1 < l2; ++l1) middle += [llGetSubString(s, l1, l1)];
+            l2 = llStringLength(word)-1;
+            for(l1 = 1; l1 < l2; ++l1) letters += [llGetSubString(word, l1, l1)];
             word = llGetSubString(word, 0, 0) + llDumpList2String(llListRandomize(letters, 1), "") + llGetSubString(word, -1, -1);
         }
 
