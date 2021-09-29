@@ -10,6 +10,8 @@ list speechblacklistto = [];
 list speechblacklisttripped = [];
 list speechfilterfrom = [];
 list speechfilterto = [];
+list speechfilterpartialfrom = [];
+list speechfilterpartialto = [];
 integer mute = FALSE;
 integer mindless = FALSE;
 string mutemsg = "";
@@ -30,6 +32,8 @@ hardReset(string n)
     speechblacklisttripped = [];
     speechfilterfrom = [];
     speechfilterto = [];
+    speechfilterpartialfrom = [];
+    speechfilterpartialto = [];
     mute = FALSE;
     mindless = FALSE;
     mutemsg = "";
@@ -89,7 +93,7 @@ handleSay(string message)
     if(startswith(llToLower(message), "/me") || startswith(llToLower(message), "/shout/me") || startswith(llToLower(message), "/shout /me") ||
        startswith(llToLower(message), "/whisper/me") || startswith(llToLower(message), "/whisper /me")) emote = TRUE;
     integer l1;
-    integer l2;
+    integer l2 = llGetListLength(speechfilterpartialfrom);
     string messagecopy;
     string word;
     string oldword;
@@ -109,6 +113,7 @@ handleSay(string message)
     }
 
     // URLs should never be filtered, enclose them in [[[ and ]]]. This is checked for later.
+    // Partial filters are also applied here.
     messagecopy = message;
     message = "";
     integer inurl = 0;
@@ -129,12 +134,26 @@ handleSay(string message)
                 message += "[[[";
                 inurl++;
             }
+            else if(emote == FALSE || quotecnt % 2 != 0)
+            {
+                for(l1 = 0; l1 < l2; ++l1)
+                {
+                    string fromCheck = llList2String(speechfilterpartialfrom, l1);
+                    if(startswith(llToLower(messagecopy), fromCheck))
+                    {
+                        message += llList2String(speechfilterpartialto, l1);
+                        messagecopy = llDeleteSubString(messagecopy, 0, llStringLength(fromCheck));
+                        jump replacedpartial;
+                    }
+                }
+            }
         }
-
-        // TODO: Partial word filters can be slotted in here.
         
         message += llGetSubString(messagecopy, 0, 0);
         messagecopy = llDeleteSubString(messagecopy, 0, 0);
+
+        @replacedpartial;
+        if(llGetSubString(message, -1, -1) == "\"") quotecnt++;
     }
 
     // Main filtering loop. Split by word, then word by word:
@@ -145,6 +164,7 @@ handleSay(string message)
     messagecopy = message;
     message = "";
     inurl = 0;
+    quotecnt = 0;
     while(llStringLength(messagecopy) > 0)
     {
         word = llList2String(llParseStringKeepNulls(messagecopy, [" ", ",", "\"", ";", ":", ".", "!", "?"], []), 0);
@@ -366,10 +386,17 @@ default
             m = llDeleteSubString(m, 0, llStringLength("SPEECH_BLACKLIST_TRIPPED"));
             speechblacklisttripped += [m];
         }
+        else if(startswith(m, "SPEECH_FILTER_PARTIAL"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("SPEECH_FILTER_PARTIAL"));
+            list split = llParseStringKeepNulls(m, ["="], []);
+            speechfilterpartialfrom += [llToLower(llList2String(split, 0))];
+            speechfilterpartialto += [llList2String(split, 1)];
+        }
         else if(startswith(m, "SPEECH_FILTER"))
         {
             m = llDeleteSubString(m, 0, llStringLength("SPEECH_FILTER"));
-            list split = llParseString2List(m, ["="], []);
+            list split = llParseStringKeepNulls(m, ["="], []);
             speechfilterfrom += [llToLower(llList2String(split, 0))];
             speechfilterto += [llList2String(split, 1)];
         }
