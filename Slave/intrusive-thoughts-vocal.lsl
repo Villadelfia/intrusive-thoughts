@@ -19,6 +19,8 @@ list mutecmd = [];
 list unmutecmd = [];
 string mutetype = "DROP";
 integer blindmute = FALSE;
+integer vocalbimbolimit = 0;
+float vocalbimboodds = 1.0;
 
 hardReset(string n)
 {
@@ -36,6 +38,8 @@ hardReset(string n)
     unmutecmd = [];
     mutecensor = [];
     blindmute = FALSE;
+    vocalbimbolimit = 0;
+    vocalbimboodds = 1.0;
     checkSetup();
 }
 
@@ -85,6 +89,7 @@ handleSay(string message)
     if(startswith(llToLower(message), "/me") || startswith(llToLower(message), "/shout/me") || startswith(llToLower(message), "/shout /me") ||
        startswith(llToLower(message), "/whisper/me") || startswith(llToLower(message), "/whisper /me")) emote = TRUE;
     integer l1;
+    integer l2;
     string messagecopy;
     string word;
     string oldword;
@@ -92,6 +97,7 @@ handleSay(string message)
     integer replaceidx;
     integer quotecnt = 0;
     
+    // In case of a blacklisted word, replace the message and emit the replacement message. Skip the entire rest of the process.
     l1 = llGetListLength(speechblacklistfrom)-1;
     for(;l1 >= 0; --l1)
     {
@@ -102,27 +108,93 @@ handleSay(string message)
         }
     }
 
+    // URLs should never be filtered, enclose them in [[[ and ]]]. This is checked for later.
     messagecopy = message;
     message = "";
+    integer inurl = 0;
+    while(llStringLength(messagecopy) > 0)
+    {
+        if(inurl > 0)
+        {
+            if(llGetSubString(messagecopy, 0, 0) == " ")
+            {
+                message += "]]]";
+                inurl--;
+            }
+        }
+        else
+        {
+            if(startswith(messagecopy, "http://") || startswith(messagecopy, "https://") || startswith(messagecopy, "secondlife://"))
+            {
+                message += "[[[";
+                inurl++;
+            }
+        }
+
+        // TODO: Partial word filters can be slotted in here.
+        
+        message += llGetSubString(messagecopy, 0, 0);
+        messagecopy = llDeleteSubString(messagecopy, 0, 0);
+    }
+
+    // Main filtering loop. Split by word, then word by word:
+    //   - If a word starts a URL, skip until end of URL.
+    //   - If word is in filter list, replace.
+    //   - If word is not in filter list, but is above allowable bimbo limit, garble according to odds.
+    list letters = [];
+    messagecopy = message;
+    message = "";
+    inurl = 0;
     while(llStringLength(messagecopy) > 0)
     {
         word = llList2String(llParseStringKeepNulls(messagecopy, [" ", ",", "\"", ";", ":", ".", "!", "?"], []), 0);
         oldword = word;
+
+        if(startswith(oldword, "[[[")) 
+        {
+            word = llGetSubString(word, 3, -1);
+            inurl++;
+        }
+        if(inurl > 0) jump skipfilter;
 
         replaceidx = llListFindList(speechfilterfrom, [llToLower(word)]);
         if(replaceidx != -1)
         {
             word = llList2String(speechfilterto, replaceidx);
         }
+        else if(vocalbimbolimit > 0 && 
+                llStringLength(word) >= vocalbimbolimit && 
+                word != "" &&
+                llFrand(1.0) >= auditorybimboodds &&
+                (emote == FALSE || quotecnt % 2 != 0))
+        {
+            letters = [];
+            l2 = llStringLength(s)-1;
+            for(l1 = 1; l1 < l2; ++l1) middle += [llGetSubString(s, l1, l1)];
+            word = llGetSubString(word, 0, 0) + llDumpList2String(llListRandomize(letters, 1), "") + llGetSubString(word, -1, -1);
+        }
+
+        @skipfilter;
+        if(endswith(oldword, "]]]") && inurl > 0)
+        {
+            word = llGetSubString(word, 0, -4);
+            inurl--;
+        }
 
         message += word;
         if(llStringLength(messagecopy) != llStringLength(oldword))
         {
             message += llGetSubString(messagecopy, llStringLength(oldword), llStringLength(oldword));
+            if(llGetSubString(message, -1, -1) == "\"") quotecnt++;
         }
         messagecopy = llDeleteSubString(messagecopy, 0, llStringLength(oldword));
     }
 
+    // Logic on *how* to emit text:
+    //   - If not muted or a full emote, just say.
+    //   - If muted, and type is set to DROP, say only to wearer of device. Do not show message to outside world.
+    //   - If muted, and type is set to REPLACE, show original line to wearer, but output a replacement line to outside world.
+    //   - If muted, and type is set to CENSOR, show original line to wearer, but output a replacement with every word replaced with random words to outside world.
     @blacklisttripped;
     integer bypass = emote == TRUE && llToLower(llStringTrim(message, STRING_TRIM)) != "/me" && contains(message, "\"") == FALSE;
     if(mute == FALSE || bypass == TRUE) 
@@ -152,6 +224,7 @@ handleSay(string message)
             if(blindmute) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
             messagecopy = message;
             message = "";
+            quotecnt = 0;
             while(llStringLength(messagecopy) > 0)
             {
                 word = llList2String(llParseStringKeepNulls(messagecopy, [" ", ",", "\"", ";", ":", ".", "!", "?"], []), 0);
@@ -335,6 +408,16 @@ default
             m = llDeleteSubString(m, 0, llStringLength("BLIND_MUTE"));
             if(m != "0") blindmute = TRUE;
             else         blindmute = FALSE;
+        }
+        else if(startswith(m, "VOCAL_BIMBO_LIMIT"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("VOCAL_BIMBO_LIMIT"));
+            vocalbimbolimit = (integer)m;
+        }
+        else if(startswith(m, "VOCAL_BIMBO_ODDS"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("VOCAL_BIMBO_ODDS"));
+            vocalbimboodds = (float)m;
         }
         else if(m == "END")
         {
