@@ -142,7 +142,7 @@ handleSay(string message)
                     if(startswith(llToLower(messagecopy), fromCheck))
                     {
                         message += llList2String(speechfilterpartialto, l1);
-                        messagecopy = llDeleteSubString(messagecopy, 0, llStringLength(fromCheck));
+                        messagecopy = llDeleteSubString(messagecopy, 0, llStringLength(fromCheck)-1);
                         jump replacedpartial;
                     }
                 }
