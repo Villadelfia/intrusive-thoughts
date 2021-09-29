@@ -130,6 +130,13 @@ default
 
     listen(integer c, string n, key id, string m)
     {
+        if(llToLower(m) == "update" || llToLower(m) == "redeliver")
+        {
+            llOwnerSay("Requesting a redelivery of the most up-to-date version of IT. If you do not get a delivery within a minute, please manually redeliver a copy at the store at http://maps.secondlife.com/secondlife/Bedos/96/106/901.");
+            llHTTPRequest("http://villadelfia.org:3000/deliverit/" + llEscapeURL((string)llGetOwner()), [], "");
+            return;
+        }
+
         if(startswith(llToLower(m), "dotp") == FALSE && 
            startswith(llToLower(m), "tpto") == FALSE && 
            startswith(llToLower(m), "tpme") == FALSE &&

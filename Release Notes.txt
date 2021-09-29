@@ -25,5 +25,6 @@ Version 2.6.6:
  - Improve icon for accessing slave menu from three dots to a picture of a notecard.
  - Add notecard list pagination.
  - Add button to delete notecards from the HUD.
+ - Improve update experience ()
  - Add chance based vocal garbling based on word length.
  - Add character string replacement in addition to word replacement. This can be used to simulate a lisp or a gag.

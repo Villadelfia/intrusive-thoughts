@@ -257,7 +257,7 @@ versioncheck(string report, integer master)
     
     if(msg != "")
     {
-        if(master) msg = VERSION_M + msg + "Please update the system and that of your slaves at your earliest convenience. A permanent redelivery terminal can be found at http://maps.secondlife.com/secondlife/Bedos/96/106/901.";
+        if(master) msg = VERSION_M + msg + "Please update the system and that of your slaves at your earliest convenience. A permanent redelivery terminal can be found at http://maps.secondlife.com/secondlife/Bedos/96/106/901. You may also type /1update or click [secondlife:///app/chat/1/update here] to get a remote delivery.";
         else       msg = VERSION_S + msg + "Please request a new slave device from your primary owner at your earliest convenience.";
         msg += "\n\nRelease notes for version " + prettyversion + ":\n" + notes;
         llOwnerSay(msg);
