@@ -32,7 +32,8 @@
 #define S_API_MIND_SYNC         -1015
 #define S_API_MUTE_SYNC         -1016
 #define S_API_RLV_CHECK         -1017
-#define S_API_EMERGENCY         -1017
+#define S_API_EMERGENCY         -1018
+#define S_API_BLIND_LEVEL       -1019
 
 #define M_API_HUD_STARTED       -2000
 #define M_API_CONFIG_DATA       -2001
@@ -76,7 +77,7 @@
 #define VERSION_M "IT-Master v2.6"
 #define VERSION_MAJOR 2
 #define VERSION_MINOR 6
-#define VERSION_PATCH 6
+#define VERSION_PATCH 7
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG
@@ -106,6 +107,24 @@ resetother()
         item = llGetInventoryName(INVENTORY_SCRIPT, count);
         if(item != llGetScriptName()) llResetOtherScript(item);
     }
+}
+
+string formatfloat(float number, integer precision)
+{    
+    float roundingValue = llPow(10, -precision)*0.5;
+    float rounded;
+    if (number < 0) rounded = number - roundingValue;
+    else            rounded = number + roundingValue;
+ 
+    if(precision < 1) // Rounding integer value
+    {
+        integer intRounding = (integer)llPow(10, -precision);
+        rounded = (integer)rounded/intRounding*intRounding;
+        precision = -1; // Don't truncate integer value
+    }
+ 
+    string strNumber = (string)rounded;
+    return llGetSubString(strNumber, 0, llSubStringIndex(strNumber, ".") + precision);
 }
 
 integer startswith(string haystack, string needle)

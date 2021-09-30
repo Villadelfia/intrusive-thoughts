@@ -12,6 +12,7 @@ string blindmsg = "";
 list blindcmd = [];
 list unblindcmd = [];
 integer rlvtries = 0;
+float currentVision = 4.0;
 
 hardReset(string n)
 {
@@ -21,7 +22,7 @@ hardReset(string n)
     blindcmd = [];
     unblindcmd = [];
     name = n;
-    checkSetup();
+    checkSetup(0, 0);
 }
 
 handleHear(key skey, string sender, string message)
@@ -39,7 +40,7 @@ handleHear(key skey, string sender, string message)
                     blind = FALSE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, unblindmsg, NULL_KEY);
                     ownersay(skey, name + " can see again.");
-                    checkSetup();
+                    checkSetup(0, 0);
                 }
             }
         }
@@ -56,16 +57,21 @@ handleHear(key skey, string sender, string message)
                     blind = TRUE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, blindmsg, NULL_KEY);
                     ownersay(skey, name + " can no longer see.");
-                    checkSetup();
+                    checkSetup(128, currentVision);
                 }
             }
         }
     }
 }
 
-checkSetup()
+checkSetup(float from, float to)
 {
-    if(blind) llOwnerSay("@clear=setsphere,setsphere=n,,setsphere_distmin:0.25=force,setsphere_valuemin:0=force,setsphere_distmax:128=force,setsphere_tween:5=force,setsphere_distmax:4=force,setsphere_tween=force");
+    if(blind) 
+    {
+        llOwnerSay("@clear=setsphere,setsphere=n,"+
+                   "setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:" + (string)from + "=force,"+
+                   "setsphere_tween:5=force,setsphere_distmax:" + (string)to + "=force,setsphere_tween=force");
+    }
     else      llOwnerSay("@clear=setsphere");
 }
 
@@ -82,7 +88,7 @@ default
         }
         else if(num == S_API_RLV_CHECK)
         {
-            checkSetup();
+            checkSetup(128, currentVision);
         }
         else if(num == S_API_OWNERS)
         {
@@ -100,7 +106,7 @@ default
             publicaccess = (integer)str;
             groupaccess = (integer)((string)id);
         }
-        if(num == S_API_BLIND_TOGGLE)
+        else if(num == S_API_BLIND_TOGGLE)
         {
             if(blind)
             {
@@ -108,7 +114,7 @@ default
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, unblindmsg, NULL_KEY);
                 if(name != "") ownersay(id, name + " can see again.");
                 else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can see again.");
-                checkSetup();
+                checkSetup(0, 0);
             }
             else
             {
@@ -116,8 +122,15 @@ default
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, blindmsg, NULL_KEY);
                 if(name != "") ownersay(id, name + " can no longer see.");
                 else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer see.");
-                checkSetup();
+                checkSetup(128, currentVision);
             }
+        }
+        else if(num == S_API_BLIND_LEVEL)
+        {
+            checkSetup(currentVision, (float)str);
+            currentVision = (float)str;
+            if(name != "") ownersay(id, name + " has had their vision distance adjust to " + formatfloat(currentVision, 2) + " meters.");
+            else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has had their vision distance adjust to " + formatfloat(currentVision, 2) + " meters.");
         }
         else if(num == S_API_EMERGENCY)
         {

@@ -14,6 +14,7 @@ string path = "";
 string playing = "";
 integer daze = FALSE;
 integer locked = FALSE;
+float currentVision = 4.0;
 
 hardReset(string n)
 {
@@ -89,10 +90,12 @@ handlemenu(key k)
         if(llGetOwnerKey(k) == primary) ownersay(k, "[secondlife:///app/chat/1/" + prefix + "ownerinfo - Add/remove secondary owners.]");
         ownersay(k, " ");
         ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "mind mindlessness]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing]/[secondlife:///app/chat/1/" + prefix + "lock lock].");
+        ownersay(k, "- Sight radius: [secondlife:///app/chat/1/" + prefix + "b--- ---] [secondlife:///app/chat/1/" + prefix + "b-- --] [secondlife:///app/chat/1/" + prefix + "b- -] " + formatfloat(currentVision, 2) + " meters [secondlife:///app/chat/1/" + prefix + "b+ +] [secondlife:///app/chat/1/" + prefix + "b++ ++] [secondlife:///app/chat/1/" + prefix + "b+++ +++]");
         ownersay(k, " ");
         ownersay(k, "- /1" + prefix + "say <message>: Say a message.");
         ownersay(k, "- /1" + prefix + "think <message>: Think a message.");
         ownersay(k, "- /1" + prefix + "leashlength <meters>: Set the leash length.");
+        ownersay(k, "- /1" + prefix + "blindset <distance>: Directly set distance of sight radius in meters.");
     }
 
     llSetObjectName(oldn);
@@ -403,6 +406,45 @@ default
         else if(llToLower(m) == "blind")
         {
             llMessageLinked(LINK_SET, S_API_BLIND_TOGGLE, "", k);
+        }
+        else if(llToLower(m) == "b-")
+        {
+            currentVision -= 0.05;
+            if(currentVision < 0) currentVision = 0.0;
+            llMessageLinked(LINK_SET, S_API_BLIND_LEVEL, (string)currentVision, k);
+        }
+        else if(llToLower(m) == "b--")
+        {
+            currentVision -= 0.25;
+            if(currentVision < 0) currentVision = 0.0;
+            llMessageLinked(LINK_SET, S_API_BLIND_LEVEL, (string)currentVision, k);
+        }
+        else if(llToLower(m) == "b---")
+        {
+            currentVision -= 1.0;
+            if(currentVision < 0) currentVision = 0.0;
+            llMessageLinked(LINK_SET, S_API_BLIND_LEVEL, (string)currentVision, k);
+        }
+        else if(llToLower(m) == "b+")
+        {
+            currentVision += 0.05;
+            llMessageLinked(LINK_SET, S_API_BLIND_LEVEL, (string)currentVision, k);
+        }
+        else if(llToLower(m) == "b++")
+        {
+            currentVision += 0.25;
+            llMessageLinked(LINK_SET, S_API_BLIND_LEVEL, (string)currentVision, k);
+        }
+        else if(llToLower(m) == "b+++")
+        {
+            currentVision += 1.0;
+            llMessageLinked(LINK_SET, S_API_BLIND_LEVEL, (string)currentVision, k);
+        }
+        else if(startswith(m, "blindset"))
+        {
+            currentVision = (float)llDeleteSubString(m, 0, llStringLength("blindset"));
+            if(currentVision < 0) currentVision = 0.0;
+            llMessageLinked(LINK_SET, S_API_BLIND_LEVEL, (string)currentVision, k);
         }
         else if(llToLower(m) == "mute")
         {
