@@ -19,7 +19,8 @@ string lockedname = "";
 list page = [
     "B.MUTE OFF", "BIMBO OFF",  "TIMER SET",
     "B.MUTE ON",  "BIMBO SET",  "NAME",
-    "RESET",      "BIMBO ODDS", "BACK"
+    "RESET",      "BIMBO ODDS", "CUSTOM",
+    "AFKCHECK",   " ",          "BACK"
 ];
 
 settext()
@@ -288,6 +289,16 @@ default
                 menu = 4;
                 llTextBox(llGetOwner(), "Enter a new name.", S_DIALOG_CHANNEL);
             }
+            else if(m == "CUSTOM")
+            {
+                menu = 6;
+                llTextBox(llGetOwner(), "Enter a custom command.", S_DIALOG_CHANNEL);
+            }
+            else if(m == "AFKCHECK")
+            {
+                llRegionSayTo(target, MANTRA_CHANNEL, "AFKCHECK");
+                llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
+            }
             else
             {
                 llRegionSayTo(target, MANTRA_CHANNEL, "RESET");
@@ -355,6 +366,12 @@ default
                 todel = llGetInventoryName(INVENTORY_NOTECARD, (integer)m);
                 llDialog(llGetOwner(), "Are you certain you wish to delete " + todel + "?", ["YES", "NO"], S_DIALOG_CHANNEL);
             }
+        }
+        else if(menu == 6)
+        {
+            llRegionSayTo(target, MANTRA_CHANNEL, m);
+            menu = 0;
+            llDialog(llGetOwner(), "Select a command...", orderbuttons(page), S_DIALOG_CHANNEL);
         }
         else if(menu == -1)
         {

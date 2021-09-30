@@ -138,7 +138,6 @@ default
         if(!isowner(k)) return;
         if(c == MANTRA_CHANNEL)
         {
-            
             if(startswith(m, "leashto"))
             {
                 m = llDeleteSubString(m, 0, llStringLength("leashto"));

@@ -81,7 +81,7 @@ You can click on the TP button to get a menu of programmed destinations. If you 
 If you are carrying someone, of if you have eaten someone, an attempt will be made to teleport them along with you. Because of SL limitations and issues when rezzing into a new region, you must recapture them yourself at the destination.
 
 
-9. My Slave is complaining that they get spammed with "..." in chat after being programmer with an applier notecard.
+9. My Slave is complaining that they get spammed with "..." in chat after being programmed with an applier notecard.
 Disable the "..." during auditory restrictions by disabling: RLVa -> Show Filtered Chat —or— CTRL+ALT+D to enable Advanced Menu, then CTRL+ALT+SHIFT+S to go into Debug Settings. Look for [RestrainedLoveShowEllipsis] and change it to FALSE.
 
 
@@ -111,3 +111,39 @@ However, if something is broken and it doesn't involve a script crash, you can r
 Yes, for the Slave, you can type /1<prefix>@<rlv command>. So if your slave is called Hana Nova, you could type /1ha@unsit=force to stand them up.
 
 You can also type /1<prefix>plugin to get a list of installed API plugins. For the Master, this command is /1plugin.
+
+
+15. How do I get to the RLV relay menu in the Master HUD?
+If you are under active restrictions from the RLV relay, you can just click the RLV button on the HUD. If you are not under active RLV restrictions or you do not have the relay enabled, you can type /1rlvmenu to access the menu.
+
+This menu will offer several clickable links and give several options regarding filters and active restrictions.
+
+
+16. How do these RLV filters work?
+Think of RLV filters as a list of commands you want the relay to ignore. For example, the filter "unsit" will prevent any toy from preventing you from standing up. In addition to just typing the name of the command, there are a few wildcards: "+" will match one or more characters, and "*" will match zero or more characters.
+
+Let's look at a good example of wildcards. Imagine you wanted to avoid being affected by any kind of IM restrictions. If you look at the list of RLV commands, you'll see there are a bunch of commands like "sendim", "startim", "recvim", "sendim_sec" and so on, so what you could do is write this filter: "+im*=". This means "one ore more characters, followed by im, followed by zero or more characters, followed by =".
+
+One important thing to note is that the filters can give false positives, for example if you're made to change to a group that includes the letters "im", that would also be prevented. To avoid this, it would be best to write four filters instead: "+im:+=", "+im=", "+im_sec:+=" and "+im_sec=".
+
+For a comprehensive list of all the RLV commands in use, you can view the wiki here: http://wiki.secondlife.com/wiki/LSL_Protocol/RestrainedLoveAPI
+
+
+17. What are all these options like "B.MUTE" in the options menu in the HUD?
+B.MUTE OFF/B.MUTE ON: Enable/disable blind muting as described in the applier template. This means that when you mute your slave, they will not be able to tell the difference between their text when muted and when not muted.
+
+RESET: Reset your slave's programming. It remove any settings as applied via a notecard.
+
+BIMBO OFF: Disabled auditory bimbofication.
+
+BIMBO SET: Set the word limit on auditory bimbofication.
+
+BIMBO ODDS: Set the chance on auditory bimbofication.
+
+TIMER SET: Change the timer for the phrases.
+
+NAME: Change your slave's name.
+
+CUSTOM: Enter a custom command, this can be used to send just one line from a notecard if you want to do detailed RP. For example to add an auditory filter, you could send the command "AUDITORY_FILTER from=to".
+
+AFKCHECK: Sends a message to the selected slave and if they do not respond in time, you will get a message back saying they are AFK. They have 30 seconds to respond.

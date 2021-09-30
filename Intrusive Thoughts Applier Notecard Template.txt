@@ -85,6 +85,27 @@ alice=1
 ⚠ERROR⚠: Unauthorized vocal reference to authority detected. Vocal pipeline discarded.
 ⚠ERROR⚠: Unauthorized vocal reference to unit detected. Vocal pipeline discarded.
 
+# What follows is a list of phrases to be required in the submissive's speech. When the submissive
+# does not include any of these, the entire message will be replaced by the message defined in
+# SPEECH_REQUIREDLIST_TRIPPED. If that is not defined, the message will be dropped silently.
+█SPEECH_REQUIREDLIST_ENTRY
+mistress
+
+# This phrase will be said when no phrase from the REQUIREDLIST was included in the spoken message.
+# If left undefined, the message will be dropped silently.
+█SPEECH_REQUIREDLIST_TRIPPED
+/me forgot to use the magic word...
+
+# What follows is a list of letter sequences to be replaced in the submissive's speech, in the format
+# original=replacement. Unlike SPEECH_FILTER below, this list will be processed on a character by 
+# character basis, and they will be executed from top to bottom. This means that more specific 
+# filters that start with the same letters as other filters should be listed first. This is ran BEFORE the
+# SPEECH_FILTER filtering.
+█SPEECH_FILTER_PARTIAL
+sss=thhh
+ss=thh
+s=th
+
 # What follows is a list of words to be replaced in the submissive's speech, in the format
 # original=replacement. Note that original must be a single word. If no filters are given,
 # no speech will be filtered. Note that the blacklist operates before the speech filter.
@@ -151,6 +172,18 @@ Suddenly, you feel your vocal chords re-attaching to your neural interface. You 
 # instructed to hand to people.
 █DIALECT
 0
+
+# Maximum amount of letters in a spoken word before lit may be garbled.
+# The feature can be disabled by changing this to 3 or lower. Note that words replaced by the
+# vocal filter will never be filtered by the vocal bimbo filter.
+█VOCAL_BIMBO_LIMIT
+10
+
+# Odds of a word not getting shuffled when the vocal bimbo limit is tripped. 0.80 means 80% 
+# chance the word is kept intact when it is is too long. Setting this to 1.0 will disable the 
+# vocal bimbo filter.
+█VOCAL_BIMBO_ODDS
+0.80
 
 # This is the percent chance from 0.0 (not at all) to 1.0 (always) that a RANDOM_PREFIX_WORD will be
 # inserted before any said word. This happens AFTER any filtering, so these will even be inserted

@@ -8,6 +8,8 @@ string name = "";
 list speechblacklistfrom = [];
 list speechblacklistto = [];
 list speechblacklisttripped = [];
+list speechrequiredlist = [];
+string speechrequiredlisttripped = "";
 list speechfilterfrom = [];
 list speechfilterto = [];
 list speechfilterpartialfrom = [];
@@ -30,6 +32,8 @@ hardReset(string n)
     speechblacklistfrom = [];
     speechblacklistto = [];
     speechblacklisttripped = [];
+    speechrequiredlist = [];
+    speechrequiredlisttripped = "";
     speechfilterfrom = [];
     speechfilterto = [];
     speechfilterpartialfrom = [];
@@ -111,6 +115,16 @@ handleSay(string message)
             jump blacklisttripped;
         }
     }
+
+    // In case of NO requiredlisted word, replace the message with the replacement message. Rest of the process is skipped.
+    l1 = llGetListLength(speechrequiredlist)-1;
+    for(;l1 >= 0; --l1)
+    {
+        if(contains(llToLower(message), llList2String(speechrequiredlist, l1))) jump maycontinue;
+    }
+    message = speechrequiredlisttripped;
+    jump blacklisttripped;
+    @maycontinue;
 
     // URLs should never be filtered, enclose them in [[[ and ]]]. This is checked for later.
     // Partial filters are also applied here.
@@ -385,6 +399,16 @@ default
         {
             m = llDeleteSubString(m, 0, llStringLength("SPEECH_BLACKLIST_TRIPPED"));
             speechblacklisttripped += [m];
+        }
+        else if(startswith(m, "SPEECH_REQUIREDLIST_ENTRY"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("SPEECH_REQUIREDLIST_ENTRY"));
+            speechrequiredlist += [llToLower(m)];
+        }
+        else if(startswith(m, "SPEECH_REQUIREDLIST_TRIPPED"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("SPEECH_REQUIREDLIST_TRIPPED"));
+            speechrequiredlisttripped = m;
         }
         else if(startswith(m, "SPEECH_FILTER_PARTIAL"))
         {

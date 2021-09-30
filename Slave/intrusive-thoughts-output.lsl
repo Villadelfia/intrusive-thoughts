@@ -12,6 +12,7 @@ string name;
 float randomprefixchance = 0.0;
 list randomprefixwords = [];
 key focustarget = NULL_KEY;
+float currentFocus = 2.0;
 
 hardReset(string n)
 {
@@ -255,6 +256,12 @@ default
         {
             hardReset(name);
         }
+        else if(num == S_API_FOCUS_LEVEL)
+        {
+            currentFocus = (float)str;
+            if(name != "") ownersay(id, name + " has had their focus distance adjusted to " + formatfloat(currentFocus, 2) + " meters.");
+            else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has had their focus distance adjusted to " + formatfloat(currentFocus, 2) + " meters.");
+        }
 
         if(num == S_API_SELF_DESC && str != "")     handleSelfDescribe(str);
         else if(num == S_API_FOCUS_TOGGLE)          focusToggle(id);
@@ -282,7 +289,20 @@ default
         vector pos = llList2Vector(llGetObjectDetails(focustarget, [OBJECT_POS]), 0);
         if(pos != ZERO_VECTOR)
         {
-            llOwnerSay("@setcam_focus:" + (string)focustarget + ";2;=force");
+            list data;
+            list uuids = llGetAttachedList(focustarget);
+            integer n = llGetListLength(uuids);
+            while(~--n)
+            {
+                data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_CREATOR, OBJECT_DESC]);
+                if(startswith((string)data[0], "Intrusive Thoughts Focus Target") && (key)data[1] == llGetCreator())
+                {
+                    llOwnerSay("@setcam_focus:" + (string)llList2Key(uuids, n) + ";" + (string)currentFocus + ";" + (string)data[2] + "=force");
+                    jump skipold;
+                }
+            }
+            llOwnerSay("@setcam_focus:" + (string)focustarget + ";" + (string)currentFocus + ";=force");
+            @skipold;
             llSetTimerEvent(0.1);
         }
         else

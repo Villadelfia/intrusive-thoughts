@@ -1,83 +1,88 @@
-#define MANTRA_CHANNEL    -2033649842
-#define PING_CHANNEL      -1766324201
-#define S_DIALOG_CHANNEL  -1246653822
-#define O_DIALOG_CHANNEL  -1438864911
-#define RLV_CHANNEL        1324689755
-#define VOICE_CHANNEL      1997346185
-#define HUD_SPEAK_CHANNEL  2003469558
-#define RLV_CHECK_CHANNEL  2033461987
-#define GAZE_CHAT_CHANNEL  2102234356
-#define SPEAK_CHANNEL       166845635
-#define LEASH_CHANNEL       166845636
-#define HOME_HUD_CHANNEL    166845637
-#define RLVRC             -1812221819
-#define COMMAND_CHANNEL             1
-#define BALL_CHANNEL                8
+#define MANTRA_CHANNEL      -2033649842
+#define PING_CHANNEL        -1766324201
+#define S_DIALOG_CHANNEL    -1246653822
+#define O_DIALOG_CHANNEL    -1438864911
+#define RLV_CHANNEL          1324689755
+#define VOICE_CHANNEL        1997346185
+#define HUD_SPEAK_CHANNEL    2003469558
+#define RLV_CHECK_CHANNEL    2033461987
+#define GAZE_CHAT_CHANNEL    2102234356
+#define SPEAK_CHANNEL         166845635
+#define LEASH_CHANNEL         166845636
+#define HOME_HUD_CHANNEL      166845637
+#define RLVRC               -1812221819
+#define COMMAND_CHANNEL               1
+#define BALL_CHANNEL                  8
 
-#define S_API_HARD_RESET        -1000
-#define S_API_SELF_DESC         -1001
-#define S_API_SELF_SAY          -1002
-#define S_API_SAY               -1003
-#define S_API_ONLY_OTHERS_SAY   -1004
-#define S_API_BLIND_TOGGLE      -1005
-#define S_API_DEAF_TOGGLE       -1006
-#define S_API_MUTE_TOGGLE       -1007
-#define S_API_FOCUS_TOGGLE      -1008
-#define S_API_DISABLE           -1009
-#define S_API_ENABLE            -1010
-#define S_API_STARTED           -1011
-#define S_API_OWNERS            -1012
-#define S_API_OTHER_ACCESS      -1013
-#define S_API_MIND_TOGGLE       -1014
-#define S_API_MIND_SYNC         -1015
-#define S_API_MUTE_SYNC         -1016
-#define S_API_RLV_CHECK         -1017
-#define S_API_EMERGENCY         -1018
-#define S_API_BLIND_LEVEL       -1019
+#define S_API_HARD_RESET          -1000
+#define S_API_SELF_DESC           -1001
+#define S_API_SELF_SAY            -1002
+#define S_API_SAY                 -1003
+#define S_API_ONLY_OTHERS_SAY     -1004
+#define S_API_BLIND_TOGGLE        -1005
+#define S_API_DEAF_TOGGLE         -1006
+#define S_API_MUTE_TOGGLE         -1007
+#define S_API_FOCUS_TOGGLE        -1008
+#define S_API_DISABLE             -1009
+#define S_API_ENABLE              -1010
+#define S_API_STARTED             -1011
+#define S_API_OWNERS              -1012
+#define S_API_OTHER_ACCESS        -1013
+#define S_API_MIND_TOGGLE         -1014
+#define S_API_MIND_SYNC           -1015
+#define S_API_MUTE_SYNC           -1016
+#define S_API_RLV_CHECK           -1017
+#define S_API_EMERGENCY           -1018
+#define S_API_BLIND_LEVEL         -1019
+#define S_API_FOCUS_LEVEL         -1020
 
-#define M_API_HUD_STARTED       -2000
-#define M_API_CONFIG_DATA       -2001
-#define M_API_CONFIG_DONE       -2002
-#define M_API_CAM_AVATAR        -2003
-#define M_API_CAM_OBJECT        -2004
-#define M_API_LOCK              -2005
-#define M_API_BUTTON_PRESSED    -2006
-#define M_API_SET_FILTER        -2007
-#define M_API_DOTP              -2008
-#define M_API_TPOK_O            -2009
-#define M_API_TPOK_V            -2010
-#define M_API_STATUS_MESSAGE    -2011
-#define M_API_STATUS_DONE       -2012
+#define M_API_HUD_STARTED         -2000
+#define M_API_CONFIG_DATA         -2001
+#define M_API_CONFIG_DONE         -2002
+#define M_API_CAM_AVATAR          -2003
+#define M_API_CAM_OBJECT          -2004
+#define M_API_LOCK                -2005
+#define M_API_BUTTON_PRESSED      -2006
+#define M_API_SET_FILTER          -2007
+#define M_API_DOTP                -2008
+#define M_API_TPOK_O              -2009
+#define M_API_TPOK_V              -2010
+#define M_API_STATUS_MESSAGE      -2011
+#define M_API_STATUS_DONE         -2012
 
-#define RLV_API_SET_SRC         -3000
-#define RLV_API_CLR_SRC         -3001
-#define RLV_API_HANDLE_CMD      -3002
-#define RLV_API_SAFEWORD        -3003
-#define RLV_API_HANDOVER        -3004
+#define RLV_API_SET_SRC           -3000
+#define RLV_API_CLR_SRC           -3001
+#define RLV_API_HANDLE_CMD        -3002
+#define RLV_API_SAFEWORD          -3003
+#define RLV_API_HANDOVER          -3004
+#define RLV_API_GET_RESTRICTIONS  -3005
+#define RLV_API_RESP_RESTRICTIONS -3006
+#define RLV_API_SET_FILTERS       -3007
+#define RLV_API_HANDLE_CMD_QUIET  -3008
 
-#define X_API_FILL_FACTOR       -4000
+#define X_API_FILL_FACTOR         -4000
 
-#define IT_PLUGIN_REGISTER      -8000
-#define IT_PLUGIN_RESPONSE      -8001
-#define IT_PLUGIN_OWNERSAY      -8002
-#define IT_PLUGIN_INFOREQUEST   -8003
-#define IT_PLUGIN_COMMAND       -8004
-#define IT_PLUGIN_ALLOWSLAVE    -8005
-#define IT_PLUGIN_ACK           -8006
-#define IT_PLUGIN_LOCK          -8007
-#define IT_PLUGIN_OBJECT        -8008
-#define IT_PLUGIN_DESCRIPTION   -8009
+#define IT_PLUGIN_REGISTER        -8000
+#define IT_PLUGIN_RESPONSE        -8001
+#define IT_PLUGIN_OWNERSAY        -8002
+#define IT_PLUGIN_INFOREQUEST     -8003
+#define IT_PLUGIN_COMMAND         -8004
+#define IT_PLUGIN_ALLOWSLAVE      -8005
+#define IT_PLUGIN_ACK             -8006
+#define IT_PLUGIN_LOCK            -8007
+#define IT_PLUGIN_OBJECT          -8008
+#define IT_PLUGIN_DESCRIPTION     -8009
 
 #define IT_CREATOR              "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9"
 
 //#define DEBUG
 //#define RETAIL_MODE
 
-#define VERSION_S "IT-Slave v2.6"
-#define VERSION_M "IT-Master v2.6"
+#define VERSION_S "IT-Slave v2.7"
+#define VERSION_M "IT-Master v2.7"
 #define VERSION_MAJOR 2
-#define VERSION_MINOR 6
-#define VERSION_PATCH 7
+#define VERSION_MINOR 7
+#define VERSION_PATCH 0
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG

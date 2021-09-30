@@ -7,6 +7,7 @@ key id = NULL_KEY;
 string objectname;
 key sitid = NULL_KEY;
 list restrictions = [];
+list filters = [];
 
 integer handlinghandover = FALSE;
 
@@ -50,7 +51,80 @@ dohandover(key target, integer keep)
     llSetTimerEvent(30.0);
 }
 
-handlerlvrc(string msg)
+integer isAllowed(string c)
+{
+    // Force to lower, remove the @, and remove spaces.
+    if(llGetSubString(c, 0, 0) == "@") c = llDeleteSubString(c, 0, 0);
+    c = llToLower(c);
+    c = llDumpList2String(llParseStringKeepNulls(c, [" "], []), "");
+
+    // Try all the filters for a match.
+    integer i;
+    integer j;
+    integer fc = llGetListLength(filters);
+    for(i = 0; i < fc; ++i)
+    {
+        // Working copy of command.
+        string cmd = c;
+
+        // Get the filter, split into tokens.
+        string testing = llList2String(filters, i);
+        list filter = llParseString2List(testing, [], ["+", "*"]);
+        integer fl = llGetListLength(filter);
+        integer skipping = FALSE;
+
+        // Parse through the tokens.
+        for(j = 0; j < fl; ++j)
+        {
+            string token = llList2String(filter, j);
+
+            // If the token is "*" or "+", set skipping. If "+", eat a letter.
+            // Either way, skip to the acceptance check due to exhausted filter.
+            // In the case of a malformed filter with a +*, *+, ++, or ** sequence, it will not double trigger.
+            // It will instead warn the user of a malformed filter and deny the command.
+            if(token == "*" || token == "+")
+            {
+                if(skipping)
+                {
+                    llOwnerSay("Error: RLV filter \"" + testing + "\" is malformed due to consecutive wildcards. Denying all RLV commands until remedied.");
+                    return FALSE;
+                }
+                skipping = TRUE;
+                if(token == "+") cmd = llDeleteSubString(cmd, 0, 0);
+                jump skiploop;
+            }
+
+            // If skipping flag is set, eat characters until the command starts with the token.
+            while(skipping && llStringLength(cmd) != 0 && startswith(cmd, token) == FALSE) cmd = llDeleteSubString(cmd, 0, 0);
+
+            // Check if cmd starts with token, if it does not, this means this filter does not match.
+            // If it does, eat away the filter from the command string and unset skipping.
+            if(startswith(cmd, token) == FALSE)
+            {
+                jump nextfilter;
+            }
+            else
+            {
+                cmd = llDeleteSubString(cmd, 0, llStringLength(token)-1);
+                skipping = FALSE;
+            }
+
+            // If we are at the end of the filter, and have not rejected the filter, that means it must be accepted.
+            @skiploop;
+            if(j == fl-1) 
+            {
+                llOwnerSay("Command \"" + c + "\" denied due to filter \"" + testing + "\".");
+                return FALSE;
+            }
+        }
+        @nextfilter;
+    }
+
+    // No filter matched. Allow the command.
+    return TRUE;
+}
+
+handlerlvrc(string msg, integer echo)
 {
     list args = llParseStringKeepNulls(msg,[","],[]);
     if(llGetListLength(args)!=3) return;
@@ -73,10 +147,10 @@ handlerlvrc(string msg)
         command = llList2String(commands,i);
         if (llGetSubString(command,0,0)=="@") 
         {
-            if(command != "@detach=y" && command != "@permissive=y" && command != "@clear")
+            if(command != "@detach=y" && command != "@permissive=y" && command != "@clear" && isAllowed(command) == TRUE)
             {
                 llOwnerSay(command);
-                llRegionSayTo(id, RLVRC, ident+","+(string)id+","+command+",ok");
+                if(echo) llRegionSayTo(id, RLVRC, ident+","+(string)id+","+command+",ok");
                 list subargs = llParseString2List(command, ["="], []);
                 string behav = llGetSubString(llList2String(subargs, 0), 1, -1);
                 integer index = llListFindList(restrictions, [behav]);
@@ -95,20 +169,20 @@ handlerlvrc(string msg)
         }
         else if(command == "!pong")
         {
-            llOwnerSay("@sit:"+(string)sitid+"=force,"+llDumpList2String(restrictions, "=n,")+"=n");
+            if(echo) llOwnerSay("@sit:"+(string)sitid+"=force,"+llDumpList2String(restrictions, "=n,")+"=n");
             llSetTimerEvent(0);
         }
         else if(command == "!version")
         {
-            llRegionSayTo(id, RLVRC, ident+","+(string)id+",!version,1100");
+            if(echo) llRegionSayTo(id, RLVRC, ident+","+(string)id+",!version,1100");
         }
         else if(command == "!implversion")
         {
-            llRegionSayTo(id, RLVRC, ident+","+(string)id+",!implversion,ORG=0004/Hana's Relay");
+            if(echo) llRegionSayTo(id, RLVRC, ident+","+(string)id+",!implversion,ORG=0004/Hana's Relay");
         }
         else if(command == "!x-orgversions")
         {
-            llRegionSayTo(id, RLVRC, ident+","+(string)id+",!x-orgversions,ORG=0004/handover=001");
+            if(echo) llRegionSayTo(id, RLVRC, ident+","+(string)id+",!x-orgversions,ORG=0004/handover=001");
         }
         else if(startswith(command, "!x-handover"))
         {
@@ -122,7 +196,7 @@ handlerlvrc(string msg)
         }
         else
         {
-            llRegionSayTo(id, RLVRC, ident+","+(string)id+","+command+",ko");
+            if(echo) llRegionSayTo(id, RLVRC, ident+","+(string)id+","+command+",ko");
         }
     }
     if(restrictions == [])
@@ -154,9 +228,24 @@ default
 
     link_message(integer sender_num, integer num, string str, key k)
     {
-        if(num == RLV_API_HANDLE_CMD && (string)k == (string)rlvid && id != NULL_KEY)  
+        if(num == RLV_API_HANDLE_CMD && (string)k == (string)rlvid && id != NULL_KEY)            handlerlvrc(str, TRUE);
+        else if(num == RLV_API_HANDLE_CMD_QUIET && (string)k == (string)rlvid && id != NULL_KEY) handlerlvrc(str, FALSE);
+        else if(num == RLV_API_GET_RESTRICTIONS)
         {
-            handlerlvrc(str);
+            if(id)
+            {
+                llMessageLinked(LINK_SET, RLV_API_RESP_RESTRICTIONS, (string)rlvid, (key)(llDumpList2String(restrictions, "\n")));
+            }
+            else
+            {
+                llMessageLinked(LINK_SET, RLV_API_RESP_RESTRICTIONS, (string)rlvid, (key)"");
+            }
+        }
+        else if(num == RLV_API_SET_FILTERS)
+        {                    
+            str = llToLower(str);
+            str = llDumpList2String(llParseStringKeepNulls(str, [" "], []), "");
+            filters = llParseString2List(str, ["\n"], []);
         }
         else if(num == RLV_API_SET_SRC && str == (string)rlvid)                        
         {

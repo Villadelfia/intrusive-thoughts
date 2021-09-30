@@ -15,6 +15,7 @@ string playing = "";
 integer daze = FALSE;
 integer locked = FALSE;
 float currentVision = 4.0;
+float currentFocus = 2.0;
 
 hardReset(string n)
 {
@@ -91,11 +92,13 @@ handlemenu(key k)
         ownersay(k, " ");
         ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "mind mindlessness]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing]/[secondlife:///app/chat/1/" + prefix + "lock lock].");
         ownersay(k, "- Sight radius: [secondlife:///app/chat/1/" + prefix + "b--- ---] [secondlife:///app/chat/1/" + prefix + "b-- --] [secondlife:///app/chat/1/" + prefix + "b- -] " + formatfloat(currentVision, 2) + " meters [secondlife:///app/chat/1/" + prefix + "b+ +] [secondlife:///app/chat/1/" + prefix + "b++ ++] [secondlife:///app/chat/1/" + prefix + "b+++ +++]");
+        ownersay(k, "- Focus distance: [secondlife:///app/chat/1/" + prefix + "f--- ---] [secondlife:///app/chat/1/" + prefix + "f-- --] [secondlife:///app/chat/1/" + prefix + "f- -] " + formatfloat(currentFocus, 2) + " meters [secondlife:///app/chat/1/" + prefix + "f+ +] [secondlife:///app/chat/1/" + prefix + "f++ ++] [secondlife:///app/chat/1/" + prefix + "f+++ +++]");
         ownersay(k, " ");
         ownersay(k, "- /1" + prefix + "say <message>: Say a message.");
         ownersay(k, "- /1" + prefix + "think <message>: Think a message.");
         ownersay(k, "- /1" + prefix + "leashlength <meters>: Set the leash length.");
         ownersay(k, "- /1" + prefix + "blindset <distance>: Directly set distance of sight radius in meters.");
+        ownersay(k, "- /1" + prefix + "focusset <distance>: Directly set focus distance in meters.");
     }
 
     llSetObjectName(oldn);
@@ -472,6 +475,45 @@ default
         else if(llToLower(m) == "focus")
         {
             llMessageLinked(LINK_SET, S_API_FOCUS_TOGGLE, "", k);
+        }
+        else if(llToLower(m) == "f-")
+        {
+            currentFocus -= 0.05;
+            if(currentFocus < 0) currentFocus = 0.0;
+            llMessageLinked(LINK_SET, S_API_FOCUS_LEVEL, (string)currentFocus, k);
+        }
+        else if(llToLower(m) == "f--")
+        {
+            currentFocus -= 0.25;
+            if(currentFocus < 0) currentFocus = 0.0;
+            llMessageLinked(LINK_SET, S_API_FOCUS_LEVEL, (string)currentFocus, k);
+        }
+        else if(llToLower(m) == "f---")
+        {
+            currentFocus -= 1.0;
+            if(currentFocus < 0) currentFocus = 0.0;
+            llMessageLinked(LINK_SET, S_API_FOCUS_LEVEL, (string)currentFocus, k);
+        }
+        else if(llToLower(m) == "f+")
+        {
+            currentFocus += 0.05;
+            llMessageLinked(LINK_SET, S_API_FOCUS_LEVEL, (string)currentFocus, k);
+        }
+        else if(llToLower(m) == "f++")
+        {
+            currentFocus += 0.25;
+            llMessageLinked(LINK_SET, S_API_FOCUS_LEVEL, (string)currentFocus, k);
+        }
+        else if(llToLower(m) == "f+++")
+        {
+            currentFocus += 1.0;
+            llMessageLinked(LINK_SET, S_API_FOCUS_LEVEL, (string)currentFocus, k);
+        }
+        else if(startswith(m, "focusset"))
+        {
+            currentFocus = (float)llDeleteSubString(m, 0, llStringLength("focusset"));
+            if(currentFocus < 0) currentFocus = 0.0;
+            llMessageLinked(LINK_SET, S_API_FOCUS_LEVEL, (string)currentFocus, k);
         }
         else if(startswith(llToLower(m), "onball"))
         {

@@ -29,6 +29,11 @@ Version 2.6.6:
  - Add chance based vocal garbling based on word length.
  - Add character string replacement in addition to word replacement. This can be used to simulate a lisp or a gag.
 
-Version 2.6.7:
+Version 2.7.0:
  - Fix non-functional emergency reset in some cases.
  - Add adjustable blindness to blind toggle.
+ - Add the ability to trigger an AFK check on your slaves.
+ - Add option to send advanced commands via Master HUD.
+ - Wearable focus target to make the slave focus on a specific piece of your avatar.
+ - Adjustable focus distance.
+ - Master HUD selective RLV relay and filtering. Type /1rlvmenu to learn more!

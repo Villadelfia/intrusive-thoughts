@@ -4,6 +4,9 @@ key owner;
 list rlvclients = [];
 list blacklist = [];
 list whitelist = [];
+list filters = [];
+integer responses = 0;
+list restrictions = [];
 key handlingk = NULL_KEY;
 string handlingm;
 integer handlingi;
@@ -41,6 +44,14 @@ buildclients()
     }
     while(llGetListLength(rlvclients) < handlers) rlvclients += [(key)NULL_KEY];
     while(llGetListLength(rlvclients) > handlers) rlvclients = llDeleteSubList(rlvclients, -1, -1);
+    llMessageLinked(LINK_SET, RLV_API_SET_FILTERS, llDumpList2String(filters, "\n"), (key)"");
+}
+
+integer hasrestrictions()
+{
+    integer n = llGetListLength(rlvclients);
+    while(~--n) if(llList2Key(rlvclients, n) != NULL_KEY) return TRUE;
+    return FALSE;
 }
 
 checktp()
@@ -50,6 +61,77 @@ checktp()
         region = llGetRegionName();
         nridisable = FALSE;
     }
+}
+
+givemenu()
+{
+    llOwnerSay("RLV relay options:");
+    
+    // General options.
+    llOwnerSay(" ");
+    if(enabled)
+    {
+        llOwnerSay("Your RLV relay is currently enabled. Click [secondlife:///app/chat/1/rlvoff here] to turn off your RLV relay, clearing any and all restrictions.");
+    }
+    else
+    {
+        llOwnerSay("Your RLV relay is currently disabled. Click [secondlife:///app/chat/1/rlvon here] to turn on your RLV relay.");
+    }
+    
+    // Commands.
+    llOwnerSay(" ");
+    llOwnerSay("/1rlvrun <command> — Run an RLV command on yourself. This will bypass any filters you have set up.");
+    llOwnerSay("[secondlife:///app/chat/1/rlvmenu /1rlvmenu] — Show this menu.");
+
+    // Restrictions.
+    integer dev = -1;
+    integer i;
+    integer l = llGetListLength(restrictions);
+
+    llOwnerSay(" ");
+    llOwnerSay("Active restrictions:");
+    if(restrictions != [])
+    {
+
+        for(i = 0; i < l; i += 3)
+        {
+            integer newdev = (integer)llList2String(restrictions, i);
+            string oname = llList2String(restrictions, i+1);
+            string res = llList2String(restrictions, i+2);
+            if(newdev != dev)
+            {
+                dev = newdev;
+                llOwnerSay("Device " + (string)(dev) + ": " + oname);
+            }
+            llOwnerSay(" - [secondlife:///app/chat/1/relaycmd%20" + (string)dev + "%20" + llEscapeURL(res + "=y") + " " + res + "]");
+        }
+    
+        llOwnerSay(" ");
+        llOwnerSay("Click any of the above links to remove that restriction.");
+    }
+    else
+    {
+        llOwnerSay(" - None");
+    }
+
+    // Filters.
+    llOwnerSay(" ");
+    llOwnerSay("RLV filters:");
+    if(filters != [])
+    {
+        l = llGetListLength(filters);
+        for(i = 0; i < l; ++i) llOwnerSay(" - [secondlife:///app/chat/1/filterdel%20" + (string)i + " " + llList2String(filters, i) + "]");
+        
+        llOwnerSay(" ");
+        llOwnerSay("Click any of the above links to remove that filter.");
+    }
+    else
+    {
+        llOwnerSay(" - None");
+        llOwnerSay(" ");
+    }
+    
+    llOwnerSay("Type \"/1filteradd <filter>\" to add an RLV command filter.");
 }
 
 default
@@ -65,12 +147,81 @@ default
         owner = llGetOwner();
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(0, "", llGetOwner(), "");
+        llListen(1, "", llGetOwner(), "");
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         buildclients();
     }
 
     listen(integer c, string n, key id, string m)
     {
+        if(c == 1)
+        {
+            if(startswith(llToLower(m), "filteradd"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("filteradd"));
+                if(llGetSubString(m, 0, 0) == "@") m = llDeleteSubString(m, 0, 0);
+                m = llToLower(m);
+                m = llDumpList2String(llParseStringKeepNulls(m, [" "], []), "");
+                llOwnerSay("Adding RLV command filter \"" + m + "\".");
+                filters += [m];
+                llMessageLinked(LINK_SET, RLV_API_SET_FILTERS, llDumpList2String(filters, "\n"), (key)"");
+            }
+            else if(startswith(llToLower(m), "filterdel"))
+            {
+                integer which = (integer)llDeleteSubString(m, 0, llStringLength("filterdel"));
+                llOwnerSay("Removing RLV command filter \"" + llList2String(filters, which) + "\".");
+                filters = llDeleteSubList(filters, which, which);
+                llMessageLinked(LINK_SET, RLV_API_SET_FILTERS, llDumpList2String(filters, "\n"), (key)"");
+            }
+            else if(startswith(llToLower(m), "rlvrun"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("rlvrun"));
+                if(!startswith(m, "@")) m = "@" + m;
+                llOwnerSay(m);
+            }
+            else if(llToLower(m) == "rlvmenu")
+            {
+                responses = 0;
+                restrictions = [];
+                llMessageLinked(LINK_SET, RLV_API_GET_RESTRICTIONS, "", (key)"");
+            }  
+            else if(llToLower(m) == "rlvoff")
+            {
+                if(enabled)
+                {
+                    enabled = FALSE;
+                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
+                    llOwnerSay("Your RLV relay has been turned off. In addition, you have been freed from all RLV devices that may have had ongoing restrictions on you.");
+                    llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
+                }
+            }  
+            else if(llToLower(m) == "rlvon")
+            {
+                if(!enabled)
+                {
+                    enabled = TRUE;
+                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
+                    llOwnerSay("Your RLV relay has been turned on.");
+                    llOwnerSay("@permissive=n,touchme=add,sendchannel:1=add,sendchannel:8=add");
+                }
+            }           
+
+            if(hasrestrictions() == FALSE || restrictions == []) return;
+            if(nridisable) return;
+            if(!enabled) return;            
+            
+            if(startswith(llToLower(m), "relaycmd"))
+            {
+                list args = llParseString2List(llDeleteSubString(m, 0, llStringLength("relaycmd")), [" "], []);
+                integer relayid = (integer)llList2String(args, 0);
+                string cmd = llList2String(args, 1);
+                llOwnerSay("Disabling restriction \"" + llDeleteSubString(cmd, -2, -1) + "\" on device " + (string)relayid + ".");
+                llMessageLinked(LINK_SET, RLV_API_HANDLE_CMD_QUIET, "override," + (string)llGetOwner() + ",@" + cmd, (key)((string)relayid));
+            }
+
+            return;
+        }
+
         if(nridisable) return;
         if(!enabled) return;
         if(c == RLVRC)
@@ -178,20 +329,13 @@ default
         }
         else if(c == 0)
         {
-            integer hasrestrictions = FALSE;
-            integer n = llGetListLength(rlvclients);
-            while(~--n)
-            {
-                if(llList2Key(rlvclients, n) != NULL_KEY) hasrestrictions = TRUE;
-                if(hasrestrictions) jump skipcheck;
-            }
-            @skipcheck;
-            if(contains(llToLower(m), "((red))") && hasrestrictions && enabled)
+            integer hr = hasrestrictions();
+            if(contains(llToLower(m), "((red))") && hr && enabled)
             {
                 llOwnerSay("You've safeworded. You're free from all RLV devices that grabbed you.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
             }
-            else if(contains(llToLower(m), "((forcered))") && hasrestrictions && enabled)
+            else if(contains(llToLower(m), "((forcered))") && hr && enabled)
             {
                 llOwnerSay("You've used the hard safeword. Freeing you and detaching.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
@@ -214,18 +358,50 @@ default
             if(rlvclients == []) return;
             if(str == "relay")
             {
-                enabled = !enabled;
-                llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
-                if(enabled)
+                if(enabled == FALSE)
                 {
+                    enabled = TRUE;
+                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
                     llOwnerSay("Your RLV relay has been turned on.");
                     llOwnerSay("@permissive=n,touchme=add,sendchannel:1=add,sendchannel:8=add");
-                }
+                }                
                 else
                 {
-                    llOwnerSay("Your RLV relay has been turned off. In addition, you have been freed from all RLV devices that may have had ongoing restrictions on you.");
-                    llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
+                    if(hasrestrictions())
+                    {
+                        responses = 0;
+                        restrictions = [];
+                        llMessageLinked(LINK_SET, RLV_API_GET_RESTRICTIONS, "", (key)"");
+                    }
+                    else
+                    {
+                        enabled = FALSE;
+                        llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
+                        llOwnerSay("Your RLV relay has been turned off. In addition, you have been freed from all RLV devices that may have had ongoing restrictions on you.");
+                        llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
+                    }
                 }
+            }
+        }
+        else if(num == RLV_API_RESP_RESTRICTIONS)
+        {
+            responses++;
+            if((string)k != "")
+            {
+                integer hid = (integer)str;
+                string oname = llList2String(llGetObjectDetails(llList2Key(rlvclients, hid), [OBJECT_NAME]), 0);
+                list rests = llParseString2List((string)k, ["\n"], []);
+                integer i;
+                integer l = llGetListLength(rests);
+                for(i = 0; i < l; ++i)
+                {
+                    restrictions += [str, oname, llList2String(rests, i)];
+                }
+            }
+            if(responses == llGetListLength(rlvclients))
+            {
+                restrictions = llListSort(restrictions, 3, TRUE);
+                givemenu();
             }
         }
         else if(num == M_API_CONFIG_DONE)

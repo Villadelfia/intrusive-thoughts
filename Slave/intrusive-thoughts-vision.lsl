@@ -129,8 +129,8 @@ default
         {
             checkSetup(currentVision, (float)str);
             currentVision = (float)str;
-            if(name != "") ownersay(id, name + " has had their vision distance adjust to " + formatfloat(currentVision, 2) + " meters.");
-            else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has had their vision distance adjust to " + formatfloat(currentVision, 2) + " meters.");
+            if(name != "") ownersay(id, name + " has had their vision distance adjusted to " + formatfloat(currentVision, 2) + " meters.");
+            else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has had their vision distance adjusted to " + formatfloat(currentVision, 2) + " meters.");
         }
         else if(num == S_API_EMERGENCY)
         {

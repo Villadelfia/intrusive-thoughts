@@ -563,6 +563,11 @@ default
 
     http_response(key id, integer status, list metadata, string body)
     {
+        if(id == http)
+        {
+            if(status == 200) versioncheck(body, TRUE);
+            else              llOwnerSay("Cannot check for updates: Connectivity issue between SL and the external server.");
+        }
         if(id == http && status == 200) versioncheck(body, TRUE);
     }
 }
