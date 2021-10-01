@@ -147,3 +147,12 @@ NAME: Change your slave's name.
 CUSTOM: Enter a custom command, this can be used to send just one line from a notecard if you want to do detailed RP. For example to add an auditory filter, you could send the command "AUDITORY_FILTER from=to".
 
 AFKCHECK: Sends a message to the selected slave and if they do not respond in time, you will get a message back saying they are AFK. They have 30 seconds to respond.
+
+
+18. How do I change the sound of the vore carrier?
+Rez your hud onto the ground and take the "carrier" out of it, rez that as well. 
+
+Edit the carrier and select the link with the acid-anim script. Placing a sound file here will replace the gurgling sound.
+Edit the carrier and select the link with the stomach-anim script. Placing a sound file here will replace the heartbeat sound.
+
+Take it back to your inventory and replace it in your HUD.
