@@ -45,3 +45,6 @@ Version 2.7.1:
  - Fix requirelist to only apply in non-emotes.
  - Add warning when update server cannot be reached.
  - Add method to specify that blacklist entries should only apply to full words.
+ 
+Version 2.7.2:
+ - Add ability to change vore carrier sounds.
