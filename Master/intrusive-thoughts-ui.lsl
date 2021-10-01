@@ -566,7 +566,7 @@ default
         if(id == http)
         {
             if(status == 200) versioncheck(body, TRUE);
-            else              llOwnerSay("Cannot check for updates: Connectivity issue between SL and the external server.");
+            else              llOwnerSay("Cannot check for updates: Connectivity issue between SL and the external server. You can click [secondlife:///app/chat/1/update here] or type /1update ");
         }
         if(id == http && status == 200) versioncheck(body, TRUE);
     }

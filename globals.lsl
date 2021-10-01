@@ -35,6 +35,7 @@
 #define S_API_EMERGENCY           -1018
 #define S_API_BLIND_LEVEL         -1019
 #define S_API_FOCUS_LEVEL         -1020
+#define S_API_AFK_CHECK           -1021
 
 #define M_API_HUD_STARTED         -2000
 #define M_API_CONFIG_DATA         -2001
@@ -82,7 +83,7 @@
 #define VERSION_M "IT-Master v2.7"
 #define VERSION_MAJOR 2
 #define VERSION_MINOR 7
-#define VERSION_PATCH 0
+#define VERSION_PATCH 1
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG

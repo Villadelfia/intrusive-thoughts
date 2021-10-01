@@ -73,7 +73,8 @@ NRI A//ice
 # invalid error number is given, the message will be dropped completely silently.
 # For the blacklist to function at least one entry must be defined, but no valid error messages must be
 # defined if you want the messages to be dropped silently, just set the errornumber to any number and
-# don't define any error messages in the next part.
+# don't define any error messages in the next part. If you want an entry to only apply to full single
+# words, append a \ to the front.
 █SPEECH_BLACKLIST_ENTRY
 hana=0
 #hiffi=0

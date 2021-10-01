@@ -57,6 +57,13 @@ default
             publicaccess = (integer)str;
             groupaccess = (integer)((string)id);
         }
+        else if(num == S_API_AFK_CHECK)
+        {
+            afkChecker = llGetOwnerKey(id);                
+            if(llGetAgentSize(afkChecker) != ZERO_VECTOR) llRegionSayTo(afkChecker, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been given an AFK check. They have 30 seconds to succeed.");
+            else                                          llInstantMessage(afkChecker, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been given an AFK check. They have 30 seconds to succeed.");
+            afkCheck();
+        }
     }
 
     state_entry()
@@ -123,7 +130,9 @@ default
             }
             else if(m == "AFKCHECK")
             {
-                afkChecker = llGetOwnerKey(k);
+                afkChecker = llGetOwnerKey(k);                
+                if(llGetAgentSize(afkChecker) != ZERO_VECTOR) llRegionSayTo(afkChecker, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been given an AFK check. They have 30 seconds to succeed.");
+                else                                          llInstantMessage(afkChecker, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been given an AFK check. They have 30 seconds to succeed.");
                 afkCheck();
             }
         }

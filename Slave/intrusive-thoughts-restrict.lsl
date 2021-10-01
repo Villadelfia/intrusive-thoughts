@@ -94,6 +94,7 @@ handlemenu(key k)
         ownersay(k, "- Sight radius: [secondlife:///app/chat/1/" + prefix + "b--- ---] [secondlife:///app/chat/1/" + prefix + "b-- --] [secondlife:///app/chat/1/" + prefix + "b- -] " + formatfloat(currentVision, 2) + " meters [secondlife:///app/chat/1/" + prefix + "b+ +] [secondlife:///app/chat/1/" + prefix + "b++ ++] [secondlife:///app/chat/1/" + prefix + "b+++ +++]");
         ownersay(k, "- Focus distance: [secondlife:///app/chat/1/" + prefix + "f--- ---] [secondlife:///app/chat/1/" + prefix + "f-- --] [secondlife:///app/chat/1/" + prefix + "f- -] " + formatfloat(currentFocus, 2) + " meters [secondlife:///app/chat/1/" + prefix + "f+ +] [secondlife:///app/chat/1/" + prefix + "f++ ++] [secondlife:///app/chat/1/" + prefix + "f+++ +++]");
         ownersay(k, " ");
+        ownersay(k, "- [secondlife:///app/chat/1/" + prefix + "afkcheck /1" + prefix + "afkcheck]: Have the slave do an AFK check.");
         ownersay(k, "- /1" + prefix + "say <message>: Say a message.");
         ownersay(k, "- /1" + prefix + "think <message>: Think a message.");
         ownersay(k, "- /1" + prefix + "leashlength <meters>: Set the leash length.");
@@ -336,6 +337,10 @@ default
         {
             ownersay(k, "Stripping " + name + " of all clothes.");
             llOwnerSay("@detach=force,remoutfit=force");
+        }
+        else if(llToLower(m) == "afkcheck")
+        {
+            llMessageLinked(LINK_SET, S_API_AFK_CHECK, "", k);
         }
         else if(llToLower(m) == "list")
         {

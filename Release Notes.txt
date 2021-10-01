@@ -36,4 +36,12 @@ Version 2.7.0:
  - Add option to send advanced commands via Master HUD.
  - Wearable focus target to make the slave focus on a specific piece of your avatar.
  - Adjustable focus distance.
+ - Add requirelist to mirror blacklist. 
  - Master HUD selective RLV relay and filtering. Type /1rlvmenu to learn more!
+
+Version 2.7.1:
+ - Fix AFK check to notify owner on start, also add it to main menu.
+ - Fix issue with empty requirelist.
+ - Fix requirelist to only apply in non-emotes.
+ - Add warning when update server cannot be reached.
+ - Add method to specify that blacklist entries should only apply to full words.

@@ -6,7 +6,9 @@ integer groupaccess = FALSE;
 
 string name = "";
 list speechblacklistfrom = [];
+list speechblacklistwordsfrom = [];
 list speechblacklistto = [];
+list speechblacklistwordsto = [];
 list speechblacklisttripped = [];
 list speechrequiredlist = [];
 string speechrequiredlisttripped = "";
@@ -30,7 +32,9 @@ hardReset(string n)
 {
     name = n;
     speechblacklistfrom = [];
+    speechblacklistwordsfrom = [];
     speechblacklistto = [];
+    speechblacklistwordsto = [];
     speechblacklisttripped = [];
     speechrequiredlist = [];
     speechrequiredlisttripped = "";
@@ -116,15 +120,36 @@ handleSay(string message)
         }
     }
 
-    // In case of NO requiredlisted word, replace the message with the replacement message. Rest of the process is skipped.
-    l1 = llGetListLength(speechrequiredlist)-1;
+    l1 = llGetListLength(speechblacklistwordsfrom)-1;
+    list words = llParseStringKeepNulls(llToLower(message), [" ", ",", "\"", ";", ":", ".", "!", "?"], []);
     for(;l1 >= 0; --l1)
     {
-        if(contains(llToLower(message), llList2String(speechrequiredlist, l1))) jump maycontinue;
+        l2 = llGetListLength(words)-1;
+        for(;l2 >= 0; --l2)
+        {
+            if(llList2String(words, l2) == llList2String(speechblacklistwordsfrom, l1))
+            {
+                message = llList2String(speechblacklisttripped, llList2Integer(speechblacklistwordsto, l1));
+                jump blacklisttripped;
+            }
+        }
     }
-    message = speechrequiredlisttripped;
-    jump blacklisttripped;
-    @maycontinue;
+
+    // In case of NO requiredlisted word, replace the message with the replacement message. Rest of the process is skipped.
+    if(speechrequiredlist != [])
+    {
+        if(emote == FALSE || contains(message, "\"") == TRUE)
+        {
+            l1 = llGetListLength(speechrequiredlist)-1;
+            for(;l1 >= 0; --l1)
+            {
+                if(contains(llToLower(message), llList2String(speechrequiredlist, l1))) jump maycontinue;
+            }
+            message = speechrequiredlisttripped;
+            jump blacklisttripped;
+            @maycontinue;
+        }
+    }
 
     // URLs should never be filtered, enclose them in [[[ and ]]]. This is checked for later.
     // Partial filters are also applied here.
@@ -392,8 +417,17 @@ default
         {
             m = llDeleteSubString(m, 0, llStringLength("SPEECH_BLACKLIST_ENTRY"));
             list split = llParseString2List(m, ["="], []);
-            speechblacklistfrom += [llToLower(llList2String(split, 0))];
-            speechblacklistto += [(integer)llList2String(split, 1)];
+            string sequence = llToLower(llList2String(split, 0));
+            if(startswith(sequence, "\\"))
+            {
+                speechblacklistwordsfrom += [sequence];
+                speechblacklistwordsto += [(integer)llList2String(split, 1)];
+            }
+            else
+            {
+                speechblacklistfrom += [sequence];
+                speechblacklistto += [(integer)llList2String(split, 1)];
+            }
         }
         else if(startswith(m, "SPEECH_BLACKLIST_TRIPPED"))
         {
