@@ -74,6 +74,8 @@
 #define IT_PLUGIN_OBJECT          -8008
 #define IT_PLUGIN_DESCRIPTION     -8009
 
+#define IT_CARRIER_REGISTER       -8500
+
 #define IT_CREATOR              "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9"
 
 //#define DEBUG

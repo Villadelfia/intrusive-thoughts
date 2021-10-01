@@ -420,7 +420,7 @@ default
             string sequence = llToLower(llList2String(split, 0));
             if(startswith(sequence, "\\"))
             {
-                speechblacklistwordsfrom += [sequence];
+                speechblacklistwordsfrom += [llDeleteSubString(sequence, 0, 0)];
                 speechblacklistwordsto += [(integer)llList2String(split, 1)];
             }
             else
