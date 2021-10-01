@@ -1,0 +1,5 @@
+To get started with making your own carrier, rez the object you wish to use as a carrier, and insert the two included scripts into it. Then edit carrier-example and any extra scripts you may need until you are ready to use the carrier.
+
+Once ready, rez your hud on the ground, and remove the "carrier" object from it, then rename your object to "carrier" and place it in the HUD. Now, when you vore, it will be rezzed instead.
+
+The script has been made with the possibility to allow multiple sitters, but this has not yet been added to the HUD. If there is enough demand, this feature will be added.

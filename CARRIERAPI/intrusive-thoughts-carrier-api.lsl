@@ -26,7 +26,6 @@ default
     on_rez(integer start_param)
     {
         rezzer = llGetOwnerKey((key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0));
-        firstavatar = NULL_KEY;
         if(start_param == 0) return;
         llSetTimerEvent(60.0);
     }
@@ -83,7 +82,8 @@ default
             }
             else if(startswith(m, "rlvforward"))
             {
-                if(llAvatarOnLinkSitTarget(volumelink) == NULL_KEY) die();
+                integer avatars = llGetNumberOfPrims() - llGetObjectPrimCount(llGetKey());
+                if(avatars == 0) die();
                 m = llDeleteSubString(m, 0, llStringLength("rlvforward"));
                 for(i = 0; i < l; ++i) if(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i))) llRegionSayTo(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)), RLVRC, "cmd," + (string)llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)) + "," + m);
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "rlvresponse ok");
