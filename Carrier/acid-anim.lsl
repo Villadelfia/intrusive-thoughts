@@ -39,7 +39,8 @@ default
                 llOwnerSay("Volume link found at link number " + (string)i + ".");
             }
         }
-        llLoopSound("38510ac5-5338-ec76-1a6c-c2115538aa8d", 0.5);
+        if(llGetInventoryName(INVENTORY_SOUND, 0) == "") llLoopSound("38510ac5-5338-ec76-1a6c-c2115538aa8d", 0.5);
+        else                                             llLoopSound(llGetInventoryName(INVENTORY_SOUND, 0), 0.5);
         calculateFill();
     }
 
