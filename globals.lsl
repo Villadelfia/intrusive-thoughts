@@ -75,6 +75,9 @@
 #define IT_PLUGIN_DESCRIPTION     -8009
 
 #define IT_CARRIER_REGISTER       -8500
+#define IT_CARRIER_ACID           -8501
+#define IT_CARRIER_ACID_MAX       -8502
+#define IT_CARRIER_APPLY_RLV      -8503
 
 #define IT_CREATOR              "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9"
 

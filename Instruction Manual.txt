@@ -2,6 +2,7 @@ Welcome to the Intrusive Thoughts system. This notecard will tell you all you ne
 
 1. What's inside
 Inside of your package you will find:
+ - > Intrusive Thoughts Carrier API: An unpacker for the Carrier kit and API with instructions and an example script.
  - > Intrusive Thoughts Furniture Contents (Can Speak): An unpacker for the tools needed to make objects 'furniture' for the IT system. This version is meant for objects like radios or speakers, things that could feasibly speak.
  - > Intrusive Thoughts Furniture Contents (Mute): An unpacker for the tools needed to make objects 'furniture' for the IT system. This version is meant for objects that would not be able to speak.
  - > Intrusive Thoughts Leash Handles: An unpacker containing two leash handles compatible with the IT Slaves.
@@ -10,6 +11,7 @@ Inside of your package you will find:
  - Instruction Manual: You're reading it right now.
  - Intrusive Thoughts Applier Notecard Template: An example applier notecard. You will be using this to set up the voice and hearing restrictions featured in the IT Slaves.
  - Intrusive Thoughts Configuration: You will be editing this notecard and dropping it onto the HUD to set it up before first usage and whenever you wish to change the settings.
+ - Intrusive Thoughts Focus Target: The focus target, to be used to make a slave look at a specific point on your body.
  - Intrusive Thoughts Master: The Master HUD, to be worn by you.
  - Intrusive Thoughts Slave: The Slave HUD, to be given to your submissives.
  - Intrusive Thoughts Slave NORELAY: The Slave HUD, to be given to your submissives. This version without an RLV relay built in.
