@@ -380,6 +380,24 @@ You blink slowly as your vision returns at your Creator's command and you see cl
 
 
 
+##################
+# SECTION 5: RLV PREFIXES #
+##################
+
+# Change the prefix for the RLV "stuff" from ~stuff to a folder of your choosing.
+█PREFIX_STUFF
+~stuff
+
+# Change the prefix for the RLV "outfit" from ~outfit to a folder of your choosing.
+█PREFIX_OUTFIT
+~outfit
+
+# Change the prefix for the RLV "form" from ~form to a folder of your choosing.
+█PREFIX_FORM
+~form
+
+
+
 █END
 # Any lines beyond this will not be read. You may leave documentation for yourself here without
 # Harming the loading speed of the configuration.

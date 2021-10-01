@@ -17,11 +17,18 @@ integer locked = FALSE;
 float currentVision = 4.0;
 float currentFocus = 2.0;
 
+string outfitPrefix = "~outfit";
+string stuffPrefix = "~stuff";
+string formPrefix = "~form";
+
 hardReset(string n)
 {
     name = llGetDisplayName(llGetOwner());
     noim = FALSE;
     daze = FALSE;
+    outfitPrefix = "~outfit";
+    stuffPrefix = "~stuff";
+    formPrefix = "~form";
 
     if(n != "") name = n;
     if(playing != "") llStopAnimation(playing);
@@ -186,7 +193,7 @@ default
                 string thing;
                 integer l;
                 integer i;
-                if(path == "~form")
+                if(path == formPrefix)
                 {
                     ownersay(requester, "Available forms for " + name + ":");
                     ownersay(requester, " ");
@@ -199,7 +206,7 @@ default
                     ownersay(requester, " ");
                     ownersay(requester, "[secondlife:///app/chat/1/" + prefix + "! Back to command list...]");
                 }
-                else if(path == "~outfit")
+                else if(path == outfitPrefix)
                 {
                     ownersay(requester, "Available outfits for " + name + ":");
                     ownersay(requester, " ");
@@ -214,7 +221,7 @@ default
                     ownersay(requester, " ");
                     ownersay(requester, "[secondlife:///app/chat/1/" + prefix + "! Back to command list...]");
                 }
-                else if(path == "~stuff")
+                else if(path == stuffPrefix)
                 {
                     ownersay(requester, "Available stuff for " + name + ":");
                     ownersay(requester, " ");
@@ -312,6 +319,18 @@ default
                 m = llDeleteSubString(m, 0, llStringLength("NAME"));
                 name = m;
             }
+            else if(startswith(m, "PREFIX_STUFF"))
+            {
+                stuffPrefix = llDeleteSubString(m, 0, llStringLength("PREFIX_STUFF"));
+            }
+            else if(startswith(m, "PREFIX_OUTFIT"))
+            {
+                outfitPrefix = llDeleteSubString(m, 0, llStringLength("PREFIX_OUTFIT"));
+            }
+            else if(startswith(m, "PREFIX_FORM"))
+            {
+                formPrefix = llDeleteSubString(m, 0, llStringLength("PREFIX_FORM"));
+            }
             else if(m == "END")
             {
                 ownersay(k, "[restrict]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
@@ -349,18 +368,18 @@ default
         }
         else if(llToLower(m) == "listoutfit")
         {
-            path = "~outfit";
-            llOwnerSay("@getinv:~outfit=" + (string)RLV_CHANNEL);
+            path = outfitPrefix;
+            llOwnerSay("@getinv:" + outfitPrefix + "=" + (string)RLV_CHANNEL);
         }
         else if(llToLower(m) == "liststuff")
         {
-            path = "~stuff";
-            llOwnerSay("@getinv:~stuff=" + (string)RLV_CHANNEL);
+            path = stuffPrefix;
+            llOwnerSay("@getinv:" + stuffPrefix + "=" + (string)RLV_CHANNEL);
         }
         else if(llToLower(m) == "listform")
         {
-            path = "~form";
-            llOwnerSay("@getinv:~form=" + (string)RLV_CHANNEL);
+            path = formPrefix;
+            llOwnerSay("@getinv:" + formPrefix + "=" + (string)RLV_CHANNEL);
         }
         else if(startswith(llToLower(m), "list"))
         {
@@ -371,31 +390,31 @@ default
         {
             path = llDeleteSubString(m, 0, llStringLength("outfitstrip"));
             ownersay(k, "Stripping " + name + " of everything, then wearing outfit '" + path + "'.");
-            llOwnerSay("@detach=force,remoutfit=force,attachover:~outfit/" + path + "=force");
+            llOwnerSay("@detach=force,remoutfit=force,attachover:" + outfitPrefix + "/" + path + "=force");
         }
         else if(startswith(llToLower(m), "outfit"))
         {
             path = llDeleteSubString(m, 0, llStringLength("outfit"));
             ownersay(k, "Stripping " + name + " of her outfits, then wearing outfit '" + path + "'.");
-            llOwnerSay("@detachall:~outfit=force,attachover:~outfit/" + path + "=force");
+            llOwnerSay("@detachall:" + outfitPrefix + "=force,attachover:" + outfitPrefix + "/" + path + "=force");
         }
         else if(startswith(llToLower(m), "form"))
         {
             path = llDeleteSubString(m, 0, llStringLength("form"));
             ownersay(k, "Stripping " + name + " of all clothes, then wearing form '" + path + "'.");
-            llOwnerSay("@detach=force,attachover:~form/" + path + "=force");
+            llOwnerSay("@detach=force,attachover:" + formPrefix + "/" + path + "=force");
         }
         else if(startswith(llToLower(m), "add"))
         {
             path = llDeleteSubString(m, 0, llStringLength("add"));
-            ownersay(k, "Wearing '~stuff/" + path + "' on " + name + ".");
-            llOwnerSay("@attachover:~stuff/" + path + "=force");
+            ownersay(k, "Wearing '" + stuffPrefix + "/" + path + "' on " + name + ".");
+            llOwnerSay("@attachover:" + stuffPrefix + "/" + path + "=force");
         }
         else if(startswith(llToLower(m), "remove"))
         {
             path = llDeleteSubString(m, 0, llStringLength("remove"));
-            ownersay(k, "Removing '~stuff/" + path + "' from " + name + ".");
-            llOwnerSay("@detachall:~stuff/" + path + "=force");
+            ownersay(k, "Removing '" + stuffPrefix + "/" + path + "' from " + name + ".");
+            llOwnerSay("@detachall:" + stuffPrefix + "/" + path + "=force");
         }
         else if(startswith(m, "think"))
         {
