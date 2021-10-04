@@ -27,10 +27,20 @@ string mutetype = "DROP";
 integer blindmute = FALSE;
 integer vocalbimbolimit = 0;
 float vocalbimboodds = 1.0;
+integer tempDisable = FALSE;
 
-hardReset(string n)
+softReset()
 {
-    name = n;
+    tempDisable = TRUE;
+    mute = FALSE;
+    mindless = FALSE;
+    checkSetup();
+}
+
+hardReset()
+{
+    tempDisable = FALSE;
+    name = "";
     speechblacklistfrom = [];
     speechblacklistwordsfrom = [];
     speechblacklistto = [];
@@ -96,6 +106,11 @@ handleHear(key skey, string sender, string message)
 
 handleSay(string message)
 {
+    if(tempDisable)
+    {
+        llMessageLinked(LINK_SET, S_API_SAY, message, (key)name);
+        return;
+    }
     if(startswith(message, "((") == TRUE && endswith(message, "))") == TRUE) return;
     integer emote = FALSE;
     if(startswith(llToLower(message), "/me") || startswith(llToLower(message), "/shout/me") || startswith(llToLower(message), "/shout /me") ||
@@ -332,6 +347,7 @@ default
     {
         if(num == S_API_RLV_CHECK)
         {
+            tempDisable = FALSE;
             checkSetup();
         }
         else if(num == S_API_OWNERS)
@@ -378,7 +394,7 @@ default
         }
         else if(num == S_API_EMERGENCY)
         {
-            hardReset(name);
+            softReset();
         }
     }
 
@@ -405,7 +421,7 @@ default
         if(!isowner(k)) return;
         if(m == "RESET")
         {
-            hardReset("");
+            hardReset();
         }
         else if(startswith(m, "NAME"))
         {

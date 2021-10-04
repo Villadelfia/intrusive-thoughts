@@ -14,14 +14,20 @@ list unblindcmd = [];
 integer rlvtries = 0;
 float currentVision = 4.0;
 
-hardReset(string n)
+softReset()
+{
+    blind = FALSE;
+    checkSetup(0, 0);
+}
+
+hardReset()
 {
     blind = FALSE;
     unblindmsg = "";
     blindmsg = "";
     blindcmd = [];
     unblindcmd = [];
-    name = n;
+    name = "";
     checkSetup(0, 0);
 }
 
@@ -134,7 +140,7 @@ default
         }
         else if(num == S_API_EMERGENCY)
         {
-            hardReset(name);
+            softReset();
         }
     }
 
@@ -196,7 +202,7 @@ default
         if(!isowner(k)) return;
         if(m == "RESET")
         {
-            hardReset("");
+            hardReset();
         }
         else if(startswith(m, "NAME"))
         {

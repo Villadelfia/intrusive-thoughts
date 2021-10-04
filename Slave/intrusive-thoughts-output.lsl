@@ -13,15 +13,23 @@ float randomprefixchance = 0.0;
 list randomprefixwords = [];
 key focustarget = NULL_KEY;
 float currentFocus = 2.0;
+integer tempDisable = FALSE;
 
-hardReset(string n)
+softReset()
 {
+    tempDisable = TRUE;
+    focus = FALSE;
+}
+
+hardReset()
+{
+    
+    tempDisable = FALSE;
     blindmute = FALSE;
     focus = FALSE;
     randomprefixchance = 0.0;
     randomprefixwords = [];
     name = llGetDisplayName(llGetOwner());
-    if(n != "") name = n;
 }
 
 handleSelfDescribe(string message)
@@ -183,6 +191,7 @@ focusToggle(key target)
 
 string prefixfilter(string m)
 {
+    if(tempDisable) return m;
     if(randomprefixchance == 0.0) return m;
     if(randomprefixwords == []) return m;
     integer emote = FALSE;
@@ -234,6 +243,7 @@ default
     {
         if(num == S_API_RLV_CHECK)
         {
+            tempDisable = FALSE;
             if(focus) llSetTimerEvent(0.1);
         }
         else if(num == S_API_OWNERS)
@@ -254,7 +264,7 @@ default
         }
         else if(num == S_API_EMERGENCY)
         {
-            hardReset(name);
+            softReset();
         }
         else if(num == S_API_FOCUS_LEVEL)
         {
@@ -321,7 +331,7 @@ default
         if(!isowner(k)) return;
         if(m == "RESET")
         {
-            hardReset("");
+            hardReset();
         }
         else if(startswith(m, "NAME") && c == MANTRA_CHANNEL)
         {

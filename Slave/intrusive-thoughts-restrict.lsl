@@ -21,7 +21,7 @@ string outfitPrefix = "~outfit";
 string stuffPrefix = "~stuff";
 string formPrefix = "~form";
 
-hardReset(string n)
+hardReset()
 {
     name = llGetDisplayName(llGetOwner());
     noim = FALSE;
@@ -30,7 +30,14 @@ hardReset(string n)
     stuffPrefix = "~stuff";
     formPrefix = "~form";
 
-    if(n != "") name = n;
+    if(playing != "") llStopAnimation(playing);
+    doSetup();
+}
+
+softReset()
+{
+    noim = FALSE;
+    daze = FALSE;
     if(playing != "") llStopAnimation(playing);
     doSetup();
 }
@@ -292,10 +299,10 @@ default
             }
             else if(llToLower(m) == "emergency")
             {
-                ownersay(k, "Removing all restrictions and notifying your primary owner...");
+                ownersay(k, "Removing all RLV restrictions, nullifying your filters until next relog, and notifying your primary owner...");
                 if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been emergency reset by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
                 else llInstantMessage(primary, "The " + VERSION_S + " has been emergency reset by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-                hardReset(name);
+                softReset();
                 llMessageLinked(LINK_SET, S_API_EMERGENCY, name, "");
             }
             else if(llToLower(m) == "!" || m == "" || llToLower(m) == "menu")
@@ -312,7 +319,7 @@ default
         {
             if(m == "RESET")
             {
-                hardReset("");
+                hardReset();
             }
             else if(startswith(m, "NAME"))
             {

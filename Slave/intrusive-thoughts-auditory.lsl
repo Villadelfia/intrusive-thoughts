@@ -20,11 +20,20 @@ list deafencmd = [];
 list undeafencmd = [];
 list deafenexcept = [];
 integer setup = FALSE;
+integer tempDisable = FALSE;
 
-hardReset(string n)
+softReset()
 {
     deaf = FALSE;
-    name = n;
+    tempDisable = TRUE;
+    checkSetup();
+}
+
+hardReset()
+{
+    tempDisable = FALSE;
+    deaf = FALSE;
+    name = "";
     auditoryfilterfrom = [];
     auditoryfilterto = [];
     auditorybimbolimit = 0;
@@ -44,6 +53,12 @@ hardReset(string n)
 
 handleHear(key skey, string sender, string message)
 {
+    if(tempDisable == TRUE && setup == TRUE)
+    {
+        llMessageLinked(LINK_SET, S_API_SELF_SAY, message, "");
+        return;
+    }
+
     if(!setup) return;
     if(startswith(message, "((") == TRUE && endswith(message, "))") == TRUE) return;
     integer emote = FALSE;
@@ -295,6 +310,7 @@ default
     {
         if(num == S_API_RLV_CHECK)
         {
+            tempDisable = FALSE;
             checkSetup();
         }
         else if(num == S_API_OWNERS)
@@ -334,7 +350,7 @@ default
         }
         else if(num == S_API_EMERGENCY)
         {
-            hardReset(name);
+            softReset();
         }
     }
 
@@ -350,7 +366,7 @@ default
         if(!isowner(k)) return;
         if(m == "RESET")
         {
-            hardReset("");
+            hardReset();
         }
         else if(startswith(m, "NAME"))
         {

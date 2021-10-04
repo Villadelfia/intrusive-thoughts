@@ -15,7 +15,13 @@ list mindfrom = [];
 list mindto = [];
 integer blindmute = FALSE;
 
-hardReset(string n)
+softReset()
+{
+    mindless = FALSE;
+    mute = FALSE;
+}
+
+hardReset()
 {
     mindless = FALSE;
     mute = FALSE;
@@ -25,7 +31,7 @@ hardReset(string n)
     mindoncmd = [];
     mindfrom = [];
     mindto = [];
-    name = n;
+    name = "";
     blindmute = FALSE;
 }
 
@@ -135,7 +141,7 @@ default
         }
         else if(num == S_API_EMERGENCY)
         {
-            hardReset(name);
+            softReset();
         }
     }
 
@@ -161,7 +167,7 @@ default
         if(!isowner(k)) return;
         if(m == "RESET")
         {
-            hardReset("");
+            hardReset();
         }
         else if(startswith(m, "NAME"))
         {

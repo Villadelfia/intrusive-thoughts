@@ -50,3 +50,6 @@ Version 2.7.2:
  - Add ability to change vore carrier sounds.
  - Add carrier building kit.
  - Add ability to change #RLV prefixes via applier notecard.
+
+Version 2.7.3:
+ - Improve emergency button.
