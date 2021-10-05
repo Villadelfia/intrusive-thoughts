@@ -170,6 +170,7 @@ handleSay(string message)
     // Partial filters are also applied here.
     messagecopy = message;
     message = "";
+    l2 = llGetListLength(speechfilterpartialfrom);
     integer inurl = 0;
     while(llStringLength(messagecopy) > 0)
     {
