@@ -9,6 +9,9 @@ vector seatedoffset;
 vector oldpos;
 string name;
 integer waitingstate;
+integer struggleEvents = 0;
+integer struggleFailed = FALSE;
+integer captured = FALSE;
 
 die()
 {
@@ -51,6 +54,7 @@ default
     {
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(BALL_CHANNEL, "", NULL_KEY, "");
+        llListen(STRUGGLE_CHANNEL, "", NULL_KEY, "");
         llSitTarget(<0.0, 0.0, 0.001>, ZERO_ROTATION);
         rezzer = llGetOwner();
         llVolumeDetect(TRUE);
@@ -108,9 +112,15 @@ default
 
                 // Make sure to flag that we have been sat on.
                 saton = TRUE;
+                
+                if(!captured) 
+                {
+                    llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "captured|" + (string)firstavatar);
+                    captured = TRUE;
+                }
 
                 // And animate the sat avatar.
-                llRequestPermissions(llAvatarOnSitTarget(), PERMISSION_TRIGGER_ANIMATION);
+                llRequestPermissions(llAvatarOnSitTarget(), PERMISSION_TRIGGER_ANIMATION | PERMISSION_TAKE_CONTROLS);
             }
         }
     }
@@ -128,8 +138,17 @@ default
         // Start the animation.
         llStartAnimation(animation);
 
+        // Take controls.
+        llTakeControls(CONTROL_FWD | CONTROL_BACK | CONTROL_LEFT | CONTROL_RIGHT | CONTROL_ROT_LEFT | CONTROL_ROT_RIGHT | CONTROL_UP | CONTROL_DOWN, TRUE, TRUE);
+
         // And start a timer loop.
         llSetTimerEvent(0.5);
+    }
+
+    control(key id, integer level, integer edge)
+    {
+        integer start = level & edge;
+        if(start) struggleEvents++;
     }
 
     touch_start(integer num_detected)
@@ -246,10 +265,42 @@ default
                 die();
             }
         }
+        else if(c == STRUGGLE_CHANNEL)
+        {
+            if((keyisavatar == TRUE && llGetOwnerKey(id) != rezzer) || (keyisavatar == FALSE && id != rezzer)) return;
+            if(llAvatarOnSitTarget() == NULL_KEY) die();
+            if(startswith(m, "struggle_fail"))
+            {
+                m = llList2String(llParseString2List(m, ["|"], []), 1);
+                llSetObjectName("");
+                llRegionSayTo(llAvatarOnSitTarget(), 0, m);
+                llReleaseControls();
+                struggleFailed = FALSE;
+            }
+            else if(startswith(m, "struggle_success"))
+            {
+                m = llList2String(llParseString2List(m, ["|"], []), 1);
+                llSetObjectName("");
+                llRegionSayTo(llAvatarOnSitTarget(), 0, m);
+                llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
+                if(animation == "hide_b") llRegionSayTo(llAvatarOnSitTarget(), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, put on something and then take it off again. If this doesn't help, relog.");
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
+                llSleep(0.5);
+                llUnSit(llAvatarOnSitTarget());
+                llSleep(10.0);
+                die();
+            }
+        }
     }
 
     timer()
     {
+        if(struggleEvents > 0 && struggleFailed == FALSE)
+        {
+            llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "struggle_count|" + (string)firstavatar + "|" + (string)struggleEvents);
+            struggleEvents = 0;
+        }
+
         if(editmode)
         {
             llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)rezzer + ";;=force");

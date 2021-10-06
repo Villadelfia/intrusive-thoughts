@@ -158,3 +158,13 @@ Edit the carrier and select the link with the acid-anim script. Placing a sound 
 Edit the carrier and select the link with the stomach-anim script. Placing a sound file here will replace the heartbeat sound.
 
 Take it back to your inventory and replace it in your HUD.
+
+
+19. How do I use the Struggle API?
+When the victim of Vore, Furniture or Worn Objectification is captured, a message will be broadcast on STRUGGLE_CHANNEL (997611882) toward the person, or prim in the case of furniture, that did the capturing. The message is "captured|<uuid>" and you may use this to notify the victim of how struggling works and how you handle it.
+
+Once the victim begins struggling by pressing SHIFT+A, SHIFT+D, PGUP or PGDN, a message will be sent if there were more than 0 inputs in the last second in the following format: "struggle_count|<uuid>|<count in last second>"
+
+You may respond in two ways, via llRegionSayTo directly back to the ball or the carrier: "struggle_fail|<message>" will stop sending struggle updates and tell the victim the message included, and "struggle_success|<message>" will free the victim and tell them the message included. Both messages should be sent on STRUGGLE_CHANNEL.
+
+In the case of vore carriers made using the included kit, you are expected to handle this API yourself or implement your own struggling system.

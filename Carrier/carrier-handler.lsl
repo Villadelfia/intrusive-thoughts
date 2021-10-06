@@ -6,6 +6,9 @@ key focuskey;
 float fillfactor = 0.25;
 integer ticks = 0;
 integer dissolved = FALSE;
+integer struggleEvents = 0;
+integer struggleFailed = FALSE;
+integer captured = FALSE;
 
 list whitelist = ["boot",    "top",      "bangle", "armband", "bracer", "thigh",  "ring", 
                   "suit",    "lingerie", "bra",    "shoe",    "glove",  "sock",   "stocking", 
@@ -56,6 +59,7 @@ default
     {
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(BALL_CHANNEL, "", NULL_KEY, "");
+        llListen(STRUGGLE_CHANNEL, "", NULL_KEY, "");
         integer i = llGetNumberOfPrims();
         for (; i >= 0; --i)
         {
@@ -106,7 +110,12 @@ default
                     }
                 }
                 if(focuskey == NULL_KEY) focuskey = llAvatarOnLinkSitTarget(volumelink);
-                llRequestPermissions(llAvatarOnLinkSitTarget(volumelink), PERMISSION_TRIGGER_ANIMATION);
+                if(!captured) 
+                {
+                    llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "captured|" + (string)firstavatar);
+                    captured = TRUE;
+                }
+                llRequestPermissions(llAvatarOnLinkSitTarget(volumelink), PERMISSION_TRIGGER_ANIMATION | PERMISSION_TAKE_CONTROLS);
             }
         }
     }
@@ -122,6 +131,7 @@ default
         llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, "Click me to see the outside world for 30 seconds.");
         llSetObjectName(oldn);
         ticks = 100;
+        llTakeControls(CONTROL_FWD | CONTROL_BACK | CONTROL_LEFT | CONTROL_RIGHT | CONTROL_ROT_LEFT | CONTROL_ROT_RIGHT | CONTROL_UP | CONTROL_DOWN, TRUE, TRUE);
         llResetTime();
         llSetTimerEvent(0.5);
     }
@@ -131,6 +141,12 @@ default
         if(llDetectedKey(0) != llAvatarOnLinkSitTarget(volumelink)) return;
         ticks = 0;
         llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "focus," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@setcam_focus:" + (string)rezzer + ";2;0/1/0=force");
+    }
+    
+    control(key id, integer level, integer edge)
+    {
+        integer start = level & edge;
+        if(start) struggleEvents++;
     }
 
     listen(integer c, string n, key id, string m)
@@ -207,10 +223,43 @@ default
                 die();
             }
         }
+        else if(c == STRUGGLE_CHANNEL)
+        {
+            if(llGetOwnerKey(id) != rezzer) return;
+            if(llAvatarOnLinkSitTarget(volumelink) == NULL_KEY) die();
+            if(startswith(m, "struggle_fail"))
+            {
+                m = llList2String(llParseString2List(m, ["|"], []), 1);
+                llSetObjectName("");
+                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, m);
+                llReleaseControls();
+                struggleFailed = FALSE;
+            }
+            else if(startswith(m, "struggle_success"))
+            {
+                m = llList2String(llParseString2List(m, ["|"], []), 1);
+                llSetObjectName("");
+                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, m);
+                llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
+                llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + <0.0, 0.0, 10.0>);
+                if(dissolved) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, put on something and then take it off again. If this doesn't help, relog.");
+                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(volumelink) + ",!release");
+                llSleep(0.5);
+                llUnSit(llAvatarOnLinkSitTarget(volumelink));
+                llSleep(0.5);
+                die();
+            }
+        }
     }
 
     timer()
     {
+        if(struggleEvents > 0 && struggleFailed == FALSE)
+        {
+            llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "struggle_count|" + (string)firstavatar + "|" + (string)struggleEvents);
+            struggleEvents = 0;
+        }
+
         if(llAvatarOnLinkSitTarget(volumelink) == NULL_KEY)
         {
             die();

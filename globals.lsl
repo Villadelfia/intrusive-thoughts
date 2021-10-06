@@ -10,6 +10,7 @@
 #define SPEAK_CHANNEL         166845635
 #define LEASH_CHANNEL         166845636
 #define HOME_HUD_CHANNEL      166845637
+#define STRUGGLE_CHANNEL      997611882
 #define RLVRC               -1812221819
 #define COMMAND_CHANNEL               1
 #define BALL_CHANNEL                  8
