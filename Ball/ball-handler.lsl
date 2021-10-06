@@ -342,7 +342,7 @@ default
             if(keyisavatar == TRUE) return;
             string oldn = llGetObjectName();
             llSetObjectName(name);
-            if(llToLower(llStringTrim(m, STRING_TRIM)) != "/me" && startswith(m, "/me") == TRUE && contains(m, "\"") == FALSE)
+            if(llToLower(llStringTrim(m, STRING_TRIM)) == "/me" || startswith(m, "/me") == FALSE || contains(m, "\"") == TRUE)
             {
                 llRegionSayTo(llAvatarOnSitTarget(), 0, m);
             }
