@@ -12,6 +12,32 @@ integer waitingstate;
 integer struggleEvents = 0;
 integer struggleFailed = FALSE;
 integer captured = FALSE;
+string prefix = "";
+
+// 0 = Nothing extra.
+// 1 = Cannot open IM sessions.
+// 2 = Cannot send IMs.
+// 3 = Cannot send or receive IMs.
+integer imRestrict = 0;
+
+// 0 = Nothing extra.
+// 1 = Dark fog at 10 meters.
+// 2 = Light fog at 10 meters.
+// 3 = Dark fog at 2 meters.
+// 4 = Light fog at 2 meters.
+// 5 = Blind.
+integer visionRestrict = 0;
+
+// 0 = Nothing extra.
+// 1 = Incapable of hearing anyone but wearer and co-captured victims.
+// 2 = Incapable of hearing anyone but wearer.
+// 3 = Deaf.
+integer hearingRestrict = 0;
+
+// 0 = Nothing extra.
+// 1 = No longer capable of emoting.
+// 2 = Incapable of any kind of speech, even to owner.
+integer speechRestrict = 0;
 
 die()
 {
@@ -19,6 +45,148 @@ die()
     llSetPrimitiveParams([PRIM_TEMP_ON_REZ, TRUE]);
     llDie();
     while(TRUE) llSleep(60.0);
+}
+
+applyIm()
+{
+    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@sendim=y|@startim=y|@recvim=y");
+    if(imRestrict > 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@startim=n");
+    if(imRestrict > 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@sendim=n");
+    if(imRestrict > 2) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@recvim=n");
+}
+
+applyVision()
+{
+    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=y");
+    if(visionRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_distmin:0=force|@setsphere_valuemin:0=force|@setsphere_distmax:10=force|@setsphere_param:0/0/0/0=force");
+    if(visionRestrict == 2) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_distmin:0=force|@setsphere_valuemin:0=force|@setsphere_distmax:10=force|@setsphere_param:1/1/1/0=force");
+    if(visionRestrict == 3) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_distmin:0=force|@setsphere_valuemin:0=force|@setsphere_distmax:2=force|@setsphere_param:0/0/0/0=force");
+    if(visionRestrict == 4) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_distmin:0=force|@setsphere_valuemin:0=force|@setsphere_distmax:2=force|@setsphere_param:1/1/1/0=force");
+    if(visionRestrict == 5) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_distmin:0=force|@setsphere_valuemin:0=force|@setsphere_distmax:0=force|@setsphere_param:0/0/0/0=force");
+}
+
+applyHearing()
+{
+    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@recvchat=y|@recvemote=y|@recvchat:" + (string)llGetOwnerKey(rezzer) + "=rem|@recvemote:" + (string)llGetOwnerKey(rezzer) + "=rem");
+    if(hearingRestrict == 3) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@recvchat=n|@recvemote=n");
+    else                     llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@recvchat=n|@recvemote=n|@recvchat:" + (string)llGetOwnerKey(rezzer) + "=add|@recvemote:" + (string)llGetOwnerKey(rezzer) + "=add");
+}
+
+applySpeech()
+{
+    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@redirchat:" + (string)DUMMY_CHANNEL + "=rem|@rediremote=y|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)DUMMY_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec:" + (string)DUMMY_CHANNEL + "=rem");
+    if(speechRestrict == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add|@sendchannel_sec=n|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add");
+    if(speechRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)DUMMY_CHANNEL + "=add|@sendchannel_sec=n|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add");
+    if(speechRestrict == 2) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)DUMMY_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)DUMMY_CHANNEL + "=add|@sendchannel_sec=n");
+}
+
+sitterMenu()
+{
+    string oldn = llGetObjectName();
+    llSetObjectName("");
+    llRegionSayTo(firstavatar, 0, "Object Options Menu:");
+    llRegionSayTo(firstavatar, 0, " ");
+    llRegionSayTo(firstavatar, 0, "IM Options:");
+    if(imRestrict == 0)       llRegionSayTo(firstavatar, 0, " * No restrictions.");
+    else                      llRegionSayTo(firstavatar, 0, " - No restrictions.");
+    if(imRestrict < 1)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "im1 Cannot open IM sessions.]");
+    else if(imRestrict == 1)  llRegionSayTo(firstavatar, 0, " * Cannot open IM sessions.");
+    else                      llRegionSayTo(firstavatar, 0, " - Cannot open IM sessions.");
+    if(imRestrict < 2)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "im2 Cannot send IMs.]");
+    else if(imRestrict == 2)  llRegionSayTo(firstavatar, 0, " * Cannot send IMs.");
+    else                      llRegionSayTo(firstavatar, 0, " - Cannot send IMs.");
+    if(imRestrict < 3)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "im3 Cannot send or receive IMs.]");
+    else if(imRestrict == 3)  llRegionSayTo(firstavatar, 0, " * Cannot send or receive IMs.");
+    llRegionSayTo(firstavatar, 0, " ");
+    llRegionSayTo(firstavatar, 0, "Vision Options:");
+    if(visionRestrict == 0)       llRegionSayTo(firstavatar, 0, " * No restrictions.");
+    else                          llRegionSayTo(firstavatar, 0, " - No restrictions.");
+    if(visionRestrict < 1)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi1 Dark fog at 10 meters.]");
+    else if(visionRestrict == 1)  llRegionSayTo(firstavatar, 0, " * Dark fog at 10 meters.");
+    else                          llRegionSayTo(firstavatar, 0, " - Dark fog at 10 meters.");
+    if(visionRestrict < 2)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi2 Light fog at 10 meters.]");
+    else if(visionRestrict == 2)  llRegionSayTo(firstavatar, 0, " * Light fog at 10 meters.");
+    else                          llRegionSayTo(firstavatar, 0, " - Light fog at 10 meters.");
+    if(visionRestrict < 3)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi3 Dark fog at 2 meters.]");
+    else if(visionRestrict == 3)  llRegionSayTo(firstavatar, 0, " * Dark fog at 2 meters.");
+    else                          llRegionSayTo(firstavatar, 0, " - Dark fog at 2 meters.");
+    if(visionRestrict < 4)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi4 Light fog at 2 meters.]");
+    else if(visionRestrict == 4)  llRegionSayTo(firstavatar, 0, " * Light fog at 2 meters.");
+    else                          llRegionSayTo(firstavatar, 0, " - Light fog at 2 meters.");
+    if(visionRestrict < 5)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi5 Blind.]");
+    else if(visionRestrict == 5)  llRegionSayTo(firstavatar, 0, " * Blind.");
+    llRegionSayTo(firstavatar, 0, " ");
+    llRegionSayTo(firstavatar, 0, "Hearing Options:");
+    if(hearingRestrict == 0)       llRegionSayTo(firstavatar, 0, " * No restrictions.");
+    else                           llRegionSayTo(firstavatar, 0, " - No restrictions.");
+    if(hearingRestrict < 1)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "he1 Incapable of hearing anyone but wearer and co-captured victims.]");
+    else if(hearingRestrict == 1)  llRegionSayTo(firstavatar, 0, " * Incapable of hearing anyone but wearer and co-captured victims.");
+    else                           llRegionSayTo(firstavatar, 0, " - Incapable of hearing anyone but wearer and co-captured victims.");
+    if(hearingRestrict < 2)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "he2 Incapable of hearing anyone but wearer.]");
+    else if(hearingRestrict == 2)  llRegionSayTo(firstavatar, 0, " * Incapable of hearing anyone but wearer.");
+    else                           llRegionSayTo(firstavatar, 0, " - Incapable of hearing anyone but wearer.");
+    if(hearingRestrict < 3)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "he3 Deaf.]");
+    else if(hearingRestrict == 3)  llRegionSayTo(firstavatar, 0, " * Deaf.");
+    llRegionSayTo(firstavatar, 0, " ");
+    llRegionSayTo(firstavatar, 0, "Speech Options:");
+    if(speechRestrict == 0)       llRegionSayTo(firstavatar, 0, " * No extra restrictions.");
+    else                          llRegionSayTo(firstavatar, 0, " - No extra restrictions.");
+    if(speechRestrict < 1)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "sp1 No longer capable of emoting.]");
+    else if(speechRestrict == 1)  llRegionSayTo(firstavatar, 0, " * No longer capable of emoting.");
+    else                          llRegionSayTo(firstavatar, 0, " - No longer capable of emoting.");
+    if(speechRestrict < 2)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "sp2 Incapable of any kind of speech, even to owner.]");
+    else if(speechRestrict == 2)  llRegionSayTo(firstavatar, 0, " * Incapable of any kind of speech, even to owner.");
+    llSetObjectName(oldn);
+}
+
+ownerMenu()
+{
+    string oldn = llGetObjectName();
+    llSetObjectName("");
+    llOwnerSay("Object Options Menu:");
+    llOwnerSay(" ");
+    llOwnerSay("IM Options:");
+    if(imRestrict != 0)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "im0 No restrictions.]");
+    else                 llOwnerSay(" * No restrictions.");
+    if(imRestrict != 1)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "im1 Cannot open IM sessions.]");
+    else                 llOwnerSay(" * Cannot open IM sessions.");
+    if(imRestrict != 2)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "im2 Cannot send IMs.]");
+    else                 llOwnerSay(" * Cannot send IMs.");
+    if(imRestrict != 3)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "im3 Cannot send or receive IMs.]");
+    else                 llOwnerSay(" * Cannot send or receive IMs.");
+    llOwnerSay(" ");
+    llOwnerSay("Vision Options:");
+    if(visionRestrict != 0)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi0 No restrictions.]");
+    else                     llOwnerSay(" * No restrictions.");
+    if(visionRestrict != 1)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi1 Dark fog at 10 meters.]");
+    else                     llOwnerSay(" * Dark fog at 10 meters.");
+    if(visionRestrict != 2)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi2 Light fog at 10 meters.]");
+    else                     llOwnerSay(" * Light fog at 10 meters.");
+    if(visionRestrict != 3)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi3 Dark fog at 2 meters.]");
+    else                     llOwnerSay(" * Dark fog at 2 meters.");
+    if(visionRestrict != 4)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi4 Light fog at 2 meters.]");
+    else                     llOwnerSay(" * Light fog at 2 meters.");
+    if(visionRestrict != 5)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi5 Blind.]");
+    else                     llOwnerSay(" * Blind.");
+    llOwnerSay(" ");
+    llOwnerSay("Hearing Options:");
+    if(hearingRestrict != 0)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "he0 No restrictions.]");
+    else                      llOwnerSay(" * No restrictions.");
+    if(hearingRestrict != 1)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "he1 Incapable of hearing anyone but wearer and co-captured victims.]");
+    else                      llOwnerSay(" * Incapable of hearing anyone but wearer and co-captured victims.");
+    if(hearingRestrict != 2)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "he2 Incapable of hearing anyone but wearer.]");
+    else                      llOwnerSay(" * Incapable of hearing anyone but wearer.");
+    if(hearingRestrict != 3)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "he3 Deaf.]");
+    else                      llOwnerSay(" * Deaf.");
+    llOwnerSay(" ");
+    llOwnerSay("Speech Options:");
+    if(speechRestrict != 0)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "sp0 No extra restrictions.]");
+    else                     llOwnerSay(" * No extra restrictions.");
+    if(speechRestrict != 1)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "sp1 No longer capable of emoting.]");
+    else                     llOwnerSay(" * No longer capable of emoting.");
+    if(speechRestrict != 2)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "sp2 Incapable of any kind of speech, even to owner.]");
+    else                     llOwnerSay(" * Incapable of any kind of speech, even to owner.");
+    llSetObjectName(oldn);
 }
 
 toggleedit()
@@ -52,9 +220,12 @@ default
 {
     state_entry()
     {
+        llOwnerSay((string)llGetFreeMemory());
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(BALL_CHANNEL, "", NULL_KEY, "");
         llListen(STRUGGLE_CHANNEL, "", NULL_KEY, "");
+        llListen(GAZE_ECHO_CHANNEL, "", NULL_KEY, "");
+        llListen(5, "", NULL_KEY, "");
         llSitTarget(<0.0, 0.0, 0.001>, ZERO_ROTATION);
         rezzer = llGetOwner();
         llVolumeDetect(TRUE);
@@ -71,6 +242,7 @@ default
         editmode = FALSE;
         seatedoffset = ZERO_VECTOR;
         waitingstate = 0;
+        prefix = llGetSubString((string)llGetKey(), -10, -1);
         
         // Set the rezzer and default animation.
         rezzer = (key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0);
@@ -133,13 +305,20 @@ default
         llRegionSayTo(llAvatarOnSitTarget(), COMMAND_CHANNEL, "*onball " + (string)llGetKey());
 
         // Apply RLV restrictions.
-        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames_sec:" + (string)llGetOwnerKey(rezzer) + "=n|@shownametags=n|@shownearby=n|@showhovertextall=n|@showworldmap=n|@showminimap=n|@showloc=n|@setcam_focus:" + (string)rezzer + ";;1/0/0=force|@setcam_origindistmax:10=n|@buy=n|@pay=n|@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@showinv=n|@interact=n|@showself=n|@sendgesture=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add|@sendchannel_sec=n|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add");
+        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames_sec:" + (string)llGetOwnerKey(rezzer) + "=n|@shownametags=n|@shownearby=n|@showhovertextall=n|@showworldmap=n|@showminimap=n|@showloc=n|@setcam_focus:" + (string)rezzer + ";;1/0/0=force|@setcam_origindistmax:10=n|@buy=n|@pay=n|@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@showinv=n|@interact=n|@showself=n|@sendgesture=n|@sendim:" + (string)llGetOwnerKey(rezzer) + "=add|@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add|@sendchannel_sec:5=add");
+        applyIm();
+        applyHearing();
+        applySpeech();
+        applyVision();
 
         // Start the animation.
         llStartAnimation(animation);
 
         // Take controls.
         llTakeControls(CONTROL_FWD | CONTROL_BACK | CONTROL_LEFT | CONTROL_RIGHT | CONTROL_ROT_LEFT | CONTROL_ROT_RIGHT | CONTROL_UP | CONTROL_DOWN, TRUE, TRUE);
+
+        // Notify of menu.
+        llRegionSayTo(llAvatarOnSitTarget(), 0, "You can access a menu to restrict yourself further by clicking [secondlife:///app/chat/5/menu here] or by typing /5menu.");
 
         // And start a timer loop.
         llSetTimerEvent(0.5);
@@ -163,7 +342,7 @@ default
             if(keyisavatar == TRUE) return;
             string oldn = llGetObjectName();
             llSetObjectName(name);
-            if(llToLower(llStringTrim(m, STRING_TRIM)) == "/me" || startswith(m, "/me") == FALSE || contains(m, "\"") == TRUE)
+            if(llToLower(llStringTrim(m, STRING_TRIM)) != "/me" && startswith(m, "/me") == TRUE && contains(m, "\"") == FALSE)
             {
                 llRegionSayTo(llAvatarOnSitTarget(), 0, m);
             }
@@ -173,13 +352,80 @@ default
             }
             llSetObjectName(oldn);
         }
+        else if(c == GAZE_ECHO_CHANNEL)
+        {
+            if(hearingRestrict > 1) return;
+            string oldn = llGetObjectName();
+            llSetObjectName(n);
+            llRegionSayTo(llAvatarOnSitTarget(), 0, m);
+            llSetObjectName(oldn);
+        }
         else if(c == BALL_CHANNEL)
         {
             if(keyisavatar == FALSE || llGetOwnerKey(id) != rezzer) return;
+            if(hearingRestrict == 3) return;
             string oldn = llGetObjectName();
             llSetObjectName("Wearer's Thoughts");
             llRegionSayTo(llAvatarOnSitTarget(), 0, m);
             llSetObjectName(oldn);
+        }
+        else if(c == 5)
+        {
+            if(id != firstavatar && rezzer != llGetOwnerKey(id)) return;
+            if(m == "menu" && id == firstavatar) sitterMenu();
+            else if(m == "menu" && rezzer == llGetOwnerKey(id)) ownerMenu();
+            else if(startswith(m, prefix + "im"))
+            {
+                if(id == firstavatar && imRestrict > (integer)llGetSubString(m, -1, -1)) return;
+                imRestrict = (integer)llGetSubString(m, -1, -1);
+                if(imRestrict < 0) imRestrict = 0;
+                if(imRestrict > 3) imRestrict = 3;
+                string oldn = llGetObjectName();
+                llSetObjectName("");
+                llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's IM restrictions set to level " + (string)imRestrict + ".");
+                llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's IM restrictions set to level " + (string)imRestrict + ".");
+                applyIm();
+                llSetObjectName(oldn);
+            }
+            else if(startswith(m, prefix + "vi"))
+            {
+                if(id == firstavatar && visionRestrict > (integer)llGetSubString(m, -1, -1)) return;
+                visionRestrict = (integer)llGetSubString(m, -1, -1);
+                if(visionRestrict < 0) visionRestrict = 0;
+                if(visionRestrict > 5) visionRestrict = 5;
+                string oldn = llGetObjectName();
+                llSetObjectName("");
+                llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Vision restrictions set to level " + (string)visionRestrict + ".");
+                llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Vision restrictions set to level " + (string)visionRestrict + ".");
+                applyVision();
+                llSetObjectName(oldn);
+            }
+            else if(startswith(m, prefix + "he"))
+            {
+                if(id == firstavatar && hearingRestrict > (integer)llGetSubString(m, -1, -1)) return;
+                hearingRestrict = (integer)llGetSubString(m, -1, -1);
+                if(hearingRestrict < 0) hearingRestrict = 0;
+                if(hearingRestrict > 3) hearingRestrict = 3;
+                string oldn = llGetObjectName();
+                llSetObjectName("");
+                llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Hearing restrictions set to level " + (string)hearingRestrict + ".");
+                llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Hearing restrictions set to level " + (string)hearingRestrict + ".");
+                applyHearing();
+                llSetObjectName(oldn);
+            }
+            else if(startswith(m, prefix + "sp"))
+            {
+                if(id == firstavatar && speechRestrict > (integer)llGetSubString(m, -1, -1)) return;
+                speechRestrict = (integer)llGetSubString(m, -1, -1);
+                if(speechRestrict < 0) speechRestrict = 0;
+                if(speechRestrict > 2) speechRestrict = 2;
+                string oldn = llGetObjectName();
+                llSetObjectName("");
+                llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
+                llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
+                applySpeech();
+                llSetObjectName(oldn);
+            }
         }
         else if(c == MANTRA_CHANNEL)
         {

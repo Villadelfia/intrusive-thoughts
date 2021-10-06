@@ -30,7 +30,7 @@ saytoobject(string n, string m)
 {
     string old = llGetObjectName();
     llSetObjectName(n);
-    llRegionSayTo(storedavatar, 0, m);
+    llRegionSayTo(storedavatar, GAZE_ECHO_CHANNEL, m);
     llSetObjectName(old);
 }
 

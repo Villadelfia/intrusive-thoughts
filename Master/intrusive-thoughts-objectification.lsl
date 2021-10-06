@@ -82,6 +82,7 @@ giveeditmenu()
     if(l == 1)
     {
         llRegionSayTo(llList2Key(objectifiedballs, 0), MANTRA_CHANNEL, "edit");
+        llRegionSayTo(llList2Key(objectifiedballs, 0), 5, "menu");
         return;
     }
 
@@ -203,6 +204,7 @@ default
             {
                 if(m == " ") return;
                 llRegionSayTo(llList2Key(objectifiedballs, (integer)m), MANTRA_CHANNEL, "edit");
+                llRegionSayTo(llList2Key(objectifiedballs, (integer)m), 5, "menu");
             }
             else if(dialog == 3)
             {
@@ -307,7 +309,7 @@ default
             else 
             {
                 integer n = llGetListLength(objectifiedavatars);
-                while(~--n) llRegionSayTo(llList2Key(objectifiedavatars, n), 0, m);
+                while(~--n) llRegionSayTo(llList2Key(objectifiedballs, n), GAZE_ECHO_CHANNEL, m);
                 llOwnerSay(m);
             }
             llSetObjectName("");

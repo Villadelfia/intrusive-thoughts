@@ -55,3 +55,4 @@ Version 2.7.3:
  - Improve emergency button.
  - Fix partial filter.
  - Add struggle API. Refer to documentation for more info.
+ - Add adjustable restrictions for objectification.
