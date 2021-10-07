@@ -161,13 +161,24 @@ Take it back to your inventory and replace it in your HUD.
 
 
 19. How do I use the Struggle API?
-When the victim of Vore, Furniture or Worn Objectification is captured, a message will be broadcast on STRUGGLE_CHANNEL (997611882) toward the person, or prim in the case of furniture, that did the capturing. The message is "captured|<uuid>" and you may use this to notify the victim of how struggling works and how you handle it.
+The struggle API communicates on channel 997611882, hereafter called STRUGGLE_CHANNEL. The struggle API is present in the included vore carrier, the objectification ball, and the furniture ball. Messages will be sent to the person wearing the IT hud that rezzed the vore carrier or objectification ball, or the furniture prim in the case of furniture.
 
-Once the victim begins struggling by pressing SHIFT+A, SHIFT+D, PGUP or PGDN, a message will be sent if there were more than 0 inputs in the last second in the following format: "struggle_count|<uuid>|<count in last second>"
+The following messages will be sent from the carrier/ball to the hud wearer/furniture:
+ - captured|<uuid>|<type> — Sent when a new victim is captured. Uuid is the victim's uuid. Type is 'vore' or 'object' depending on what they are a victim of.
+ - released|<uuid> — Sent when a victim is released for any reason. Uuid is the released victim's uuid.
+ - acid_level|<uuid>|<level> — Sent when a vore victim is captured and whenever the acid level is changed thereafter. Uuid is the victim's uuid. Level is a floating point number between 0.0 and 1.0.
+ - acid_dissolve|<uuid> — Sent when the acid level is pushed over the max. The victim is considered dissolved by the carrier at this point. Uuid is the victim's uuid.
+ - struggle_count|<uuid>|<count> — Sent when the victim has made a non-zero amount of struggle attempts in the last second by pressing SHIFT+A, SHIFT+D, PGUP or PGDN. Uuid is the victim's uuid. Count is the amount of struggle actions counted in the last second.
 
-You may respond in two ways, via llRegionSayTo directly back to the ball or the carrier: "struggle_fail|<message>" will stop sending struggle updates and tell the victim the message included, and "struggle_success|<message>" will free the victim and tell them the message included. Both messages should be sent on STRUGGLE_CHANNEL.
+The following commands will be accepted from the wearer/furniture prim:
+ - struggle_success|<uuid>|<message> — This command signifies that the struggle was a success. The victim matching uuid (if any) will be released and they will be told the message passed.
+ - struggle_fail|<uuid>|<message> — This command signifies that the struggle failed. The victim matching uuid (if any) will no longer generate struggle_count messages and will be told the message passed.
 
-In the case of vore carriers made using the included kit, you are expected to handle this API yourself or implement your own struggling system.
+Implementation notes:
+ - You may add scripts to the carrier/ball to expand this api, but your messages MUST be prefixed with two underscores, a product identifier, and another underscore. So for example, you could add '__cooltoy_custom_message' to the API for your needs.
+ - Outgoing messages from the carrier/ball may be modified in the future, but new parameters will ALWAYS be added to the end of the command, so you can always split on '|' and find what you expect where you expect it. Please do NOT check the length of the split list, as it may grow in the future.
+ - If incoming commands are added in the future that replace old commands, the old command will still be supported where possible.
+ - In the case of vore carriers made using the included kit, you are expected to handle this API yourself or implement your own struggling system.
 
 
 20. How do I use the Adjustable Restrictions when objectifying someone?

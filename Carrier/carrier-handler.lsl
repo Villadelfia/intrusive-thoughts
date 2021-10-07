@@ -1,6 +1,6 @@
 #include <IT/globals.lsl>
 key rezzer;
-key firstavatar;
+key firstavatar = NULL_KEY;
 integer volumelink;
 key focuskey;
 float fillfactor = 0.25;
@@ -18,6 +18,7 @@ list whitelist = ["boot",    "top",      "bangle", "armband", "bracer", "thigh",
 
 die()
 {
+    if(firstavatar) llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "released|" + (string)firstavatar);
     llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
     llSetAlpha(0.0, ALL_SIDES);
     llSetPrimitiveParams([PRIM_TEMP_ON_REZ, TRUE]);
@@ -112,7 +113,8 @@ default
                 if(focuskey == NULL_KEY) focuskey = llAvatarOnLinkSitTarget(volumelink);
                 if(!captured) 
                 {
-                    llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "captured|" + (string)firstavatar);
+                    llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "captured|" + (string)firstavatar + "|vore");
+                    llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "acid_level|" + (string)firstavatar + "|" + (string)fillfactor);
                     captured = TRUE;
                 }
                 llRequestPermissions(llAvatarOnLinkSitTarget(volumelink), PERMISSION_TRIGGER_ANIMATION | PERMISSION_TAKE_CONTROLS);
@@ -197,11 +199,13 @@ default
                 float height = (float)llDeleteSubString(m, 0, llStringLength("acidlevel"));
                 height /= 100.0;
                 fillfactor = height;
+                llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "acid_level|" + (string)firstavatar + "|" + (string)fillfactor);
                 llMessageLinked(LINK_SET, X_API_FILL_FACTOR, (string)height, (key)"");
             }
             else if(startswith(m, "dissolve"))
             {
                 if(llAvatarOnLinkSitTarget(volumelink) == NULL_KEY) die();
+                llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "acid_dissolve|" + (string)firstavatar);
                 llStopAnimation("sit");
                 llStartAnimation("digest");
                 dissolved = TRUE;
@@ -229,25 +233,33 @@ default
             if(llAvatarOnLinkSitTarget(volumelink) == NULL_KEY) die();
             if(startswith(m, "struggle_fail"))
             {
-                m = llList2String(llParseString2List(m, ["|"], []), 1);
-                llSetObjectName("");
-                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, m);
-                llReleaseControls();
-                struggleFailed = FALSE;
+                list params = llParseString2List(m, ["|"], []);
+                m = llList2String(llParseString2List(m, ["|"], []), -1);
+                if(llGetListLength(params) == 2 || (llGetListLength(params) == 3 && (key)llList2String(params, 1) == firstavatar))
+                {
+                    llSetObjectName("");
+                    llRegionSayTo(firstavatar, 0, m);
+                    llReleaseControls();
+                    struggleFailed = FALSE;
+                }
             }
             else if(startswith(m, "struggle_success"))
             {
-                m = llList2String(llParseString2List(m, ["|"], []), 1);
-                llSetObjectName("");
-                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, m);
-                llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
-                llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + <0.0, 0.0, 10.0>);
-                if(dissolved) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, put on something and then take it off again. If this doesn't help, relog.");
-                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(volumelink) + ",!release");
-                llSleep(0.5);
-                llUnSit(llAvatarOnLinkSitTarget(volumelink));
-                llSleep(0.5);
-                die();
+                list params = llParseString2List(m, ["|"], []);
+                m = llList2String(llParseString2List(m, ["|"], []), -1);
+                if(llGetListLength(params) == 2 || (llGetListLength(params) == 3 && (key)llList2String(params, 1) == firstavatar))
+                {
+                    llSetObjectName("");
+                    llRegionSayTo(firstavatar, 0, m);
+                    llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
+                    llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + <0.0, 0.0, 10.0>);
+                    if(dissolved) llRegionSayTo(firstavatar, 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, put on something and then take it off again. If this doesn't help, relog.");
+                    llRegionSayTo(firstavatar, RLVRC, "release," + (string)firstavatar + ",!release");
+                    llSleep(0.5);
+                    llUnSit(firstavatar);
+                    llSleep(0.5);
+                    die();
+                }
             }
         }
     }

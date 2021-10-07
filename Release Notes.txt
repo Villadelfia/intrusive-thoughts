@@ -56,3 +56,6 @@ Version 2.7.3:
  - Fix partial filter.
  - Add struggle API. Refer to documentation for more info.
  - Add adjustable restrictions for objectification.
+
+Version 2.7.4:
+ - Expand struggle API and futureproof it. This includes API stability rules for future changes.

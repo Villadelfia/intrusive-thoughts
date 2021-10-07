@@ -1,7 +1,7 @@
 #include <IT/globals.lsl>
 string animation = "";
 key rezzer;
-key firstavatar;
+key firstavatar = NULL_KEY;
 integer keyisavatar;
 integer saton;
 integer editmode;
@@ -41,6 +41,7 @@ integer speechRestrict = 0;
 
 die()
 {
+    if(firstavatar) llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "released|" + (string)firstavatar);
     llSetAlpha(0.0, ALL_SIDES);
     llSetPrimitiveParams([PRIM_TEMP_ON_REZ, TRUE]);
     llDie();
@@ -287,7 +288,7 @@ default
                 
                 if(!captured) 
                 {
-                    llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "captured|" + (string)firstavatar);
+                    llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "captured|" + (string)firstavatar + "|object");
                     captured = TRUE;
                 }
 
@@ -517,24 +518,32 @@ default
             if(llAvatarOnSitTarget() == NULL_KEY) die();
             if(startswith(m, "struggle_fail"))
             {
-                m = llList2String(llParseString2List(m, ["|"], []), 1);
-                llSetObjectName("");
-                llRegionSayTo(llAvatarOnSitTarget(), 0, m);
-                llReleaseControls();
-                struggleFailed = FALSE;
+                list params = llParseString2List(m, ["|"], []);
+                m = llList2String(llParseString2List(m, ["|"], []), -1);
+                if(llGetListLength(params) == 2 || (llGetListLength(params) == 3 && (key)llList2String(params, 1) == firstavatar))
+                {
+                    llSetObjectName("");
+                    llRegionSayTo(firstavatar, 0, m);
+                    llReleaseControls();
+                    struggleFailed = FALSE;
+                }
             }
             else if(startswith(m, "struggle_success"))
             {
-                m = llList2String(llParseString2List(m, ["|"], []), 1);
-                llSetObjectName("");
-                llRegionSayTo(llAvatarOnSitTarget(), 0, m);
-                llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
-                if(animation == "hide_b") llRegionSayTo(llAvatarOnSitTarget(), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, put on something and then take it off again. If this doesn't help, relog.");
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
-                llSleep(0.5);
-                llUnSit(llAvatarOnSitTarget());
-                llSleep(10.0);
-                die();
+                list params = llParseString2List(m, ["|"], []);
+                m = llList2String(llParseString2List(m, ["|"], []), -1);
+                if(llGetListLength(params) == 2 || (llGetListLength(params) == 3 && (key)llList2String(params, 1) == firstavatar))
+                {
+                    llSetObjectName("");
+                    llRegionSayTo(firstavatar, 0, m);
+                    llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
+                    if(animation == "hide_b") llRegionSayTo(firstavatar, 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, put on something and then take it off again. If this doesn't help, relog.");
+                    llRegionSayTo(firstavatar, RLVRC, "release," + (string)firstavatar + ",!release");
+                    llSleep(0.5);
+                    llUnSit(firstavatar);
+                    llSleep(10.0);
+                    die();
+                }
             }
         }
     }
