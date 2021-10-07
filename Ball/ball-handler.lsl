@@ -137,6 +137,12 @@ sitterMenu()
     else                          llRegionSayTo(firstavatar, 0, " - No longer capable of emoting.");
     if(speechRestrict < 2)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "sp2 Incapable of any kind of speech, even to owner.]");
     else if(speechRestrict == 2)  llRegionSayTo(firstavatar, 0, " * Incapable of any kind of speech, even to owner.");
+    llOwnerSay(" ");
+    llOwnerSay("Visibility Options:");
+    if(animation != "hide_a")  llRegionSayTo(firstavatar, 0, " - Under the ground, but avatar and nameplate visible.");
+    else                       llRegionSayTo(firstavatar, 0, " * Under the ground, but avatar and nameplate visible.");
+    if(animation != "hide_b")  llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after relog.]");
+    else                       llRegionSayTo(firstavatar, 0, " * Completely invisible, even the nameplate. Slightly fiddly to become visible again after relog.");
     llSetObjectName(oldn);
 }
 
@@ -187,6 +193,12 @@ ownerMenu()
     else                     llOwnerSay(" * No longer capable of emoting.");
     if(speechRestrict != 2)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "sp2 Incapable of any kind of speech, even to owner.]");
     else                     llOwnerSay(" * Incapable of any kind of speech, even to owner.");
+    llOwnerSay(" ");
+    llOwnerSay("Visibility Options:");
+    if(animation != "hide_a")  llOwnerSay(" - Under the ground, but avatar and nameplate visible.");
+    else                       llOwnerSay(" * Under the ground, but avatar and nameplate visible.");
+    if(animation != "hide_b")  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after relog.]");
+    else                       llOwnerSay(" * Completely invisible, even the nameplate. Slightly fiddly to become visible again after relog.");
     llSetObjectName(oldn);
 }
 
@@ -425,6 +437,18 @@ default
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
                 applySpeech();
+                llSetObjectName(oldn);
+            }
+            else if(m == prefix + "invis")
+            {
+                if(animation == "hide_b") return;
+                llStopAnimation(animation);
+                animation = "hide_b";
+                llStartAnimation(animation);
+                string oldn = llGetObjectName();
+                llSetObjectName("");
+                llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
+                llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
                 llSetObjectName(oldn);
             }
         }
