@@ -267,6 +267,17 @@ default
                 objectifiednames += [llGetDisplayName(av)];
                 objectifieddescriptions += [desc];
             }
+            else if(startswith(m, "objrename"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("objrename"));
+                integer i = llListFindList(objectifiedballs, [id]);
+                if(i != -1) 
+                {
+                    detachobject(llList2String(objectifieddescriptions, i));
+                    attachobject(m);
+                    objectifieddescriptions = llListReplaceList(objectifieddescriptions, [m], i, i);
+                }
+            }
         }
         else if(c == RLVRC)
         {

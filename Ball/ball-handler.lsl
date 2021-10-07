@@ -199,6 +199,10 @@ ownerMenu()
     else                       llOwnerSay(" * Under the ground, but avatar and nameplate visible.");
     if(animation != "hide_b")  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after relog.]");
     else                       llOwnerSay(" * Completely invisible, even the nameplate. Slightly fiddly to become visible again after relog.");
+    llOwnerSay(" ");
+    llOwnerSay("Other Options:");
+    llOwnerSay(" - Type /5 " + prefix + "name <new name> to rename this object.");
+    llOwnerSay(" - If there is a purple cylinder present, you can move it to change the object's nameplate, then click it to hide it.");
     llSetObjectName(oldn);
 }
 
@@ -449,6 +453,17 @@ default
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
+                llSetObjectName(oldn);
+            }
+            else if(startswith(m, prefix + "name"))
+            {
+                if(id == firstavatar) return;
+                m = llDeleteSubString(m, 0, llStringLength(prefix + "name"));
+                string oldn = llGetObjectName();
+                llSetObjectName("");
+                llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about is now " + m + ".");
+                llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about is now " + m + ".");
+                llRegionSayTo(rezzer, MANTRA_CHANNEL, "objrename " + m);
                 llSetObjectName(oldn);
             }
         }
