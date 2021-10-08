@@ -3,8 +3,6 @@ Welcome to the Intrusive Thoughts system. This notecard will tell you all you ne
 1. What's inside
 Inside of your package you will find:
  - > Intrusive Thoughts Carrier API: An unpacker for the Carrier kit and API with instructions and an example script.
- - > Intrusive Thoughts Furniture Contents (Can Speak): An unpacker for the tools needed to make objects 'furniture' for the IT system. This version is meant for objects like radios or speakers, things that could feasibly speak.
- - > Intrusive Thoughts Furniture Contents (Mute): An unpacker for the tools needed to make objects 'furniture' for the IT system. This version is meant for objects that would not be able to speak.
  - > Intrusive Thoughts Leash Handles: An unpacker containing two leash handles compatible with the IT Slaves.
  - > Intrusive Thoughts Plugin API: An unpacker for the Plugin API instructions and Demo Plugin scripts.
  - > Intrusive Thoughts RLV Client Script: An unpacker containing an extra script if 10 supported RLV devices on the RLV relay is not enough.
@@ -12,6 +10,8 @@ Inside of your package you will find:
  - Intrusive Thoughts Applier Notecard Template: An example applier notecard. You will be using this to set up the voice and hearing restrictions featured in the IT Slaves.
  - Intrusive Thoughts Configuration: You will be editing this notecard and dropping it onto the HUD to set it up before first usage and whenever you wish to change the settings.
  - Intrusive Thoughts Focus Target: The focus target, to be used to make a slave look at a specific point on your body.
+ - Intrusive Thoughts Furniture (Can speak): Rez this to make an object 'furniture' for the IT system. This version is meant for objects like radios or speakers, things that could feasibly speak.
+ - Intrusive Thoughts Furniture (Mute): Rez this to make an object 'furniture' for the IT system. This version is meant for objects that would not be able to speak.
  - Intrusive Thoughts Master: The Master HUD, to be worn by you.
  - Intrusive Thoughts Slave: The Slave HUD, to be given to your submissives.
  - Intrusive Thoughts Slave NORELAY: The Slave HUD, to be given to your submissives. This version without an RLV relay built in.
@@ -88,11 +88,13 @@ Disable the "..." during auditory restrictions by disabling: RLVa -> Show Filter
 
 
 10. How do I create Furniture compatible with the Objectification system?
-Unpack a Furniture pack and drop the script and the ball object in anything to turn it into furniture. You can drop it alongside Immersivity HUD furniture scripts and it will work. The name of the object will be the name of the furniture when speaking.
+Rez one of the two furniture objects included and follow the instructions it gives you. The name of the object it links to will be the name of the furniture when emoting or speaking.
 
-If you edit the object description to include the word "invis", the captured avatar will be made entirely invisible rather than being pushed under the ground.
+If you edit the object description to include the word "invis", the captured avatar will be made entirely invisible rather than being pushed under the ground. If two pieces of furniture in the same region share the same object description, they will be mentally linked and they will be able to talk to each other, no matter the distance between the two pieces of furniture. This allows you, for example, to split up a statue into multiple pieces, each capable of containing a stored object, and each able to talk to each other.
 
-If two pieces of furniture in the same region share the same object description, they will be mentally linked and they will be able to talk to each other, no matter the distance between the two pieces of furniture. This allows you, for example, to split up a statue into multiple pieces, each capable of containing a stored object, and each able to talk to each other.
+You can edit the name and description on the object before dropping the linking script in it, or on the furniture after it has linked.
+
+You can add Immersivity HUD furniture scripts and it will still work. It has been tested with AVSitter scripted seats and those work as well. Any other scripted objects will likely work.
 
 
 11. How do I create a leash holder?

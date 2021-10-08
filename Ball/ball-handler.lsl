@@ -23,9 +23,11 @@ integer imRestrict = 0;
 // 0 = Nothing extra.
 // 1 = Dark fog at 10 meters.
 // 2 = Light fog at 10 meters.
-// 3 = Dark fog at 2 meters.
-// 4 = Light fog at 2 meters.
-// 5 = Blind.
+// 3 = Dark fog at 5 meters.
+// 4 = Light fog at 5 meters.
+// 5 = Dark fog at 2 meters.
+// 6 = Light fog at 2 meters.
+// 7 = Blind.
 integer visionRestrict = 0;
 
 // 0 = Nothing extra.
@@ -59,18 +61,20 @@ applyIm()
 applyVision()
 {
     llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=y");
-    if(visionRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_distmin:0=force|@setsphere_valuemin:0=force|@setsphere_distmax:10=force|@setsphere_param:0/0/0/0=force");
-    if(visionRestrict == 2) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_distmin:0=force|@setsphere_valuemin:0=force|@setsphere_distmax:10=force|@setsphere_param:1/1/1/0=force");
-    if(visionRestrict == 3) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_distmin:0=force|@setsphere_valuemin:0=force|@setsphere_distmax:2=force|@setsphere_param:0/0/0/0=force");
-    if(visionRestrict == 4) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_distmin:0=force|@setsphere_valuemin:0=force|@setsphere_distmax:2=force|@setsphere_param:1/1/1/0=force");
-    if(visionRestrict == 5) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_distmin:0=force|@setsphere_valuemin:0=force|@setsphere_distmax:0=force|@setsphere_param:0/0/0/0=force");
+    float dist = 10.0;
+    if(visionRestrict > 2) dist = 5.0;
+    if(visionRestrict > 4) dist = 2.0;
+    if(visionRestrict > 6) dist = 0.0;
+    string color = "0/0/0";
+    if(visionRestrict % 2 == 0) color = "1/1/1";
+    if(visionRestrict > 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_distmin:" + (string)(dist/4) + "=force|@setsphere_valuemin:0=force|@setsphere_distmax:" + (string)dist + "=force|@setsphere_param:" + color + "/0=force");
 }
 
 applyHearing()
 {
-    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@recvchat=y|@recvemote=y|@recvchat:" + (string)llGetOwnerKey(rezzer) + "=rem|@recvemote:" + (string)llGetOwnerKey(rezzer) + "=rem");
+    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@recvchat=y|@recvemote=y|@recvchat:" + (string)llGetOwnerKey(rezzer) + "=rem|@recvemote:" + (string)llGetOwnerKey(rezzer) + "=rem|@recvchat:" + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + "=rem|@recvemote:" + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + "=rem");
     if(hearingRestrict == 3)     llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@recvchat=n|@recvemote=n");
-    else if(hearingRestrict > 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@recvchat=n|@recvemote=n|@recvchat:" + (string)llGetOwnerKey(rezzer) + "=add|@recvemote:" + (string)llGetOwnerKey(rezzer) + "=add");
+    else if(hearingRestrict > 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@recvchat=n|@recvemote=n|@recvchat:" + (string)llGetOwnerKey(rezzer) + "=add|@recvemote:" + (string)llGetOwnerKey(rezzer) + "=add|@recvchat:" + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + "=add|@recvemote:" + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + "=add");
 }
 
 applySpeech()
@@ -108,14 +112,20 @@ sitterMenu()
     if(visionRestrict < 2)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi2 Light fog at 10 meters.]");
     else if(visionRestrict == 2)  llRegionSayTo(firstavatar, 0, " * Light fog at 10 meters.");
     else                          llRegionSayTo(firstavatar, 0, " - Light fog at 10 meters.");
-    if(visionRestrict < 3)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi3 Dark fog at 2 meters.]");
-    else if(visionRestrict == 3)  llRegionSayTo(firstavatar, 0, " * Dark fog at 2 meters.");
+    if(visionRestrict < 3)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi3 Dark fog at 5 meters.]");
+    else if(visionRestrict == 3)  llRegionSayTo(firstavatar, 0, " * Dark fog at 5 meters.");
+    else                          llRegionSayTo(firstavatar, 0, " - Dark fog at 5 meters.");
+    if(visionRestrict < 4)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi4 Light fog at 5 meters.]");
+    else if(visionRestrict == 4)  llRegionSayTo(firstavatar, 0, " * Light fog at 5 meters.");
+    else                          llRegionSayTo(firstavatar, 0, " - Light fog at 5 meters.");
+    if(visionRestrict < 5)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi5 Dark fog at 2 meters.]");
+    else if(visionRestrict == 5)  llRegionSayTo(firstavatar, 0, " * Dark fog at 2 meters.");
     else                          llRegionSayTo(firstavatar, 0, " - Dark fog at 2 meters.");
-    if(visionRestrict < 4)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi4 Light fog at 2 meters.]");
-    else if(visionRestrict == 4)  llRegionSayTo(firstavatar, 0, " * Light fog at 2 meters.");
+    if(visionRestrict < 6)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi6 Light fog at 2 meters.]");
+    else if(visionRestrict == 6)  llRegionSayTo(firstavatar, 0, " * Light fog at 2 meters.");
     else                          llRegionSayTo(firstavatar, 0, " - Light fog at 2 meters.");
-    if(visionRestrict < 5)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi5 Blind.]");
-    else if(visionRestrict == 5)  llRegionSayTo(firstavatar, 0, " * Blind.");
+    if(visionRestrict < 7)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "vi7 Blind.]");
+    else if(visionRestrict == 7)  llRegionSayTo(firstavatar, 0, " * Blind.");
     llRegionSayTo(firstavatar, 0, " ");
     llRegionSayTo(firstavatar, 0, "Hearing Options:");
     if(hearingRestrict == 0)       llRegionSayTo(firstavatar, 0, " * No restrictions.");
@@ -137,8 +147,8 @@ sitterMenu()
     else                          llRegionSayTo(firstavatar, 0, " - No longer capable of emoting.");
     if(speechRestrict < 2)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "sp2 Incapable of any kind of speech, even to owner.]");
     else if(speechRestrict == 2)  llRegionSayTo(firstavatar, 0, " * Incapable of any kind of speech, even to owner.");
-    llOwnerSay(" ");
-    llOwnerSay("Visibility Options:");
+    llRegionSayTo(firstavatar, 0, " ");
+    llRegionSayTo(firstavatar, 0, "Visibility Options:");
     if(animation != "hide_a")  llRegionSayTo(firstavatar, 0, " - Under the ground, but avatar and nameplate visible.");
     else                       llRegionSayTo(firstavatar, 0, " * Under the ground, but avatar and nameplate visible.");
     if(animation != "hide_b")  llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after relog.]");
@@ -169,11 +179,15 @@ ownerMenu()
     else                     llOwnerSay(" * Dark fog at 10 meters.");
     if(visionRestrict != 2)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi2 Light fog at 10 meters.]");
     else                     llOwnerSay(" * Light fog at 10 meters.");
-    if(visionRestrict != 3)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi3 Dark fog at 2 meters.]");
+    if(visionRestrict != 3)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi3 Dark fog at 5 meters.]");
+    else                     llOwnerSay(" * Dark fog at 5 meters.");
+    if(visionRestrict != 4)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi4 Light fog at 5 meters.]");
+    else                     llOwnerSay(" * Light fog at 5 meters.");
+    if(visionRestrict != 5)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi5 Dark fog at 2 meters.]");
     else                     llOwnerSay(" * Dark fog at 2 meters.");
-    if(visionRestrict != 4)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi4 Light fog at 2 meters.]");
+    if(visionRestrict != 6)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi6 Light fog at 2 meters.]");
     else                     llOwnerSay(" * Light fog at 2 meters.");
-    if(visionRestrict != 5)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi5 Blind.]");
+    if(visionRestrict != 7)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi7 Blind.]");
     else                     llOwnerSay(" * Blind.");
     llOwnerSay(" ");
     llOwnerSay("Hearing Options:");
@@ -409,7 +423,7 @@ default
                 if(id == firstavatar && visionRestrict > (integer)llGetSubString(m, -1, -1)) return;
                 visionRestrict = (integer)llGetSubString(m, -1, -1);
                 if(visionRestrict < 0) visionRestrict = 0;
-                if(visionRestrict > 5) visionRestrict = 5;
+                if(visionRestrict > 7) visionRestrict = 7;
                 string oldn = llGetObjectName();
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Vision restrictions set to level " + (string)visionRestrict + ".");
