@@ -292,19 +292,17 @@ default
             {
                 if(accept == TRUE)
                 {
-                    llSleep(1.0);
-                    if((llGetAgentInfo(target) & AGENT_SITTING) != 0)
-                    {
-                        string spoof;
-                        spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["%ME%"], []), owner);
-                        spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), targetdescription);
-                        spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
-                        llSay(0, spoof);
-                        attachobject(targetdescription);
-                    }
-                    else llOwnerSay("Could not capture '" + lockedname + "'.");
+                    string spoof;
+                    spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["%ME%"], []), owner);
+                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), targetdescription);
+                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
+                    llSay(0, spoof);
+                    attachobject(targetdescription);
                 }
-                else llOwnerSay("Could not capture '" + lockedname + "'.");
+                else
+                {
+                    llOwnerSay("Could not capture '" + lockedname + "'.");
+                }
                 await = "";
                 llRegionSayTo(lastrezzed, MANTRA_CHANNEL, "check");
             }
@@ -333,7 +331,7 @@ default
         lastrezzed = id;
         llSetObjectName("RLV Capture");
         await = "c";
-        llRegionSayTo(target, RLVRC, "c," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
+        llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)target);
         objectifiedballs += [id];
         objectifiedavatars += [target];
         objectifiednames += [targetname];

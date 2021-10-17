@@ -330,8 +330,6 @@ default
 
     run_time_permissions(integer perm)
     {
-        llSleep(1.0);
-
         // Let the IT slave know to turn off its garbler.
         llRegionSayTo(llAvatarOnSitTarget(), COMMAND_CHANNEL, "*onball " + (string)llGetKey());
 
@@ -511,6 +509,14 @@ default
             {
                 if(llAvatarOnSitTarget() == NULL_KEY) die();
             }
+            else if(startswith(m, "sit"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("sit"));
+                firstavatar = (key)m;
+                llListen(GAZE_CHAT_CHANNEL, "", firstavatar, "");
+                llListen(RLVRC, "", NULL_KEY, "");
+                llRegionSayTo((key)m, RLVRC, "c," + m + ",@sit:" + (string)llGetKey() + "=force|@shownearby=n");
+            }
             else if(m == "edit" && llGetOwnerKey(id) == llGetOwnerKey(rezzer) && keyisavatar == TRUE)
             {
                 toggleedit();
@@ -563,6 +569,12 @@ default
                 }
                 llSleep(10.0);
                 die();
+            }
+            else if(startswith(m, "c,"))
+            {
+                llSleep(1.0);
+                if(llList2Key(llGetObjectDetails(firstavatar, [OBJECT_ROOT]), 0) == llGetKey()) llRegionSayTo(rezzer, RLVRC, "c," + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + ",@sit=n,ok");
+                else llRegionSayTo(rezzer, RLVRC, "c," + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + ",@sit=n,ko");
             }
         }
         else if(c == STRUGGLE_CHANNEL)
