@@ -27,6 +27,8 @@ default
             else if(str == "food") llOwnerSay(VERSION_M + ": Set food name to '" + (string)id + "'");
             else if(str == "vore") llOwnerSay(VERSION_M + ": Set vore phrase to '" + (string)id + "'");
             else if(str == "unvore") llOwnerSay(VERSION_M + ": Set unvore phrase to '" + (string)id + "'");
+            else if(str == "possess") llOwnerSay(VERSION_M + ": Set possess phrase to '" + (string)id + "'");
+            else if(str == "unpossess") llOwnerSay(VERSION_M + ": Set unpossess phrase to '" + (string)id + "'");
             else if(str == "ball" && ((string)id == "1" || (string)id == "2")) 
             {
                 if((integer)((string)id) == 1)

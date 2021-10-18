@@ -3,6 +3,7 @@
 #define S_DIALOG_CHANNEL    -1246653822
 #define O_DIALOG_CHANNEL    -1438864911
 #define RLV_CHANNEL          1324689755
+#define POSS_CHANNEL         1324689756
 #define VOICE_CHANNEL        1997346185
 #define HUD_SPEAK_CHANNEL    2003469558
 #define RLV_CHECK_CHANNEL    2033461987
@@ -87,11 +88,12 @@
 //#define DEBUG
 //#define RETAIL_MODE
 
-#define VERSION_S "IT-Slave v2.7"
-#define VERSION_M "IT-Master v2.7"
+#define VERSION_S "IT-Slave v2.8"
+#define VERSION_M "IT-Master v2.8"
+#define VERSION_FULL "020800"
 #define VERSION_MAJOR 2
-#define VERSION_MINOR 7
-#define VERSION_PATCH 4
+#define VERSION_MINOR 8
+#define VERSION_PATCH 0
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG

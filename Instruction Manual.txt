@@ -185,3 +185,9 @@ Implementation notes:
 
 20. How do I use the Adjustable Restrictions when objectifying someone?
 When you capture someone and click the "EDIT OBJECT" button, you will be given a menu in chat with clickable links. Of note here is that the captured person can also get this menu, however they can only make the restrictions worse, not better.
+
+
+21. How do I use the possession system?
+Same as the objectification and vore systems. You lock onto someone, then you click the "possess" button. It will then give them an object (or use the slave if they're wearing it) and them under your control. You can click the play/pause button so you can move yourself, and you can click the chair button to have your victim sit on what you're looking at. You can also talk into channel /7 to talk through your victim's mouth.
+
+When you're done, just click the release button.

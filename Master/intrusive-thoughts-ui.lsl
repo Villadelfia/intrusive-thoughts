@@ -18,6 +18,7 @@ integer started = FALSE;
 
 integer hasobject = FALSE;
 integer hasprey   = FALSE;
+integer hasposs   = FALSE;
 integer hasrelay  = FALSE;
 
 string lockedavatarname = "";
@@ -49,7 +50,7 @@ setbuttonfilter(string filter, integer active)
             buttonstates = llListReplaceList(buttonstates, [active], i, i);
             if(active) alpha = 0.0;
             else       alpha = 0.7;
-            llSetLinkAlpha(llList2Integer(buttonlinks, i), alpha, ALL_SIDES);
+            llSetLinkAlpha(llList2Integer(buttonlinks, i), alpha, 4);
         }
     }
 
@@ -59,7 +60,7 @@ setbuttonfilter(string filter, integer active)
     {
         i = llListFindList(buttons, ["vore"]);
         buttonstates = llListReplaceList(buttonstates, [FALSE], i, i);
-        llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, ALL_SIDES);
+        llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, 4);
     }
     else
     {
@@ -68,13 +69,38 @@ setbuttonfilter(string filter, integer active)
         {
             i = llListFindList(buttons, ["vore"]);
             buttonstates = llListReplaceList(buttonstates, [TRUE], i, i);
-            llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.0, ALL_SIDES);
+            llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.0, 4);
         }
         else
         {
             i = llListFindList(buttons, ["vore"]);
             buttonstates = llListReplaceList(buttonstates, [FALSE], i, i);
-            llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, ALL_SIDES);
+            llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, 4);
+        }
+    }
+
+    // Similarly, possess and unpossess are not compatible.
+    i = llListFindList(buttons, ["unpossess"]);
+    if(llList2Integer(buttonstates, i) == TRUE)
+    {
+        i = llListFindList(buttons, ["possess"]);
+        buttonstates = llListReplaceList(buttonstates, [FALSE], i, i);
+        llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, 4);
+    }
+    else
+    {
+        i = llListFindList(buttons, ["objectify"]);
+        if(llList2Integer(buttonstates, i) == TRUE)
+        {
+            i = llListFindList(buttons, ["possess"]);
+            buttonstates = llListReplaceList(buttonstates, [TRUE], i, i);
+            llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.0, 4);
+        }
+        else
+        {
+            i = llListFindList(buttons, ["possess"]);
+            buttonstates = llListReplaceList(buttonstates, [FALSE], i, i);
+            llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, 4);
         }
     }
 
@@ -191,7 +217,8 @@ dosetup()
             else
             {
                 buttonstates += [FALSE];
-                llSetLinkAlpha(i, 0.7, ALL_SIDES);
+                llSetLinkAlpha(i, 0.0, ALL_SIDES);
+                llSetLinkAlpha(i, 0.7, 4);
             }
         }
         --i;
@@ -285,6 +312,18 @@ gethelp(string b)
     else if(b == "hide")
     {
         llOwnerSay("Clicking this button will minimize/maximize the HUD.");
+    }
+    else if(b == "possess" || b == "unpossess")
+    {
+        llOwnerSay("Possess will attempt to take control over the locked avatar. Release will let them go.");
+    }
+    else if(b == "posspause")
+    {
+        llOwnerSay("While you are possessing someone, you can not move. This button will pause the possession so you can move. You can then click it again to take control over your victim again.");
+    }
+    else if(b == "posssit")
+    {
+        llOwnerSay("This button will have your victim sit on the object you are looking at, or stand them up if they were already seated.");
     }
 }
 
@@ -448,8 +487,9 @@ default
             if(str == "vore") hasprey = (integer)((string)id);
             if(str == "object") hasobject = (integer)((string)id);
             if(str == "relay") hasrelay = (integer)((string)id);
-            if(hasprey || hasobject || hasrelay) llOwnerSay("@detach=n");
-            else                                 llOwnerSay("@detach=y");
+            if(str == "poss") hasposs = (integer)((string)id);
+            if(hasprey || hasobject || hasrelay || hasposs) llOwnerSay("@detach=n");
+            else                                            llOwnerSay("@detach=y");
         }
         else if(num == M_API_BUTTON_PRESSED)
         {

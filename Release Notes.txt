@@ -60,3 +60,6 @@ Version 2.7.3:
 Version 2.7.4:
  - Expand struggle API and futureproof it. This includes API stability rules for future changes.
  - Add renaming and total invisibility to adjustable restrictions.
+
+Version 2.8.0:
+ - Add initial version of Possession system!

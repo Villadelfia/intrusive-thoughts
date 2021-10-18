@@ -1,16 +1,12 @@
 # Tp lines configure pre-set locations for the tpto and tpme commands
 # The format is: tp = shortname,region,x,y,z
-tp = mystwood,Quiet Riot,141,95,55
-tp = mw,Quiet Riot,141,95,55
-tp = silenced,San Fierro,218,15,2422
-tp = hbc,Myanimo,96,20,903
+tp = nri,Bedos,97,99,901
 
 # The name that will be used in place of %ME% in spoofs.
 name = Avatar
 
 # The prefix for your objects when they emote, in the following example
 # an emote would look like: "Hana's shoes wiggle a little"
-# Note: Basic ASCII only.
 objectprefix = Avatar's
 
 # Spoof configuration:
@@ -42,3 +38,17 @@ food = Prey
 # the term defined above.
 vore = %ME% eats %VIC%, now their %OBJ%.
 unvore = %ME% releases their %OBJ%.
+
+# These are the phrases used when possessing and releasing someone. %OBJ% cannot be used here.
+possess = %ME% gazes deeply into %VIC%'s eyes as they slowly lose control over their body...
+unpossess = %ME% releases her control over %VIC%, as they find their control over their own body returning...
+
+# Relaymode can be set to ask, group, or auto.
+# In ask mode, permission will be asked for all devices not owned by yourself or others on the allow list.
+# In group mode, in addition to the above, permission will also be granted to devices in the same group as yourself.
+# In auto mode, every request will be granted.
+relaymode = ask
+
+# Relayallowed lines add uuids of allowed device owners for the RLV relay. One per line.
+# the following line would allow Hana Nova's devices if you uncomment it:
+# relayallowed = 1aaf1cad-8d64-4966-b1ee-4d17dee81ca9
