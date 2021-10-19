@@ -50,5 +50,20 @@ unpossess = %ME% releases her control over %VIC%, as they find their control ove
 relaymode = ask
 
 # Relayallowed lines add uuids of allowed device owners for the RLV relay. One per line.
-# the following line would allow Hana Nova's devices if you uncomment it:
-# relayallowed = 1aaf1cad-8d64-4966-b1ee-4d17dee81ca9
+# the following line would allow Hana Nova's devices if you remove the #:
+#relayallowed = 1aaf1cad-8d64-4966-b1ee-4d17dee81ca9
+
+# Relayfilter lines add filters to the RLV relay of the master as described in the Instruction Manual.
+# There are a few special filters you can add that will automatically add a few related and common commands
+# to the filter list:
+#   - block_im: Blocks IM restrictions.
+#   - block_blur: Blocks screen blurring.
+#   - block_overlay: Blocks screen overlays and environment changing.
+#   - block_sphere: Blocks vision spheres.
+#   - block_inventory: Blocks inventory commands that stop you from accessing your inventory.
+#   - block_autotp: Blocks commands that will allow someone to automatically teleport to you or automatically summon you.
+#   - block_tp: Blocks teleport preventing commands with the exception of unsit.
+# Some examples are given, just remove the # to use them.
+#relayfilter = block_im
+#relayfilter = sendim*:+=
+#relayfilter = unsit

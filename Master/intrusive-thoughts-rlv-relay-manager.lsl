@@ -407,6 +407,7 @@ default
         else if(num == M_API_CONFIG_DONE)
         {
             if(rlvclients == []) enabled = FALSE;
+            llMessageLinked(LINK_SET, RLV_API_SET_FILTERS, llDumpList2String(filters, "\n"), (key)"");
             llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
             if(enabled == TRUE)
             {
@@ -428,6 +429,7 @@ default
             if(configured)
             {
                 allowed = [];
+                filters = [];
                 configured = FALSE;
             }
 
@@ -454,6 +456,50 @@ default
             {
                 allowed += [k];
                 llOwnerSay(VERSION_M + ": RLV Relay will automatically allow devices owned by secondlife:///app/agent/" + (string)k + "/about.");
+            }
+            else if(str == "relayfilter")
+            {
+                string filter = llToLower((string)k);
+                if(filter == "block_im")
+                {
+                    filters += ["sendim", "recvim", "startim"];
+                    llOwnerSay(VERSION_M + ": RLV Relay will filter out IM blocking commands.");
+                }
+                else if(filter == "block_blur")
+                {
+                    filters += ["*renderresolutiondivisor"];
+                    llOwnerSay(VERSION_M + ": RLV Relay will filter out screen blur commands.");
+                }
+                else if(filter == "block_overlay")
+                {
+                    filters += ["setoverlay", "setenv_"];
+                    llOwnerSay(VERSION_M + ": RLV Relay will filter out overlay and vision commands.");
+                }
+                else if(filter == "block_sphere")
+                {
+                    filters += ["setsphere", "camdraw"];
+                    llOwnerSay(VERSION_M + ": RLV Relay will filter out vision sphere commands.");
+                }
+                else if(filter == "block_inventory")
+                {
+                    filters += ["showinv", "view"];
+                    llOwnerSay(VERSION_M + ": RLV Relay will filter out inventory commands.");
+                }
+                else if(filter == "block_autotp")
+                {
+                    filters += ["accepttp"];
+                    llOwnerSay(VERSION_M + ": RLV Relay will filter out auto-teleport commands.");
+                }
+                else if(filter == "block_tp")
+                {
+                    filters += ["tp", "sittp", "standtp"];
+                    llOwnerSay(VERSION_M + ": RLV Relay will filter out teleport commands.");
+                }
+                else
+                {
+                    filters += [filter];
+                    llOwnerSay(VERSION_M + ": RLV Relay filter \"" + filter + "\" added.");
+                }
             }
         }
     }
