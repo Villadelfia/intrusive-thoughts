@@ -99,9 +99,9 @@ default
 
     listen(integer c, string n, key id, string m)
     {
-        if(nridisable) return;
         if(c == RLVRC)
         {
+            if(nridisable) return;
             if(rlvclients == []) return;
             list args = llParseStringKeepNulls(m, [","], []);
 
@@ -165,6 +165,7 @@ default
         }
         else if(c == tempchannel && templisten != -1)
         {
+            if(nridisable) return;
             if(handlingk == NULL_KEY) return;
             if(m == "ALLOW")
             {
@@ -225,6 +226,7 @@ default
         }
         else if(c == 0)
         {
+            if(nridisable) return;
             if(contains(llToLower(m), "((red))"))
             {
                 llOwnerSay("You've safeworded. You're free from all RLV devices that grabbed you.");

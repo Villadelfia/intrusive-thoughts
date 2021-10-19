@@ -63,3 +63,9 @@ Version 2.7.4:
 
 Version 2.8.0:
  - Add initial version of Possession system!
+
+Version 2.8.1:
+ - Add teleport following for objectification, vore and vore kits.
+ - Add relay filter configuration to configuration notecard.
+ - Improve RLV relay client.
+ - Fix several small typos and bugs.

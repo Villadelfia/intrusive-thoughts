@@ -1,6 +1,9 @@
 #include <IT/globals.lsl>
 key rezzer;
 list sitTargetLinks = [];
+key urlt;
+string url = "null";
+integer firstattempt = TRUE;
 
 die()
 {
@@ -17,6 +20,7 @@ default
     {
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(BALL_CHANNEL, "", NULL_KEY, "");
+        llListen(RLVRC, "", NULL_KEY, "");
         rezzer = llGetOwner();
         llVolumeDetect(TRUE);
         llSetStatus(STATUS_ROTATE_X | STATUS_ROTATE_Y | STATUS_ROTATE_Z, FALSE);
@@ -26,6 +30,7 @@ default
     on_rez(integer start_param)
     {
         rezzer = llGetOwnerKey((key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0));
+        urlt = llRequestURL();
         if(start_param == 0) return;
         llSetTimerEvent(60.0);
     }
@@ -50,6 +55,12 @@ default
                 }
                 llSetTimerEvent(0.5);
             }
+        }
+        if(change & CHANGED_REGION)
+        {
+            url = "null";
+            llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
+            urlt = llRequestURL();
         }
     }
 
@@ -80,13 +91,10 @@ default
                 llSleep(0.5);
                 die();
             }
-            else if(startswith(m, "rlvforward"))
+            else if(startswith(m, "sit"))
             {
-                integer avatars = llGetNumberOfPrims() - llGetObjectPrimCount(llGetKey());
-                if(avatars == 0) die();
-                m = llDeleteSubString(m, 0, llStringLength("rlvforward"));
-                for(i = 0; i < l; ++i) if(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i))) llRegionSayTo(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)), RLVRC, "cmd," + (string)llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)) + "," + m);
-                llRegionSayTo(rezzer, MANTRA_CHANNEL, "rlvresponse ok");
+                m = llDeleteSubString(m, 0, llStringLength("sit"));
+                llRegionSayTo((key)m, RLVRC, "cv," + m + ",@sit:" + (string)llGetKey() + "=force|@shownearby=n");
             }
             else if(m == "check")
             {
@@ -119,9 +127,15 @@ default
                         llUnSit(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)));
                     }
                 }
+                integer avatars = llGetNumberOfPrims() - llGetObjectPrimCount(llGetKey());
+                if(avatars == 0) die();
             }
-            integer avatars = llGetNumberOfPrims() - llGetObjectPrimCount(llGetKey());
-            if(avatars == 0) die();
+            else if(startswith(m, "cv,"))
+            {
+                llSleep(1.0);
+                if(llList2Key(llGetObjectDetails(llGetOwnerKey(id), [OBJECT_ROOT]), 0) == llGetKey()) llRegionSayTo(rezzer, RLVRC, "cv," + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + ",@sit=n,ok");
+                else llRegionSayTo(rezzer, RLVRC, "cv," + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + ",@sit=n,ko");
+            }
         }
     }
 
@@ -140,6 +154,8 @@ default
 
     timer()
     {
+        llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
+
         integer i;
         integer l = llGetListLength(sitTargetLinks);
         integer avatars = llGetNumberOfPrims() - llGetObjectPrimCount(llGetKey());
@@ -150,34 +166,33 @@ default
         else
         {
             vector my = llGetPos();
+            vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0);
+            float dist = llVecDist(my, pos);
 
             if(llGetAgentSize(rezzer) == ZERO_VECTOR)
             {
-                llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
-                llSetRegionPos(my + <0.0, 0.0, 10.0>);
-                for(i = 0; i < l; ++i) if(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i))) llRegionSayTo(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)) + ",!release");
-                llSleep(0.5);
-                for(i = 0; i < l; ++i) if(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i))) llUnSit(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)));
-                llSleep(0.5);
-                die();
-                return;
+                if(firstattempt)
+                {
+                    firstattempt = FALSE;
+                    llSetTimerEvent(30.0);
+                    return;
+                }
+                else
+                {
+                    llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
+                    llSetRegionPos(my + <0.0, 0.0, 10.0>);
+                    for(i = 0; i < l; ++i) if(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i))) llRegionSayTo(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)) + ",!release");
+                    llSleep(0.5);
+                    for(i = 0; i < l; ++i) if(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i))) llUnSit(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)));
+                    llSleep(0.5);
+                    die();
+                    return;
+                }
             }
-
-            vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0);
-            float dist = llVecDist(my, pos);
-            my.z = pos.z;
-            float xydist = llVecDist(my, pos);
-            if(xydist > 365.0 || pos == ZERO_VECTOR)
+            else
             {
-                llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
-                llSetRegionPos(my + <0.0, 0.0, 10.0>);
-                for(i = 0; i < l; ++i) if(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i))) llRegionSayTo(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)) + ",!release");
-                llSleep(0.5);
-                for(i = 0; i < l; ++i) if(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i))) llUnSit(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)));
-                llSleep(0.5);
-                die();
-                return;
-            }
+                firstattempt = TRUE;
+            }   
 
             if(dist > 60.0)
             {
@@ -194,6 +209,37 @@ default
             {
                 llStopMoveToTarget();
                 llSetStatus(STATUS_PHYSICS, FALSE);
+            }
+        }
+    }
+
+    http_request(key id, string method, string body)
+    {
+        if(id == urlt)
+        {
+            urlt = NULL_KEY;
+            if(method == URL_REQUEST_GRANTED) 
+            {
+                url = body;
+                llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
+            }
+        }
+        else if(method == "POST")
+        {
+            if(body == "die")
+            {
+                firstattempt = FALSE;
+                llSetTimerEvent(0.1);
+            }
+            else
+            {
+                llSetTimerEvent(0.0);
+                integer i;
+                integer l = llGetListLength(sitTargetLinks);
+                for(i = 0; i < l; ++i) if(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i))) llRegionSayTo(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)), RLVRC, "cantp," + (string)llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)) + ",@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tpto:" + body + "=force|!release");
+                llHTTPResponse(id, 200, "OK");
+                llSleep(10.0);
+                die();
             }
         }
     }

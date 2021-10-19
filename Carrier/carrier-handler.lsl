@@ -1,5 +1,7 @@
 #include <IT/globals.lsl>
 key rezzer;
+key urlt;
+string url = "null";
 key firstavatar = NULL_KEY;
 integer volumelink;
 key focuskey;
@@ -9,6 +11,7 @@ integer dissolved = FALSE;
 integer struggleEvents = 0;
 integer struggleFailed = FALSE;
 integer captured = FALSE;
+integer firstattempt = TRUE;
 
 list whitelist = ["boot",    "top",      "bangle", "armband", "bracer", "thigh",  "ring", 
                   "suit",    "lingerie", "bra",    "shoe",    "glove",  "sock",   "stocking", 
@@ -84,6 +87,7 @@ default
     on_rez(integer start_param)
     {
         rezzer = llGetOwnerKey((key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0));
+        urlt = llRequestURL();
         firstavatar = NULL_KEY;
         if(start_param == 0) return;
         llSetTimerEvent(60.0);
@@ -119,6 +123,12 @@ default
                 }
                 llRequestPermissions(llAvatarOnLinkSitTarget(volumelink), PERMISSION_TRIGGER_ANIMATION | PERMISSION_TAKE_CONTROLS);
             }
+        }
+        if(change & CHANGED_REGION)
+        {
+            url = "null";
+            llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
+            urlt = llRequestURL();
         }
     }
 
@@ -182,12 +192,12 @@ default
                 llSleep(0.5);
                 die();
             }
-            else if(startswith(m, "rlvforward"))
+            else if(startswith(m, "sit"))
             {
-                if(llAvatarOnLinkSitTarget(volumelink) == NULL_KEY) die();
-                m = llDeleteSubString(m, 0, llStringLength("rlvforward"));
-                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "cmd," + (string)llAvatarOnLinkSitTarget(volumelink) + "," + m);
-                llRegionSayTo(rezzer, MANTRA_CHANNEL, "rlvresponse ok");
+                m = llDeleteSubString(m, 0, llStringLength("sit"));
+                firstavatar = (key)m;
+                llListen(RLVRC, "", NULL_KEY, "");
+                llRegionSayTo((key)m, RLVRC, "cv," + m + ",@sit:" + (string)llGetKey() + "=force|@shownearby=n");
             }
             else if(m == "check")
             {
@@ -225,6 +235,12 @@ default
                 llUnSit(llAvatarOnLinkSitTarget(volumelink));
                 llSleep(10.0);
                 die();
+            }
+            else if(startswith(m, "cv,"))
+            {
+                llSleep(1.0);
+                if(llList2Key(llGetObjectDetails(firstavatar, [OBJECT_ROOT]), 0) == llGetKey()) llRegionSayTo(rezzer, RLVRC, "cv," + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + ",@sit=n,ok");
+                else llRegionSayTo(rezzer, RLVRC, "cv," + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + ",@sit=n,ko");
             }
         }
         else if(c == STRUGGLE_CHANNEL)
@@ -266,6 +282,8 @@ default
 
     timer()
     {
+        llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
+
         if(struggleEvents > 0 && struggleFailed == FALSE)
         {
             llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "struggle_count|" + (string)firstavatar + "|" + (string)struggleEvents);
@@ -279,34 +297,33 @@ default
         else
         {
             vector my = llGetPos();
+            vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0);
+            float dist = llVecDist(my, pos);
 
             if(llGetAgentSize(rezzer) == ZERO_VECTOR)
             {
-                llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
-                llSetRegionPos(my + <0.0, 0.0, 10.0>);
-                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(volumelink) + ",!release");
-                llSleep(0.5);
-                llUnSit(llAvatarOnLinkSitTarget(volumelink));
-                llSleep(0.5);
-                die();
-                return;
+                if(firstattempt)
+                {
+                    firstattempt = FALSE;
+                    llSetTimerEvent(30.0);
+                    return;
+                }
+                else
+                {
+                    llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
+                    llSetRegionPos(my + <0.0, 0.0, 10.0>);
+                    llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(volumelink) + ",!release");
+                    llSleep(0.5);
+                    llUnSit(llAvatarOnLinkSitTarget(volumelink));
+                    llSleep(0.5);
+                    die();
+                    return;
+                }
             }
-
-            vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0);
-            float dist = llVecDist(my, pos);
-            my.z = pos.z;
-            float xydist = llVecDist(my, pos);
-            if(xydist > 365.0 || pos == ZERO_VECTOR)
+            else
             {
-                llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
-                llSetRegionPos(my + <0.0, 0.0, 10.0>);
-                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(volumelink) + ",!release");
-                llSleep(0.5);
-                llUnSit(llAvatarOnLinkSitTarget(volumelink));
-                llSleep(0.5);
-                die();
-                return;
-            }
+                firstattempt = TRUE;
+            }            
 
             if(dist > 60.0)
             {
@@ -328,6 +345,35 @@ default
             ticks++;
             if(ticks > 60) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "focus," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@setcam_focus:" + (string)focuskey + ";0;0/1/0=force");
             if(llGetTime() > 60.0) detachrandom();
+        }
+    }
+
+    http_request(key id, string method, string body)
+    {
+        if(id == urlt)
+        {
+            urlt = NULL_KEY;
+            if(method == URL_REQUEST_GRANTED) 
+            {
+                url = body;
+                llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
+            }
+        }
+        else if(method == "POST")
+        {
+            if(body == "die")
+            {
+                firstattempt = FALSE;
+                llSetTimerEvent(0.1);
+            }
+            else
+            {
+                llSetTimerEvent(0.0);
+                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "cantp," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tpto:" + body + "=force|!release");
+                llHTTPResponse(id, 200, "OK");
+                llSleep(10.0);
+                die();
+            }
         }
     }
 }

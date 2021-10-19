@@ -8,6 +8,7 @@ string unvorespoof = "";
 key lockedavatar = NULL_KEY;
 string lockedname = "";
 key vorecarrier = NULL_KEY;
+string voreurl = "null";
 key vorevictim = NULL_KEY;
 string vorename = "";
 key target;
@@ -16,6 +17,10 @@ string await;
 integer fillfactor = 25;
 integer filter = FALSE;
 integer configured = FALSE;
+key buffered = NULL_KEY;
+integer timermode = 0;
+string lastregion;
+integer countdown = 0;
 
 detachbelly()
 {
@@ -50,6 +55,7 @@ unvore()
     llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "unsit");
     vorecarrier = NULL_KEY;
     vorevictim = NULL_KEY;
+    voreurl = "null";
     vorename = "";
 }
 
@@ -82,6 +88,7 @@ default
     {
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
+        llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
     }
 
     attach(key id)
@@ -104,19 +111,17 @@ default
             {
                 if(accept == TRUE)
                 {
-                    llSleep(1.0);
-                    if((llGetAgentInfo(target) & AGENT_SITTING) != 0)
-                    {
-                        string spoof;
-                        spoof = llDumpList2String(llParseStringKeepNulls(vorespoof, ["%ME%"], []), owner);
-                        spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), foodname);
-                        spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
-                        llSay(0, spoof);
-                        attachbelly();
-                    }
-                    else llOwnerSay("Could not eat '" + lockedname + "'.");
+                    string spoof;
+                    spoof = llDumpList2String(llParseStringKeepNulls(vorespoof, ["%ME%"], []), owner);
+                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), foodname);
+                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), vorename);
+                    llSay(0, spoof);
+                    attachbelly();
                 }
-                else llOwnerSay("Could not eat '" + lockedname + "'.");
+                else 
+                {
+                    llOwnerSay("Could not eat '" + lockedname + "'.");
+                }
                 llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "check");
                 await = "";
             }
@@ -128,26 +133,42 @@ default
             llSay(0, m);
             llSetObjectName("");
         }
+        else if(c == MANTRA_CHANNEL)
+        {
+            if(startswith(m, "objurl"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("objurl"));
+                if(vorecarrier == id) voreurl = m;
+            }
+        }
     }
 
     object_rez(key id)
     {
         if(llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0) != "carrier") return;
         vorecarrier = id;
-        llSetObjectName("RLV Capture");
-        fillfactor = 25;
-        await = "cv";
-        llRegionSayTo(target, RLVRC, "cv," + (string)target + ",@sit:" + (string)id + "=force|!x-handover/" + (string)id + "/0|!release");
         vorename = targetname;
         vorevictim = target;
-        llSetObjectName("");
+        voreurl = "null";
+        if(timermode == 0)
+        {
+            fillfactor = 25;
+            await = "cv";
+        }
+        else
+        {
+            llOwnerSay("Done re-eating!");
+            timermode = 0;
+            llSetTimerEvent(2.5);
+        }
+        llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)target);
     }
 
     link_message(integer sender_num, integer num, string str, key id)
     {
         if(num == M_API_CONFIG_DONE) 
         {
-            llSetTimerEvent(0.5);
+            llSetTimerEvent(2.5);
             configured = TRUE;
         }
         else if(num == M_API_CONFIG_DATA)
@@ -169,13 +190,7 @@ default
         }
         else if(num == M_API_DOTP)
         {
-            if(vorecarrier == NULL_KEY || (string)id == llGetRegionName()) llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
-            else
-            {
-                await = "";
-                llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "rlvforward " + str);
-                llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
-            }
+            llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
         }
         else if(num == M_API_LOCK)
         {
@@ -184,6 +199,7 @@ default
         }
         else if(num == M_API_BUTTON_PRESSED)
         {
+            if(timermode != 0) return;
             if(str == "vore")
             {
                 vore();
@@ -220,32 +236,146 @@ default
     timer()
     {
         llSetTimerEvent(0.0);
-        
-        list req = llGetObjectDetails(vorecarrier, [OBJECT_CREATOR]);
-        if(vorecarrier != NULL_KEY && (req == [] || llList2Key(req, 0) != llGetCreator()))
+        if(timermode == 0)
         {
-            detachbelly();
-            vorecarrier = NULL_KEY;
-            vorevictim = NULL_KEY;
-            vorename = "";
+            integer differentRegion = lastregion != llGetRegionName();        
+            list req = llGetObjectDetails(vorecarrier, [OBJECT_CREATOR]);
+            if(vorecarrier != NULL_KEY && (req == [] || llList2Key(req, 0) != llGetCreator()))
+            {
+                if(differentRegion)
+                {
+                    timermode = 1;
+                    buffered = NULL_KEY;
+                    jump timermode1;
+                }
+                else if(buffered == vorecarrier)
+                {
+                    detachbelly();
+                    vorecarrier = NULL_KEY;
+                    vorevictim = NULL_KEY;
+                    vorename = "";
+                    voreurl = "null";
+                }
+                else
+                {
+                    buffered = vorecarrier;
+                }
+            }
+
+            if(vorecarrier != NULL_KEY)
+            {
+                if(!filter)
+                {
+                    filter = TRUE;
+                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
+                }
+            }
+            else
+            {
+                if(filter)
+                {
+                    filter = FALSE;
+                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
+                }
+            }
+
+            llSetTimerEvent(2.5);
+            return;
+            @timermode1;
+            llSetTimerEvent(0.5);
+        }
+        else if(timermode == 1)
+        {
+            vector pos = llGetPos();
+            string region = llGetRegionName();
+            if(!canrez(llGetPos()))
+            {
+                llOwnerSay("Can't rez here, trying to set land group.");
+                llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
+                llSleep(2.5);
+            }
+
+            integer teleportothers = canrez(llGetPos());
+            if(teleportothers) llOwnerSay("Fetching your vore victim and giving them 30 seconds to arrive...");
+            else               llOwnerSay("Can't rez here, not fetching your vore victim...");
+
+            if(voreurl == "null")
+            {
+                detachbelly();
+                vorecarrier = NULL_KEY;
+                vorevictim = NULL_KEY;
+                vorename = "";
+            }
+            else
+            {
+                if(teleportothers) llHTTPRequest(voreurl, [HTTP_METHOD, "POST"], region + "/" + (string)llRound(pos.x) + "/" + (string)llRound(pos.y)+ "/" + (string)llRound(pos.z));
+                else               llHTTPRequest(voreurl, [HTTP_METHOD, "POST"], "die");
+            }
+
+            if(teleportothers)
+            {
+                timermode = 2;
+                countdown = 11;
+                llSetTimerEvent(3.0);
+            }
+            else
+            {
+                timermode = 0;
+                llSetTimerEvent(2.5);
+            }
+        }
+        else if(timermode == 2)
+        {
+            if(countdown > 0)
+            {
+                countdown--;
+
+                integer arrived = llListFindList(llGetAgentList(AGENT_LIST_REGION, []), [vorevictim]);
+
+                if(arrived != -1) 
+                {
+                    countdown = 0;
+                    llSleep(5.0);
+                }
+
+                if(countdown != 0) llSetTimerEvent(3.0);
+            }
+
+            if(countdown == 0)
+            {
+                if(llGetAgentSize(vorevictim) == ZERO_VECTOR)
+                {
+                    detachbelly();
+                    vorecarrier = NULL_KEY;
+                    vorevictim = NULL_KEY;
+                    vorename = "";
+                    voreurl = "null";
+                }
+
+                if(vorecarrier == NULL_KEY)
+                {
+                    llOwnerSay("Your vore victim didn't arrive in time.");
+                    timermode = 0;
+                    llSetTimerEvent(2.5);
+                }
+                else
+                {
+                    llOwnerSay("Re-eating " + vorename + "...");
+                    timermode = 3;
+                    target = vorevictim;
+                    targetname = vorename;
+                    llRezAtRoot("carrier", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, 1);
+                    llSetTimerEvent(10.0);
+                }
+            }
+        }
+        else if(timermode == 3)
+        {
+            llOwnerSay("Could not re-eat!");
+            timermode = 0;
+            llSetTimerEvent(2.5);
         }
 
-        if(vorecarrier != NULL_KEY)
-        {
-            if(!filter)
-            {
-                filter = TRUE;
-                llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
-            }
-        }
-        else
-        {
-            if(filter)
-            {
-                filter = FALSE;
-                llMessageLinked(LINK_SET, M_API_SET_FILTER, "vore", (key)((string)filter));
-            }
-        }
-        llSetTimerEvent(0.5);
+        lastregion = llGetRegionName();
     }
 }

@@ -19,8 +19,15 @@ list objectifiedavatars = [];
 list objectifiednames = [];
 list objectifieddescriptions = [];
 list objectifiedballs = [];
+list objectifiedurls = [];
+list objectificationqueue = [];
 string await = "";
 
+integer timermode = 0;
+integer countdown = 0;
+list arrived = [];
+string lastregion;
+list buffered = [];
 integer store = -1;
 string storingon;
 key closestavatar = NULL_KEY;
@@ -110,7 +117,7 @@ givestoremenu()
         return;
     }
 
-    string prompt = "Who will you store in as '" + llList2String(llGetObjectDetails(lastseenobject, [OBJECT_NAME]), 0) + "'?\n";
+    string prompt = "Who will you store as '" + llList2String(llGetObjectDetails(lastseenobject, [OBJECT_NAME]), 0) + "'?\n";
     integer i;
     if(l > 12) l = 12;
     list buttons = [];
@@ -137,6 +144,7 @@ release(integer i)
     objectifiedavatars = llDeleteSubList(objectifiedavatars, i, i);
     objectifiedballs = llDeleteSubList(objectifiedballs, i, i);
     objectifieddescriptions = llDeleteSubList(objectifieddescriptions, i, i);
+    objectifiedurls = llDeleteSubList(objectifiedurls, i, i);
 }
 
 releaseall()
@@ -170,9 +178,36 @@ addobject(string desc)
     llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, hideopt);
 }
 
+handlequeue()
+{
+    if(objectificationqueue == [])
+    {
+        llOwnerSay("Done recapturing!");
+        timermode = 0;
+        llSetTimerEvent(2.5);
+    }
+    else
+    {
+        target = llList2Key(objectificationqueue, 0);
+        targetname = llList2String(objectificationqueue, 1);
+        targetdescription = llList2String(objectificationqueue, 2);
+        objectificationqueue = llDeleteSubList(objectificationqueue, 0, 2);
+        if(llGetAgentSize(target) == ZERO_VECTOR) 
+        {
+            llOwnerSay("Skipping " + targetname + ". Not present.");
+            handlequeue();
+        }
+        else
+        {
+            llOwnerSay("Recapturing " + targetname + ".");
+            llSetTimerEvent(10.0);
+            llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, hideopt);
+        }
+    }
+}
+
 default
 {
-
     state_entry()
     {
         llListen(O_DIALOG_CHANNEL, "", llGetOwner(), "");
@@ -248,6 +283,7 @@ default
                     objectifiedavatars = llDeleteSubList(objectifiedavatars, store, store);
                     objectifiedballs = llDeleteSubList(objectifiedballs, store, store);
                     objectifieddescriptions = llDeleteSubList(objectifieddescriptions, store, store);
+                    objectifiedurls = llDeleteSubList(objectifiedurls, store, store);
                 }
             }
             else if(startswith(m, "puton"))
@@ -255,6 +291,7 @@ default
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("puton")), ["|||"], []);
                 key av = (key)llList2String(params, 0);
                 string desc = llList2String(params, 1);
+                string url = llList2String(params, 2);
                 attachobject(desc);
                 string spoof;
                 spoof = llDumpList2String(llParseStringKeepNulls(putonspoof, ["%ME%"], []), owner);
@@ -266,6 +303,7 @@ default
                 objectifiedavatars += [av];
                 objectifiednames += [llGetDisplayName(av)];
                 objectifieddescriptions += [desc];
+                objectifiedurls += [url];
             }
             else if(startswith(m, "objrename"))
             {
@@ -277,6 +315,12 @@ default
                     attachobject(m);
                     objectifieddescriptions = llListReplaceList(objectifieddescriptions, [m], i, i);
                 }
+            }
+            else if(startswith(m, "objurl"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("objurl"));
+                integer i = llListFindList(objectifiedballs, [id]);
+                if(i != -1) objectifiedurls = llListReplaceList(objectifiedurls, [m], i, i);
             }
         }
         else if(c == RLVRC)
@@ -295,7 +339,7 @@ default
                     string spoof;
                     spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["%ME%"], []), owner);
                     spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), targetdescription);
-                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), lockedname);
+                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), targetname);
                     llSay(0, spoof);
                     attachobject(targetdescription);
                 }
@@ -329,14 +373,18 @@ default
     {
         if(llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0) != "ball") return;
         lastrezzed = id;
-        llSetObjectName("RLV Capture");
-        await = "c";
-        llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)target);
         objectifiedballs += [id];
         objectifiedavatars += [target];
         objectifiednames += [targetname];
         objectifieddescriptions += [targetdescription];
-        llSetObjectName("");
+        objectifiedurls += ["null"];
+        llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)target);
+        if(timermode == 0) await = "c";
+        else
+        {
+            attachobject(targetdescription);
+            handlequeue();
+        }
     }
 
     link_message(integer sender_num, integer num, string str, key id)
@@ -345,7 +393,7 @@ default
         {
             lockedavatar = NULL_KEY;
             lockedname = "";
-            llSetTimerEvent(0.5);
+            llSetTimerEvent(2.5);
             configured = TRUE;
         }
         else if(num == M_API_CONFIG_DATA)
@@ -372,14 +420,7 @@ default
         }
         else if(num == M_API_DOTP)
         {
-            if(objectifiedavatars == [] || (string)id == llGetRegionName()) llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
-            else
-            {
-                await = "";
-                integer l = llGetListLength(objectifiedballs);
-                while(~--l) llRegionSayTo(llList2Key(objectifiedballs, l), MANTRA_CHANNEL, "rlvforward " + str);
-                llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
-            }
+            llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
         }
         else if(num == M_API_LOCK)
         {
@@ -388,6 +429,7 @@ default
         }
         else if(num == M_API_BUTTON_PRESSED)
         {
+            if(timermode != 0) return;
             if(str == "furniture")
             {
                 store = -1;
@@ -418,36 +460,188 @@ default
     timer()
     {
         llSetTimerEvent(0.0);
-        integer l = llGetListLength(objectifiedballs);
-        while(~--l)
+        if(timermode == 0)
         {
-            list req = llGetObjectDetails(llList2Key(objectifiedballs, l), [OBJECT_CREATOR]);
-            if(req == [] || llList2Key(req, 0) != llGetCreator())
+            integer l = llGetListLength(objectifiedballs);
+            while(~--l)
             {
-                detachobject(llList2String(objectifieddescriptions, l));
-                objectifiednames = llDeleteSubList(objectifiednames, l, l);
-                objectifiedavatars = llDeleteSubList(objectifiedavatars, l, l);
-                objectifiedballs = llDeleteSubList(objectifiedballs, l, l);
-                objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
+                integer differentRegion = lastregion != llGetRegionName();
+                list req = llGetObjectDetails(llList2Key(objectifiedballs, l), [OBJECT_CREATOR]);
+                if(req == [] || llList2Key(req, 0) != llGetCreator())
+                {
+                    // If we're in a different region, that means we teleported. So don't give up on those people yet.
+                    if(differentRegion)
+                    {
+                        timermode = 1;
+                        buffered = [];
+                        jump timermode1;
+                    }
+                    else
+                    {
+                        integer inbuffered = llListFindList(buffered, [llList2Key(objectifiedballs, l)]);
+                        if(inbuffered == -1)
+                        {
+                            buffered += [llList2Key(objectifiedballs, l)];
+                        }
+                        else
+                        {
+                            detachobject(llList2String(objectifieddescriptions, l));
+                            objectifiednames = llDeleteSubList(objectifiednames, l, l);
+                            objectifiedavatars = llDeleteSubList(objectifiedavatars, l, l);
+                            objectifiedballs = llDeleteSubList(objectifiedballs, l, l);
+                            objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
+                            objectifiedurls = llDeleteSubList(objectifiedurls, l, l);
+                            buffered = llDeleteSubList(buffered, inbuffered, inbuffered);
+                        }
+                    }
+                }
             }
+
+            if(objectifiedballs != [])
+            {
+                if(!filter)
+                {
+                    filter = TRUE;
+                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
+                }
+            }
+            else
+            {
+                if(filter)
+                {
+                    filter = FALSE;
+                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
+                }
+            }
+
+            llSetTimerEvent(2.5);
+            return;
+            @timermode1;
+            llSetTimerEvent(0.5);
+        }
+        else if(timermode == 1)
+        {
+            vector pos = llGetPos();
+            string region = llGetRegionName();
+            integer l = llGetListLength(objectifiedballs);
+            if(!canrez(llGetPos()))
+            {
+                llOwnerSay("Can't rez here, trying to set land group.");
+                llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
+                llSleep(2.5);
+            }
+
+            integer teleportothers = canrez(llGetPos());
+            if(teleportothers) llOwnerSay("Fetching your objectified avatars and giving them 30 seconds to arrive...");
+            else               llOwnerSay("Can't rez here, not fetching your objectified avatars...");
+
+            while(~--l)
+            {
+                if(llList2String(objectifiedurls, l) == "null")
+                {
+                    detachobject(llList2String(objectifieddescriptions, l));
+                    objectifiednames = llDeleteSubList(objectifiednames, l, l);
+                    objectifiedavatars = llDeleteSubList(objectifiedavatars, l, l);
+                    objectifiedballs = llDeleteSubList(objectifiedballs, l, l);
+                    objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
+                    objectifiedurls = llDeleteSubList(objectifiedurls, l, l);
+                }
+                else
+                {
+                    if(teleportothers) llHTTPRequest(llList2String(objectifiedurls, l), [HTTP_METHOD, "POST"], region + "/" + (string)llRound(pos.x) + "/" + (string)llRound(pos.y)+ "/" + (string)llRound(pos.z));
+                    else               llHTTPRequest(llList2String(objectifiedurls, l), [HTTP_METHOD, "POST"], "die");
+                }
+            }
+
+            if(teleportothers)
+            {
+                timermode = 2;
+                countdown = 11;
+                arrived = [];
+                llSetTimerEvent(3.0);
+            }
+            else
+            {
+                timermode = 0;
+                llSetTimerEvent(2.5);
+            }
+        }
+        else if(timermode == 2)
+        {
+            if(countdown > 0)
+            {
+                countdown--;
+
+                integer l = llGetListLength(objectifiedballs);
+                list agents = llGetAgentList(AGENT_LIST_REGION, []);
+                while(~--l)
+                {
+                    key av = llList2Key(objectifiedavatars, l);
+                    integer inarrived = llListFindList(arrived, [av]);
+                    integer inagents = llListFindList(agents, [av]);
+                    if(inarrived == -1 && inagents != -1) arrived += [av];
+                }
+
+                if(llGetListLength(arrived) == llGetListLength(objectifiedballs)) 
+                {
+                    countdown = 0;
+                    llSleep(5.0);
+                }
+
+                if(countdown != 0) llSetTimerEvent(3.0);
+            }
+
+            if(countdown == 0)
+            {
+                arrived = [];
+                integer l = llGetListLength(objectifiedballs);
+                while(~--l)
+                {
+                    detachobject(llList2String(objectifieddescriptions, l));
+                    if(llGetAgentSize(llList2Key(objectifiedavatars, l)) == ZERO_VECTOR)
+                    {
+                        objectifiednames = llDeleteSubList(objectifiednames, l, l);
+                        objectifiedavatars = llDeleteSubList(objectifiedavatars, l, l);
+                        objectifiedballs = llDeleteSubList(objectifiedballs, l, l);
+                        objectifieddescriptions = llDeleteSubList(objectifieddescriptions, l, l);
+                        objectifiedurls = llDeleteSubList(objectifiedurls, l, l);
+                    }
+                }
+
+                if(objectifiedballs == [])
+                {
+                    llOwnerSay("Nobody arrived in time.");
+                    timermode = 0;
+                    llSetTimerEvent(2.5);
+                }
+                else
+                {
+                    llOwnerSay("Starting to recapture...");
+                    objectificationqueue = [];
+                    integer l = llGetListLength(objectifiedballs);
+                    while(~--l)
+                    {
+                        objectificationqueue += [
+                            llList2Key(objectifiedavatars, l),
+                            llList2String(objectifiednames, l),
+                            llList2String(objectifieddescriptions, l)
+                        ];
+                    }
+                    timermode = 3;
+                    objectifiednames = [];
+                    objectifiedavatars = [];
+                    objectifiedballs = [];
+                    objectifieddescriptions = [];
+                    objectifiedurls = [];
+                    handlequeue();
+                }
+            }
+        }
+        else if(timermode == 3)
+        {
+            handlequeue();
         }
 
-        if(objectifiedballs != [])
-        {
-            if(!filter)
-            {
-                filter = TRUE;
-                llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
-            }
-        }
-        else
-        {
-            if(filter)
-            {
-                filter = FALSE;
-                llMessageLinked(LINK_SET, M_API_SET_FILTER, "object", (key)((string)filter));
-            }
-        }
-        llSetTimerEvent(0.5);
+        lastregion = llGetRegionName();
     }
 }

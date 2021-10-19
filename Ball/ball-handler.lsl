@@ -1,6 +1,8 @@
 #include <IT/globals.lsl>
 string animation = "";
 key rezzer;
+key urlt;
+string url = "null";
 key firstavatar = NULL_KEY;
 integer keyisavatar;
 integer saton;
@@ -12,6 +14,7 @@ integer waitingstate;
 integer struggleEvents = 0;
 integer struggleFailed = FALSE;
 integer captured = FALSE;
+integer firstattempt = TRUE;
 string prefix = "";
 
 // 0 = Nothing extra.
@@ -87,7 +90,6 @@ applySpeech()
 
 sitterMenu()
 {
-    string oldn = llGetObjectName();
     llSetObjectName("");
     llRegionSayTo(firstavatar, 0, "Object Options Menu:");
     llRegionSayTo(firstavatar, 0, " ");
@@ -149,16 +151,14 @@ sitterMenu()
     else if(speechRestrict == 2)  llRegionSayTo(firstavatar, 0, " * Incapable of any kind of speech, even to owner.");
     llRegionSayTo(firstavatar, 0, " ");
     llRegionSayTo(firstavatar, 0, "Visibility Options:");
-    if(animation != "hide_a")  llRegionSayTo(firstavatar, 0, " - Under the ground, but avatar and nameplate visible.");
-    else                       llRegionSayTo(firstavatar, 0, " * Under the ground, but avatar and nameplate visible.");
+    if(animation != "hide_a")  llRegionSayTo(firstavatar, 0, " - Under the ground, nameplate visible.");
+    else                       llRegionSayTo(firstavatar, 0, " * Under the ground, nameplate visible.");
     if(animation != "hide_b")  llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after relog.]");
     else                       llRegionSayTo(firstavatar, 0, " * Completely invisible, even the nameplate. Slightly fiddly to become visible again after relog.");
-    llSetObjectName(oldn);
 }
 
 ownerMenu()
 {
-    string oldn = llGetObjectName();
     llSetObjectName("");
     llOwnerSay("Object Options Menu:");
     llOwnerSay(" ");
@@ -209,27 +209,19 @@ ownerMenu()
     else                     llOwnerSay(" * Incapable of any kind of speech, even to owner.");
     llOwnerSay(" ");
     llOwnerSay("Visibility Options:");
-    if(animation != "hide_a")  llOwnerSay(" - Under the ground, but avatar and nameplate visible.");
-    else                       llOwnerSay(" * Under the ground, but avatar and nameplate visible.");
+    if(animation != "hide_a")  llOwnerSay(" - Under the ground, nameplate visible.");
+    else                       llOwnerSay(" * Under the ground, nameplate visible.");
     if(animation != "hide_b")  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after relog.]");
     else                       llOwnerSay(" * Completely invisible, even the nameplate. Slightly fiddly to become visible again after relog.");
     llOwnerSay(" ");
     llOwnerSay("Other Options:");
     llOwnerSay(" - Type /5 " + prefix + "name <new name> to rename this object.");
     llOwnerSay(" - If there is a purple cylinder present, you can move it to change the object's nameplate, then click it to hide it.");
-    llSetObjectName(oldn);
 }
 
 toggleedit()
 {
-    if(editmode == FALSE && (keyisavatar == FALSE || (llGetAgentInfo(rezzer) & AGENT_SITTING) == 0))
-    {
-        string oldn = llGetObjectName();
-        llSetObjectName(name);
-        llOwnerSay("I must be following a seated avatar to edit my position.");
-        llSetObjectName(oldn);
-        return;
-    }
+    if(editmode == FALSE && (keyisavatar == FALSE || (llGetAgentInfo(rezzer) & AGENT_SITTING) == 0)) return;
     editmode = !editmode;
     if(editmode)
     {
@@ -274,6 +266,7 @@ default
         seatedoffset = ZERO_VECTOR;
         waitingstate = 0;
         prefix = llGetSubString((string)llGetKey(), -10, -1);
+        urlt = llRequestURL();
         
         // Set the rezzer and default animation.
         rezzer = (key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0);
@@ -326,6 +319,12 @@ default
                 llRequestPermissions(llAvatarOnSitTarget(), PERMISSION_TRIGGER_ANIMATION | PERMISSION_TAKE_CONTROLS);
             }
         }
+        if(change & CHANGED_REGION)
+        {
+            url = "null";
+            llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
+            urlt = llRequestURL();
+        }
     }
 
     run_time_permissions(integer perm)
@@ -347,7 +346,8 @@ default
         llTakeControls(CONTROL_FWD | CONTROL_BACK | CONTROL_LEFT | CONTROL_RIGHT | CONTROL_ROT_LEFT | CONTROL_ROT_RIGHT | CONTROL_UP | CONTROL_DOWN, TRUE, TRUE);
 
         // Notify of menu.
-        llRegionSayTo(llAvatarOnSitTarget(), 0, "You can access a menu to restrict yourself further by clicking [secondlife:///app/chat/5/menu here] or by typing /5menu.");
+        llSetObjectName("");
+        llRegionSayTo(llAvatarOnSitTarget(), 0, "You can restrict yourself further by clicking [secondlife:///app/chat/5/menu here] or by typing /5menu.");
 
         // And start a timer loop.
         llSetTimerEvent(0.5);
@@ -369,7 +369,6 @@ default
         if(c == GAZE_CHAT_CHANNEL)
         {
             if(keyisavatar == TRUE) return;
-            string oldn = llGetObjectName();
             llSetObjectName(name);
             if(llToLower(llStringTrim(m, STRING_TRIM)) == "/me" || startswith(m, "/me") == FALSE || contains(m, "\"") == TRUE)
             {
@@ -379,24 +378,19 @@ default
             {
                 llSay(0, m);
             }
-            llSetObjectName(oldn);
         }
         else if(c == GAZE_ECHO_CHANNEL)
         {
             if(hearingRestrict > 1) return;
-            string oldn = llGetObjectName();
             llSetObjectName(n);
             llRegionSayTo(llAvatarOnSitTarget(), 0, m);
-            llSetObjectName(oldn);
         }
         else if(c == BALL_CHANNEL)
         {
             if(keyisavatar == FALSE || llGetOwnerKey(id) != rezzer) return;
             if(hearingRestrict == 3) return;
-            string oldn = llGetObjectName();
             llSetObjectName("Wearer's Thoughts");
             llRegionSayTo(llAvatarOnSitTarget(), 0, m);
-            llSetObjectName(oldn);
         }
         else if(c == 5)
         {
@@ -409,12 +403,10 @@ default
                 imRestrict = (integer)llGetSubString(m, -1, -1);
                 if(imRestrict < 0) imRestrict = 0;
                 if(imRestrict > 3) imRestrict = 3;
-                string oldn = llGetObjectName();
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's IM restrictions set to level " + (string)imRestrict + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's IM restrictions set to level " + (string)imRestrict + ".");
                 applyIm();
-                llSetObjectName(oldn);
             }
             else if(startswith(m, prefix + "vi"))
             {
@@ -422,12 +414,10 @@ default
                 visionRestrict = (integer)llGetSubString(m, -1, -1);
                 if(visionRestrict < 0) visionRestrict = 0;
                 if(visionRestrict > 7) visionRestrict = 7;
-                string oldn = llGetObjectName();
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Vision restrictions set to level " + (string)visionRestrict + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Vision restrictions set to level " + (string)visionRestrict + ".");
                 applyVision();
-                llSetObjectName(oldn);
             }
             else if(startswith(m, prefix + "he"))
             {
@@ -435,12 +425,10 @@ default
                 hearingRestrict = (integer)llGetSubString(m, -1, -1);
                 if(hearingRestrict < 0) hearingRestrict = 0;
                 if(hearingRestrict > 3) hearingRestrict = 3;
-                string oldn = llGetObjectName();
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Hearing restrictions set to level " + (string)hearingRestrict + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Hearing restrictions set to level " + (string)hearingRestrict + ".");
                 applyHearing();
-                llSetObjectName(oldn);
             }
             else if(startswith(m, prefix + "sp"))
             {
@@ -448,12 +436,10 @@ default
                 speechRestrict = (integer)llGetSubString(m, -1, -1);
                 if(speechRestrict < 0) speechRestrict = 0;
                 if(speechRestrict > 2) speechRestrict = 2;
-                string oldn = llGetObjectName();
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
                 applySpeech();
-                llSetObjectName(oldn);
             }
             else if(m == prefix + "invis")
             {
@@ -461,22 +447,18 @@ default
                 llStopAnimation(animation);
                 animation = "hide_b";
                 llStartAnimation(animation);
-                string oldn = llGetObjectName();
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
-                llSetObjectName(oldn);
             }
             else if(startswith(m, prefix + "name"))
             {
                 if(id == firstavatar) return;
                 m = llDeleteSubString(m, 0, llStringLength(prefix + "name"));
-                string oldn = llGetObjectName();
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about is now " + m + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about is now " + m + ".");
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "objrename " + m);
-                llSetObjectName(oldn);
             }
         }
         else if(c == MANTRA_CHANNEL)
@@ -487,23 +469,14 @@ default
                 llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
                 if(animation == "hide_b")
                 {
-                    string oldn = llGetObjectName();
                     llSetObjectName("");
                     llRegionSayTo(llAvatarOnSitTarget(), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, put on something and then take it off again. If this doesn't help, relog.");
-                    llSetObjectName(oldn);
                 }
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
                 llSleep(10.0);
                 die();
-            }
-            else if(startswith(m, "rlvforward"))
-            {
-                if(llAvatarOnSitTarget() == NULL_KEY) die();
-                m = llDeleteSubString(m, 0, llStringLength("rlvforward"));
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "cmd," + (string)llAvatarOnSitTarget() + "," + m);
-                llRegionSayTo(rezzer, MANTRA_CHANNEL, "rlvresponse ok");
             }
             else if(m == "check")
             {
@@ -527,7 +500,8 @@ default
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("puton")), ["|||"], []);
                 rezzer = (key)llList2String(params, 0);
                 name = llList2String(params, 1);
-                llRegionSayTo(rezzer, MANTRA_CHANNEL, "puton " + (string)llAvatarOnSitTarget() + "|||" + name);
+                llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
+                llRegionSayTo(rezzer, MANTRA_CHANNEL, "puton " + (string)llAvatarOnSitTarget() + "|||" + name + "|||" + url);
                 keyisavatar = TRUE;
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames_sec:" + (string)llGetOwnerKey(rezzer) + "=n");
             }
@@ -537,6 +511,7 @@ default
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("putdown")), ["|||"], []);
                 rezzer = (key)llList2String(params, 0);
                 name = llList2String(params, 1);
+                llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
                 keyisavatar = FALSE;
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "unrestrict," + (string)llAvatarOnSitTarget() + ",@recvim:10=y|@sendim:10=y");
             }
@@ -545,15 +520,12 @@ default
         {
             if(m == "ping," + (string)llGetKey() + ",ping,ping") 
             {
-                string oldn = llGetObjectName();
                 llSetObjectName(name);
                 llSay(0, "Attempting recapture...");
-                llSetObjectName(oldn);
                 llRegionSay(RLVRC, "ping," + (string)llGetOwnerKey(id) + ",!pong");
             }
             else if(endswith(m, (string)llGetKey()+",!release,ok"))
             {
-                string oldn = llGetObjectName();
                 llSetObjectName(name);
                 llSay(0, "Releasing captive...");
                 llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
@@ -565,7 +537,6 @@ default
                 {
                     llSetObjectName("");
                     llRegionSayTo(llAvatarOnSitTarget(), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, try undeforming yourself via the Avatar -> Avatar Health menu. If that doesn't work, teleport to a different region, and as a last resort, you can relog.");
-                    llSetObjectName(oldn);
                 }
                 llSleep(10.0);
                 die();
@@ -615,6 +586,8 @@ default
 
     timer()
     {
+        llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
+
         if(struggleEvents > 0 && struggleFailed == FALSE)
         {
             llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "struggle_count|" + (string)firstavatar + "|" + (string)struggleEvents);
@@ -640,10 +613,8 @@ default
             // Just recently vacated.
             if(waitingstate == 0)
             {
-                string oldn = llGetObjectName();
                 llSetObjectName(name);
                 llSay(0, "Captive has disappeared. Waiting for " + (string)hours + " hours before resetting.");
-                llSetObjectName(oldn);
                 waitingstate = 1;
                 llResetTime();
             }
@@ -695,35 +666,33 @@ default
             vector offset = ZERO_VECTOR;
             if(keyisavatar) offset = seatedoffset;
 
-            if(keyisavatar == TRUE && llGetAgentSize(rezzer) == ZERO_VECTOR)
+            if((keyisavatar == TRUE && llGetAgentSize(rezzer) == ZERO_VECTOR) || (keyisavatar == FALSE && llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) == ZERO_VECTOR))
             {
-                llSetRegionPos(my - offset);
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
-                llSleep(0.5);
-                llUnSit(llAvatarOnSitTarget());
-                llSleep(10.0);
-                die();
-                return;
+                if(firstattempt)
+                {
+                    firstattempt = FALSE;
+                    llSetTimerEvent(30.0);
+                    return;
+                }
+                else
+                {
+                    llSetRegionPos(my - offset);
+                    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
+                    llSleep(0.5);
+                    llUnSit(llAvatarOnSitTarget());
+                    llSleep(10.0);
+                    die();
+                    return;
+                }
+                
+            }
+            else
+            {
+                firstattempt = TRUE;
             }
 
             vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + offset;
             float dist = llVecDist(my, pos);
-            my.z = pos.z;
-            float xydist = llVecDist(my, pos);
-            if(xydist > 365.0 || pos == ZERO_VECTOR)
-            {
-                // More than a region away on a flat plane. This should never happen. Die.
-                llSetRegionPos(llGetPos() - offset);
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
-                llSleep(0.5);
-                llUnSit(llAvatarOnSitTarget());
-                llSleep(10.0);
-                die();
-                return;
-            }
-            
             if(dist > 60.0)
             {
                 llStopMoveToTarget();
@@ -742,6 +711,35 @@ default
             }
 
             llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)rezzer + ";;=force");
+        }
+    }
+
+    http_request(key id, string method, string body)
+    {
+        if(id == urlt)
+        {
+            urlt = NULL_KEY;
+            if(method == URL_REQUEST_GRANTED) 
+            {
+                url = body;
+                llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
+            }
+        }
+        else if(method == "POST")
+        {
+            if(body == "die")
+            {
+                firstattempt = FALSE;
+                llSetTimerEvent(0.1);
+            }
+            else
+            {
+                llSetTimerEvent(0.0);
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "cantp," + (string)llAvatarOnSitTarget() + ",@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tpto:" + body + "=force|!release");
+                llHTTPResponse(id, 200, "OK");
+                llSleep(10.0);
+                die();
+            }
         }
     }
 }

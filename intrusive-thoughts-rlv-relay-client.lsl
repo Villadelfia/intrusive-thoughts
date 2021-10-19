@@ -251,6 +251,7 @@ default
         {
             if(id != NULL_KEY) release();
             id = k;
+            llSetTimerEvent(5.0);
             objectname = llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0);
         }
         else if(num == RLV_API_SAFEWORD)                                               
@@ -272,7 +273,20 @@ default
     timer()
     {
         llSetTimerEvent(0.0);
-        handlinghandover = FALSE;
-        release();
+        if(handlinghandover)
+        {
+            handlinghandover = FALSE;
+            release();
+        }
+        
+        if(id)
+        {
+            if(llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0) == ZERO_VECTOR)
+            {
+                release();
+            }
+        }
+        
+        if(id) llSetTimerEvent(5.0);
     }
 }

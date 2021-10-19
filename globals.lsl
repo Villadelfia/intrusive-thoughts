@@ -90,10 +90,10 @@
 
 #define VERSION_S "IT-Slave v2.8"
 #define VERSION_M "IT-Master v2.8"
-#define VERSION_FULL "020800"
+#define VERSION_FULL "020801"
 #define VERSION_MAJOR 2
 #define VERSION_MINOR 8
-#define VERSION_PATCH 0
+#define VERSION_PATCH 1
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG
@@ -273,11 +273,12 @@ ownersay(key target, string s)
 
 versioncheck(string report, integer master)
 {
-    list dets = llParseString2List(report, [".", "\n"], []);
-    integer ma = (integer)llList2String(dets, 0);
-    integer mi = (integer)llList2String(dets, 1);
-    integer pa = (integer)llList2String(dets, 2);
-    string notes = llDumpList2String(llDeleteSubList(dets, 0, 2), "\n");
+    list dets = llParseString2List(report, ["\n"], []);
+    list v = llParseString2List(llList2String(dets, 0), ["."], []);
+    integer ma = (integer)llList2String(v, 0);
+    integer mi = (integer)llList2String(v, 1);
+    integer pa = (integer)llList2String(v, 2);
+    string notes = llDumpList2String(llDeleteSubList(dets, 0, 0), "\n");
     string prettyversion = (string)ma + "." + (string)mi + "." + (string)pa;
     string msg = "";
     if(ma > VERSION_MAJOR) msg = ": There is a major version update available to the Intrusive Thoughts System. ";
