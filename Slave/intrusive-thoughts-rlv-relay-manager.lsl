@@ -42,29 +42,18 @@ buildclients()
     while(llGetListLength(rlvclients) > handlers) rlvclients = llDeleteSubList(rlvclients, -1, -1);
 }
 
-checktp()
-{
-    if(llGetRegionName() != region)
-    {
-        region = llGetRegionName();
-        if(region == "NRI") nridisable = TRUE;
-        else                nridisable = FALSE;
-    }
-}
-
 default
 {
     changed(integer change)
     {
         if(change & CHANGED_INVENTORY) buildclients();
-        if(change & CHANGED_TELEPORT) checktp();
+        if(change & CHANGED_REGION)    region = "";
     }
 
     on_rez(integer start_param)
     {
         region = llGetRegionName();
-        if(region == "NRI") nridisable = TRUE;
-        else                nridisable = FALSE;
+        nridisable = FALSE;
     }
 
     link_message(integer sender_num, integer num, string str, key k)
@@ -141,24 +130,45 @@ default
                 }
                 else
                 {
-                    // If it's not owned by the owner or us, we check if it's one of the allowed commands.
-                    if(command == "!version") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!version,1100");
-                    else if(command == "!implversion") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!implversion,ORG=0004/Hana's Relay");
-                    else if(command == "!x-orgversions") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!x-orgversions,ORG=0004/handover=001");
-                    else if((behavior == "@version" || behavior == "@versionnew" || behavior == "@versionnum" || behavior == "@versionnumbl") && command == behavior + "=" + value) llOwnerSay(command);
+                    if(region != "NRI")
+                    {
+                        // If it's not owned by the owner or us, we check if it's one of the allowed commands.
+                        if(command == "!version") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!version,1100");
+                        else if(command == "!implversion") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!implversion,ORG=0004/Hana's Relay");
+                        else if(command == "!x-orgversions") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!x-orgversions,ORG=0004/handover=001");
+                        else if((behavior == "@version" || behavior == "@versionnew" || behavior == "@versionnum" || behavior == "@versionnumbl") && command == behavior + "=" + value) llOwnerSay(command);
 
-                    // If not, we ask the owner for permission if they're available, or the
-                    // wearer if they're not.
+                        // If not, we ask the owner for permission if they're available, or the
+                        // wearer if they're not.
+                        else
+                        {
+                            key target = llGetOwner();
+                            if(llGetAgentSize(primary) != ZERO_VECTOR) target = primary;
+                            handlingk = id;
+                            handlingm = m;
+                            handlingi = available;
+                            makelisten(target);
+                            llDialog(target, "The device '" + n + "' owned by secondlife:///app/agent/" + (string)llGetOwnerKey(id) + "/about wants to access the relay of secondlife:///app/agent/" + (string)llGetOwner() + "/about, will you allow this?\n \n(Timeout in 15 seconds.)", ["ALLOW", "DENY", "BLOCK"], tempchannel);
+                            llSetTimerEvent(15.0);
+                        }
+                    }
                     else
                     {
-                        key target = llGetOwner();
-                        if(llGetAgentSize(primary) != ZERO_VECTOR) target = primary;
-                        handlingk = id;
-                        handlingm = m;
-                        handlingi = available;
-                        makelisten(target);
-                        llDialog(target, "The device '" + n + "' owned by secondlife:///app/agent/" + (string)llGetOwnerKey(id) + "/about wants to access the relay of secondlife:///app/agent/" + (string)llGetOwner() + "/about, will you allow this?\n \n(Timeout in 15 seconds.)", ["ALLOW", "DENY", "BLOCK"], tempchannel);
-                        llSetTimerEvent(15.0);
+                        if(command == "!version") return;
+                        else if(command == "!implversion") return;
+                        else if(command == "!x-orgversions") return;
+                        else if((behavior == "@version" || behavior == "@versionnew" || behavior == "@versionnum" || behavior == "@versionnumbl") && command == behavior + "=" + value) return;
+                        else
+                        {
+                            key target = llGetOwner();
+                            if(llGetAgentSize(primary) != ZERO_VECTOR) target = primary;
+                            handlingk = id;
+                            handlingm = m;
+                            handlingi = available;
+                            makelisten(target);
+                            llDialog(target, "The device '" + n + "' owned by secondlife:///app/agent/" + (string)llGetOwnerKey(id) + "/about wants to access the relay of secondlife:///app/agent/" + (string)llGetOwner() + "/about, will you allow this?\n \n(Timeout in 15 seconds.)", ["ALLOW", "DENY", "BLOCK"], tempchannel);
+                            llSetTimerEvent(15.0);
+                        }
                     }
                 }
             }
@@ -197,13 +207,13 @@ default
             {
                 if(llGetCreator() != llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0)) return;
                 nridisable = TRUE;
-                region = llGetRegionName();
+                region = "NRI";
             }
             else if(m == "NRINORLV")
             {
                 if(llGetCreator() != llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0)) return;
                 nridisable = FALSE;
-                region = llGetRegionName();
+                region = "";
             }
 
             if(!isowner(id)) return;
