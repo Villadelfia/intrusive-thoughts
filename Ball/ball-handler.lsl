@@ -628,6 +628,7 @@ default
             hearingRestrict = (integer)llList2String(settings, 2);
             speechRestrict = (integer)llList2String(settings, 3);
             integer isHidden = (integer)llList2String(settings, 4);            
+            llSetObjectName("");
             if(imRestrict > 0) llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's IM restrictions set to level " + (string)imRestrict + ".");
             if(imRestrict > 0) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's IM restrictions set to level " + (string)imRestrict + ".");
             if(visionRestrict > 0) llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Vision restrictions set to level " + (string)visionRestrict + ".");

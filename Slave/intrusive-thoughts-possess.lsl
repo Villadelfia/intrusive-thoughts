@@ -2,6 +2,7 @@
 #define IMPULSE 1.6
 key controller = NULL_KEY;
 key primary = NULL_KEY;
+string name = "";
 list owners = [];
 integer publicaccess = FALSE;
 integer groupaccess = FALSE;
@@ -11,6 +12,7 @@ release()
     llReleaseControls();
     llOwnerSay("@interact=y,tplocal=y,tplm=y,tploc=y,unsit=y");
     controller = NULL_KEY;
+    llSetTimerEvent(0.0);
 }
 
 default
@@ -42,6 +44,7 @@ default
     state_entry()
     {
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+        llListen(0, "", NULL_KEY, "");
     }
 
     listen(integer c, string n, key id, string m)
@@ -84,6 +87,16 @@ default
 
         id = llGetOwnerKey(id);
         if(isowner(id) == FALSE) return;
+        if(m == "RESET")
+        {
+            name = "";
+        }
+        else if(startswith(m, "NAME"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("NAME"));
+            name = m;
+        }
+
         if(m == "takectrl" && controller == NULL_KEY)
         {
             controller = id;
@@ -121,19 +134,30 @@ default
         else if(startswith(m, "ctrlsay"))
         {
             m = llDeleteSubString(m, 0, llStringLength("ctrlsay"));
-            string prefix = "secondlife:///app/agent/" + (string)llGetOwner() + "/about";
-            if(startswith(m, "/me"))
+            if(name == "")
             {
-                prefix = "/me " + prefix;
-                m = llDeleteSubString(m, 0, 2);
+                string prefix = "secondlife:///app/agent/" + (string)llGetOwner() + "/about";
+                if(startswith(m, "/me"))
+                {
+                    prefix = "/me " + prefix;
+                    m = llDeleteSubString(m, 0, 2);
+                }
+                else
+                {
+                    prefix += ": ";
+                }
+                llSetObjectName("");
+                if(llVecDist(llGetPos(), llList2Vector(llGetObjectDetails(controller, [OBJECT_POS]), 0)) > 20.0) llRegionSayTo(controller, 0, prefix + m);
+                llSay(0, prefix + m);
             }
             else
             {
-                prefix += ": ";
+                llSetObjectName(name);
+                if(llVecDist(llGetPos(), llList2Vector(llGetObjectDetails(controller, [OBJECT_POS]), 0)) > 20.0) llRegionSayTo(controller, 0, m);
+                llSay(0, m);
+                llSetObjectName("");
             }
-            llSetObjectName("");
-            if(llVecDist(llGetPos(), llList2Vector(llGetObjectDetails(controller, [OBJECT_POS]), 0)) > 20.0) llRegionSayTo(controller, 0, prefix + m);
-            llSay(0, prefix + m);
+            
         }
         else if(startswith(m, "ctrl"))
         {
@@ -177,7 +201,7 @@ default
 
     timer()
     {
-        if(llGetAgentSize(controller) == ZERO_VECTOR)
+        if(controller != NULL_KEY && llGetAgentSize(controller) == ZERO_VECTOR)
         {
             llOwnerSay("You're free from secondlife:///app/agent/" + (string)controller + "/about's control.");
             release();

@@ -255,7 +255,7 @@ gethelp(string b)
     }
     else if(b == "lock")
     {
-        llOwnerSay("Click this button to lock the last seen avatar as a target for many functions of the HUD. Clicking the button with someone locked, will instead unlock the HUD target. The indicator in the upper right of the HUD will show whether or not you have a lock.");
+        llOwnerSay("Click this button to lock the last seen avatar as a target for many functions of the HUD. Clicking the button with someone locked, will instead unlock the HUD target. The indicator in the upper right of the HUD will show whether or not you have a lock. You can also type /1lock <uuid/username> to lock onto someone if they are hard to cam.");
     }
     else if(b == "sit")
     {
@@ -380,10 +380,36 @@ default
             llOwnerSay(message);
             llSetObjectName(oldn);
         }
-        else if(channel == COMMAND_CHANNEL && message == "hardreset")
+        else if(channel == COMMAND_CHANNEL)
         {
-            llOwnerSay("Doing a hard reset of your Master HUD.");
-            resetscripts();
+            if(message == "hardreset")
+            {
+                llOwnerSay("Doing a hard reset of your Master HUD.");
+                resetscripts();
+            }
+            else if(startswith(message, "lock"))
+            {
+                message = llDeleteSubString(message, 0, llStringLength("lock"));
+                key uuid = (key)message;
+                if(uuid)
+                {
+                    if(llGetAgentSize(uuid) != ZERO_VECTOR)
+                    {
+                        llMessageLinked(LINK_SET, M_API_LOCK, llGetDisplayName(uuid), uuid);
+                    }
+                }
+                else
+                {
+                    uuid = llName2Key(message);
+                    if(uuid)
+                    {
+                        if(llGetAgentSize(uuid) != ZERO_VECTOR)
+                        {
+                            llMessageLinked(LINK_SET, M_API_LOCK, llGetDisplayName(uuid), uuid);
+                        }
+                    }
+                }
+            }            
         }
     }
 

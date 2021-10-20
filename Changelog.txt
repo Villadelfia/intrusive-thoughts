@@ -20,3 +20,10 @@ Ball — ball-menu
 Carrier — carrier-handler
 Carrier API — intrusive-thoughts-carrier-api
 Intrusive Thoughts Possessor — possession-slave
+
+2.8.1d:
+Master — intrusive-thoughts-ui
+
+2.8.1e:
+Slave — intrusive-thoughts-possess
+Ball — ball-handler
