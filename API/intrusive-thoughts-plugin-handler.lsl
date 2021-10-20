@@ -19,6 +19,16 @@ default
     {
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
+        
+        // Parse through all other scripts, reset those not owner by creator and those starting with plugin.
+        integer i;
+        integer n = llGetInventoryNumber(INVENTORY_SCRIPT);
+        for(i = 0; i < n; ++i)
+        {
+            string name = llGetInventoryName(INVENTORY_SCRIPT, i);
+            key creator = llGetInventoryCreator(name);
+            if(creator != llGetInventoryCreator(llGetScriptName()) || startswith(llToLower(name), "plugin")) llResetOtherScript(name);
+        }
     }
 
     link_message(integer sender_num, integer num, string str, key id)

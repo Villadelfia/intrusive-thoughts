@@ -6,6 +6,8 @@ You will noticed that these updates include letters after the version, that is b
 2.8.1b:
 Master — intrusive-thoughts-objectification
 Master — intrusive-thoughts-possess
-Intrusive Thoughts Possessor — possession-slave
+Master — intrusive-thoughts-plugin-handler
 Slave — intrusive-thoughts-possess
+Slave — intrusive-thoughts-plugin-handler
 Ball — ball-handler
+Intrusive Thoughts Possessor — possession-slave
