@@ -11,3 +11,12 @@ Slave — intrusive-thoughts-possess
 Slave — intrusive-thoughts-plugin-handler
 Ball — ball-handler
 Intrusive Thoughts Possessor — possession-slave
+
+2.8.1c:
+Master — intrusive-thoughts-possess
+Slave — intrusive-thoughts-possess
+Ball — ball-handler
+Ball — ball-menu
+Carrier — carrier-handler
+Carrier API — intrusive-thoughts-carrier-api
+Intrusive Thoughts Possessor — possession-slave

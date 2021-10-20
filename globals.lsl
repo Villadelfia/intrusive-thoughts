@@ -66,6 +66,9 @@
 #define RLV_API_HANDLE_CMD_QUIET  -3008
 
 #define X_API_FILL_FACTOR         -4000
+#define X_API_SETTINGS_LOAD       -4001
+#define X_API_SETTINGS_SAVE       -4002
+#define X_API_GIVE_MENU           -4003
 
 #define IT_PLUGIN_REGISTER        -8000
 #define IT_PLUGIN_RESPONSE        -8001
@@ -90,7 +93,7 @@
 
 #define VERSION_S "IT-Slave v2.8"
 #define VERSION_M "IT-Master v2.8"
-#define VERSION_FULL "9EA893"
+#define VERSION_FULL "9EA793"
 #define VERSION_MAJOR 2
 #define VERSION_MINOR 8
 #define VERSION_PATCH 1

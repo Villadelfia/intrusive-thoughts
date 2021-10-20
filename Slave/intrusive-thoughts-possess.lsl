@@ -77,6 +77,7 @@ default
             {
                 prefix += ": ";
             }
+            llSetObjectName("");
             llRegionSayTo(controller, 0, prefix + m);
             return;
         }

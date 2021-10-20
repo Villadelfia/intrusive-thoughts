@@ -69,3 +69,5 @@ Version 2.8.1:
  - Add relay filter configuration to configuration notecard.
  - Improve RLV relay client.
  - Fix several small typos and bugs.
+ - Add restriction preference saving.
+ - Add possession voice relay.

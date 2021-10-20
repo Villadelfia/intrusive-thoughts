@@ -94,7 +94,7 @@ default
             else if(startswith(m, "sit"))
             {
                 m = llDeleteSubString(m, 0, llStringLength("sit"));
-                llRegionSayTo((key)m, RLVRC, "cv," + m + ",@sit:" + (string)llGetKey() + "=force|@shownearby=n");
+                llRegionSayTo((key)m, RLVRC, "cv," + m + ",@sit:" + (string)llGetKey() + "=force|@unsit=n");
             }
             else if(m == "check")
             {
