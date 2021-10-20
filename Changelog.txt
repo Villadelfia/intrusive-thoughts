@@ -1,0 +1,11 @@
+This notecard lists the scripts that changed from version to version. For features that changed, please refer to the Release Notes notecard.
+
+You will noticed that these updates include letters after the version, that is because I do stealth updates that fix small, non-critical bugs, without changing the version number. To update a modded object, pick all scripts from the newest version that updated between your version and the newest version, and replace them, then reset all scripts. If the object 'ball' is listed, that means the ball was changed in the master HUD and the two furniture boxes.
+
+
+2.8.1b:
+Master — intrusive-thoughts-objectification
+Master — intrusive-thoughts-possess
+Intrusive Thoughts Possessor — possession-slave
+Slave — intrusive-thoughts-possess
+Ball — ball-handler

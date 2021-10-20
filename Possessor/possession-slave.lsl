@@ -8,6 +8,7 @@ default
     {
         llRegionSay(MANTRA_CHANNEL, "ctrlready " + (string)llGetOwner());
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+        llListen(0, "", NULL_KEY, "");
     }
 
     on_rez(integer start_param)
@@ -17,6 +18,41 @@ default
 
     listen(integer c, string n, key id, string m)
     {
+        if(c == 0)
+        {
+            if(controller == NULL_KEY) return;
+            if(llVecDist(llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0), llList2Vector(llGetObjectDetails(controller, [OBJECT_POS]), 0)) <= 20.0) return;
+            string prefix = "";
+            if(id != llGetOwnerKey(id))
+            {
+                string group = "";
+                if((string)llGetObjectDetails(id, [OBJECT_OWNER]) == NULL_KEY) group = "&groupowned=true";
+                vector pos = llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0);
+                string slurl = llEscapeURL(llGetRegionName()) + "/"+ (string)((integer)pos.x) + "/"+ (string)((integer)pos.y) + "/"+ (string)(llCeil(pos.z));
+                prefix = "[secondlife:///app/objectim/" + (string)id + 
+                        "?name=" + llEscapeURL(n) + 
+                        "&owner=" + (string)llGetOwnerKey(id) + 
+                        group +
+                        "&slurl=" + llEscapeURL(slurl) + " " + n + "]";
+            }
+            else
+            {
+                prefix = "secondlife:///app/agent/" + (string)id + "/about";
+            }
+
+            if(startswith(m, "/me"))
+            {
+                prefix = "/me " + prefix;
+                m = llDeleteSubString(m, 0, 2);
+            }
+            else
+            {
+                prefix += ": ";
+            }
+            llRegionSayTo(controller, 0, prefix + m);
+            return;
+        }
+
         id = llGetOwnerKey(id);
         if(m == "takectrl" && controller == NULL_KEY)
         {
@@ -68,6 +104,7 @@ default
                 prefix += ": ";
             }
             llSetObjectName("");
+            if(llVecDist(llGetPos(), llList2Vector(llGetObjectDetails(controller, [OBJECT_POS]), 0)) > 20.0) llRegionSayTo(controller, 0, prefix + m);
             llSay(0, prefix + m);
         }
         else if(startswith(m, "ctrl"))

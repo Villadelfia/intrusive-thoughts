@@ -15,7 +15,7 @@ integer struggleEvents = 0;
 integer struggleFailed = FALSE;
 integer captured = FALSE;
 integer firstattempt = TRUE;
-string prefix = "";
+string prefix = "??";
 
 // 0 = Nothing extra.
 // 1 = Cannot open IM sessions.
@@ -215,7 +215,7 @@ ownerMenu()
     else                       llOwnerSay(" * Completely invisible, even the nameplate. Slightly fiddly to become visible again after relog.");
     llOwnerSay(" ");
     llOwnerSay("Other Options:");
-    llOwnerSay(" - Type /5 " + prefix + "name <new name> to rename this object.");
+    llOwnerSay(" - Type /5" + prefix + "name <new name> to rename this object.");
     llOwnerSay(" - If there is a purple cylinder present, you can move it to change the object's nameplate, then click it to hide it.");
 }
 
@@ -265,7 +265,6 @@ default
         editmode = FALSE;
         seatedoffset = ZERO_VECTOR;
         waitingstate = 0;
-        prefix = llGetSubString((string)llGetKey(), -10, -1);
         urlt = llRequestURL();
         
         // Set the rezzer and default animation.
@@ -308,6 +307,9 @@ default
 
                 // Make sure to flag that we have been sat on.
                 saton = TRUE;
+
+                // Set the prefix
+                prefix = llToLower(llGetSubString(llGetUsername(firstavatar), 0, 1));
                 
                 if(!captured) 
                 {
@@ -394,9 +396,9 @@ default
         }
         else if(c == 5)
         {
-            if(id != firstavatar && rezzer != llGetOwnerKey(id)) return;
+            if(id != firstavatar && llGetOwner() != llGetOwnerKey(id)) return;
             if(m == "menu" && id == firstavatar) sitterMenu();
-            else if(m == "menu" && rezzer == llGetOwnerKey(id)) ownerMenu();
+            else if(m == "menu" && id != firstavatar) ownerMenu();
             else if(startswith(m, prefix + "im"))
             {
                 if(id == firstavatar && imRestrict > (integer)llGetSubString(m, -1, -1)) return;

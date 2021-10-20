@@ -90,7 +90,7 @@
 
 #define VERSION_S "IT-Slave v2.8"
 #define VERSION_M "IT-Master v2.8"
-#define VERSION_FULL "020801"
+#define VERSION_FULL "9EA893"
 #define VERSION_MAJOR 2
 #define VERSION_MINOR 8
 #define VERSION_PATCH 1
