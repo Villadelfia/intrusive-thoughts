@@ -280,6 +280,7 @@ default
             }
 
             llSetTimerEvent(2.5);
+            lastregion = llGetRegionName();
             return;
             @timermode1;
             llSetTimerEvent(0.5);

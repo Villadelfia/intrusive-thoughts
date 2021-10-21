@@ -69,6 +69,10 @@ Version 2.8.1:
  - Add relay filter configuration to configuration notecard.
  - Improve RLV relay client.
  - Fix several small typos and bugs.
+
+Version 2.8.2:
+ - Add restriction preferences for vore.
+ - Expand restriction preferences for objectification.
  - Add restriction preference saving.
  - Add possession voice relay.
  - Add /1lock <uuid/username> command to manually lock on to people.

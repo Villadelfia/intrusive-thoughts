@@ -299,6 +299,7 @@ default
                 spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), llGetDisplayName(av));
                 spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%TAR%"], []), storingon);
                 llSay(0, spoof);
+                llRegionSayTo(id, MANTRA_CHANNEL, "prefix " + objectprefix);
                 objectifiedballs += [id];
                 objectifiedavatars += [av];
                 objectifiednames += [llGetDisplayName(av)];
@@ -378,7 +379,7 @@ default
         objectifiednames += [targetname];
         objectifieddescriptions += [targetdescription];
         objectifiedurls += ["null"];
-        llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)target);
+        llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)target + "|||" + targetdescription + "|||" + objectprefix);
         if(timermode == 0) await = "c";
         else
         {

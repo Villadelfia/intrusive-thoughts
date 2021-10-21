@@ -32,3 +32,14 @@ Ball — ball-handler
 Furniture (mute) — furniture-handler-mute
 Furniture (can speak) — furniture-handler-voice
 Master — intrusive-thoughts-controller
+
+2.8.2:
+Master — intrusive-thoughts-objectification
+Master — intrusive-thoughts-vore
+Master — intrusive-thoughts-ui
+Ball — ball-handler
+Ball — ball-menu
+Carrier — carrier-handler
+Carrier — carrier-menu
+Furniture (mute) — furniture-handler-mute
+Furniture (can speak) — furniture-handler-voice

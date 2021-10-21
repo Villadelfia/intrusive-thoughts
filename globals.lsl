@@ -9,6 +9,7 @@
 #define RLV_CHECK_CHANNEL    2033461987
 #define GAZE_CHAT_CHANNEL    2102234356
 #define GAZE_ECHO_CHANNEL    2102234357
+#define GAZE_REN_CHANNEL     2102234358
 #define DUMMY_CHANNEL        2133491168
 #define SPEAK_CHANNEL         166845635
 #define LEASH_CHANNEL         166845636
@@ -96,7 +97,7 @@
 #define VERSION_FULL "9EA793"
 #define VERSION_MAJOR 2
 #define VERSION_MINOR 8
-#define VERSION_PATCH 1
+#define VERSION_PATCH 2
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG
