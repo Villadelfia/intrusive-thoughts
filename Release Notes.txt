@@ -73,3 +73,5 @@ Version 2.8.1:
  - Add possession voice relay.
  - Add /1lock <uuid/username> command to manually lock on to people.
  - Add proper name to slave possession.
+ - Fix bug regarding config reading.
+ - Make furniture phantom after linking.

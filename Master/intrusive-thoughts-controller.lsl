@@ -399,7 +399,9 @@ default
             else
             {
                 list tokens = llParseStringKeepNulls(d, ["="], []);
-                llMessageLinked(LINK_SET, M_API_CONFIG_DATA, llStringTrim(llList2String(tokens, 0), STRING_TRIM), (key)llStringTrim(llList2String(tokens, 1), STRING_TRIM));
+                string setting = llStringTrim(llList2String(tokens, 0), STRING_TRIM);
+                string value   = llStringTrim(llDumpList2String(llDeleteSubList(tokens, 0, 0), "="), STRING_TRIM);
+                llMessageLinked(LINK_SET, M_API_CONFIG_DATA, setting, (key)value);
             }
             ++line;
             getline = llGetNotecardLine(name, line);

@@ -139,7 +139,7 @@ default
             tVar += 0.025;
             llSetLinkPrimitiveParamsFast(LINK_THIS, [PRIM_ROTATION, rCos(startRot, endRot, tVar),
                                                      PRIM_SIZE,     vCos(startScale, endScale, tVar),
-                                                     PRIM_COLOR,    ALL_SIDES, <1.0, 1.0, 1.0>, fCos(startAlpha, endAlpha, tVar)]);
+                                                     PRIM_COLOR,    ALL_SIDES, <0.784, 0.094, 0.094>, fCos(startAlpha, endAlpha, tVar)]);
             llSetRegionPos(vCos(startPos, endPos, tVar));
         }
         else if(tVar <= 2.0)
@@ -166,6 +166,7 @@ default
                                                      PRIM_GLOW,       ALL_SIDES, 0.0]);
             llCreateLink(linkTarget, TRUE);
             llSetObjectName(myName);
+            llSetStatus(STATUS_PHANTOM, TRUE);
             llOwnerSay("Alright, I'm good to go. You can now store objects in me via the IT Master HUD.");
             state running;
         }

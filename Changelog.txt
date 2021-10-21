@@ -27,3 +27,8 @@ Master — intrusive-thoughts-ui
 2.8.1e:
 Slave — intrusive-thoughts-possess
 Ball — ball-handler
+
+2.8.1f:
+Furniture (mute) — furniture-handler-mute
+Furniture (can speak) — furniture-handler-voice
+Master — intrusive-thoughts-controller
