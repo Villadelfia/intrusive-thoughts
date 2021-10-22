@@ -83,6 +83,7 @@ possess()
     else if(possessState == 5)
     {
         // And we're good to go.
+        llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
         llMessageLinked(LINK_SET, M_API_SET_FILTER, "poss", (key)((string)TRUE));
         llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "takectrl");
         llSetTimerEvent(0.1);
@@ -227,7 +228,7 @@ default
                     llRegionSayTo(possessionvictim, RLVRC, "release," + (string)possessionvictim + ",!release");
                     possessionvictim = NULL_KEY;
                     possessorobject = NULL_KEY;
-                    llOwnerSay("Could not possess '" + victimname + "'. Did not accept possessor object.");
+                    llOwnerSay("Could not possess '" + victimname + "'. Did not accept object, has Forbid Give to #RLV enabled, or RLV gave a bad response. Try again!");
                 }
             }
         }

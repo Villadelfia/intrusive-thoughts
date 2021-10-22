@@ -105,6 +105,7 @@ default
             if(m == "objready " + (string)provisiontarget)
             {
                 llSetTimerEvent(0.0);
+                llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
                 llMessageLinked(LINK_SET, M_API_PROVISION_RESPONSE, (string)provisiontarget + "|||" + provisionname + "|||" + provisiondesc, id);
                 provisiontarget = NULL_KEY;
             }

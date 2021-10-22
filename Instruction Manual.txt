@@ -166,7 +166,7 @@ Take it back to your inventory and replace it in your HUD.
 The struggle API communicates on channel 997611882, hereafter called STRUGGLE_CHANNEL. The struggle API is present in the included vore carrier, the objectification ball, and the furniture ball. Messages will be sent to the person wearing the IT hud that rezzed the vore carrier or objectification ball, or the furniture prim in the case of furniture.
 
 The following messages will be sent from the carrier/ball to the hud wearer/furniture:
- - captured|<uuid>|<type> — Sent when a new victim is captured. Uuid is the victim's uuid. Type is 'vore' or 'object' depending on what they are a victim of.
+ - captured|<uuid>|<type> — Sent when a new victim is captured. Uuid is the victim's uuid. Type is 'vore', 'object', or 'possess' depending on what they are a victim of.
  - released|<uuid> — Sent when a victim is released for any reason. Uuid is the released victim's uuid.
  - acid_level|<uuid>|<level> — Sent when a vore victim is captured and whenever the acid level is changed thereafter. Uuid is the victim's uuid. Level is a floating point number between 0.0 and 1.0.
  - acid_dissolve|<uuid> — Sent when the acid level is pushed over the max. The victim is considered dissolved by the carrier at this point. Uuid is the victim's uuid.

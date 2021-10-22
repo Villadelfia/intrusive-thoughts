@@ -212,22 +212,17 @@ ownerMenu()
 
 default
 {
-    state_entry()
+    changed(integer change)
     {
-        prefix = llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1));
-    }
-
-    on_rez(integer start_param)
-    {
-        llResetScript();
+        if(change & CHANGED_OWNER) prefix = llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1));
     }
 
     link_message(integer sender_num, integer num, string str, key id)
     {
         if(num == X_API_GIVE_MENU)
         {
-            if(id == llGetOwner()) sitterMenu();
-            else                   ownerMenu();
+            if(id == llGetOwner())               sitterMenu();
+            if(id == llGetOwnerKey(objectifier)) ownerMenu();
         }
         else if(num == X_API_SETTINGS_SAVE)
         {

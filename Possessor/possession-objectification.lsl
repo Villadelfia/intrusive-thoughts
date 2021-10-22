@@ -1,4 +1,6 @@
 #include <IT/globals.lsl>
+integer handle1;
+integer handle2;
 string animation = "";
 key objectifier = NULL_KEY;
 key urlt;
@@ -175,10 +177,20 @@ default
         llListen(BALL_CHANNEL, "", NULL_KEY, "");
         llListen(STRUGGLE_CHANNEL, "", NULL_KEY, "");
         llListen(GAZE_ECHO_CHANNEL, "", NULL_KEY, "");
-        llListen(GAZE_CHAT_CHANNEL, "", llGetOwner(), "");
-        llListen(GAZE_REN_CHANNEL, "", llGetOwner(), "");
+        handle1 = llListen(GAZE_CHAT_CHANNEL, "", llGetOwner(), "");
+        handle2 = llListen(GAZE_REN_CHANNEL, "", llGetOwner(), "");
         llListen(5, "", NULL_KEY, "");
         animation = "hide_a";
+    }
+
+    attach(key id)
+    {
+        llSetTimerEvent(0.0);
+        struggleEvents = 0;
+        struggleFailed = FALSE;
+        llTargetRemove(leashinghandle);
+        llStopMoveToTarget();
+        objectifier = NULL_KEY;
     }
 
     changed(integer change)
@@ -191,6 +203,14 @@ default
             die();
             llSleep(0.5);
             die();
+        }
+        if(change & CHANGED_OWNER)
+        {
+            prefix = llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1));
+            llListenRemove(handle1);
+            llListenRemove(handle2);
+            handle1 = llListen(GAZE_CHAT_CHANNEL, "", llGetOwner(), "");
+            handle2 = llListen(GAZE_REN_CHANNEL, "", llGetOwner(), "");
         }
     }
 
@@ -205,9 +225,11 @@ default
         // Take controls.
         llTakeControls(CONTROL_FWD | CONTROL_BACK | CONTROL_LEFT | CONTROL_RIGHT | CONTROL_ROT_LEFT | CONTROL_ROT_RIGHT | CONTROL_UP | CONTROL_DOWN, TRUE, TRUE);
 
+        // Struggle
+        llRegionSayTo(objectifier, STRUGGLE_CHANNEL, "captured|" + (string)llGetOwner() + "|object");
+
         // Notify of menu.
         llSetObjectName("");
-        prefix = llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1));
         llOwnerSay("You can restrict yourself further by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you are captured by the same person.");
         llRegionSayTo(objectifier, 0, "You can edit the restrictions on your victim by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you capture the same person.");
 
@@ -237,6 +259,7 @@ default
         }
         else if(c == GAZE_ECHO_CHANNEL)
         {
+            if(llGetOwnerKey(id) != objectifier) return;
             if(hearingRestrict > 1) return;
             llSetObjectName(n);
             llOwnerSay(m);

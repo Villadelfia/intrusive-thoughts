@@ -83,3 +83,5 @@ Version 2.8.2:
 Version 2.9.0:
  - Fix several small issues.
  - Objectification in no-rez zones!
+ - Improved reliability of possession.
+ - Possession struggle API.

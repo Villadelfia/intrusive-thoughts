@@ -335,10 +335,9 @@ integer validlock(key k)
         if(llGetAgentInfo(k) & AGENT_SITTING)
         {
             key saton = llList2Key(llGetObjectDetails(k, [OBJECT_ROOT]), 0);
-            list dets = llGetObjectDetails(saton, [OBJECT_NAME, OBJECT_CREATOR]);
-            string sname = llList2String(dets, 0);
-            string screa = (string)llList2Key(dets, 1);
-            if((sname == "ball" || sname == "carrier") && IT_CREATOR == screa) return FALSE;
+            list dets = llGetObjectDetails(saton, [OBJECT_CREATOR]);
+            string screa = (string)llList2Key(dets, 0);
+            if(IT_CREATOR == screa) return FALSE;
         }
         return TRUE;
     }
