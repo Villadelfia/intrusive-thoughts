@@ -7,10 +7,11 @@ default
 {
     state_entry()
     {
-        llRegionSay(MANTRA_CHANNEL, "ctrlready " + (string)llGetOwner());
-        llRegionSay(MANTRA_CHANNEL, "objready " + (string)llGetOwner());
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(0, "", NULL_KEY, "");
+        llSleep(1.0);
+        llRegionSay(MANTRA_CHANNEL, "ctrlready " + (string)llGetOwner());
+        llRegionSay(MANTRA_CHANNEL, "objready " + (string)llGetOwner());
     }
 
     on_rez(integer start_param)

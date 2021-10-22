@@ -13,6 +13,7 @@ integer filter = FALSE;
 integer configured = FALSE;
 integer possessState = 0;
 integer inControl = FALSE;
+integer gotCtrl = FALSE;
 key objectid;
 string objectname;
 
@@ -166,6 +167,7 @@ default
             }
             else if(m == "ctrlstarted " + (string)possessionvictim)
             {
+                gotCtrl = TRUE;
                 string spoof;
                 spoof = llDumpList2String(llParseStringKeepNulls(possessspoof, ["%ME%"], []), owner);
                 spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), victimname);
@@ -273,6 +275,7 @@ default
                     llOwnerSay("You can't possess yourself, silly!");
                     return;
                 }
+                gotCtrl = FALSE;
                 possessState = 0;
                 possessionvictim = NULL_KEY;
                 possessorobject = NULL_KEY;
@@ -369,6 +372,7 @@ default
         }
         else if(possessState == 5)
         {
+            if(!gotCtrl) llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "takectrl");
             list req = llGetObjectDetails(possessorobject, [OBJECT_CREATOR]);
             if(req == [] || llList2Key(req, 0) != llGetCreator())
             {
