@@ -50,15 +50,6 @@ attachobject(string o)
     llOwnerSay("@attachover:~IT/" + llToLower(o) + "=force");
 }
 
-integer canrez(vector pos)
-{
-    integer flags = llGetParcelFlags(pos);
-    if(flags & PARCEL_FLAG_ALLOW_CREATE_OBJECTS) return TRUE;
-    list details = llGetParcelDetails(pos, [PARCEL_DETAILS_OWNER, PARCEL_DETAILS_GROUP]);
-    if(llList2Key(details, 0) == llGetOwner()) return TRUE;
-    return(flags & PARCEL_FLAG_ALLOW_CREATE_GROUP_OBJECTS) && llSameGroup(llList2Key(details, 1));
-}
-
 givereleasemenu()
 {
     integer l = llGetListLength(objectifiednames);
@@ -89,7 +80,7 @@ giveeditmenu()
     if(l == 1)
     {
         llRegionSayTo(llList2Key(objectifiedballs, 0), MANTRA_CHANNEL, "edit");
-        llRegionSayTo(llList2Key(objectifiedballs, 0), 5, "menu");
+        llRegionSayTo(llList2Key(objectifiedballs, 0), 5, llGetSubString(llList2String(objectifiednames, 0), 0, 1) + "menu");
         return;
     }
 
@@ -158,24 +149,10 @@ addobject(string desc)
     if(lockedavatar == llGetOwner()) return;
     if(desc == "") desc = "object";
     targetdescription = desc;
-    
-    if(!canrez(llGetPos()))
-    {
-        llOwnerSay("Can't rez here, trying to set land group.");
-        llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
-        llSleep(2.5);
-    }
-
-    if(!canrez(llGetPos())) 
-    {
-        llOwnerSay("Can't rez here. Not capturing.");
-        return;
-    }
-
     llOwnerSay("Capturing '" + lockedname + "'.");
     target = lockedavatar;
     targetname = lockedname;
-    llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, hideopt);
+    llMessageLinked(LINK_SET, M_API_PROVISION_REQUEST, targetname + "|||" + desc + "|||" + (string)hideopt, target);
 }
 
 handlequeue()
@@ -200,8 +177,8 @@ handlequeue()
         else
         {
             llOwnerSay("Recapturing " + targetname + ".");
-            llSetTimerEvent(10.0);
-            llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, hideopt);
+            llSetTimerEvent(60.0);
+            llMessageLinked(LINK_SET, M_API_PROVISION_REQUEST, targetname + "|||" + targetdescription + "|||" + (string)hideopt, target);
         }
     }
 }
@@ -239,7 +216,7 @@ default
             {
                 if(m == " ") return;
                 llRegionSayTo(llList2Key(objectifiedballs, (integer)m), MANTRA_CHANNEL, "edit");
-                llRegionSayTo(llList2Key(objectifiedballs, (integer)m), 5, "menu");
+                llRegionSayTo(llList2Key(objectifiedballs, (integer)m), 5, llGetSubString(llList2String(objectifiednames, (integer)m), 0, 1) + "menu");
             }
             else if(dialog == 3)
             {
@@ -456,6 +433,32 @@ default
                 llTextBox(llGetOwner(), "As what do you wish to wear " + lockedname + "?", O_DIALOG_CHANNEL);
             }
         }
+        else if(num == M_API_PROVISION_RESPONSE)
+        {
+            list params = llParseString2List(str, ["|||"], []);
+            if(id)
+            {
+                lastrezzed = id;
+                objectifiedballs += [id];
+                objectifiedavatars += [(key)llList2String(params, 0)];
+                objectifiednames += [llList2String(params, 1)];
+                objectifieddescriptions += [llList2String(params, 2)];
+                objectifiedurls += ["null"];
+                llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)llList2String(params, 0) + "|||" + llList2String(params, 2) + "|||" + objectprefix);
+                if(timermode == 0) await = "c";
+                else
+                {
+                    attachobject(llList2String(params, 2));
+                    handlequeue();
+                }
+            }
+            else
+            {
+                llOwnerSay("Could not capture '" + llList2String(params, 1) + "'.");
+                if(timermode != 0) handlequeue();
+            }
+
+        }
     }
 
     timer()
@@ -526,16 +529,7 @@ default
             vector pos = llGetPos();
             string region = llGetRegionName();
             integer l = llGetListLength(objectifiedballs);
-            if(!canrez(llGetPos()))
-            {
-                llOwnerSay("Can't rez here, trying to set land group.");
-                llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
-                llSleep(2.5);
-            }
-
-            integer teleportothers = canrez(llGetPos());
-            if(teleportothers) llOwnerSay("Fetching your objectified avatars and giving them 30 seconds to arrive...");
-            else               llOwnerSay("Can't rez here, not fetching your objectified avatars...");
+            llOwnerSay("Fetching your objectified avatars and giving them 30 seconds to arrive...");
 
             while(~--l)
             {
@@ -550,23 +544,14 @@ default
                 }
                 else
                 {
-                    if(teleportothers) llHTTPRequest(llList2String(objectifiedurls, l), [HTTP_METHOD, "POST"], region + "/" + (string)llRound(pos.x) + "/" + (string)llRound(pos.y)+ "/" + (string)llRound(pos.z));
-                    else               llHTTPRequest(llList2String(objectifiedurls, l), [HTTP_METHOD, "POST"], "die");
+                    llHTTPRequest(llList2String(objectifiedurls, l), [HTTP_METHOD, "POST"], region + "/" + (string)llRound(pos.x) + "/" + (string)llRound(pos.y)+ "/" + (string)llRound(pos.z));
                 }
             }
 
-            if(teleportothers)
-            {
-                timermode = 2;
-                countdown = 11;
-                arrived = [];
-                llSetTimerEvent(3.0);
-            }
-            else
-            {
-                timermode = 0;
-                llSetTimerEvent(2.5);
-            }
+            timermode = 2;
+            countdown = 11;
+            arrived = [];
+            llSetTimerEvent(3.0);
         }
         else if(timermode == 2)
         {

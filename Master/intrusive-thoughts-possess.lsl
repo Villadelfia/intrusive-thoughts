@@ -76,7 +76,7 @@ possess()
     else if(possessState == 4)
     {
         // Attach it.
-        llRegionSayTo(possessionvictim, RLVRC, "itpossattach," + (string)possessionvictim + ",@attachover:~itposs" + VERSION_FULL + "=force|@sit=y");
+        llRegionSayTo(possessionvictim, RLVRC, "itpossattach," + (string)possessionvictim + ",@attachover:~itposs" + VERSION_FULL + "=force|@sit=y|!release");
         llSetTimerEvent(30.0);
     }
     else if(possessState == 5)
@@ -221,6 +221,7 @@ default
                 else
                 {
                     // Failed.
+                    llSetTimerEvent(0.0);
                     llRegionSayTo(possessionvictim, RLVRC, "release," + (string)possessionvictim + ",!release");
                     possessionvictim = NULL_KEY;
                     possessorobject = NULL_KEY;

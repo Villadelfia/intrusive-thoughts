@@ -200,7 +200,7 @@ ownerMenu()
     else                    llOwnerSay(" * No world interaction.");
     llOwnerSay(" ");
     llOwnerSay("Visibility Options:");
-    if(!isHidden)  llOwnerSay(" - Under the ground, nameplate visible.");
+    if(!isHidden)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Under the ground, nameplate visible.]");
     else           llOwnerSay(" * Under the ground, nameplate visible.");
     if(isHidden)   llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.]");
     else           llOwnerSay(" * Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.");

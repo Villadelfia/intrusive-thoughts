@@ -4,6 +4,7 @@
 #define O_DIALOG_CHANNEL    -1438864911
 #define RLV_CHANNEL          1324689755
 #define POSS_CHANNEL         1324689756
+#define PROV_CHANNEL         1324689757
 #define VOICE_CHANNEL        1997346185
 #define HUD_SPEAK_CHANNEL    2003469558
 #define RLV_CHECK_CHANNEL    2033461987
@@ -55,6 +56,8 @@
 #define M_API_TPOK_V              -2010
 #define M_API_STATUS_MESSAGE      -2011
 #define M_API_STATUS_DONE         -2012
+#define M_API_PROVISION_REQUEST   -2013
+#define M_API_PROVISION_RESPONSE  -2014
 
 #define RLV_API_SET_SRC           -3000
 #define RLV_API_CLR_SRC           -3001
@@ -70,6 +73,7 @@
 #define X_API_SETTINGS_LOAD       -4001
 #define X_API_SETTINGS_SAVE       -4002
 #define X_API_GIVE_MENU           -4003
+#define X_API_SET_OBJECTIFIER     -4004
 
 #define IT_PLUGIN_REGISTER        -8000
 #define IT_PLUGIN_RESPONSE        -8001
@@ -92,12 +96,12 @@
 //#define DEBUG
 //#define RETAIL_MODE
 
-#define VERSION_S "IT-Slave v2.8"
-#define VERSION_M "IT-Master v2.8"
-#define VERSION_FULL "9EA793"
+#define VERSION_S "IT-Slave v2.9"
+#define VERSION_M "IT-Master v2.9"
+#define VERSION_FULL "3313FE"
 #define VERSION_MAJOR 2
-#define VERSION_MINOR 8
-#define VERSION_PATCH 2
+#define VERSION_MINOR 9
+#define VERSION_PATCH 0
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG

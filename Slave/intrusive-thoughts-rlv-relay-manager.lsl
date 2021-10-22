@@ -52,7 +52,7 @@ default
 
     on_rez(integer start_param)
     {
-        region = llGetRegionName();
+        region = "";
         nridisable = FALSE;
     }
 

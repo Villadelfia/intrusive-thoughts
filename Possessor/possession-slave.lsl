@@ -1,12 +1,14 @@
 #include <IT/globals.lsl>
 #define IMPULSE 1.6
 key controller = NULL_KEY;
+key objectifier = NULL_KEY;
 
 default
 {
     state_entry()
     {
         llRegionSay(MANTRA_CHANNEL, "ctrlready " + (string)llGetOwner());
+        llRegionSay(MANTRA_CHANNEL, "objready " + (string)llGetOwner());
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(0, "", NULL_KEY, "");
     }
@@ -54,18 +56,27 @@ default
             return;
         }
 
-        id = llGetOwnerKey(id);
-        if(m == "takectrl" && controller == NULL_KEY)
+        if(m == "takectrl" && controller == NULL_KEY && objectifier == NULL_KEY)
         {
-            controller = id;
+            controller = llGetOwnerKey(id);
             llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
+        }
+        else if(startswith(m, "sit") && controller == NULL_KEY && objectifier == NULL_KEY)
+        {
+            objectifier = id;
         }
         else if(m == "pingctrl")
         {
-            if(controller == NULL_KEY) llRegionSayTo(id, MANTRA_CHANNEL, "ctrlready " + (string)llGetOwner());
-            else                       llRegionSayTo(id, MANTRA_CHANNEL, "ctrlbusy " + (string)llGetOwner());
+            if(controller == NULL_KEY && objectifier == NULL_KEY) llRegionSayTo(llGetOwnerKey(id), MANTRA_CHANNEL, "ctrlready " + (string)llGetOwner());
+            else                                                  llRegionSayTo(llGetOwnerKey(id), MANTRA_CHANNEL, "ctrlbusy " + (string)llGetOwner());
+        }
+        else if(m == "objping")
+        {
+            if(controller == NULL_KEY && objectifier == NULL_KEY) llRegionSayTo(id, MANTRA_CHANNEL, "objready " + (string)llGetOwner());
+            else                                                  llRegionSayTo(id, MANTRA_CHANNEL, "objbusy " + (string)llGetOwner());
         }
 
+        id = llGetOwnerKey(id);
         if(id != controller) return;
 
         if(m == "releasectrl")

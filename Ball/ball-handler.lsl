@@ -432,14 +432,27 @@ default
             }
             else if(m == prefix + "invis")
             {
-                if(animation == "hide_b") return;
-                llStopAnimation(animation);
-                animation = "hide_b";
-                llStartAnimation(animation);
-                llSetObjectName("");
-                llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
-                llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
-                llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
+                if(animation == "hide_b")
+                {
+                    if(id == firstavatar) return;
+                    llStopAnimation(animation);
+                    animation = "hide_a";
+                    llStartAnimation(animation);
+                    llSetObjectName("");
+                    llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about will now be rendered visible again, but it will require a relog.");
+                    llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about will now be rendered visible again, but it will require a relog.");
+                    llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
+                }
+                else
+                {
+                    llStopAnimation(animation);
+                    animation = "hide_b";
+                    llStartAnimation(animation);
+                    llSetObjectName("");
+                    llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
+                    llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
+                    llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
+                }
             }
             else if(startswith(m, prefix + "name"))
             {
@@ -562,7 +575,7 @@ default
                     llSetObjectName("");
                     llRegionSayTo(firstavatar, 0, m);
                     llReleaseControls();
-                    struggleFailed = FALSE;
+                    struggleFailed = TRUE;
                 }
             }
             else if(startswith(m, "struggle_success"))

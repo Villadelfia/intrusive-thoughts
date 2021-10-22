@@ -17,9 +17,6 @@ integer configured = FALSE;
 integer relaymode = 0;
 list allowed = [];
 
-integer nridisable = FALSE;
-string region = "";
-
 makelisten(key who)
 {
     if(templisten != -1) llListenRemove(templisten);
@@ -52,15 +49,6 @@ integer hasrestrictions()
     integer n = llGetListLength(rlvclients);
     while(~--n) if(llList2Key(rlvclients, n) != NULL_KEY) return TRUE;
     return FALSE;
-}
-
-checktp()
-{
-    if(llGetRegionName() != region)
-    {
-        region = llGetRegionName();
-        nridisable = FALSE;
-    }
 }
 
 givemenu()
@@ -139,7 +127,6 @@ default
     changed(integer change)
     {
         if(change & CHANGED_INVENTORY) buildclients();
-        if(change & CHANGED_TELEPORT) checktp();
     }
 
     state_entry()
@@ -148,7 +135,6 @@ default
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(0, "", llGetOwner(), "");
         llListen(1, "", llGetOwner(), "");
-        llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         buildclients();
     }
 
@@ -207,7 +193,7 @@ default
             }           
 
             if(hasrestrictions() == FALSE || restrictions == []) return;
-            if(nridisable) return;
+            //if(nridisable) return;
             if(!enabled) return;            
             
             if(startswith(llToLower(m), "relaycmd"))
@@ -222,7 +208,6 @@ default
             return;
         }
 
-        if(nridisable) return;
         if(!enabled) return;
         if(c == RLVRC)
         {
@@ -316,15 +301,6 @@ default
                 llSetTimerEvent(0.0);
                 if(llListFindList(blacklist, [handlingk]) == -1) blacklist += [handlingk];
                 handlingk = NULL_KEY;
-            }
-        }
-        else if(c == MANTRA_CHANNEL)
-        {
-            if(m == "NRIREGION")
-            {
-                if(llGetCreator() != llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0)) return;
-                nridisable = TRUE;
-                region = llGetRegionName();
             }
         }
         else if(c == 0)

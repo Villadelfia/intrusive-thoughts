@@ -79,3 +79,7 @@ Version 2.8.2:
  - Add proper name to slave possession.
  - Fix bug regarding config reading.
  - Make furniture phantom after linking.
+
+Version 2.9.0:
+ - Fix several small issues.
+ - Objectification in no-rez zones!

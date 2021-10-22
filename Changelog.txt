@@ -43,3 +43,16 @@ Carrier — carrier-handler
 Carrier — carrier-menu
 Furniture (mute) — furniture-handler-mute
 Furniture (can speak) — furniture-handler-voice
+
+2.9.0:
+Master — intrusive-thoughts-objectification
+Master — intrusive-thoughts-possess
+Master — intrusive-thoughts-provision
+Master — intrusive-thoughts-ui
+Master — intrusive-thoughts-rlv-relay-manager
+Slave — intrusive-thoughts-rlv-relay-manager
+Ball — ball-handler
+Ball — ball-menu
+Intrusive Thoughts Possessor — possession-slave
+Intrusive Thoughts Possessor — possession-objectification
+Intrusive Thoughts Possessor — possession-menu
