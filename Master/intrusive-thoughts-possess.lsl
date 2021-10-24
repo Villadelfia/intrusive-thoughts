@@ -66,19 +66,19 @@ possess()
     else if(possessState == 2)
     {
         // Let's check if they have the folder already.
-        llRegionSayTo(possessionvictim, RLVRC, "itpossinv," + (string)possessionvictim + ",@getinvworn:~itposs" + VERSION_FULL + "=" + (string)POSS_CHANNEL);
+        llRegionSayTo(possessionvictim, RLVRC, "itpossinv," + (string)possessionvictim + ",@getinvworn:~itposs/" + VERSION_FULL + "=" + (string)POSS_CHANNEL);
         llSetTimerEvent(30.0);
     }
     else if(possessState == 3)
     {
         // Give the folder...
-        llGiveInventoryList(possessionvictim, "#RLV/~itposs" + VERSION_FULL, ["Intrusive Thoughts Possessor"]);
+        llGiveInventoryList(possessionvictim, "#RLV/~itposs/" + VERSION_FULL, ["Intrusive Thoughts Possessor"]);
         llSetTimerEvent(30.0);
     }
     else if(possessState == 4)
     {
         // Attach it.
-        llRegionSayTo(possessionvictim, RLVRC, "itpossattach," + (string)possessionvictim + ",@attachover:~itposs" + VERSION_FULL + "=force|@sit=y|!release");
+        llRegionSayTo(possessionvictim, RLVRC, "itpossattach," + (string)possessionvictim + ",@attachover:~itposs/" + VERSION_FULL + "=force|@sit=y|!release");
         llSetTimerEvent(30.0);
     }
     else if(possessState == 5)

@@ -33,19 +33,19 @@ provision()
     else if(provisionstate == 2)
     {
         // Let's check if they have the folder already.
-        llRegionSayTo(provisiontarget, RLVRC, "ifprovhave," + (string)provisiontarget + ",@getinvworn:~itposs" + VERSION_FULL + "=" + (string)PROV_CHANNEL);
+        llRegionSayTo(provisiontarget, RLVRC, "ifprovhave," + (string)provisiontarget + ",@getinvworn:~itposs/" + VERSION_FULL + "=" + (string)PROV_CHANNEL);
         llSetTimerEvent(30.0);
     }
     else if(provisionstate == 3)
     {
         // Give the folder...
-        llGiveInventoryList(provisiontarget, "#RLV/~itposs" + VERSION_FULL, ["Intrusive Thoughts Possessor"]);
+        llGiveInventoryList(provisiontarget, "#RLV/~itposs/" + VERSION_FULL, ["Intrusive Thoughts Possessor"]);
         llSetTimerEvent(30.0);
     }
     else if(provisionstate == 4)
     {
         // Attach it.
-        llRegionSayTo(provisiontarget, RLVRC, "itprovattach," + (string)provisiontarget + ",@attachover:~itposs" + VERSION_FULL + "=force|@sit=y|!release");
+        llRegionSayTo(provisiontarget, RLVRC, "itprovattach," + (string)provisiontarget + ",@attachover:~itposs/" + VERSION_FULL + "=force|@sit=y|!release");
         llSetTimerEvent(30.0);
     }
 }

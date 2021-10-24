@@ -659,7 +659,7 @@ default
                         data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
                         if(llToLower((string)data[0]) == llToLower(name) || llToLower((string)data[0]) == llToLower(objectprefix + name))
                         {
-                            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)llList2Key(uuids, n) + ";;" + (string)data[1] + "=force");
+                            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@" + (string)data[1]);
                             return;
                         }
                     }
@@ -669,7 +669,7 @@ default
                         data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
                         if(startswith((string)data[0], "Intrusive Thoughts Focus Target"))
                         {
-                            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)llList2Key(uuids, n) + ";;" + (string)data[1] + "=force");
+                            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@" + (string)data[1]);
                             return;
                         }
                     }

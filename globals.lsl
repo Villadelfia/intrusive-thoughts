@@ -98,7 +98,7 @@
 
 #define VERSION_S "IT-Slave v3.0"
 #define VERSION_M "IT-Master v3.0"
-#define VERSION_FULL "AE2D4B"
+#define VERSION_FULL "BE2D4B"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
 #define VERSION_PATCH 0

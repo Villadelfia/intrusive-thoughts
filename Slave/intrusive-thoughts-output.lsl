@@ -304,10 +304,10 @@ default
             integer n = llGetListLength(uuids);
             while(~--n)
             {
-                data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_CREATOR, OBJECT_DESC]);
-                if(startswith((string)data[0], "Intrusive Thoughts Focus Target") && (key)data[1] == llGetCreator())
+                data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
+                if(startswith((string)data[0], "Intrusive Thoughts Focus Target"))
                 {
-                    llOwnerSay("@setcam_focus:" + (string)llList2Key(uuids, n) + ";" + (string)currentFocus + ";" + (string)data[2] + "=force");
+                    llOwnerSay("@" + (string)data[1]);
                     jump skipold;
                 }
             }
