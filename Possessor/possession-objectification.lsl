@@ -578,7 +578,32 @@ default
         leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
         leashinghandle = llTarget(leashtarget, 1.0);
         if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 0.7);
-        if(cameraRestrict != 0) llOwnerSay("@setcam_focus:" + (string)objectifier + ";;=force");
+        if(cameraRestrict != 0) 
+        {
+            list uuids = llGetAttachedList(objectifier);
+            integer n = llGetListLength(uuids);
+            list data = [];
+            while(~--n)
+            {
+                data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
+                if(llToLower((string)data[0]) == llToLower(name) || llToLower((string)data[0]) == llToLower(objectprefix + name))
+                {
+                    llOwnerSay("@setcam_focus:" + (string)llList2Key(uuids, n) + ";;" + (string)data[1] + "=force");
+                    return;
+                }
+            }
+            n = llGetListLength(uuids);
+            while(~--n)
+            {
+                data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
+                if(startswith((string)data[0], "Intrusive Thoughts Focus Target"))
+                {
+                    llOwnerSay("@setcam_focus:" + (string)llList2Key(uuids, n) + ";;" + (string)data[1] + "=force");
+                    return;
+                }
+            }
+            llOwnerSay("@setcam_focus:" + (string)objectifier + ";;=force");
+        }
     }
 
     http_request(key id, string method, string body)

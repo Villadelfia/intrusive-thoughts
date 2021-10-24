@@ -13,6 +13,7 @@ integer struggleEvents = 0;
 integer struggleFailed = FALSE;
 integer captured = FALSE;
 integer firstattempt = TRUE;
+integer timerctr = 0;
 
 list whitelist = ["boot",    "top",      "bangle", "armband", "bracer", "thigh",  "ring", 
                   "suit",    "lingerie", "bra",    "shoe",    "glove",  "sock",   "stocking", 
@@ -425,8 +426,6 @@ default
 
     timer()
     {
-        llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
-
         if(struggleEvents > 0 && struggleFailed == FALSE)
         {
             llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "struggle_count|" + (string)firstavatar + "|" + (string)struggleEvents);
@@ -485,7 +484,12 @@ default
                 llSetStatus(STATUS_PHYSICS, FALSE);
             }
 
-            if(cameraRestrict != 0) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "focus," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@setcam_focus:" + (string)focuskey + ";0;0/1/0=force");
+            if(timerctr % 10 == 0)
+            {
+                llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
+                if(cameraRestrict != 0) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "focus," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@setcam_focus:" + (string)focuskey + ";0;0/1/0=force");
+            }
+            timerctr++;
             if(llGetTime() > 60.0) detachrandom();
         }
     }

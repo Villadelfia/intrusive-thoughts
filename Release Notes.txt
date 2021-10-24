@@ -85,3 +85,6 @@ Version 2.9.0:
  - Objectification in no-rez zones!
  - Improved reliability of possession.
  - Possession struggle API.
+ - Fix faulty interaction between IT objectification and relay.
+ - Add objectification focus targets. See the manual for more info!
+ - Vastly improve focus target setup!

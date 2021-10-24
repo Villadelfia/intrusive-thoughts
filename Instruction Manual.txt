@@ -9,7 +9,7 @@ Inside of your package you will find:
  - Instruction Manual: You're reading it right now.
  - Intrusive Thoughts Applier Notecard Template: An example applier notecard. You will be using this to set up the voice and hearing restrictions featured in the IT Slaves.
  - Intrusive Thoughts Configuration: You will be editing this notecard and dropping it onto the HUD to set it up before first usage and whenever you wish to change the settings.
- - Intrusive Thoughts Focus Target: The focus target, to be used to make a slave look at a specific point on your body.
+ - Intrusive Thoughts Focus Target: The focus target, to be used to make a slave or object look at a specific point on your body.
  - Intrusive Thoughts Furniture (Can speak): Rez this to make an object 'furniture' for the IT system. This version is meant for objects like radios or speakers, things that could feasibly speak.
  - Intrusive Thoughts Furniture (Mute): Rez this to make an object 'furniture' for the IT system. This version is meant for objects that would not be able to speak.
  - Intrusive Thoughts Master: The Master HUD, to be worn by you.
@@ -191,3 +191,9 @@ When you capture someone and click the "EDIT OBJECT" button, you will be given a
 Same as the objectification and vore systems. You lock onto someone, then you click the "possess" button. It will then give them an object (or use the slave if they're wearing it) and them under your control. You can click the play/pause button so you can move yourself, and you can click the chair button to have your victim sit on what you're looking at. You can also talk into channel /7 to talk through your victim's mouth.
 
 When you're done, just click the release button.
+
+
+22. How do I use the Focus Target?
+When worn as is, any slave or object that has focusing restrictions active will look at the focus target instead of your avatar center. You can wear it on any attachment point. When worn, you will get a clickable link to get a menu to modify the position, rotation and zoom factor, as well as get a preview of what your slaves/objects will me seeing. This preview uses RLV, but is not a restriction on you.
+
+You can also rename the object a specific name to make that specific object look at it. For example, if you wear a focus target called Heels, the worn object called Heels will look at that target. All other objects will still look at the standard focus target.
