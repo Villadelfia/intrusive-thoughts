@@ -275,6 +275,40 @@ default
         {
             if(llGetOwnerKey(id) != objectifier && llGetOwner() != id) return;
             if(m == prefix + "menu") llMessageLinked(LINK_THIS, X_API_GIVE_MENU, "", llGetOwnerKey(id));
+            else if(m == prefix + "invis")
+            {
+                if(animation == "hide_b")
+                {
+                    if(id == llGetOwner()) return;
+                    llStopAnimation(animation);
+                    animation = "hide_a";
+                    llStartAnimation(animation);
+                    llSetObjectName("");
+                    llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about will now be rendered visible again, but it will require a relog.");
+                    llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about will now be rendered visible again, but it will require a relog.");
+                    llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
+                }
+                else
+                {
+                    llStopAnimation(animation);
+                    animation = "hide_b";
+                    llStartAnimation(animation);
+                    llSetObjectName("");
+                    llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about is now rendered truly invisible, nameplate and all.");
+                    llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about is now rendered truly invisible, nameplate and all.");
+                    llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
+                }
+            }
+            else if(startswith(m, prefix + "name"))
+            {
+                if(id == llGetOwner()) return;
+                m = llDeleteSubString(m, 0, llStringLength(prefix + "name"));
+                name = m;
+                llSetObjectName("");
+                llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about is now " + objectprefix + m + ".");
+                llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about is now " + objectprefix + m + ".");
+                llRegionSayTo(objectifier, MANTRA_CHANNEL, "objrename " + m);
+            }
             else if(startswith(m, prefix + "im"))
             {
                 if(id == llGetOwner() && imRestrict > (integer)llGetSubString(m, -1, -1)) return;
@@ -370,40 +404,6 @@ default
                 llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's World restrictions set to level " + (string)worldRestrict + ".");
                 applyWorld();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
-            }
-            else if(m == prefix + "invis")
-            {
-                if(animation == "hide_b")
-                {
-                    if(id == llGetOwner()) return;
-                    llStopAnimation(animation);
-                    animation = "hide_a";
-                    llStartAnimation(animation);
-                    llSetObjectName("");
-                    llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about will now be rendered visible again, but it will require a relog.");
-                    llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about will now be rendered visible again, but it will require a relog.");
-                    llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
-                }
-                else
-                {
-                    llStopAnimation(animation);
-                    animation = "hide_b";
-                    llStartAnimation(animation);
-                    llSetObjectName("");
-                    llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about is now rendered truly invisible, nameplate and all.");
-                    llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about is now rendered truly invisible, nameplate and all.");
-                    llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
-                }
-            }
-            else if(startswith(m, prefix + "name"))
-            {
-                if(id == llGetOwner()) return;
-                m = llDeleteSubString(m, 0, llStringLength(prefix + "name"));
-                name = m;
-                llSetObjectName("");
-                llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about is now " + objectprefix + m + ".");
-                llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about is now " + objectprefix + m + ".");
-                llRegionSayTo(objectifier, MANTRA_CHANNEL, "objrename " + m);
             }
         }
         else if(c == MANTRA_CHANNEL)
@@ -655,14 +655,14 @@ default
             if(hearingRestrict > 0) llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's Hearing restrictions set to level " + (string)hearingRestrict + ".");
             if(speechRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
             if(speechRestrict != 1) llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
-            if(dazeRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about's Daze restrictions set to level " + (string)speechRestrict + ".");
-            if(dazeRestrict != 1) llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's Daze restrictions set to level " + (string)speechRestrict + ".");
-            if(cameraRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about's Camera restrictions set to level " + (string)speechRestrict + ".");
-            if(cameraRestrict != 1) llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's Camera restrictions set to level " + (string)speechRestrict + ".");
-            if(inventoryRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about's Inventory restrictions set to level " + (string)speechRestrict + ".");
-            if(inventoryRestrict != 1) llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's Inventory restrictions set to level " + (string)speechRestrict + ".");
-            if(worldRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about's World restrictions set to level " + (string)speechRestrict + ".");
-            if(worldRestrict != 1) llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's World restrictions set to level " + (string)speechRestrict + ".");
+            if(dazeRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about's Daze restrictions set to level " + (string)dazeRestrict + ".");
+            if(dazeRestrict != 1) llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's Daze restrictions set to level " + (string)dazeRestrict + ".");
+            if(cameraRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about's Camera restrictions set to level " + (string)cameraRestrict + ".");
+            if(cameraRestrict != 1) llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's Camera restrictions set to level " + (string)cameraRestrict + ".");
+            if(inventoryRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about's Inventory restrictions set to level " + (string)inventoryRestrict + ".");
+            if(inventoryRestrict != 1) llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's Inventory restrictions set to level " + (string)inventoryRestrict + ".");
+            if(worldRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about's World restrictions set to level " + (string)worldRestrict + ".");
+            if(worldRestrict != 1) llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's World restrictions set to level " + (string)worldRestrict + ".");
             if(isHidden && animation != "hide_b")
             {
                 llStopAnimation(animation);

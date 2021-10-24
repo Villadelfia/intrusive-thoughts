@@ -82,14 +82,14 @@ sitterMenu()
     llRegionSayTo(firstavatar, 0, "Speech Options:");
     if(speechRestrict == 0)       llRegionSayTo(firstavatar, 0, " * No restrictions.");
     else                          llRegionSayTo(firstavatar, 0, " - No restrictions.");
-    if(speechRestrict < 1)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "sp1 Not capable of speech except to owner and other captives. Can emote.]");
-    else if(speechRestrict == 1)  llRegionSayTo(firstavatar, 0, " * Not capable of speech except to owner and other captives. Can emote.");
-    else                          llRegionSayTo(firstavatar, 0, " - Not capable of speech except to owner and other captives. Can emote.");
+    if(speechRestrict < 1)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "sp1 Not capable of speech except to wearer and other captives. Can emote.]");
+    else if(speechRestrict == 1)  llRegionSayTo(firstavatar, 0, " * Not capable of speech except to wearer and other captives. Can emote.");
+    else                          llRegionSayTo(firstavatar, 0, " - Not capable of speech except to wearer and other captives. Can emote.");
     if(speechRestrict < 2)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "sp2 No longer capable of emoting.]");
     else if(speechRestrict == 2)  llRegionSayTo(firstavatar, 0, " * No longer capable of emoting.");
     else                          llRegionSayTo(firstavatar, 0, " - No longer capable of emoting.");
-    if(speechRestrict < 3)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "sp3 Incapable of any kind of speech, even to owner.]");
-    else if(speechRestrict == 3)  llRegionSayTo(firstavatar, 0, " * Incapable of any kind of speech, even to owner.");
+    if(speechRestrict < 3)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "sp3 Incapable of any kind of speech, even to wearer.]");
+    else if(speechRestrict == 3)  llRegionSayTo(firstavatar, 0, " * Incapable of any kind of speech, even to wearer.");
     llRegionSayTo(firstavatar, 0, " ");
     llRegionSayTo(firstavatar, 0, "Daze Options:");
     if(dazeRestrict == 0)       llRegionSayTo(firstavatar, 0, " * No restrictions.");
@@ -116,10 +116,10 @@ sitterMenu()
     else if(worldRestrict == 1)  llRegionSayTo(firstavatar, 0, " * No world interaction.");
     llRegionSayTo(firstavatar, 0, " ");
     llRegionSayTo(firstavatar, 0, "Visibility Options:");
-    if(!isHidden)  llRegionSayTo(firstavatar, 0, " - Under the ground, nameplate visible.");
-    else           llRegionSayTo(firstavatar, 0, " * Under the ground, nameplate visible.");
-    if(isHidden)   llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.]");
-    else           llRegionSayTo(firstavatar, 0, " * Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.");
+    if(isHidden)  llRegionSayTo(firstavatar, 0, " - Under the ground, nameplate visible.");
+    else          llRegionSayTo(firstavatar, 0, " * Under the ground, nameplate visible.");
+    if(!isHidden) llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.]");
+    else          llRegionSayTo(firstavatar, 0, " * Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.");
 }
 
 ownerMenu()
@@ -168,12 +168,12 @@ ownerMenu()
     llOwnerSay("Speech Options:");
     if(speechRestrict != 0)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "sp0 No restrictions.]");
     else                     llOwnerSay(" * No restrictions.");
-    if(speechRestrict != 1)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "sp1 Not capable of speech except to owner and other captives. Can emote.]");
-    else                     llOwnerSay(" * Not capable of speech except to owner and other captives. Can emote.");
+    if(speechRestrict != 1)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "sp1 Not capable of speech except to wearer and other captives. Can emote.]");
+    else                     llOwnerSay(" * Not capable of speech except to wearer and other captives. Can emote.");
     if(speechRestrict != 2)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "sp2 No longer capable of emoting.]");
     else                     llOwnerSay(" * No longer capable of emoting.");
-    if(speechRestrict != 3)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "sp3 Incapable of any kind of speech, even to owner.]");
-    else                     llOwnerSay(" * Incapable of any kind of speech, even to owner.");
+    if(speechRestrict != 3)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "sp3 Incapable of any kind of speech, even to wearer.]");
+    else                     llOwnerSay(" * Incapable of any kind of speech, even to wearer.");
     llOwnerSay(" ");
     llOwnerSay("Dazing Options:");
     if(dazeRestrict != 0)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "da0 No restrictions.]");
@@ -200,10 +200,10 @@ ownerMenu()
     else                    llOwnerSay(" * No world interaction.");
     llOwnerSay(" ");
     llOwnerSay("Visibility Options:");
-    if(!isHidden)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Under the ground, nameplate visible.]");
-    else           llOwnerSay(" * Under the ground, nameplate visible.");
-    if(isHidden)   llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.]");
-    else           llOwnerSay(" * Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.");
+    if(isHidden)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Under the ground, nameplate visible.]");
+    else          llOwnerSay(" * Under the ground, nameplate visible.");
+    if(!isHidden) llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.]");
+    else          llOwnerSay(" * Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.");
     llOwnerSay(" ");
     llOwnerSay("Other Options:");
     llOwnerSay(" - Type /5" + prefix + "name <new name> to rename this object.");

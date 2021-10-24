@@ -76,3 +76,15 @@ Ball — ball-handler
 Carrier — carrier-handler
 Intrusive Thoughts Possessor — possession-objectification
 Intrusive Thoughts Focus Target — intrusive-thoughts-focus-target
+
+3.0.0:
+Master — intrusive-thoughts-possess
+Master — intrusive-thoughts-provision
+Master — intrusive-thoughts-ui
+Slave — intrusive-thoughts-controller
+Slave — intrusive-thoughts-restrict
+Furniture — furniture-handler
+Ball — ball-handler
+Ball — ball-menu
+Intrusive Thoughts Possessor — possession-objectification
+Intrusive Thoughts Possessor — possession-menu

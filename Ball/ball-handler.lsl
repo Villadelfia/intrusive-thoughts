@@ -11,7 +11,6 @@ vector seatedoffset;
 vector oldpos;
 string name;
 string objectprefix = "";
-integer waitingstate;
 integer struggleEvents = 0;
 integer struggleFailed = FALSE;
 integer captured = FALSE;
@@ -196,7 +195,6 @@ default
         saton = FALSE;
         editmode = FALSE;
         seatedoffset = ZERO_VECTOR;
-        waitingstate = 0;
         urlt = llRequestURL();
         
         // Set the rezzer and default animation.
@@ -287,7 +285,7 @@ default
         // Notify of menu.
         llSetObjectName("");
         llRegionSayTo(llAvatarOnSitTarget(), 0, "You can restrict yourself further by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you are captured by the same person.");
-        llRegionSayTo(rezzer, 0, "You can edit the restrictions on your victim by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you capture the same person.");
+        llRegionSayTo(llGetOwnerKey(rezzer), 0, "You can edit the restrictions on your victim by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you capture the same person.");
 
         // And start a timer loop.
         llSetTimerEvent(0.5);
@@ -341,6 +339,37 @@ default
         {
             if(id != firstavatar && llGetOwner() != llGetOwnerKey(id)) return;
             if(m == prefix + "menu") llMessageLinked(LINK_THIS, X_API_GIVE_MENU, "", llGetOwnerKey(id));
+            else if(m == prefix + "invis")
+            {
+                if(animation == "hide_b")
+                {
+                    if(id == firstavatar) return;
+                    llStopAnimation(animation);
+                    animation = "hide_a";
+                    llStartAnimation(animation);
+                    llSetObjectName("");
+                    doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about will now be rendered visible again, but it will require a relog.");
+                    llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
+                }
+                else
+                {
+                    llStopAnimation(animation);
+                    animation = "hide_b";
+                    llStartAnimation(animation);
+                    llSetObjectName("");
+                    doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
+                    llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
+                }
+            }
+            else if(startswith(m, prefix + "name"))
+            {
+                if(id == firstavatar) return;
+                m = llDeleteSubString(m, 0, llStringLength(prefix + "name"));
+                name = m;
+                llSetObjectName("");
+                doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about is now " + objectprefix + m + ".");
+                llRegionSayTo(rezzer, MANTRA_CHANNEL, "objrename " + m);
+            }
             else if(startswith(m, prefix + "im"))
             {
                 if(id == firstavatar && imRestrict > (integer)llGetSubString(m, -1, -1)) return;
@@ -429,37 +458,6 @@ default
                 applyWorld();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
-            else if(m == prefix + "invis")
-            {
-                if(animation == "hide_b")
-                {
-                    if(id == firstavatar) return;
-                    llStopAnimation(animation);
-                    animation = "hide_a";
-                    llStartAnimation(animation);
-                    llSetObjectName("");
-                    doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about will now be rendered visible again, but it will require a relog.");
-                    llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
-                }
-                else
-                {
-                    llStopAnimation(animation);
-                    animation = "hide_b";
-                    llStartAnimation(animation);
-                    llSetObjectName("");
-                    doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
-                    llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
-                }
-            }
-            else if(startswith(m, prefix + "name"))
-            {
-                if(id == firstavatar) return;
-                m = llDeleteSubString(m, 0, llStringLength(prefix + "name"));
-                name = m;
-                llSetObjectName("");
-                doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about is now " + objectprefix + m + ".");
-                llRegionSayTo(rezzer, MANTRA_CHANNEL, "objrename " + m);
-            }
         }
         else if(c == MANTRA_CHANNEL)
         {
@@ -486,8 +484,11 @@ default
                 if(objectprefix == "NULL") objectprefix = "";
                 llListen(GAZE_CHAT_CHANNEL, "", firstavatar, "");
                 llListen(GAZE_REN_CHANNEL, "", firstavatar, "");
+                vector pos = llList2Vector(llGetObjectDetails(firstavatar, [OBJECT_POS]), 0);
+                llSetRegionPos(pos);
                 llListen(RLVRC, "", NULL_KEY, "");
                 llRegionSayTo(firstavatar, RLVRC, "c," + (string)firstavatar + ",@sit:" + (string)llGetKey() + "=force|@unsit=n");
+                llSetTimerEvent(20.0);
             }
             else if(m == "edit" && llGetOwnerKey(id) == llGetOwnerKey(rezzer) && keyisavatar == TRUE)
             {
@@ -521,28 +522,16 @@ default
                 objectprefix = m;
             }
         }
-        else if(c == RLVRC && waitingstate < 4)
+        else if(c == RLVRC)
         {
-            if(m == "ping," + (string)llGetKey() + ",ping,ping") 
+            if(endswith(m, (string)llGetKey()+",!release,ok"))
             {
                 llSetObjectName(objectprefix + name);
-                llSay(0, "Attempting recapture...");
-                llRegionSay(RLVRC, "ping," + (string)llGetOwnerKey(id) + ",!pong");
-            }
-            else if(endswith(m, (string)llGetKey()+",!release,ok"))
-            {
-                llSetObjectName(objectprefix + name);
-                llSay(0, "Releasing captive...");
                 llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames_sec=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure_sec=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem");
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());
-                if(animation == "hide_b")
-                {
-                    llSetObjectName("");
-                    llRegionSayTo(llAvatarOnSitTarget(), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, try undeforming yourself via the Avatar -> Avatar Health menu. If that doesn't work, teleport to a different region, and as a last resort, you can relog.");
-                }
                 llSleep(10.0);
                 die();
             }
@@ -604,66 +593,10 @@ default
 
         if(llGetNumberOfPrims() == 1)
         {
-            integer hours = (integer)llGetObjectDesc();
-            
-            // If we were never sat on, delete.
-            if(saton == FALSE) die();
-
-            // If the key is an avatar, delete.
-            if(keyisavatar) die();
-
-            // Just recently vacated.
-            if(waitingstate == 0)
-            {
-                llSetObjectName(objectprefix + name);
-                llSay(0, "Captive has disappeared. Waiting for " + (string)hours + " hours before resetting.");
-                waitingstate = 1;
-                llResetTime();
-            }
-
-            // 10 second cooldown
-            else if(waitingstate == 1)
-            {
-                if(llGetTime() < 10.0) return;
-                waitingstate = 2;
-            }
-
-            // Die if too long without sitter, go to next step if we see the sitter in the region.
-            else if(waitingstate == 2)
-            {
-                if(llGetTime() > (hours * 3600)) die();
-                if(llGetAgentSize(firstavatar) != ZERO_VECTOR)
-                {
-                    waitingstate = 3;
-                    llResetTime();
-                }
-            }
-
-            // We saw the avatar, wait 45 seconds for a recapture.
-            else if(waitingstate == 3)
-            {
-                if(llGetTime() < 45.0) return;
-                waitingstate = 4;
-            }
-
-            // Recapture didn't happen, try manual capture.
-            else if(waitingstate == 4)
-            {
-                llRegionSayTo(firstavatar, RLVRC, "recapture," + (string)firstavatar + ",@sit:" + (string)llGetKey() + "=force");
-                llResetTime();
-                waitingstate = 5;
-            }
-
-            // And if still not sat on after 60 more seconds... die.
-            else if(waitingstate == 5)
-            {
-                if(llGetTime() < 60.0) return;
-                die();
-            }
+            die();
         }
         else
         {
-            waitingstate = 0;
             vector my = llGetPos();
             vector offset = ZERO_VECTOR;
             if(keyisavatar) offset = seatedoffset;

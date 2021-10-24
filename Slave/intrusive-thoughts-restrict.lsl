@@ -102,7 +102,11 @@ handlemenu(key k)
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "liststuff - List all stuff.]");
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "stand - Stand up.]");
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "leash - Leash]/[secondlife:///app/chat/1/" + prefix + "unleash unleash.]");
-        if(llGetOwnerKey(k) == primary) ownersay(k, "[secondlife:///app/chat/1/" + prefix + "ownerinfo - Add/remove secondary owners.]");
+        if(llGetOwnerKey(k) == primary) 
+        {
+            ownersay(k, "[secondlife:///app/chat/1/" + prefix + "ownerinfo - Add/remove secondary owners.]");
+            ownersay(k, "- Notification toggles: [secondlife:///app/chat/1/" + prefix + "tpnotify On teleport]/[secondlife:///app/chat/1/" + prefix + "lognotify On wear/detach].");
+        }
         ownersay(k, " ");
         ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "mind mindlessness]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing]/[secondlife:///app/chat/1/" + prefix + "lock lock].");
         ownersay(k, "- Sight radius: [secondlife:///app/chat/1/" + prefix + "b--- ---] [secondlife:///app/chat/1/" + prefix + "b-- --] [secondlife:///app/chat/1/" + prefix + "b- -] " + formatfloat(currentVision, 2) + " meters [secondlife:///app/chat/1/" + prefix + "b+ +] [secondlife:///app/chat/1/" + prefix + "b++ ++] [secondlife:///app/chat/1/" + prefix + "b+++ +++]");
@@ -143,22 +147,6 @@ default
         {
             publicaccess = (integer)str;
             groupaccess = (integer)((string)id);
-        }
-    }
-
-    changed(integer change)
-    {
-        if(change & CHANGED_TELEPORT) 
-        {
-            string oldn = llGetObjectName();
-            llSetObjectName("");
-            if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
-            else
-            {
-                llSetObjectName(oldn);
-                llInstantMessage(primary, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
-            }
-            llSetObjectName(oldn);
         }
     }
 

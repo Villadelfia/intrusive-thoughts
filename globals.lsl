@@ -96,11 +96,11 @@
 //#define DEBUG
 //#define RETAIL_MODE
 
-#define VERSION_S "IT-Slave v2.9"
-#define VERSION_M "IT-Master v2.9"
-#define VERSION_FULL "33C4BA"
-#define VERSION_MAJOR 2
-#define VERSION_MINOR 9
+#define VERSION_S "IT-Slave v3.0"
+#define VERSION_M "IT-Master v3.0"
+#define VERSION_FULL "AE2D4B"
+#define VERSION_MAJOR 3
+#define VERSION_MINOR 0
 #define VERSION_PATCH 0
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 

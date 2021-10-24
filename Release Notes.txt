@@ -88,3 +88,9 @@ Version 2.9.0:
  - Fix faulty interaction between IT objectification and relay.
  - Add objectification focus targets. See the manual for more info!
  - Vastly improve focus target setup!
+
+Version 3.0.0:
+ - Furniture 2.0. Improved experience and more settings.
+ - Improved capturing on objectification.
+ - Toggle for login and teleport notifications on slaves.
+ - Several bugs ironed out.

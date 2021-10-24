@@ -14,6 +14,7 @@ integer configured = FALSE;
 integer possessState = 0;
 integer inControl = FALSE;
 integer gotCtrl = FALSE;
+integer timerCtr = 0;
 key objectid;
 string objectname;
 
@@ -85,6 +86,7 @@ possess()
         // And we're good to go.
         llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
         llMessageLinked(LINK_SET, M_API_SET_FILTER, "poss", (key)((string)TRUE));
+        timerCtr = 0;
         llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "takectrl");
         llSetTimerEvent(0.1);
     }
@@ -373,7 +375,19 @@ default
         }
         else if(possessState == 5)
         {
-            if(!gotCtrl) llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "takectrl");
+            if(!gotCtrl) 
+            {
+                llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "takectrl");
+                timerCtr++;
+                if(timerCtr == 50)
+                {
+                    llRegionSayTo(possessionvictim, RLVRC, "release," + (string)possessionvictim + ",!release");
+                    possessionvictim = NULL_KEY;
+                    possessorobject = NULL_KEY;
+                    inControl = FALSE;
+                    llMessageLinked(LINK_SET, M_API_SET_FILTER, "poss", (key)((string)FALSE));
+                }
+            }
             list req = llGetObjectDetails(possessorobject, [OBJECT_CREATOR]);
             if(req == [] || llList2Key(req, 0) != llGetCreator())
             {

@@ -7,12 +7,27 @@ integer publicaccess = FALSE;
 integer groupaccess = FALSE;
 string prefix;
 key http;
+integer notifyLogon = TRUE;
+integer notifyTeleport = TRUE;
 
 default
 {
     changed(integer change)
     {
         if(change & CHANGED_OWNER) resetscripts();
+        if(!notifyTeleport) return;
+        if(change & CHANGED_TELEPORT) 
+        {
+            string oldn = llGetObjectName();
+            llSetObjectName("");
+            if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
+            else
+            {
+                llSetObjectName(oldn);
+                llInstantMessage(primary, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
+            }
+            llSetObjectName(oldn);
+        }
     }
 
     // This script bootstraps the entire IT Slave system.
@@ -22,14 +37,20 @@ default
         {
             if(wearer != llGetOwner()) return;
             llMessageLinked(LINK_SET, S_API_STARTED, llDumpList2String(owners, ","), primary);
-            if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-            else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            if(notifyLogon)
+            {
+                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            }
             http = llHTTPRequest(UPDATE_URL, [], "");
         }
         else
         {
-            if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-            else llInstantMessage(primary, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            if(notifyLogon)
+            {
+                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                else llInstantMessage(primary, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            }
         }
     }
 
@@ -155,6 +176,20 @@ default
             if(publicaccess) publicstatus = "ENABLED";
             ownersay(k, "Public access " + publicstatus + ". Click [secondlife:///app/chat/1/" + prefix + "publicaccess here] to toggle.");
             llMessageLinked(LINK_SET, S_API_OTHER_ACCESS, (string)publicaccess, (key)((string)groupaccess));
+        }
+        else if(m == "lognotify")
+        {
+            notifyLogon = !notifyLogon;
+            string status = "DISABLED";
+            if(notifyLogon) status = "ENABLED";
+            ownersay(k, "Wear/take off notifications " + status + ". Click [secondlife:///app/chat/1/" + prefix + "lognotify here] to toggle.");
+        }
+        else if(m == "tpnotify")
+        {
+            notifyTeleport = !notifyTeleport;
+            string status = "DISABLED";
+            if(notifyTeleport) status = "ENABLED";
+            ownersay(k, "Teleport notifications " + status + ". Click [secondlife:///app/chat/1/" + prefix + "tpnotify here] to toggle.");
         }
 
         llSetObjectName(oldn);
