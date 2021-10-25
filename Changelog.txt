@@ -96,3 +96,8 @@ Slave — intrusive-thoughts-output
 Ball — ball-handler
 Intrusive Thoughts Possessor — possession-objectification
 Intrusive Thoughts Focus Target — intrusive-thoughts-focus-target
+
+3.0.0b:
+Slave — intrusive-thoughts-mind
+Slave — intrusive-thoughts-vocal
+Intrusive Thoughts Focus Target — intrusive-thoughts-focus-target

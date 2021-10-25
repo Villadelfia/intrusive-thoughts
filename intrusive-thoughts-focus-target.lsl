@@ -1,4 +1,3 @@
-vector angleVector = <0,0,1>;
 float dist = 0.5;
 integer lastpoint = -1;
 integer point = -1;
@@ -9,42 +8,9 @@ update()
 {
     vector curScale = llGetScale();
     if(curScale.x != curScale.y || curScale.y != curScale.z || curScale.x != curScale.z) llSetScale(<curScale.x, curScale.x, curScale.x>);
-    vector x = llVecNorm(angleVector * llGetLocalRot() * llGetRot());
+    vector x = llVecNorm(<0, 0, 1> * llGetLocalRot() * llGetRot());
     string desc = (string)x.x + "/" + (string)x.y + "/" +(string)x.z;
     llSetObjectDesc("setcam_focus:" + (string)llGetKey() + ";" + (string)dist + ";" + desc + "=force");
-}
-
-updateVector()
-{
-    switch(point)
-    {
-        case 1:
-        case 18:
-        case 19:
-        case 42:
-        {
-            angleVector = <-1,0,0>;
-            break;
-        }
-        case 20:
-        case 21:
-        case 41:
-        {
-            angleVector = <1,0,0>;
-            break;
-        }
-        case 6:
-        case 9:
-        {
-            angleVector = <0,1,0>;
-            break;
-        }
-        default:
-        {
-            angleVector = <0,0,1>;
-            break;
-        }
-    }
 }
 
 preview()
@@ -60,8 +26,8 @@ adjustScale(float delta)
 
 adjustRotation(vector delta)
 {
-    rotation rot = llEuler2Rot(delta *= DEG_TO_RAD);
-    llSetRot(rot * llGetLocalRot());
+    rotation rot = llEuler2Rot(delta * DEG_TO_RAD);
+    llSetRot(llGetLocalRot() * rot);
 }
 
 adjustPosition(vector delta)
@@ -86,7 +52,7 @@ start()
     {
         lastpoint = point;
         llSetPos(ZERO_VECTOR);
-        llSetRot(ZERO_ROTATION);
+        llSetRot(llEuler2Rot(<0,90,0>*DEG_TO_RAD));
         llSetScale(<0.1, 0.1, 0.1>);
     }
 
@@ -94,8 +60,7 @@ start()
     adjPos = 0.01;
     adjRot = 2.5;
 
-    // Set the angle vector, then update the description for slaves.
-    updateVector();
+    // Update the description for slaves.
     update();
 
     // Start update loop.

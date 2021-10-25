@@ -95,3 +95,4 @@ Version 3.0.0:
  - Toggle for login and teleport notifications on slaves.
  - Several bugs ironed out.
  - Improved focus targets even more.
+ - Better security on slave chat channel.

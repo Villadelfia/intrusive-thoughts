@@ -148,8 +148,9 @@ default
     state_entry()
     {
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
-        llListen(VOICE_CHANNEL, "", llGetOwner(), "");
         llListen(0, "", NULL_KEY, "");
+        setupVoiceChannel();
+        llListen(VOICE_CHANNEL, "", llGetOwner(), "");
     }
 
     listen(integer c, string n, key k, string m)

@@ -5,7 +5,6 @@
 #define RLV_CHANNEL          1324689755
 #define POSS_CHANNEL         1324689756
 #define PROV_CHANNEL         1324689757
-#define VOICE_CHANNEL        1997346185
 #define HUD_SPEAK_CHANNEL    2003469558
 #define RLV_CHECK_CHANNEL    2033461987
 #define GAZE_CHAT_CHANNEL    2102234356
@@ -109,6 +108,12 @@ debug(string m) {llOwnerSay("[" + llGetScriptName() + "]: " + m);}
 #else
 #define debug(dummy)
 #endif
+
+integer VOICE_CHANNEL;
+setupVoiceChannel()
+{
+    VOICE_CHANNEL = 0x770D1589 ^ (integer)("0x" + llGetSubString((string)llGetOwner(), -8, -2));
+}
 
 sensortimer(float t)
 {
