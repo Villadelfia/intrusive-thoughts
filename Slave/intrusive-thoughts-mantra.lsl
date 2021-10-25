@@ -57,7 +57,7 @@ doMantra()
     llOwnerSay("@clear");
     llOwnerSay("@detach=n,redirchat:" + (string)(VOICE_CHANNEL+1) + "=add,rediremote:" + (string)(VOICE_CHANNEL+1) + "=add,sendchannel=n,sendchannel:" + (string)(VOICE_CHANNEL+1) + "=add,sendchannel:" + (string)COMMAND_CHANNEL + "=add");
     llOwnerSay("@clear=setsphere,setsphere=n,setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:128=force,setsphere_tween:5=force,setsphere_distmax:16=force,setsphere_tween=force");
-    llOwnerSay("@fly=n,temprun=n,alwaysrun=n,camunlock=n,sendgesture=n,tplocal=n,tplm=n,tploc=n,tplure=n,sittp=n,tprequest=n,tprequest:" + (string)primary + "=add,tplure:" + (string)primary + "=add,accepttp:" + (string)primary + "=add,accepttprequest:" + (string)primary + "=add");
+    llOwnerSay("@fly=n,temprun=n,alwaysrun=n,sendgesture=n,tplocal=n,tplm=n,tploc=n,tplure=n,sittp=n,tprequest=n,tprequest:" + (string)primary + "=add,tplure:" + (string)primary + "=add,accepttp:" + (string)primary + "=add,accepttprequest:" + (string)primary + "=add");
     if(llGetAgentInfo(llGetOwner()) & AGENT_SITTING) llOwnerSay("@unsit=n");
     else                                             llOwnerSay("@sit=n");
     intensity = 0;
