@@ -1,8 +1,6 @@
 #include <IT/globals.lsl>
 
 string owner = "";
-string possessspoof = "";
-string unpossessspoof = "";
 key lockedavatar = NULL_KEY;
 string lockedname = "";
 key possessionvictim = NULL_KEY;
@@ -171,19 +169,13 @@ default
             else if(m == "ctrlstarted " + (string)possessionvictim)
             {
                 gotCtrl = TRUE;
-                string spoof;
-                spoof = llDumpList2String(llParseStringKeepNulls(possessspoof, ["%ME%"], []), owner);
-                spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), victimname);
-                llSay(0, spoof);
+                llMessageLinked(LINK_SET, M_API_SPOOF, "possesscapture", (key)(owner + "||| |||" + victimname));
                 llOwnerSay("You can talk through your victim's mouth by speaking in channel /7.");
                 toggleControl();
             }
             else if(m == "ctrlended " + (string)possessionvictim)
             {
-                string spoof;
-                spoof = llDumpList2String(llParseStringKeepNulls(unpossessspoof, ["%ME%"], []), owner);
-                spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), victimname);
-                llSay(0, spoof);
+                llMessageLinked(LINK_SET, M_API_SPOOF, "possessrelease", (key)(owner + "||| |||" + victimname));
                 possessionvictim = NULL_KEY;
                 possessorobject = NULL_KEY;
                 if(inControl) 
@@ -252,12 +244,8 @@ default
             {
                 configured = FALSE;
                 owner = "";
-                possessspoof = "";
-                unpossessspoof = "";
             }
             if(str == "name") owner = (string)id;
-            else if(str == "possess") possessspoof = (string)id;
-            else if(str == "unpossess") unpossessspoof = (string)id;
         }
         else if(num == M_API_LOCK)
         {

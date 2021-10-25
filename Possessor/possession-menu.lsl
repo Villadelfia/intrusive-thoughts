@@ -212,6 +212,11 @@ ownerMenu()
 
 default
 {
+    state_entry()
+    {
+        prefix = llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1));
+    }
+    
     changed(integer change)
     {
         if(change & CHANGED_OWNER) prefix = llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1));

@@ -20,6 +20,10 @@ objectprefix = Avatar's
 capture = %ME% turns %VIC% into their %OBJ%.
 release = %ME% releases their %OBJ% and turns it back into %VIC%.
 
+# You can also override these phrases for specific objects, like so:
+#capture:test = %ME% uses her amazing debugging powers to turn %VIC% into a test!
+#release:test = %ME% uses her amazing debugging powers to release %VIC% from her fate as a test!
+
 # The pick up and put down phrases used when an object is transferred to rezzed
 # furniture. Note that you have the freedom for these to be different kinds of
 # objects.

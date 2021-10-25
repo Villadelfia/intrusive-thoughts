@@ -23,7 +23,6 @@ softReset()
 
 hardReset()
 {
-    
     tempDisable = FALSE;
     blindmute = FALSE;
     focus = FALSE;
@@ -184,8 +183,8 @@ focusToggle(key target)
     target = llGetOwnerKey(target);
     focustarget = target;
     focus = !focus;
-    if(focus) ownersay(target, name + " is now forced to look at you.");
-    else      ownersay(target, name + " is no longer forced to look at you.");
+    if(focus) ownersay(target, name + " is now forced to look at you.", 0);
+    else      ownersay(target, name + " is no longer forced to look at you.", 0);
     llSetTimerEvent(0.1);
 }
 
@@ -269,8 +268,16 @@ default
         else if(num == S_API_FOCUS_LEVEL)
         {
             currentFocus = (float)str;
-            if(name != "") ownersay(id, name + " has had their focus distance adjusted to " + formatfloat(currentFocus, 2) + " meters.");
-            else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has had their focus distance adjusted to " + formatfloat(currentFocus, 2) + " meters.");
+            if(name != "") ownersay(id, name + " has had their focus distance adjusted to " + formatfloat(currentFocus, 2) + " meters.", 0);
+            else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has had their focus distance adjusted to " + formatfloat(currentFocus, 2) + " meters.", 0);
+        }
+        else if(num == S_API_MANTRA_START)
+        {
+            llSetTimerEvent(0.0);
+        }
+        else if(num == S_API_MANTRA_DONE)
+        {
+            if(focus) llSetTimerEvent(0.1);
         }
 
         if(num == S_API_SELF_DESC && str != "")     handleSelfDescribe(str);
@@ -360,7 +367,7 @@ default
         }
         else if(m == "END")
         {
-            ownersay(k, "[output]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            ownersay(k, "[output]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
         }
     }
 }

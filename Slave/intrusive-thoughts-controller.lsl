@@ -20,7 +20,7 @@ default
         {
             string oldn = llGetObjectName();
             llSetObjectName("");
-            if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
+            if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".", 0);
             else
             {
                 llSetObjectName(oldn);
@@ -39,7 +39,7 @@ default
             llMessageLinked(LINK_SET, S_API_STARTED, llDumpList2String(owners, ","), primary);
             if(notifyLogon)
             {
-                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
                 else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
             }
             http = llHTTPRequest(UPDATE_URL, [], "");
@@ -48,7 +48,7 @@ default
         {
             if(notifyLogon)
             {
-                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
                 else llInstantMessage(primary, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
             }
         }
@@ -64,8 +64,9 @@ default
         owners = [];
         wearer = llGetOwner();
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
+        llSetObjectDesc((string)primary);
         llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
-        if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+        if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
         else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
         llOwnerSay("Your primary owner has been detected as secondlife:///app/agent/" + (string)primary + "/about. If this is incorrect, detach me immediately because this person can configure me and add additional owners.");
         llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
@@ -107,23 +108,23 @@ default
         // Owner info
         if(m == "ownerinfo")
         {
-            ownersay(k, "Owner information for " + llGetDisplayName(wearer) + ".");
-            ownersay(k, "Primary owner: secondlife:///app/agent/" + (string)primary + "/about");
+            ownersay(k, "Owner information for " + llGetDisplayName(wearer) + ".", 0);
+            ownersay(k, "Primary owner: secondlife:///app/agent/" + (string)primary + "/about", 0);
             integer n = llGetListLength(owners);
             integer i;
             for(i = 0; i < n; ++i)
             {
-                ownersay(k, "Secondary owner " + (string)i + ": secondlife:///app/agent/" + (string)llList2Key(owners, i) + "/about");
+                ownersay(k, "Secondary owner " + (string)i + ": secondlife:///app/agent/" + (string)llList2Key(owners, i) + "/about", 0);
             }
-            ownersay(k, " ");
-            ownersay(k, "To add a secondary owner, type /1" + prefix + "owneradd username. The user MUST be present on the same region.");
-            if(n != 0) ownersay(k, "To remove a secondary owner, type /1" + prefix + "ownerdel number.");
+            ownersay(k, " ", 0);
+            ownersay(k, "To add a secondary owner, type /1" + prefix + "owneradd username. The user MUST be present on the same region.", 0);
+            if(n != 0) ownersay(k, "To remove a secondary owner, type /1" + prefix + "ownerdel number.", 0);
             string groupstatus = "DISABLED";
             string publicstatus = "DISABLED";
             if(groupaccess) groupstatus = "ENABLED";
             if(publicaccess) publicstatus = "ENABLED";
-            ownersay(k, "Group access " + groupstatus + ". Click [secondlife:///app/chat/1/" + prefix + "groupaccess here] to toggle.");
-            ownersay(k, "Public access " + publicstatus + ". Click [secondlife:///app/chat/1/" + prefix + "publicaccess here] to toggle.");
+            ownersay(k, "Group access " + groupstatus + ". Click [secondlife:///app/chat/1/" + prefix + "groupaccess here] to toggle.", 0);
+            ownersay(k, "Public access " + publicstatus + ". Click [secondlife:///app/chat/1/" + prefix + "publicaccess here] to toggle.", 0);
         }
         else if(startswith(m, "owneradd"))
         {
@@ -131,19 +132,14 @@ default
             key new = llName2Key(m);
             if(new)
             {
-                ownersay(k, "Added secondary owner secondlife:///app/agent/" + (string)new + "/about.");
+                ownersay(k, "Added secondary owner secondlife:///app/agent/" + (string)new + "/about.", 0);
                 llRegionSayTo(new, 0, "You've been added as a secondary owner to the Intrusive Thoughts Slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
-                if(new != llGetOwner())
-                {
-                    llRegionSayTo(new, 0, "I am sending you a device that you must wear to be able to see the messages sent to owners by the Intrusive Thoughts Slave. If you have multiple slaves, you only need one of these.");
-                    llGiveInventory(new, "Intrusive Thoughts Listener");
-                }
                 owners += [new];
                 llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
             }
             else
             {
-                ownersay(k, "There is no user in the same region with the username " + m + ".");
+                ownersay(k, "There is no user in the same region with the username " + m + ".", 0);
             }
         }
         else if(startswith(m, "ownerdel"))
@@ -151,12 +147,12 @@ default
             integer n = (integer)llDeleteSubString(m, 0, llStringLength("ownerdel"));
             if(n < 0 || n >= llGetListLength(owners))
             {
-                ownersay(k, "Invalid number given for secondary owner deletion: " + (string)n + ".");
+                ownersay(k, "Invalid number given for secondary owner deletion: " + (string)n + ".", 0);
                 return;
             }
             else
             {
-                ownersay(k, "Deleting secondary owner secondlife:///app/agent/" + (string)llList2Key(owners, n) + "/about.");
+                ownersay(k, "Deleting secondary owner secondlife:///app/agent/" + (string)llList2Key(owners, n) + "/about.", 0);
                 owners = llDeleteSubList(owners, n, n);
                 llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
             }
@@ -166,7 +162,7 @@ default
             groupaccess = !groupaccess;
             string groupstatus = "DISABLED";
             if(groupaccess) groupstatus = "ENABLED";
-            ownersay(k, "Group access " + groupstatus + ". Click [secondlife:///app/chat/1/" + prefix + "groupaccess here] to toggle.");
+            ownersay(k, "Group access " + groupstatus + ". Click [secondlife:///app/chat/1/" + prefix + "groupaccess here] to toggle.", 0);
             llMessageLinked(LINK_SET, S_API_OTHER_ACCESS, (string)publicaccess, (key)((string)groupaccess));
         }
         else if(m == "publicaccess")
@@ -174,7 +170,7 @@ default
             publicaccess = !publicaccess;
             string publicstatus = "DISABLED";
             if(publicaccess) publicstatus = "ENABLED";
-            ownersay(k, "Public access " + publicstatus + ". Click [secondlife:///app/chat/1/" + prefix + "publicaccess here] to toggle.");
+            ownersay(k, "Public access " + publicstatus + ". Click [secondlife:///app/chat/1/" + prefix + "publicaccess here] to toggle.", 0);
             llMessageLinked(LINK_SET, S_API_OTHER_ACCESS, (string)publicaccess, (key)((string)groupaccess));
         }
         else if(m == "lognotify")
@@ -182,14 +178,14 @@ default
             notifyLogon = !notifyLogon;
             string status = "DISABLED";
             if(notifyLogon) status = "ENABLED";
-            ownersay(k, "Wear/take off notifications " + status + ". Click [secondlife:///app/chat/1/" + prefix + "lognotify here] to toggle.");
+            ownersay(k, "Wear/take off notifications " + status + ". Click [secondlife:///app/chat/1/" + prefix + "lognotify here] to toggle.", 0);
         }
         else if(m == "tpnotify")
         {
             notifyTeleport = !notifyTeleport;
             string status = "DISABLED";
             if(notifyTeleport) status = "ENABLED";
-            ownersay(k, "Teleport notifications " + status + ". Click [secondlife:///app/chat/1/" + prefix + "tpnotify here] to toggle.");
+            ownersay(k, "Teleport notifications " + status + ". Click [secondlife:///app/chat/1/" + prefix + "tpnotify here] to toggle.", 0);
         }
 
         llSetObjectName(oldn);

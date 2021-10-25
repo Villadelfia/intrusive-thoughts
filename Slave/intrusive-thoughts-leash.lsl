@@ -188,7 +188,7 @@ default
             if(llToLower(m) == "leash")
             {
                 llOwnerSay("Your leash has been grabbed by secondlife:///app/agent/" + (string)llGetOwnerKey(k) + "/about.");
-                ownersay(k, "You've grabbed the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
+                ownersay(k, "You've grabbed the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.", 0);
                 if(llGetOwnerKey(k) == primary)
                 {
                     if(primaryleashpoint)
@@ -228,7 +228,7 @@ default
             {
                 unleash();
                 llOwnerSay("Your leash has been released by secondlife:///app/agent/" + (string)llGetOwnerKey(k) + "/about.");
-                ownersay(k, "You've released the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
+                ownersay(k, "You've released the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.", 0);
             }
             else if(llToLower(m) == "yank")
             {

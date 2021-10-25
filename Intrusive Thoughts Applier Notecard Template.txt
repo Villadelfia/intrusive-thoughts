@@ -16,9 +16,10 @@
 
 
 #######################
-# SECTION 1: INTRUSIVE THOUGHTS #
+# SECTION 1: INTRUSIVE THOUGHTS & MANTRAS #
 #######################
-# To enable, you must set up at least one phrase and a timer.
+# To enable, you must set up at least one phrase and a timer for either intrusive thoughts
+# or mantras.
 
 # The first number is the minimum time in minutes for a phrase to be whispered, the
 # second number is the maximum time in minutes.
@@ -56,6 +57,19 @@ You will hear only what I want you to hear.
 You will feel only what I want you to feel.
 What will Creator make you today? A bimbo? A maid? A mannequin?
 
+# The first number is the minimum time in minutes for a phrase to be chosen, the
+# second number is the maximum time in minutes. Whenever a phrase is chosen, the
+# slave is forced to repeat it out loud in local chat before they are allowed to
+# say anything else. Eventually they will go blind, deaf, dazed and confused if
+# they do not repeat it.
+█MANTRA_TIMER
+8 17
+
+# Every time a phrase must be repeated, one of these will be chosen. One per line.
+█MANTRA_PHRASES
+I am a good gynoid. A good gynoid obeys.
+I have no will of my own.
+My creator will decide for me what to think.
 
 
 ####################

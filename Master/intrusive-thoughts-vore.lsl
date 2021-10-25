@@ -3,8 +3,6 @@
 string owner = "";
 string objectprefix = "";
 string foodname = "Food";
-string vorespoof = "";
-string unvorespoof = "";
 key lockedavatar = NULL_KEY;
 string lockedname = "";
 key vorecarrier = NULL_KEY;
@@ -47,11 +45,7 @@ unvore()
 {
     if(vorecarrier == NULL_KEY) return;
     detachbelly();
-    string spoof;
-    spoof = llDumpList2String(llParseStringKeepNulls(unvorespoof, ["%ME%"], []), owner);
-    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), foodname);
-    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), vorename);
-    llSay(0, spoof);
+    llMessageLinked(LINK_SET, M_API_SPOOF, "vorerelease", (key)(owner + "|||" + foodname + "|||" + vorename));
     llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "unsit");
     vorecarrier = NULL_KEY;
     vorevictim = NULL_KEY;
@@ -111,11 +105,7 @@ default
             {
                 if(accept == TRUE)
                 {
-                    string spoof;
-                    spoof = llDumpList2String(llParseStringKeepNulls(vorespoof, ["%ME%"], []), owner);
-                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), foodname);
-                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), vorename);
-                    llSay(0, spoof);
+                    llMessageLinked(LINK_SET, M_API_SPOOF, "vorecapture", (key)(owner + "|||" + foodname + "|||" + vorename));
                     attachbelly();
                 }
                 else 
@@ -179,18 +169,10 @@ default
                 owner = "";
                 objectprefix = "";
                 foodname = "Food";
-                vorespoof = "";
-                unvorespoof = "";
             }
             if(str == "name") owner = (string)id;
             else if(str == "objectprefix") objectprefix = (string)id + " ";
             else if(str == "food") foodname = (string)id;
-            else if(str == "vore") vorespoof = (string)id;
-            else if(str == "unvore") unvorespoof = (string)id;
-        }
-        else if(num == M_API_DOTP)
-        {
-            llMessageLinked(LINK_SET, M_API_TPOK_V, "", NULL_KEY);
         }
         else if(num == M_API_LOCK)
         {

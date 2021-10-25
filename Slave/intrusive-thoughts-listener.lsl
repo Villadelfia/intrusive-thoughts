@@ -106,12 +106,12 @@ default
             if(!isowner(k)) return;
             if(m == "RESET")
             {
-                ownersay(k, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is resetting configuration and listening to new programming...");
+                ownersay(k, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is resetting configuration and listening to new programming...", HUD_SPEAK_CHANNEL);
                 statements = [];
             }
             else if(m == "END")
             {
-                ownersay(k, "[mantra]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+                ownersay(k, "[listener]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
             }
             else if(m == "PING")
             {

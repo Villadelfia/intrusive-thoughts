@@ -101,3 +101,29 @@ Intrusive Thoughts Focus Target — intrusive-thoughts-focus-target
 Slave — intrusive-thoughts-mind
 Slave — intrusive-thoughts-vocal
 Intrusive Thoughts Focus Target — intrusive-thoughts-focus-target
+
+3.0.0c:
+Master — intrusive-thoughts-camera
+Master — intrusive-thoughts-objectification
+Master — intrusive-thoughts-possess
+Master — intrusive-thoughts-provision
+Master — intrusive-thoughts-spoofs
+Master — intrusive-thoughts-teleport
+Master — intrusive-thoughts-vore
+Master — intrusive-thoughts-plugin-handler
+Master — intrusive-thoughts-rlv-relay-client
+Slave — intrusive-thoughts-auditory
+Slave — intrusive-thoughts-controller
+Slave — intrusive-thoughts-leash
+Slave — intrusive-thoughts-listener
+Slave — intrusive-thoughts-mantra
+Slave — intrusive-thoughts-mind
+Slave — intrusive-thoughts-output
+Slave — intrusive-thoughts-restrict
+Slave — intrusive-thoughts-rlv-relay-manager
+Slave — intrusive-thoughts-vision
+Slave — intrusive-thoughts-vocal
+Slave — intrusive-thoughts-plugin-handler
+Slave — intrusive-thoughts-rlv-relay-client
+Intrusive Thoughts Possessor — possession-objectification
+Intrusive Thoughts Possessor — possession-menu

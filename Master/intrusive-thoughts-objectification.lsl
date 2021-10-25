@@ -2,10 +2,6 @@
 
 string owner = "";
 string objectprefix = "";
-string capturespoof = "";
-string releasespoof = "";
-string putonspoof = "";
-string putdownspoof = "";
 integer hideopt = 1;
 
 key lockedavatar = NULL_KEY;
@@ -125,11 +121,7 @@ givestoremenu()
 release(integer i)
 {
     detachobject(llList2String(objectifieddescriptions, i));
-    string spoof;
-    spoof = llDumpList2String(llParseStringKeepNulls(releasespoof, ["%ME%"], []), owner);
-    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), llList2String(objectifieddescriptions, i));
-    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), llList2String(objectifiednames, i));
-    llSay(0, spoof);
+    llMessageLinked(LINK_SET, M_API_SPOOF, "objrelease", (key)(owner + "|||" + llList2String(objectifieddescriptions, i) + "|||" + llList2String(objectifiednames, i)));
     llRegionSayTo(llList2Key(objectifiedballs, i), MANTRA_CHANNEL, "unsit");
     objectifiednames = llDeleteSubList(objectifiednames, i, i);
     objectifiedavatars = llDeleteSubList(objectifiedavatars, i, i);
@@ -249,12 +241,7 @@ default
                 else
                 {
                     detachobject(llList2String(objectifieddescriptions, store));
-                    string spoof;
-                    spoof = llDumpList2String(llParseStringKeepNulls(putdownspoof, ["%ME%"], []), owner);
-                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), llList2String(objectifieddescriptions, store));
-                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), llList2String(objectifiednames, store));
-                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%TAR%"], []), n);
-                    llSay(0, spoof);
+                    llMessageLinked(LINK_SET, M_API_SPOOF, "objputdown", (key)(owner + "|||" + llList2String(objectifieddescriptions, store) + "|||" + llList2String(objectifiednames, store) + "|||" + n));
                     llRegionSayTo(id, MANTRA_CHANNEL, "putdown " + (string)llList2Key(objectifiedballs, store) + "|||" + llList2String(objectifieddescriptions, store));
                     objectifiednames = llDeleteSubList(objectifiednames, store, store);
                     objectifiedavatars = llDeleteSubList(objectifiedavatars, store, store);
@@ -270,12 +257,7 @@ default
                 string desc = llList2String(params, 1);
                 string url = llList2String(params, 2);
                 attachobject(desc);
-                string spoof;
-                spoof = llDumpList2String(llParseStringKeepNulls(putonspoof, ["%ME%"], []), owner);
-                spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), desc);
-                spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), llGetDisplayName(av));
-                spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%TAR%"], []), storingon);
-                llSay(0, spoof);
+                llMessageLinked(LINK_SET, M_API_SPOOF, "objputon", (key)(owner + "|||" + desc + "|||" + llGetDisplayName(av) + "|||" + storingon));
                 llRegionSayTo(id, MANTRA_CHANNEL, "prefix " + objectprefix);
                 objectifiedballs += [id];
                 objectifiedavatars += [av];
@@ -314,11 +296,7 @@ default
             {
                 if(accept == TRUE)
                 {
-                    string spoof;
-                    spoof = llDumpList2String(llParseStringKeepNulls(capturespoof, ["%ME%"], []), owner);
-                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), targetdescription);
-                    spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), targetname);
-                    llSay(0, spoof);
+                    llMessageLinked(LINK_SET, M_API_SPOOF, "objcapture", (key)(owner + "|||" + targetdescription + "|||" + targetname));
                     attachobject(targetdescription);
                 }
                 else
@@ -381,24 +359,12 @@ default
                 configured = FALSE;
                 owner = "";
                 objectprefix = "";
-                capturespoof = "";
-                releasespoof = "";
-                putonspoof = "";
-                putdownspoof = "";
                 hideopt = 1;
             }
 
             if(str == "name") owner = (string)id;
             else if(str == "objectprefix") objectprefix = (string)id + " ";
-            else if(str == "capture") capturespoof = (string)id;
-            else if(str == "release") releasespoof = (string)id;
-            else if(str == "puton") putonspoof = (string)id;
-            else if(str == "putdown") putdownspoof = (string)id;
             else if(str == "ball") hideopt = (integer)((string)id);
-        }
-        else if(num == M_API_DOTP)
-        {
-            llMessageLinked(LINK_SET, M_API_TPOK_O, "", NULL_KEY);
         }
         else if(num == M_API_LOCK)
         {

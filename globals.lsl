@@ -41,6 +41,8 @@
 #define S_API_BLIND_LEVEL         -1019
 #define S_API_FOCUS_LEVEL         -1020
 #define S_API_AFK_CHECK           -1021
+#define S_API_MANTRA_START        -1022
+#define S_API_MANTRA_DONE         -1023
 
 #define M_API_HUD_STARTED         -2000
 #define M_API_CONFIG_DATA         -2001
@@ -50,9 +52,7 @@
 #define M_API_LOCK                -2005
 #define M_API_BUTTON_PRESSED      -2006
 #define M_API_SET_FILTER          -2007
-#define M_API_DOTP                -2008
-#define M_API_TPOK_O              -2009
-#define M_API_TPOK_V              -2010
+#define M_API_SPOOF               -2008
 #define M_API_STATUS_MESSAGE      -2011
 #define M_API_STATUS_DONE         -2012
 #define M_API_PROVISION_REQUEST   -2013
@@ -97,7 +97,7 @@
 
 #define VERSION_S "IT-Slave v3.0"
 #define VERSION_M "IT-Master v3.0"
-#define VERSION_FULL "BE2D4B"
+#define VERSION_FULL "BE2D5B"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
 #define VERSION_PATCH 0
@@ -277,11 +277,11 @@ integer isowner(key k)
     return primary == llGetOwnerKey(k) || llListFindList(owners, [llGetOwnerKey(k)]) != -1 || publicaccess || (groupaccess && llSameGroup(k));
 }
 
-ownersay(key target, string s)
+ownersay(key target, string s, integer channel)
 {
     if(target != llGetOwnerKey(target) && llList2Integer(llGetObjectDetails(target, [OBJECT_ATTACHED_POINT]), 0) != 0) target = llGetOwnerKey(target);
     if(target == llGetOwner()) llOwnerSay(s);
-    else                       llRegionSayTo(target, HUD_SPEAK_CHANNEL, s);
+    else                       llRegionSayTo(target, channel, s);
 }
 
 versioncheck(string report, integer master)

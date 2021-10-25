@@ -258,6 +258,10 @@ default
         {
             release();
         }
+        else if(num == S_API_MANTRA_DONE)
+        {
+            llOwnerSay("@sit:"+(string)sitid+"=force,"+llDumpList2String(restrictions, "=n,")+"=n");
+        }
     }
 
     on_rez(integer i) 

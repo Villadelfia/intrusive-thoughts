@@ -50,7 +50,7 @@ handleHear(key skey, string sender, string message)
                     mindless = FALSE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, mindonmsg, NULL_KEY);
                     llMessageLinked(LINK_SET, S_API_MIND_SYNC, "0", NULL_KEY);
-                    ownersay(skey, name + " is no longer mindless.");
+                    ownersay(skey, name + " is no longer mindless.", 0);
                 }
             }
         }
@@ -67,7 +67,7 @@ handleHear(key skey, string sender, string message)
                     mindless = TRUE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, mindoffmsg, NULL_KEY);
                     llMessageLinked(LINK_SET, S_API_MIND_SYNC, "1", NULL_KEY);
-                    ownersay(skey, name + " has been rendered mindless.");
+                    ownersay(skey, name + " has been rendered mindless.", 0);
                 }
             }
         }
@@ -122,16 +122,16 @@ default
             {
                 mindless = FALSE;
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, mindonmsg, NULL_KEY);
-                if(name != "") ownersay(id, name + " is no longer mindless.");
-                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about is no longer mindless.");
+                if(name != "") ownersay(id, name + " is no longer mindless.", 0);
+                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about is no longer mindless.", 0);
                 llMessageLinked(LINK_SET, S_API_MIND_SYNC, "0", NULL_KEY);
             }
             else
             {
                 mindless = TRUE;
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, mindoffmsg, NULL_KEY);
-                if(name != "") ownersay(id, name + " has been rendered mindless.");
-                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been rendered mindless.");
+                if(name != "") ownersay(id, name + " has been rendered mindless.", 0);
+                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been rendered mindless.", 0);
                 llMessageLinked(LINK_SET, S_API_MIND_SYNC, "1", NULL_KEY);
             }
         }
@@ -215,7 +215,7 @@ default
         }
         else if(m == "END")
         {
-            ownersay(k, "[mind]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            ownersay(k, "[mind]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
         }
     }
 }

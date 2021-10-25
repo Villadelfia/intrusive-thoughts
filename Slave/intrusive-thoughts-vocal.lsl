@@ -80,7 +80,7 @@ handleHear(key skey, string sender, string message)
                     mute = FALSE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, unmutemsg, NULL_KEY);
                     llMessageLinked(LINK_SET, S_API_MUTE_SYNC, "0", NULL_KEY);
-                    ownersay(skey, name + " can speak again.");
+                    ownersay(skey, name + " can speak again.", 0);
                 }
             }
         }
@@ -97,7 +97,7 @@ handleHear(key skey, string sender, string message)
                     mute = TRUE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, mutemsg, NULL_KEY);
                     llMessageLinked(LINK_SET, S_API_MUTE_SYNC, "1", NULL_KEY);
-                    ownersay(skey, name + " can no longer speak.");
+                    ownersay(skey, name + " can no longer speak.", 0);
                 }
             }
         }
@@ -338,8 +338,8 @@ handleSay(string message)
 
 checkSetup()
 {
-    if(name != "" || mute || mindless) llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=add,rediremote:" + (string)VOICE_CHANNEL + "=add,sendchannel=n,sendchannel:" + (string)RLV_CHANNEL + "=add,sendchannel:" + (string)VOICE_CHANNEL + "=add,sendchannel:" + (string)HUD_SPEAK_CHANNEL + "=add,sendchannel:" + (string)RLV_CHECK_CHANNEL + "=add,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add,sendchannel:" + (string)SPEAK_CHANNEL + "=add,sendchannel:" + (string)LEASH_CHANNEL + "=add,sendchannel:" + (string)COMMAND_CHANNEL + "=add");
-    else                               llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=rem,rediremote:" + (string)VOICE_CHANNEL + "=rem,sendchannel=y,sendchannel:" + (string)RLV_CHANNEL + "=rem,sendchannel:" + (string)VOICE_CHANNEL + "=rem,sendchannel:" + (string)HUD_SPEAK_CHANNEL + "=rem,sendchannel:" + (string)RLV_CHECK_CHANNEL + "=rem,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=rem,sendchannel:" + (string)SPEAK_CHANNEL + "=rem,sendchannel:" + (string)LEASH_CHANNEL + "=rem,sendchannel:" + (string)COMMAND_CHANNEL + "=rem");
+    if(name != "" || mute || mindless) llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=add,rediremote:" + (string)VOICE_CHANNEL + "=add,sendchannel=n,sendchannel:" + (string)VOICE_CHANNEL + "=add,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add,sendchannel:" + (string)SPEAK_CHANNEL + "=add,sendchannel:" + (string)COMMAND_CHANNEL + "=add");
+    else                               llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=rem,rediremote:" + (string)VOICE_CHANNEL + "=rem,sendchannel=y,sendchannel:" + (string)VOICE_CHANNEL + "=rem,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=rem,sendchannel:" + (string)SPEAK_CHANNEL + "=rem,sendchannel:" + (string)COMMAND_CHANNEL + "=rem");
 }
 
 default
@@ -349,6 +349,10 @@ default
         if(num == S_API_RLV_CHECK)
         {
             tempDisable = FALSE;
+            checkSetup();
+        }
+        else if(num == S_API_MANTRA_DONE)
+        {
             checkSetup();
         }
         else if(num == S_API_OWNERS)
@@ -373,8 +377,8 @@ default
             {
                 mute = FALSE;
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, unmutemsg, NULL_KEY);
-                if(name != "") ownersay(id, name + " can speak again.");
-                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.");
+                if(name != "") ownersay(id, name + " can speak again.", 0);
+                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.", 0);
                 llMessageLinked(LINK_SET, S_API_MUTE_SYNC, "0", NULL_KEY);
                 checkSetup();
             }
@@ -382,8 +386,8 @@ default
             {
                 mute = TRUE;
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, mutemsg, NULL_KEY);
-                if(name != "") ownersay(id, name + " can no longer speak.");
-                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.");
+                if(name != "") ownersay(id, name + " can no longer speak.", 0);
+                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.", 0);
                 llMessageLinked(LINK_SET, S_API_MUTE_SYNC, "1", NULL_KEY);
                 checkSetup();
             }
@@ -524,7 +528,7 @@ default
         }
         else if(m == "END")
         {
-            ownersay(k, "[vocal]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            ownersay(k, "[vocal]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
         }
     }
 }

@@ -1,13 +1,10 @@
 #include <IT/globals.lsl>
 string target = "";
-string tptarget = "";
 list locations = [];
 integer configured = FALSE;
 vector targetsimcorner;
 vector targetsimlocal;
 key ds;
-integer vok = FALSE;
-integer ook = FALSE;
 key lockedavatar;
 string lockedname;
 
@@ -15,19 +12,13 @@ dotp(string region, string x, string y, string z)
 {
     llOwnerSay("Teleporting you and your slaves to: " + slurlp(region, x, y, z));
     llRegionSay(COMMAND_CHANNEL, "*tpto " + region + "/" + x + "/" + y  + "/" + z);
-    ook = FALSE;
-    vok = FALSE;
-    tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
-    llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force|!release", (key)region);
+    llOwnerSay("@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force");
 }
 
 tpme(string region, string x, string y, string z)
 {
     llOwnerSay("Teleporting you to: " + slurlp(region, x, y, z));
-    ook = FALSE;
-    vok = FALSE;
-    tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
-    llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force|!release", (key)region);
+    llOwnerSay("@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force");
 }
 
 send(string region, string x, string y, string z)
@@ -35,10 +26,7 @@ send(string region, string x, string y, string z)
     if(lockedavatar == llGetOwner())
     {
         llOwnerSay("Teleporting you to: " + slurlp(region, x, y, z));
-        ook = FALSE;
-        vok = FALSE;
-        llMessageLinked(LINK_SET, M_API_DOTP, "@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force", (key)region);
-        tptarget = "@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force";
+        llOwnerSay("@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force");
     }
     else
     {
@@ -98,24 +86,6 @@ default
             }
             locations += llParseString2List((string)id, [","], []);
             llOwnerSay(VERSION_M + ": Loaded teleport location " + llList2String(locations, -5));
-        }
-        if(num == M_API_TPOK_O && tptarget != "") 
-        {
-            ook = TRUE;
-            if(ook == TRUE && vok == TRUE)
-            {
-                llOwnerSay(tptarget);
-                tptarget = "";
-            }
-        }
-        else if(num == M_API_TPOK_V && tptarget != "") 
-        {
-            vok = TRUE;
-            if(ook == TRUE && vok == TRUE)
-            {
-                llOwnerSay(tptarget);
-                tptarget = "";
-            }
         }
         if(num == M_API_BUTTON_PRESSED)
         {

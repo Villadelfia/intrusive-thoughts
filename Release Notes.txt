@@ -96,3 +96,7 @@ Version 3.0.0:
  - Several bugs ironed out.
  - Improved focus targets even more.
  - Better security on slave chat channel.
+ - You no longer need to wear a master hud to be able to access your slave's menus.
+ - Specific spoofs for specific transformations.
+ - Reduced no-rez objectification leashing to prevent bumping.
+ - Add required mantras as an option for slave appliers.

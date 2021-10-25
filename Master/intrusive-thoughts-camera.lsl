@@ -20,11 +20,11 @@ default
         {
             if(str == "name") llOwnerSay(VERSION_M + ": Set spoof name prefix to " + (string)id);
             else if(str == "objectprefix") llOwnerSay(VERSION_M + ": Set spoof object prefix to " + (string)id);
+            else if(str == "food") llOwnerSay(VERSION_M + ": Set food name to '" + (string)id + "'");
             else if(str == "capture") llOwnerSay(VERSION_M + ": Set capture phrase to '" + (string)id + "'");
             else if(str == "release") llOwnerSay(VERSION_M + ": Set release phrase to '" + (string)id + "'");
             else if(str == "puton") llOwnerSay(VERSION_M + ": Set put on phrase to '" + (string)id + "'");
             else if(str == "putdown") llOwnerSay(VERSION_M + ": Set put down phrase to '" + (string)id + "'");
-            else if(str == "food") llOwnerSay(VERSION_M + ": Set food name to '" + (string)id + "'");
             else if(str == "vore") llOwnerSay(VERSION_M + ": Set vore phrase to '" + (string)id + "'");
             else if(str == "unvore") llOwnerSay(VERSION_M + ": Set unvore phrase to '" + (string)id + "'");
             else if(str == "possess") llOwnerSay(VERSION_M + ": Set possess phrase to '" + (string)id + "'");
@@ -40,6 +40,8 @@ default
                     llOwnerSay(VERSION_M + ": Objectifiying something will make it invisible.");
                 }
             }
+            else if(startswith(str, "capture:")) llOwnerSay(VERSION_M + ": Set capture phrase for '" + llGetSubString(str, 8, -1) + "' to '" + (string)id + "'");
+            else if(startswith(str, "release:")) llOwnerSay(VERSION_M + ": Set release phrase for '" + llGetSubString(str, 8, -1) + "' to '" + (string)id + "'");
         }
         else if(num == M_API_CONFIG_DONE)
         {

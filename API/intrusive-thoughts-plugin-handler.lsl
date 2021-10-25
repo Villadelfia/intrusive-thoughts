@@ -90,7 +90,7 @@ default
                 str = strreplace(str, "%APPCOMMAND%", "secondlife:///app/chat/1/" + command);
                 string old = llGetObjectName();
                 llSetObjectName("");
-                ownersay(llList2Key(commandinteractor, idx), str);
+                ownersay(llList2Key(commandinteractor, idx), str, 0);
                 llSetObjectName(old);
                 llMessageLinked(LINK_SET, IT_PLUGIN_ACK, "OK", id);
             }
@@ -155,8 +155,8 @@ default
         {
             string old = llGetObjectName();
             llSetObjectName("");
-            ownersay(id, "List of plugins:");
-            ownersay(id, " ");
+            ownersay(id, "List of plugins:", 0);
+            ownersay(id, " ", 0);
             integer n = llGetListLength(commands);
             while(~--n)
             {
@@ -166,12 +166,12 @@ default
                 {
                     if(id != llGetOwner() || isowner(id) == TRUE || llList2Integer(commandslaveallowed, n) == TRUE)
                     {
-                        ownersay(id, d + ": [secondlife:///app/chat/1/" + prefix + llEscapeURL(c) + " " + c + "]");
+                        ownersay(id, d + ": [secondlife:///app/chat/1/" + prefix + llEscapeURL(c) + " " + c + "]", 0);
                     }
                 }
                 else
                 {
-                    ownersay(id, d + ": [secondlife:///app/chat/1/" + llEscapeURL(c) + " " + c + "]");
+                    ownersay(id, d + ": [secondlife:///app/chat/1/" + llEscapeURL(c) + " " + c + "]", 0);
                 }
             }
             llSetObjectName(old);

@@ -165,7 +165,7 @@ leash()
     leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
     llTargetRemove(leashinghandle);
     llStopMoveToTarget();
-    leashinghandle = llTarget(leashtarget, 1.0);
+    leashinghandle = llTarget(leashtarget, 1.5);
     if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 0.7);
 }
 
@@ -173,6 +173,7 @@ default
 {
     state_entry()
     {
+        prefix = llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1));
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(BALL_CHANNEL, "", NULL_KEY, "");
         llListen(STRUGGLE_CHANNEL, "", NULL_KEY, "");
@@ -493,7 +494,7 @@ default
         llStopMoveToTarget();
         llTargetRemove(leashinghandle);
         leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
-        leashinghandle = llTarget(leashtarget, 1.0);
+        leashinghandle = llTarget(leashtarget, 1.5);
     }
 
     not_at_target() 
@@ -505,7 +506,7 @@ default
             {
                 llTargetRemove(leashinghandle);
                 leashtarget = newpos;
-                leashinghandle = llTarget(leashtarget, 1.0);
+                leashinghandle = llTarget(leashtarget, 1.5);
             }
             if(leashtarget != ZERO_VECTOR)
             {
@@ -576,7 +577,7 @@ default
         }
         llTargetRemove(leashinghandle);        
         leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
-        leashinghandle = llTarget(leashtarget, 1.0);
+        leashinghandle = llTarget(leashtarget, 1.5);
         if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 0.7);
         if(cameraRestrict != 0) 
         {

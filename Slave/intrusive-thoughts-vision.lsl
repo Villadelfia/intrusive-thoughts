@@ -45,7 +45,7 @@ handleHear(key skey, string sender, string message)
                 {
                     blind = FALSE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, unblindmsg, NULL_KEY);
-                    ownersay(skey, name + " can see again.");
+                    ownersay(skey, name + " can see again.", 0);
                     checkSetup(0, 0);
                 }
             }
@@ -62,7 +62,7 @@ handleHear(key skey, string sender, string message)
                 {
                     blind = TRUE;
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, blindmsg, NULL_KEY);
-                    ownersay(skey, name + " can no longer see.");
+                    ownersay(skey, name + " can no longer see.", 0);
                     checkSetup(128, currentVision);
                 }
             }
@@ -96,6 +96,10 @@ default
         {
             checkSetup(128, currentVision);
         }
+        else if(num == S_API_MANTRA_DONE)
+        {
+            checkSetup(128, currentVision);
+        }
         else if(num == S_API_OWNERS)
         {
             owners = [];
@@ -118,16 +122,16 @@ default
             {
                 blind = FALSE;
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, unblindmsg, NULL_KEY);
-                if(name != "") ownersay(id, name + " can see again.");
-                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can see again.");
+                if(name != "") ownersay(id, name + " can see again.", 0);
+                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can see again.", 0);
                 checkSetup(0, 0);
             }
             else
             {
                 blind = TRUE;
                 llMessageLinked(LINK_SET, S_API_SELF_DESC, blindmsg, NULL_KEY);
-                if(name != "") ownersay(id, name + " can no longer see.");
-                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer see.");
+                if(name != "") ownersay(id, name + " can no longer see.", 0);
+                else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer see.", 0);
                 checkSetup(128, currentVision);
             }
         }
@@ -135,8 +139,8 @@ default
         {
             checkSetup(currentVision, (float)str);
             currentVision = (float)str;
-            if(name != "") ownersay(id, name + " has had their vision distance adjusted to " + formatfloat(currentVision, 2) + " meters.");
-            else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has had their vision distance adjusted to " + formatfloat(currentVision, 2) + " meters.");
+            if(name != "") ownersay(id, name + " has had their vision distance adjusted to " + formatfloat(currentVision, 2) + " meters.", 0);
+            else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has had their vision distance adjusted to " + formatfloat(currentVision, 2) + " meters.", 0);
         }
         else if(num == S_API_EMERGENCY)
         {
@@ -170,7 +174,7 @@ default
                 llSetTimerEvent(0.0);
                 string oldn = llGetObjectName();
                 llSetObjectName("");
-                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
+                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.", 0);
                 else                                       llInstantMessage(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
                 llSetObjectName(oldn);
                 llOwnerSay("Hey! Your RLV is (probably) turned off and I won't work properly until you turn it on and relog. If it is on, you're just experiencing some lag and you shouldn't worry about it.");
@@ -231,7 +235,7 @@ default
         }
         else if(m == "END")
         {
-            ownersay(k, "[vision]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.");
+            ownersay(k, "[vision]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
         }
     }
 }
