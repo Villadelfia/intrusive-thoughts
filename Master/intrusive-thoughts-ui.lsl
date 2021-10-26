@@ -30,6 +30,7 @@ key seenobjectkey = NULL_KEY;
 
 float hoverheight = 0.0;
 key http;
+key curowner;
 
 setheight()
 {
@@ -356,6 +357,7 @@ default
 
     attach(key id)
     {
+        if(curowner != llGetOwner()) return;
         if(id) doquicksetup();
     }
 
@@ -366,6 +368,7 @@ default
 
     state_entry()
     {
+        curowner = llGetOwner();
         resetother();
         dosetup();
     }
@@ -647,6 +650,5 @@ default
             if(status == 200) versioncheck(body, TRUE);
             else              llOwnerSay("Cannot check for updates: Connectivity issue between SL and the external server. You can click [secondlife:///app/chat/1/update here] or type /1update ");
         }
-        if(id == http && status == 200) versioncheck(body, TRUE);
     }
 }

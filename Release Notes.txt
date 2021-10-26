@@ -108,3 +108,7 @@ Version 3.0.0:
  - Add defaults for name and prefix.
  - Add prefix deduplication.
  - Improve /1lock functionality.
+
+Version 3.0.1:
+ - Reconsolidate HUD UI.
+ - Improve objectification and vore RLV restrictions.

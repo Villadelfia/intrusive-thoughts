@@ -73,7 +73,7 @@ capture(key id)
     llSetObjectName("");
     llRegionSayTo(id, RLVRC, "c," + (string)id + ",@sit=n,ok");
     llRegionSayTo(id, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about is being objectified in a no-rez zone, please note that if you .");
-    llOwnerSay("@detach=n,fly=n,unsit=force,sit=n,tplocal=n,tplm=n,tploc=n,tplure=n,tplure:" + (string)llGetOwnerKey(objectifier) + "=add,accepttp:" + (string)llGetOwnerKey(objectifier) + "=add,showself=n,sendgesture=n,sendim:" + (string)llGetOwnerKey(objectifier) + "=add,startim:" + (string)llGetOwnerKey(objectifier) + "=add,recvim:" + (string)llGetOwnerKey(objectifier) + "=add,sendchannel:5=add");
+    llOwnerSay("@detach=n,fly=n,unsit=force,sit=n,tplocal=n,tplm=n,tploc=n,tplure=n,tplure:" + (string)llGetOwnerKey(objectifier) + "=add,accepttp:" + (string)llGetOwnerKey(objectifier) + "=add,showself=n,sendgesture=n,startim:" + (string)llGetOwnerKey(objectifier) + "=add,recvim:" + (string)llGetOwnerKey(objectifier) + "=add,sendchannel:5=add");
     applyIm();
     applyHearing();
     applySpeech();

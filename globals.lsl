@@ -97,10 +97,10 @@
 
 #define VERSION_S "IT-Slave v3.0"
 #define VERSION_M "IT-Master v3.0"
-#define VERSION_FULL "BF2D5B"
+#define VERSION_FULL "CF2D5B"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
-#define VERSION_PATCH 0
+#define VERSION_PATCH 1
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG

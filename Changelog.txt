@@ -153,3 +153,12 @@ Master — intrusive-thoughts-objectification
 Master — intrusive-thoughts-possess
 Master — intrusive-thoughts-ui
 Master — intrusive-thoughts-vore
+
+3.0.1:
+Master — intrusive-thoughts-ui
+Master — intrusive-thoughts-possess
+Master — intrusive-thoughts-provision
+Slave — intrusive-thoughts-controller
+Carrier — carrier-handler
+Ball — ball-handler
+Intrusive Thoughts Possessor — possession-objectification
