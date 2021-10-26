@@ -148,6 +148,7 @@ handleHear(key skey, string sender, string message)
             if(contains(llToLower(message), llList2String(deafencmd, l1)))
             {
                 deaf = TRUE;
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, deafenmsg, NULL_KEY);
                 ownersay(skey, name + " can no longer hear the conversation.", 0);
                 jump cont2;
             }
@@ -282,7 +283,6 @@ handleHear(key skey, string sender, string message)
 
     message = prefix + message;
     llMessageLinked(LINK_SET, S_API_SELF_SAY, message, "");
-    if(deaf) llMessageLinked(LINK_SET, S_API_SELF_DESC, deafenmsg, NULL_KEY);
 }
 
 checkSetup()
@@ -300,6 +300,7 @@ checkSetup()
 
     if(deaf)
     {
+        setup = TRUE;
         llOwnerSay("@recvchat_sec=n,recvemote_sec=n");
     }
 }

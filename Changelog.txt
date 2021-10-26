@@ -135,3 +135,7 @@ Slave — intrusive-thoughts-restrict
 Ball — ball-handler
 Intrusive Thoughts Possessor — possession-objectification
 Intrusive Thoughts Possessor — possession-slave
+
+3.0.0e:
+Master — intrusive-thoughts-controller
+Slave — intrusive-thoughts-auditory

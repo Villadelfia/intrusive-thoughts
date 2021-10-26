@@ -1,19 +1,51 @@
-# Tp lines configure pre-set locations for the tpto and tpme commands
-# The format is: tp = shortname,region,x,y,z
-tp = nri,Bedos,97,99,901
+# Please go through this notecard and change the settings to values that work for you. Then drop this notecard
+# onto your Master HUD. You can do this while wearing the HUD.
+#
+# Every line that starts with a '#' character will be ignored by the settings reader.
+#
+# It is recommended that once you are finished setting up this notecard that you remove all empty lines
+# and lines that start with a '#' character so it will load faster.
+
+
+#####################
+## Name and identity settings ##
+#####################
+# The prefix for your objects. By default, it's set to "Avatar's", if you capture someone
+# as "Heels", with the default settings, they'd appear as "Avatar's Heels". You likely want 
+# to set it to the possessive form of your name.
+objectprefix = Avatar's
 
 # The name that will be used in place of %ME% in spoofs.
 name = Avatar
 
-# The prefix for your objects when they emote, in the following example
-# an emote would look like: "Hana's shoes wiggle a little"
-objectprefix = Avatar's
+# This is what will show as the name when your food tries to talk. The objectprefix you configured above
+# will be prepended to this. In this example, it would show as "Avatar's Prey".
+food = Prey
 
-# Spoof configuration:
-# %ME% is replaced with the name set above
-# %VIC% is replaced with the name of the victim
-# %OBJ% is replaced with the name of the object they're turning into
-# %TAR% is the target rezzed furniture
+
+###################
+## Objectification settings ##
+###################
+# Set the following to 2 if you want to fully hide the objectified avatars, but they may
+# need to teleport to another region to become visible again. If you are okay with
+# just pushing them beneath the ground, set it to 1.
+ball = 1
+
+
+##############
+## Spoof settings ##
+##############
+# Spoofs are the lines the HUD will say when you objectify, vore, possess, put on, put down, and
+# of release someone. When configuring these lines, certain special tokens are automatically
+# replaced:
+#
+# %ME% is replaced with the name set above.
+# %VIC% is replaced with the name of the victim.
+# %OBJ% is replaced with the name of the object they're turning into or being released from.
+# %TAR% is the name of the target rezzed furniture. Only used in puton and putdown.
+#
+# Note that notecard lines are limited to 255 characters, but if you end a line with "\", the next 
+# line will be seen as a continuation of the current line.
 
 # The capture and release phrases used when someone is turned into an object
 # and when they're released again.
@@ -24,29 +56,35 @@ release = %ME% releases their %OBJ% and turns it back into %VIC%.
 #capture:test = %ME% uses her amazing debugging powers to turn %VIC% into a test!
 #release:test = %ME% uses her amazing debugging powers to release %VIC% from her fate as a test!
 
-# The pick up and put down phrases used when an object is transferred to rezzed
+# The pick up and put down phrases are used when an object is transferred to rezzed
 # furniture. Note that you have the freedom for these to be different kinds of
 # objects.
 puton = %ME% picks up the %TAR% and turns it into their %OBJ%.
 putdown = %ME% puts down their %OBJ% and turns it into a %TAR%.
 
-# Set the following to 2 if you want to fully hide the captured avatars, but they may
-# need to teleport to another region to become visible again. If you are okay with
-# just pushing them beneath the ground, set it to 1.
-ball = 1
-
-# This is what will show as name when your food tries to talk. In this case, it would show as "Hana's Prey"
-food = Prey
-
 # These are the phrases uttered when eating and releasing someone. %OBJ% in this case will be replaced with
-# the term defined above.
+# the food term you defined above.
 vore = %ME% eats %VIC%, now their %OBJ%.
 unvore = %ME% releases their %OBJ%.
 
-# These are the phrases used when possessing and releasing someone. %OBJ% cannot be used here.
+# These are the phrases used when possessing and releasing someone. Only %ME% and %VIC% can be
+# used here.
 possess = %ME% gazes deeply into %VIC%'s eyes as they slowly lose control over their body...
 unpossess = %ME% releases her control over %VIC%, as they find their control over their own body returning...
 
+
+##################
+## Teleportation settings ##
+##################
+# Tp lines configure pre-set locations for the tpto and tpme commands
+# The format is: tp = shortname,region,x,y,z
+# You can have as many of these lines as you want. One line per destination.
+tp = nri,Bedos,97,99,901
+
+
+####################
+## Master RLV relay settings ##
+####################
 # Relaymode can be set to ask, group, or auto.
 # In ask mode, permission will be asked for all devices not owned by yourself or others on the allow list.
 # In group mode, in addition to the above, permission will also be granted to devices in the same group as yourself.

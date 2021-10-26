@@ -101,3 +101,4 @@ Version 3.0.0:
  - Reduced no-rez objectification leashing to prevent bumping.
  - Add required mantras as an option for slave appliers.
  - Add safeword to possession/no-rez objectification. It's ((red)).
+ - Add line splitting for long configuration lines.
