@@ -192,6 +192,8 @@ default
                 string thing;
                 integer l;
                 integer i;
+                string old = llGetObjectName();
+                llSetObjectName("");
                 if(path == formPrefix)
                 {
                     ownersay(requester, "Available forms for " + name + ":", 0);
@@ -252,6 +254,7 @@ default
                     }
                     ownersay(requester, " ", 0);
                 }
+                llSetObjectName(old);
             }
             else
             {

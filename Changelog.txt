@@ -127,3 +127,11 @@ Slave — intrusive-thoughts-plugin-handler
 Slave — intrusive-thoughts-rlv-relay-client
 Intrusive Thoughts Possessor — possession-objectification
 Intrusive Thoughts Possessor — possession-menu
+
+3.0.0d:
+Master — intrusive-thoughts-possess
+Master — intrusive-thoughts-provision
+Slave — intrusive-thoughts-restrict
+Ball — ball-handler
+Intrusive Thoughts Possessor — possession-objectification
+Intrusive Thoughts Possessor — possession-slave

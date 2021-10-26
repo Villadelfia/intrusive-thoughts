@@ -32,6 +32,15 @@ default
     {
         if(c == 0)
         {
+            if(id == llGetOwner())
+            {
+                if(llToLower(llStringTrim(m, STRING_TRIM)) == "((red))")
+                {
+                    llOwnerSay("Safeworded... Releasing you!");
+                    llOwnerSay("@clear,detachme=force");
+                }
+            }
+            
             if(controller == NULL_KEY) return;
             if(llVecDist(llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0), llList2Vector(llGetObjectDetails(controller, [OBJECT_POS]), 0)) <= 20.0) return;
             string prefix = "";

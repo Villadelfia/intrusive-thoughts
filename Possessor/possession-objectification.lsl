@@ -73,7 +73,7 @@ capture(key id)
     llSetObjectName("");
     llRegionSayTo(id, RLVRC, "c," + (string)id + ",@sit=n,ok");
     llRegionSayTo(id, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about is being objectified in a no-rez zone, please note that if you .");
-    llOwnerSay("@detach=n,fly=n,unsit=force,sit=n,tplocal=n,tplm=n,tploc=n,tplure_sec=n,tplure:" + (string)llGetOwnerKey(objectifier) + "=add,accepttp:" + (string)llGetOwnerKey(objectifier) + "=add,showself=n,sendgesture=n,sendim:" + (string)llGetOwnerKey(objectifier) + "=add,startim:" + (string)llGetOwnerKey(objectifier) + "=add,recvim:" + (string)llGetOwnerKey(objectifier) + "=add,sendchannel_sec:5=add");
+    llOwnerSay("@detach=n,fly=n,unsit=force,sit=n,tplocal=n,tplm=n,tploc=n,tplure=n,tplure:" + (string)llGetOwnerKey(objectifier) + "=add,accepttp:" + (string)llGetOwnerKey(objectifier) + "=add,showself=n,sendgesture=n,sendim:" + (string)llGetOwnerKey(objectifier) + "=add,startim:" + (string)llGetOwnerKey(objectifier) + "=add,recvim:" + (string)llGetOwnerKey(objectifier) + "=add,sendchannel:5=add");
     applyIm();
     applyHearing();
     applySpeech();
@@ -104,7 +104,7 @@ applyVision()
     if(visionRestrict > 6) dist = 0.0;
     string color = "0/0/0";
     if(visionRestrict % 2 == 0) color = "1/1/1";
-    if(visionRestrict > 0) llOwnerSay("@setsphere=n,setsphere_distmin:" + (string)(dist/4) + "=force,setsphere_valuemin:0=force,setsphere_distmax:" + (string)dist + "=force,setsphere_param:" + color + "/0=force");
+    if(visionRestrict > 0) llOwnerSay("@setsphere=n,setsphere_origin:1=force,setsphere_distmin:" + (string)(dist/4) + "=force,setsphere_valuemin:0=force,setsphere_distmax:" + (string)dist + "=force,setsphere_param:" + color + "/0=force");
 }
 
 applyHearing()
@@ -116,17 +116,17 @@ applyHearing()
 
 applySpeech()
 {
-    llOwnerSay("@redirchat=y,redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem,redirchat:" + (string)DUMMY_CHANNEL + "=rem,redirchat:" + (string)GAZE_REN_CHANNEL + "=rem,rediremote=y,rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem,rediremote:" + (string)DUMMY_CHANNEL + "=rem,rediremote:" + (string)GAZE_REN_CHANNEL + "=rem,sendchannel_sec=y,sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem,sendchannel_sec:" + (string)DUMMY_CHANNEL + "=rem,sendchannel_sec:" + (string)GAZE_REN_CHANNEL + "=rem");
-    if(speechRestrict == 0) llOwnerSay("@redirchat=n,redirchat:" + (string)GAZE_REN_CHANNEL + "=add,rediremote=n,rediremote:" + (string)GAZE_REN_CHANNEL + "=add,sendchannel_sec=n,sendchannel_sec:" + (string)GAZE_REN_CHANNEL + "=add");
-    if(speechRestrict == 1) llOwnerSay("@redirchat=n,redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add,rediremote=n,rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add,sendchannel_sec=n,sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add");
-    if(speechRestrict == 2) llOwnerSay("@redirchat=n,redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add,rediremote=n,rediremote:" + (string)DUMMY_CHANNEL + "=add,sendchannel_sec=n,sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add");
-    if(speechRestrict == 3) llOwnerSay("@redirchat=n,redirchat:" + (string)DUMMY_CHANNEL + "=add,rediremote=n,rediremote:" + (string)DUMMY_CHANNEL + "=add,sendchannel_sec=n");
+    llOwnerSay("@redirchat=y,redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem,redirchat:" + (string)DUMMY_CHANNEL + "=rem,redirchat:" + (string)GAZE_REN_CHANNEL + "=rem,rediremote=y,rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem,rediremote:" + (string)DUMMY_CHANNEL + "=rem,rediremote:" + (string)GAZE_REN_CHANNEL + "=rem,sendchannel=y,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=rem,sendchannel:" + (string)DUMMY_CHANNEL + "=rem,sendchannel:" + (string)GAZE_REN_CHANNEL + "=rem");
+    if(speechRestrict == 0) llOwnerSay("@redirchat=n,redirchat:" + (string)GAZE_REN_CHANNEL + "=add,rediremote=n,rediremote:" + (string)GAZE_REN_CHANNEL + "=add,sendchannel=n,sendchannel:" + (string)GAZE_REN_CHANNEL + "=add");
+    if(speechRestrict == 1) llOwnerSay("@redirchat=n,redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add,rediremote=n,rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add,sendchannel=n,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add");
+    if(speechRestrict == 2) llOwnerSay("@redirchat=n,redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add,rediremote=n,rediremote:" + (string)DUMMY_CHANNEL + "=add,sendchannel=n,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add");
+    if(speechRestrict == 3) llOwnerSay("@redirchat=n,redirchat:" + (string)DUMMY_CHANNEL + "=add,rediremote=n,rediremote:" + (string)DUMMY_CHANNEL + "=add,sendchannel=n");
 }
 
 applyDaze()
 {
-    if(dazeRestrict == 0) llOwnerSay("@shownames_sec=y,shownametags=y,shownearby=y,showhovertextall=y,showworldmap=y,showminimap=y,showloc=y");
-    if(dazeRestrict == 1) llOwnerSay("@shownames_sec=n,shownametags=n,shownearby=n,showhovertextall=n,showworldmap=n,showminimap=n,showloc=n");
+    if(dazeRestrict == 0) llOwnerSay("@shownames=y,shownametags=y,shownearby=y,showhovertextall=y,showworldmap=y,showminimap=y,showloc=y");
+    if(dazeRestrict == 1) llOwnerSay("@shownames=n,shownametags=n,shownearby=n,showhovertextall=n,showworldmap=n,showminimap=n,showloc=n");
 }
 
 applyCamera()
@@ -165,8 +165,8 @@ leash()
     leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
     llTargetRemove(leashinghandle);
     llStopMoveToTarget();
-    leashinghandle = llTarget(leashtarget, 1.5);
-    if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 0.7);
+    leashinghandle = llTarget(leashtarget, 2.0);
+    if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 1.5);
 }
 
 default
@@ -494,7 +494,7 @@ default
         llStopMoveToTarget();
         llTargetRemove(leashinghandle);
         leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
-        leashinghandle = llTarget(leashtarget, 1.5);
+        leashinghandle = llTarget(leashtarget, 2.0);
     }
 
     not_at_target() 
@@ -506,11 +506,11 @@ default
             {
                 llTargetRemove(leashinghandle);
                 leashtarget = newpos;
-                leashinghandle = llTarget(leashtarget, 1.5);
+                leashinghandle = llTarget(leashtarget, 2.0);
             }
             if(leashtarget != ZERO_VECTOR)
             {
-                llMoveToTarget(leashtarget, 0.7);
+                llMoveToTarget(leashtarget, 1.5);
             }
             else
             {
@@ -577,8 +577,8 @@ default
         }
         llTargetRemove(leashinghandle);        
         leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
-        leashinghandle = llTarget(leashtarget, 1.5);
-        if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 0.7);
+        leashinghandle = llTarget(leashtarget, 2.0);
+        if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 1.5);
         if(cameraRestrict != 0) 
         {
             list uuids = llGetAttachedList(objectifier);

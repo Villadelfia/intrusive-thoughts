@@ -188,7 +188,7 @@ default
                     enabled = TRUE;
                     llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
                     llOwnerSay("Your RLV relay has been turned on.");
-                    llOwnerSay("@permissive=n,touchme=add,sendchannel:1=add,sendchannel:8=add");
+                    llOwnerSay("@touchme=add,sendchannel:1=add,sendchannel:8=add,sendchannel:5=add");
                 }
             }           
 
@@ -213,6 +213,9 @@ default
         {
             if(rlvclients == []) return;
             list args = llParseStringKeepNulls(m, [","], []);
+
+            // Re-assert the exceptions.
+            llOwnerSay("@touchme=add,sendchannel:1=add,sendchannel:8=add,sendchannel:5=add");
 
             // We discard if the message is too short.
             if(llGetListLength(args)!=3) return;
@@ -305,6 +308,12 @@ default
         }
         else if(c == 0)
         {
+            if(enabled)
+            {
+                // Re-assert the exceptions.
+                llOwnerSay("@touchme=add,sendchannel:1=add,sendchannel:8=add,sendchannel:5=add");
+            }
+
             integer hr = hasrestrictions();
             if(contains(llToLower(m), "((red))") && hr && enabled)
             {
@@ -339,7 +348,7 @@ default
                     enabled = TRUE;
                     llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
                     llOwnerSay("Your RLV relay has been turned on.");
-                    llOwnerSay("@permissive=n,touchme=add,sendchannel:1=add,sendchannel:8=add");
+                    llOwnerSay("@touchme=add,sendchannel:1=add,sendchannel:8=add,sendchannel:5=add");
                 }                
                 else
                 {
@@ -388,7 +397,7 @@ default
             if(enabled == TRUE)
             {
                 llOwnerSay(VERSION_M + ": Your RLV relay is turned on, supporting up to " + (string)llGetListLength(rlvclients) + " devices.");
-                llOwnerSay("@permissive=n,touchme=add,sendchannel:1=add,sendchannel:8=add");
+                llOwnerSay("@touchme=add,sendchannel:1=add,sendchannel:8=add,sendchannel:5=add");
             }
             else if(rlvclients == [])
             {

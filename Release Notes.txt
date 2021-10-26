@@ -100,3 +100,4 @@ Version 3.0.0:
  - Specific spoofs for specific transformations.
  - Reduced no-rez objectification leashing to prevent bumping.
  - Add required mantras as an option for slave appliers.
+ - Add safeword to possession/no-rez objectification. It's ((red)).
