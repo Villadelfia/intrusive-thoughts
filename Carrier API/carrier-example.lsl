@@ -23,8 +23,9 @@ setup()
     llSitTarget(<0.0, 0.0, 0.001>, ZERO_ROTATION);
 
     // Notify the API script that your seats are ready and on which links there are seats.
+    // The second parameter is the location the carrier will follow, relative to the position of the rezzer.
     list sitTargetLinks = [0];
-    llMessageLinked(LINK_SET, IT_CARRIER_REGISTER, llDumpList2String(sitTargetLinks, ","), (key)"");
+    llMessageLinked(LINK_SET, IT_CARRIER_REGISTER, llDumpList2String(sitTargetLinks, ","), (key)((string)<0.0, 0.0, 0.0>));
 
     // Do any kind of setup you need to do for your own purposes here.
     // An example would be setting up audio.

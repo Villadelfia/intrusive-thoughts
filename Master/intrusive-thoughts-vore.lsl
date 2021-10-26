@@ -24,12 +24,20 @@ detachbelly()
 {
     llOwnerSay("@detach:~IT/vore/on=force");
     llOwnerSay("@attachover:~IT/vore/off=force");
+    bellypercent(-1, fillfactor);
 }
 
 attachbelly()
 {
     llOwnerSay("@detach:~IT/vore/off=force");
     llOwnerSay("@attachover:~IT/vore/on=force");
+    bellypercent(fillfactor, -1);
+}
+
+bellypercent(integer old, integer new)
+{
+    if(old != -1) llOwnerSay("@detach:~IT/vore/" + (string)old + "=force");
+    if(new != -1) llOwnerSay("@attachover:~IT/vore/" + (string)new + "=force");
 }
 
 integer canrez(vector pos)
@@ -192,6 +200,7 @@ default
             }
             else if(str == "acid+")
             {
+                integer old = fillfactor;
                 fillfactor += 5;
                 if(fillfactor > 100)
                 {
@@ -204,13 +213,16 @@ default
                     llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
                     llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
                 }
+                if(old != fillfactor) bellypercent(old, fillfactor);
             }
             else if(str == "acid-")
             {
+                integer old = fillfactor;
                 fillfactor -= 5;
                 if(fillfactor < 0) fillfactor = 0;
                 llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
                 llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
+                if(old != fillfactor) bellypercent(old, fillfactor);
             }
         }
     }

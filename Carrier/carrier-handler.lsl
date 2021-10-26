@@ -84,6 +84,7 @@ applyCamera()
 {
     if(cameraRestrict == 0) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@setcam_focus:" + (string)rezzer + ";0;0/1/0=force|@setoverlay=y");
     if(cameraRestrict == 1) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@setcam_focus:" + (string)focuskey + ";0;0/1/0=force|@setoverlay=n|@setoverlay_texture:5ace8e33-db4a-3596-3dd2-98b82516b5d1=force");
+    if(cameraRestrict == 2) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@setcam_focus:" + (string)llGetOwner() + ";;=force|@setoverlay=y");
 }
 
 applyInventory()
@@ -285,7 +286,7 @@ default
             {
                 cameraRestrict = (integer)llGetSubString(m, -1, -1);
                 if(cameraRestrict < 0) cameraRestrict = 0;
-                if(cameraRestrict > 1) cameraRestrict = 1;
+                if(cameraRestrict > 2) cameraRestrict = 2;
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Camera restrictions set to level " + (string)cameraRestrict + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Camera restrictions set to level " + (string)cameraRestrict + ".");
@@ -487,7 +488,8 @@ default
             if(timerctr % 10 == 0)
             {
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
-                if(cameraRestrict != 0) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "focus," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@setcam_focus:" + (string)focuskey + ";0;0/1/0=force");
+                if(cameraRestrict == 1) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "focus," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@setcam_focus:" + (string)focuskey + ";0;0/1/0=force");
+                if(cameraRestrict == 2) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "focus," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@setcam_focus:" + (string)llGetOwner() + ";;=force");
             }
             timerctr++;
             if(llGetTime() > 60.0) detachrandom();
@@ -539,14 +541,14 @@ default
             if(imRestrict > 0) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's IM restrictions set to level " + (string)imRestrict + ".");
             if(speechRestrict > 0) llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
             if(speechRestrict > 0) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
-            if(dazeRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Daze restrictions set to level " + (string)speechRestrict + ".");
-            if(dazeRestrict != 1) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Daze restrictions set to level " + (string)speechRestrict + ".");
-            if(cameraRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Camera restrictions set to level " + (string)speechRestrict + ".");
-            if(cameraRestrict != 1) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Camera restrictions set to level " + (string)speechRestrict + ".");
-            if(inventoryRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Inventory restrictions set to level " + (string)speechRestrict + ".");
-            if(inventoryRestrict != 1) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Inventory restrictions set to level " + (string)speechRestrict + ".");
-            if(worldRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's World restrictions set to level " + (string)speechRestrict + ".");
-            if(worldRestrict != 1) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's World restrictions set to level " + (string)speechRestrict + ".");
+            if(dazeRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Daze restrictions set to level " + (string)dazeRestrict + ".");
+            if(dazeRestrict != 1) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Daze restrictions set to level " + (string)dazeRestrict + ".");
+            if(cameraRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Camera restrictions set to level " + (string)cameraRestrict + ".");
+            if(cameraRestrict != 1) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Camera restrictions set to level " + (string)cameraRestrict + ".");
+            if(inventoryRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Inventory restrictions set to level " + (string)inventoryRestrict + ".");
+            if(inventoryRestrict != 1) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Inventory restrictions set to level " + (string)inventoryRestrict + ".");
+            if(worldRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's World restrictions set to level " + (string)worldRestrict + ".");
+            if(worldRestrict != 1) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's World restrictions set to level " + (string)worldRestrict + ".");
             applyIm();
             applySpeech();
             applyDaze();

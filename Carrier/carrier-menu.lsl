@@ -46,8 +46,10 @@ sitterMenu()
     llRegionSayTo(firstavatar, 0, "Camera Options:");
     if(cameraRestrict == 0)       llRegionSayTo(firstavatar, 0, " * No restrictions.");
     else                          llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "ca0 No restrictions.]");
-    if(cameraRestrict < 1)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "ca1 Camera restricted to inside stomach.]");
-    else if(cameraRestrict == 1)  llRegionSayTo(firstavatar, 0, " * Camera restricted to inside stomach.");
+    if(cameraRestrict == 1)       llRegionSayTo(firstavatar, 0, " * Camera restricted to inside stomach.");
+    else                          llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "ca1 Camera restricted to inside stomach.]");
+    if(cameraRestrict == 2)       llRegionSayTo(firstavatar, 0, " * Camera restricted to predator.");
+    else                          llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "ca2 Camera restricted to predator.]");
     llRegionSayTo(firstavatar, 0, " ");
     llRegionSayTo(firstavatar, 0, "Inventory Options:");
     if(inventoryRestrict == 0)       llRegionSayTo(firstavatar, 0, " * No restrictions.");
@@ -96,6 +98,8 @@ ownerMenu()
     else                     llOwnerSay(" * No restrictions.");
     if(cameraRestrict != 1)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "ca1 Camera restricted to inside stomach.]");
     else                     llOwnerSay(" * Camera restricted to inside stomach.");
+    if(cameraRestrict != 2)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "ca2 Camera restricted to predator.]");
+    else                     llOwnerSay(" * Camera restricted to predator.");
     llOwnerSay(" ");
     llOwnerSay("Inventory Options:");
     if(inventoryRestrict != 0)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "in0 No restrictions.]");

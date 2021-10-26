@@ -102,3 +102,6 @@ Version 3.0.0:
  - Add required mantras as an option for slave appliers.
  - Add safeword to possession/no-rez objectification. It's ((red)).
  - Add line splitting for long configuration lines.
+ - Add more camera options to vore carrier.
+ - Add acid percentage based outfit switching to vore. See instruction manual section 4 for more info.
+ - Add avatar relative positioning to carrier API.

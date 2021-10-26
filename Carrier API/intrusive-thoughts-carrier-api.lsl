@@ -1,5 +1,6 @@
 #include <IT/globals.lsl>
 key rezzer;
+vector offset;
 list sitTargetLinks = [];
 key urlt;
 string url = "null";
@@ -144,6 +145,7 @@ default
         if(num == IT_CARRIER_REGISTER)
         {
             sitTargetLinks = llParseString2List(str, [","], []);
+            offset = (vector)((string)id);
             llRegionSayTo(rezzer, MANTRA_CHANNEL, "carrierfree " + (string)(llGetListLength(sitTargetLinks)));
         }
         else if(num == IT_CARRIER_APPLY_RLV)
@@ -166,7 +168,7 @@ default
         else
         {
             vector my = llGetPos();
-            vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0);
+            vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + offset;
             float dist = llVecDist(my, pos);
 
             if(llGetAgentSize(rezzer) == ZERO_VECTOR)
