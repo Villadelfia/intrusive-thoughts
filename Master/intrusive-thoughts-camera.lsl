@@ -18,8 +18,18 @@ default
     {
         if(num == M_API_CONFIG_DATA)
         {
-            if(str == "name") llOwnerSay(VERSION_M + ": Set spoof name prefix to " + (string)id);
-            else if(str == "objectprefix") llOwnerSay(VERSION_M + ": Set spoof object prefix to " + (string)id);
+            if(str == "name") 
+            {
+                string owner = (string)id;
+                if(owner == "" || owner == "Avatar") owner = guessname();
+                llOwnerSay(VERSION_M + ": Set spoof name prefix to " + owner);
+            }
+            else if(str == "objectprefix")
+            {
+                string objectprefix = (string)id + " ";
+                if(objectprefix == " " || objectprefix == "Avatar's ") objectprefix = guessprefix();
+                llOwnerSay(VERSION_M + ": Set spoof object prefix to " + objectprefix);
+            }
             else if(str == "food") llOwnerSay(VERSION_M + ": Set food name to '" + (string)id + "'");
             else if(str == "capture") llOwnerSay(VERSION_M + ": Set capture phrase to '" + (string)id + "'");
             else if(str == "release") llOwnerSay(VERSION_M + ": Set release phrase to '" + (string)id + "'");

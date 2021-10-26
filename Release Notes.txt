@@ -105,3 +105,6 @@ Version 3.0.0:
  - Add more camera options to vore carrier.
  - Add acid percentage based outfit switching to vore. See instruction manual section 4 for more info.
  - Add avatar relative positioning to carrier API.
+ - Add defaults for name and prefix.
+ - Add prefix deduplication.
+ - Improve /1lock functionality.

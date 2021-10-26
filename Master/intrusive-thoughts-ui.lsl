@@ -255,7 +255,7 @@ gethelp(string b)
     }
     else if(b == "lock")
     {
-        llOwnerSay("Click this button to lock the last seen avatar as a target for many functions of the HUD. Clicking the button with someone locked, will instead unlock the HUD target. The indicator in the upper right of the HUD will show whether or not you have a lock. You can also type /1lock <uuid/username> to lock onto someone if they are hard to cam.");
+        llOwnerSay("Click this button to lock the last seen avatar as a target for many functions of the HUD. Clicking the button with someone locked, will instead unlock the HUD target. The indicator in the upper right of the HUD will show whether or not you have a lock. You can also type /1lock <uuid/name> to lock onto someone if they are hard to cam, just the first few letters of the legacy name or display name are needed.");
     }
     else if(b == "sit")
     {
@@ -405,6 +405,20 @@ default
                         if(llGetAgentSize(uuid) != ZERO_VECTOR)
                         {
                             llMessageLinked(LINK_SET, M_API_LOCK, llGetDisplayName(uuid), uuid);
+                        }
+                    }
+                    else
+                    {
+                        list agents = llGetAgentList(AGENT_LIST_REGION, []);
+                        integer n = llGetListLength(agents);
+                        while(~--n)
+                        {
+                            uuid = llList2Key(agents, n);
+                            if(startswith(llToLower(llGetDisplayName(uuid)), llToLower(message)) || startswith(llToLower(llGetUsername(uuid)), llToLower(message)))
+                            {
+                                llMessageLinked(LINK_SET, M_API_LOCK, llGetDisplayName(uuid), uuid);
+                                return;
+                            }
                         }
                     }
                 }

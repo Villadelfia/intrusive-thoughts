@@ -178,8 +178,16 @@ default
                 objectprefix = "";
                 foodname = "Food";
             }
-            if(str == "name") owner = (string)id;
-            else if(str == "objectprefix") objectprefix = (string)id + " ";
+            if(str == "name") 
+            {
+                owner = (string)id;
+                if(owner == "" || owner == "Avatar") owner = guessname();
+            }
+            else if(str == "objectprefix")
+            {
+                objectprefix = (string)id + " ";
+                if(objectprefix == " " || objectprefix == "Avatar's ") objectprefix = guessprefix();
+            }
             else if(str == "food") foodname = (string)id;
         }
         else if(num == M_API_LOCK)

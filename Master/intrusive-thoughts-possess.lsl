@@ -245,7 +245,11 @@ default
                 configured = FALSE;
                 owner = "";
             }
-            if(str == "name") owner = (string)id;
+            if(str == "name") 
+            {
+                owner = (string)id;
+                if(owner == "" || owner == "Avatar") owner = guessname();
+            }
         }
         else if(num == M_API_LOCK)
         {

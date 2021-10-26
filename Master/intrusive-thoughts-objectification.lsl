@@ -140,6 +140,7 @@ addobject(string desc)
 {
     if(lockedavatar == llGetOwner()) return;
     if(desc == "") desc = "object";
+    if(startswith(llToLower(desc), llToLower(objectprefix))) desc = llGetSubString(desc, llStringLength(objectprefix), -1);
     targetdescription = desc;
     llOwnerSay("Capturing '" + lockedname + "'.");
     target = lockedavatar;
@@ -362,8 +363,16 @@ default
                 hideopt = 1;
             }
 
-            if(str == "name") owner = (string)id;
-            else if(str == "objectprefix") objectprefix = (string)id + " ";
+            if(str == "name") 
+            {
+                owner = (string)id;
+                if(owner == "" || owner == "Avatar") owner = guessname();
+            }
+            else if(str == "objectprefix")
+            {
+                objectprefix = (string)id + " ";
+                if(objectprefix == " " || objectprefix == "Avatar's ") objectprefix = guessprefix();
+            }
             else if(str == "ball") hideopt = (integer)((string)id);
         }
         else if(num == M_API_LOCK)

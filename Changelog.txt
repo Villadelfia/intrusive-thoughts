@@ -146,3 +146,10 @@ Carrier — carrier-menu
 Carrier — carrier-handler
 Carrier API — carrier-example
 Carrier API — intrusive-thoughts-carrier-api
+
+3.0.0g:
+Master — intrusive-thoughts-camera
+Master — intrusive-thoughts-objectification
+Master — intrusive-thoughts-possess
+Master — intrusive-thoughts-ui
+Master — intrusive-thoughts-vore

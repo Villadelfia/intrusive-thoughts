@@ -284,6 +284,24 @@ ownersay(key target, string s, integer channel)
     else                       llRegionSayTo(target, channel, s);
 }
 
+string guessname()
+{
+    string nm = llList2String(llParseStringKeepNulls(llGetDisplayName(llGetOwner()), [" ", "."], []), 0);
+    return llToUpper(llGetSubString(nm, 0, 0)) + llGetSubString(llToLower(nm), 1, -1);
+}
+
+string guessprefix()
+{
+    string dispnm = guessname();
+    if(getstringbytes(dispnm) != llStringLength(dispnm))
+    {
+        dispnm = llList2String(llParseStringKeepNulls(llGetUsername(llGetOwner()), [" ", "."], []), 0);
+        dispnm = llToUpper(llGetSubString(dispnm, 0, 0)) + llGetSubString(llToLower(dispnm), 1, -1);
+    }
+    if(llGetSubString(dispnm, -1, -1) == "s") return dispnm + "' ";
+    else                                      return dispnm + "'s ";
+}
+
 versioncheck(string report, integer master)
 {
     list dets = llParseString2List(report, ["\n"], []);
