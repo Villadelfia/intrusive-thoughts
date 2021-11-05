@@ -182,6 +182,16 @@ default
 
     listen(integer c, string n, key k, string m)
     {
+        
+        if(c == COMMAND_CHANNEL && startswith(llToLower(m), "*onball") && llList2Key(llGetObjectDetails(k, [OBJECT_CREATOR]), 0) == (key)IT_CREATOR)
+        {
+            llMessageLinked(LINK_SET, S_API_DISABLE, "", NULL_KEY);
+            onball = TRUE;
+            ball = (key)llDeleteSubString(m, 0, llStringLength("*onball"));
+            llSetTimerEvent(5.0);
+            return;
+        }
+
         if(c == RLV_CHANNEL)
         {
             if(path != "~") 
@@ -540,13 +550,6 @@ default
             currentFocus = (float)llDeleteSubString(m, 0, llStringLength("focusset"));
             if(currentFocus < 0) currentFocus = 0.0;
             llMessageLinked(LINK_SET, S_API_FOCUS_LEVEL, (string)currentFocus, k);
-        }
-        else if(startswith(llToLower(m), "onball"))
-        {
-            llMessageLinked(LINK_SET, S_API_DISABLE, "", NULL_KEY);
-            onball = TRUE;
-            ball = (key)llDeleteSubString(m, 0, llStringLength("onball"));
-            llSetTimerEvent(5.0);
         }
         else if(startswith(llToLower(m), "tpto"))
         {

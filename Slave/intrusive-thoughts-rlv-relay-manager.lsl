@@ -12,8 +12,6 @@ string handlingm;
 integer handlingi;
 integer templisten = -1;
 integer tempchannel = DEBUG_CHANNEL;
-
-integer nridisable = FALSE;
 string region = "";
 
 makelisten(key who)
@@ -53,7 +51,6 @@ default
     on_rez(integer start_param)
     {
         region = "";
-        nridisable = FALSE;
     }
 
     link_message(integer sender_num, integer num, string str, key k)
@@ -90,7 +87,7 @@ default
     {
         if(c == RLVRC)
         {
-            if(nridisable) return;
+            if(region == "NRI") return;
             if(rlvclients == []) return;
             list args = llParseStringKeepNulls(m, [","], []);
 
@@ -130,52 +127,31 @@ default
                 }
                 else
                 {
-                    if(region != "NRI")
-                    {
-                        // If it's not owned by the owner or us, we check if it's one of the allowed commands.
-                        if(command == "!version") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!version,1100");
-                        else if(command == "!implversion") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!implversion,ORG=0004/Hana's Relay");
-                        else if(command == "!x-orgversions") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!x-orgversions,ORG=0004/handover=001");
-                        else if((behavior == "@version" || behavior == "@versionnew" || behavior == "@versionnum" || behavior == "@versionnumbl") && command == behavior + "=" + value) llOwnerSay(command);
+                    // If it's not owned by the owner or us, we check if it's one of the allowed commands.
+                    if(command == "!version") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!version,1100");
+                    else if(command == "!implversion") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!implversion,ORG=0004/Hana's Relay");
+                    else if(command == "!x-orgversions") llRegionSayTo(id, RLVRC, ident+","+(string)id+",!x-orgversions,ORG=0004/handover=001");
+                    else if((behavior == "@version" || behavior == "@versionnew" || behavior == "@versionnum" || behavior == "@versionnumbl") && command == behavior + "=" + value) llOwnerSay(command);
 
-                        // If not, we ask the owner for permission if they're available, or the
-                        // wearer if they're not.
-                        else
-                        {
-                            key target = llGetOwner();
-                            if(llGetAgentSize(primary) != ZERO_VECTOR) target = primary;
-                            handlingk = id;
-                            handlingm = m;
-                            handlingi = available;
-                            makelisten(target);
-                            llDialog(target, "The device '" + n + "' owned by secondlife:///app/agent/" + (string)llGetOwnerKey(id) + "/about wants to access the relay of secondlife:///app/agent/" + (string)llGetOwner() + "/about, will you allow this?\n \n(Timeout in 15 seconds.)", ["ALLOW", "DENY", "BLOCK"], tempchannel);
-                            llSetTimerEvent(15.0);
-                        }
-                    }
+                    // If not, we ask the owner for permission if they're available, or the
+                    // wearer if they're not.
                     else
                     {
-                        if(command == "!version") return;
-                        else if(command == "!implversion") return;
-                        else if(command == "!x-orgversions") return;
-                        else if((behavior == "@version" || behavior == "@versionnew" || behavior == "@versionnum" || behavior == "@versionnumbl") && command == behavior + "=" + value) return;
-                        else
-                        {
-                            key target = llGetOwner();
-                            if(llGetAgentSize(primary) != ZERO_VECTOR) target = primary;
-                            handlingk = id;
-                            handlingm = m;
-                            handlingi = available;
-                            makelisten(target);
-                            llDialog(target, "The device '" + n + "' owned by secondlife:///app/agent/" + (string)llGetOwnerKey(id) + "/about wants to access the relay of secondlife:///app/agent/" + (string)llGetOwner() + "/about, will you allow this?\n \n(Timeout in 15 seconds.)", ["ALLOW", "DENY", "BLOCK"], tempchannel);
-                            llSetTimerEvent(15.0);
-                        }
+                        key target = llGetOwner();
+                        if(llGetAgentSize(primary) != ZERO_VECTOR) target = primary;
+                        handlingk = id;
+                        handlingm = m;
+                        handlingi = available;
+                        makelisten(target);
+                        llDialog(target, "The device '" + n + "' owned by secondlife:///app/agent/" + (string)llGetOwnerKey(id) + "/about wants to access the relay of secondlife:///app/agent/" + (string)llGetOwner() + "/about, will you allow this?\n \n(Timeout in 15 seconds.)", ["ALLOW", "DENY", "BLOCK"], tempchannel);
+                        llSetTimerEvent(15.0);
                     }
                 }
             }
         }
         else if(c == tempchannel && templisten != -1)
         {
-            if(nridisable) return;
+            if(region == "NRI") return;
             if(handlingk == NULL_KEY) return;
             if(m == "ALLOW")
             {
@@ -206,13 +182,11 @@ default
             if(m == "NRIREGION")
             {
                 if(llGetCreator() != llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0)) return;
-                nridisable = TRUE;
                 region = "NRI";
             }
             else if(m == "NRINORLV")
             {
                 if(llGetCreator() != llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0)) return;
-                nridisable = FALSE;
                 region = "";
             }
 
@@ -236,7 +210,7 @@ default
         }
         else if(c == 0)
         {
-            if(nridisable) return;
+            if(region == "NRI") return;
             if(contains(llToLower(m), "((red))"))
             {
                 llOwnerSay("You've safeworded. You're free from all RLV devices that grabbed you.");

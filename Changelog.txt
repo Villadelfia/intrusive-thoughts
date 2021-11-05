@@ -164,5 +164,9 @@ Ball — ball-handler
 Intrusive Thoughts Possessor — possession-objectification
 
 3.0.1a:
+Master — intrusive-thoughts-ui
+Slave — intrusive-thoughts-controller
 Slave — intrusive-thoughts-mantra
 Slave — intrusive-thoughts-restrict
+Slave — intrusive-thoughts-rlv-relay-manager
+All — intrusive-thoughts-rlv-relay-client

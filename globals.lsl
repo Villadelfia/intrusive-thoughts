@@ -95,8 +95,8 @@
 //#define DEBUG
 //#define RETAIL_MODE
 
-#define VERSION_S "IT-Slave v3.0"
-#define VERSION_M "IT-Master v3.0"
+#define VERSION_S "IT-Slave v3.0.1a"
+#define VERSION_M "IT-Master v3.0.1a"
 #define VERSION_FULL "CF2D5B"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0

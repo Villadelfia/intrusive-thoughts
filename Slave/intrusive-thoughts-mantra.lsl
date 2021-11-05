@@ -68,6 +68,7 @@ doMantra()
     llSetObjectName("");
     llOwnerSay("You feel a compulsion to say *exactly* '" + statement + "'...");
     llSetObjectName(old);
+    if(onball) llOwnerSay("@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add,rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add");
     sensortimer(30.0);
 }
 
@@ -83,7 +84,7 @@ checkMantra(string m)
         string old = llGetObjectName();
         llSetObjectName("");
         llOwnerSay("The compulsion to repeat the mantra fades... For now.");
-        if(!onball)
+        if(onball == FALSE)
         {
             if(name == "") llSetObjectName(llGetDisplayName(llGetOwner()));
             else           llSetObjectName(name);
@@ -152,6 +153,7 @@ default
         }
         else if(num == S_API_DISABLE)
         {
+            if(onball == FALSE && statement != "") llOwnerSay("@redirchat:" + (string)GAZE_REN_CHANNEL + "=add,rediremote:" + (string)GAZE_REN_CHANNEL + "=add,sendchannel:" + (string)GAZE_REN_CHANNEL + "=add");
             onball = TRUE;
         }
     }
@@ -196,6 +198,11 @@ default
             {
                 statements += [llDeleteSubString(m, 0, llStringLength("MANTRA_PHRASES"))];
                 checkSetup();
+            }
+            else if(startswith(m, "NAME"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("NAME"));
+                name = m;
             }
         }
         else
