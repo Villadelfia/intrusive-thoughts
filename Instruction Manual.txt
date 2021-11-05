@@ -194,3 +194,7 @@ When you're done, just click the release button.
 When worn as is, any slave or object that has focusing restrictions active will look at the focus target instead of your avatar center. You can wear it on any attachment point. When worn, you will get a clickable link to get a menu to modify the position, rotation and zoom factor, as well as get a preview of what your slaves/objects will me seeing. This preview uses RLV, but is not a restriction on you.
 
 You can also rename the object a specific name to make that specific object look at it. For example, if you wear a focus target called Heels, the worn object called Heels will look at that target. All other objects will still look at the standard focus target.
+
+
+23. Can I stop the IT slave from resizing?
+Yes, just put anything (texture, sound, notecard...) inside of it with the name NO_RESIZE, and it won't.

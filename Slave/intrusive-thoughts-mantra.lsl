@@ -13,6 +13,8 @@ integer tempDisable = FALSE;
 integer intensity = 0;
 string statement = "";
 
+integer onball = FALSE;
+
 softReset()
 {
     tempDisable = TRUE;
@@ -81,10 +83,13 @@ checkMantra(string m)
         string old = llGetObjectName();
         llSetObjectName("");
         llOwnerSay("The compulsion to repeat the mantra fades... For now.");
-        if(name == "") llSetObjectName(llGetDisplayName(llGetOwner()));
-        else           llSetObjectName(name);
-        llSay(0, m);
-        llSetObjectName(old);
+        if(!onball)
+        {
+            if(name == "") llSetObjectName(llGetDisplayName(llGetOwner()));
+            else           llSetObjectName(name);
+            llSay(0, m);
+            llSetObjectName(old);
+        }        
         llMessageLinked(LINK_SET, S_API_MANTRA_DONE, "", NULL_KEY);
         checkSetup();
     }
@@ -140,6 +145,14 @@ default
         else if(num == S_API_EMERGENCY)
         {
             softReset();
+        }
+        else if(num == S_API_ENABLE)
+        {
+            onball = FALSE;
+        }
+        else if(num == S_API_DISABLE)
+        {
+            onball = TRUE;
         }
     }
 

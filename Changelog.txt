@@ -162,3 +162,7 @@ Slave — intrusive-thoughts-controller
 Carrier — carrier-handler
 Ball — ball-handler
 Intrusive Thoughts Possessor — possession-objectification
+
+3.0.1a:
+Slave — intrusive-thoughts-mantra
+Slave — intrusive-thoughts-restrict

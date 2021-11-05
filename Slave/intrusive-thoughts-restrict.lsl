@@ -565,7 +565,7 @@ default
                 ownersay(k, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.", 0);
                 locked = FALSE;
                 llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
-                llSetScale(<0.01, 0.01, 0.01>);
+                if(llGetInventoryType("NO_RESIZE") == INVENTORY_NONE) llSetScale(<0.01, 0.01, 0.01>);
                 llOwnerSay("@detach=y");
             }
             else
@@ -573,7 +573,7 @@ default
                 ownersay(k, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.", 0);
                 locked = TRUE;
                 llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
-                llSetScale(<0.4, 0.4, 0.4>);
+                if(llGetInventoryType("NO_RESIZE") == INVENTORY_NONE) llSetScale(<0.4, 0.4, 0.4>);
                 llOwnerSay("@detach=n");
             }
         }
