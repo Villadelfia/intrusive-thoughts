@@ -170,3 +170,10 @@ Slave — intrusive-thoughts-mantra
 Slave — intrusive-thoughts-restrict
 Slave — intrusive-thoughts-rlv-relay-manager
 All — intrusive-thoughts-rlv-relay-client
+
+3.0.1b:
+Master — intrusive-thoughts-ui
+Master — intrusive-thoughts-controller
+Slave — intrusive-thoughts-listener
+Slave — intrusive-thoughts-restrict
+Slave — intrusive-thoughts-controller

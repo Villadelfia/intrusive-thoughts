@@ -43,6 +43,8 @@
 #define S_API_AFK_CHECK           -1021
 #define S_API_MANTRA_START        -1022
 #define S_API_MANTRA_DONE         -1023
+#define S_API_SET_LOCK            -1024
+#define S_API_SCHEDULE_DETACH     -1025
 
 #define M_API_HUD_STARTED         -2000
 #define M_API_CONFIG_DATA         -2001
@@ -95,8 +97,10 @@
 //#define DEBUG
 //#define RETAIL_MODE
 
-#define VERSION_S "IT-Slave v3.0.1a"
-#define VERSION_M "IT-Master v3.0.1a"
+#define VERSION_S "IT-Slave v3.0.1b"
+#define VERSION_M "IT-Master v3.0.1b"
+// major, 3 digits, minor, 3 digits, patch, 2 digits, revision, 2 digits with base = 00, a = 01, b = 02...
+#define VERSION_CMP "00300000102"
 #define VERSION_FULL "CF2D5B"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
@@ -329,4 +333,11 @@ versioncheck(string report, integer master)
         msg += "\n\nRelease notes for version " + prettyversion + ":\n" + notes;
         llOwnerSay(msg);
     }
+}
+
+integer ishigherversion(string o)
+{
+    if(o == VERSION_CMP) return FALSE;
+    if(o == llList2String(llListSort([o, VERSION_CMP], 1, TRUE), 0)) return FALSE;
+    return TRUE;
 }

@@ -114,3 +114,4 @@ Version 3.0.1:
  - Improve objectification and vore RLV restrictions.
  - Improve mantras in slave when combined with objectification.
  - Add resize blocking for slave.
+ - Improve slave updating.

@@ -8,6 +8,7 @@ list statements = [];
 integer timerMin = 0;
 integer timerMax = 0;
 
+integer locked = FALSE;
 integer tempListen = -1;
 key afkChecker = NULL_KEY;
 string afkMessage = "";
@@ -39,7 +40,7 @@ default
     {
         if(num == S_API_STARTED)
         {
-            llRegionSayTo(llGetOwner(), MANTRA_CHANNEL, "CHECKPOS " + (string)llGetAttached());
+            llRegionSayTo(llGetOwner(), MANTRA_CHANNEL, "CHECKPOS " + (string)llGetAttached() + " " + VERSION_CMP);
         }
         else if(num == S_API_OWNERS)
         {
@@ -64,6 +65,10 @@ default
             else                                          llInstantMessage(afkChecker, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been given an AFK check. They have 30 seconds to succeed.");
             afkCheck();
         }
+        else if(num == S_API_SET_LOCK)
+        {
+            locked = (integer)str;
+        }
     }
 
     state_entry()
@@ -77,30 +82,55 @@ default
         {
             if(startswith(m, "CHECKPOS") == TRUE && llGetOwnerKey(k) == llGetOwner())
             {
-                integer attachedto = (integer)llDeleteSubString(m, 0, llStringLength("CHECKPOS"));
-                if(attachedto == llGetAttached())
+                list params = llParseString2List(m, [" "], []);
+                integer attachedto = (integer)llList2String(params, 1);
+                string oversion = llList2String(params, 2);
+                if(llGetListLength(params) < 3) oversion = "00000000000";
+                if(ishigherversion(oversion))
                 {
-                    llRegionSayTo(k, MANTRA_CHANNEL, "POSMATCH " + (string)llGetLocalPos());
-                    llOwnerSay("Detected new IT Slave on this attachment point. Moving it in place and detaching myself.");
-                    llOwnerSay("@clear,detachme=force");
+                    if(attachedto == llGetAttached())
+                    {
+                        llRegionSayTo(k, MANTRA_CHANNEL, "POSMATCH " + (string)llGetLocalPos());
+                        llRegionSayTo(k, MANTRA_CHANNEL, "POSLOCKED " + (string)locked);
+                        llOwnerSay("Detected newer IT Slave on this attachment point. Moving it in place and detaching myself.");
+                        llMessageLinked(LINK_SET, S_API_SCHEDULE_DETACH, "", NULL_KEY);
+                    }
+                    else
+                    {
+                        llOwnerSay("Detected newer IT Slave on another attachment point. Detaching it.");
+                        llRegionSayTo(k, MANTRA_CHANNEL, "POSNOMATCH " + (string)llGetAttached());
+                    }
                 }
                 else
                 {
-                    llOwnerSay("Detected new IT Slave on another attachment point. Detaching it.");
-                    llRegionSayTo(k, MANTRA_CHANNEL, "POSNOMATCH " + (string)llGetAttached());
+                    llOwnerSay("Detected older IT Slave. Detaching it.");
+                    llRegionSayTo(k, MANTRA_CHANNEL, "POSNOMATCH -1");
                 }
             }
-            else if(startswith(m, "POSMATCH") == TRUE && llGetOwnerKey(k) == llGetOwner())
+            else if(startswith(m, "POSMATCH"))
             {
-                vector newpos = (vector)llDeleteSubString(m, 0, llStringLength("POSMATCH"));
-                llOwnerSay("Moving myself into the position of your old IT slave.");
-                llSetPos(newpos);
+                llSetPos((vector)llDeleteSubString(m, 0, llStringLength("POSMATCH")));
             }
-            else if(startswith(m, "POSNOMATCH") == TRUE && llGetOwnerKey(k) == llGetOwner())
+            else if(startswith(m, "POSNOMATCH"))
             {
                 integer attachedto = (integer)llDeleteSubString(m, 0, llStringLength("POSNOMATCH"));
-                llOwnerSay("You already have another IT slave attached, but it is attached to " + attachpointtotext(attachedto) + ". Please attach me to that point instead. Detaching now.");
-                llOwnerSay("@clear,detachme=force");
+                if(attachedto != -1) llOwnerSay("You have an older IT slave attached, but it is attached to " + attachpointtotext(attachedto) + ". Please attach me to that point instead. Detaching now.");
+                else                 llOwnerSay("You have a newer IT slave attached. Detaching now.");
+                llMessageLinked(LINK_SET, S_API_SCHEDULE_DETACH, "", NULL_KEY);
+            }
+            else if(startswith(m, "POSLOCKED"))
+            {
+                list params = llParseString2List(m, [" "], []);
+                integer olocked = (integer)llList2String(params, 1);
+                if(olocked)
+                {
+                    llOwnerSay("Moving myself into the position of your old IT slave and locking myself.");
+                    llMessageLinked(LINK_SET, S_API_SET_LOCK, (string)TRUE, primary);
+                }
+                else
+                {
+                    llOwnerSay("Moving myself into the position of your old IT slave.");
+                }
             }
 
             if(!isowner(k)) return;

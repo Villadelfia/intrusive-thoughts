@@ -152,6 +152,28 @@ default
         {
             doSetup();
         }
+        else if(num == S_API_SET_LOCK)
+        {
+            locked = (integer)str;
+            if(locked)
+            {
+                ownersay(id, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.", 0);
+                llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
+                if(llGetInventoryType("NO_RESIZE") == INVENTORY_NONE) llSetScale(<0.4, 0.4, 0.4>);
+                llOwnerSay("@detach=n");
+            }
+            else
+            {
+                ownersay(id, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.", 0);
+                llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
+                if(llGetInventoryType("NO_RESIZE") == INVENTORY_NONE) llSetScale(<0.01, 0.01, 0.01>);
+                llOwnerSay("@detach=y");
+            }
+        }
+        else if(num == S_API_SCHEDULE_DETACH)
+        {
+            llOwnerSay("@clear,detachme=force");
+        }
     }
 
     attach(key id)
@@ -563,22 +585,8 @@ default
         }
         else if(llToLower(m) == "lock")
         {
-            if(locked)
-            {
-                ownersay(k, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.", 0);
-                locked = FALSE;
-                llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
-                if(llGetInventoryType("NO_RESIZE") == INVENTORY_NONE) llSetScale(<0.01, 0.01, 0.01>);
-                llOwnerSay("@detach=y");
-            }
-            else
-            {
-                ownersay(k, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.", 0);
-                locked = TRUE;
-                llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
-                if(llGetInventoryType("NO_RESIZE") == INVENTORY_NONE) llSetScale(<0.4, 0.4, 0.4>);
-                llOwnerSay("@detach=n");
-            }
+            if(locked) llMessageLinked(LINK_SET, S_API_SET_LOCK, (string)FALSE, k);
+            else       llMessageLinked(LINK_SET, S_API_SET_LOCK, (string)TRUE, k);
         }
         else if(llToLower(m) == "stand" || llToLower(m) == "unsit")
         {
