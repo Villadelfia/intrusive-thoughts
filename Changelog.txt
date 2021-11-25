@@ -177,3 +177,16 @@ Master — intrusive-thoughts-controller
 Slave — intrusive-thoughts-listener
 Slave — intrusive-thoughts-restrict
 Slave — intrusive-thoughts-controller
+
+3.0.1d:
+Master — intrusive-thoughts-rlv-relay-manager
+Master — intrusive-thoughts-ui
+Master — intrusive-thoughts-controller
+Slave — intrusive-thoughts-mantra
+Slave — intrusive-thoughts-vocal
+Slave — intrusive-thoughts-controller
+All — intrusive-thoughts-rlv-relay-client
+Intrusive Thoughts Possessor — possession-objectification
+Ball — ball-handler
+Carrier — carrier-handler
+Carrier API — carrier-api

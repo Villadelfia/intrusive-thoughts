@@ -188,7 +188,7 @@ default
                     enabled = TRUE;
                     llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
                     llOwnerSay("Your RLV relay has been turned on.");
-                    llOwnerSay("@touchme=add,sendchannel:1=add,sendchannel:8=add,sendchannel:5=add");
+                    llOwnerSay("@touchme=add");
                 }
             }           
 
@@ -215,7 +215,7 @@ default
             list args = llParseStringKeepNulls(m, [","], []);
 
             // Re-assert the exceptions.
-            llOwnerSay("@touchme=add,sendchannel:1=add,sendchannel:8=add,sendchannel:5=add");
+            llOwnerSay("@touchme=add");
 
             // We discard if the message is too short.
             if(llGetListLength(args)!=3) return;
@@ -311,7 +311,7 @@ default
             if(enabled)
             {
                 // Re-assert the exceptions.
-                llOwnerSay("@touchme=add,sendchannel:1=add,sendchannel:8=add,sendchannel:5=add");
+                llOwnerSay("@touchme=add");
             }
 
             integer hr = hasrestrictions();
@@ -348,7 +348,7 @@ default
                     enabled = TRUE;
                     llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
                     llOwnerSay("Your RLV relay has been turned on.");
-                    llOwnerSay("@touchme=add,sendchannel:1=add,sendchannel:8=add,sendchannel:5=add");
+                    llOwnerSay("@touchme=add");
                 }                
                 else
                 {
@@ -397,7 +397,7 @@ default
             if(enabled == TRUE)
             {
                 llOwnerSay(VERSION_M + ": Your RLV relay is turned on, supporting up to " + (string)llGetListLength(rlvclients) + " devices.");
-                llOwnerSay("@touchme=add,sendchannel:1=add,sendchannel:8=add,sendchannel:5=add");
+                llOwnerSay("@touchme=add");
             }
             else if(rlvclients == [])
             {

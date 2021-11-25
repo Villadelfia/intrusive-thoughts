@@ -338,8 +338,8 @@ handleSay(string message)
 
 checkSetup()
 {
-    if(name != "" || mute || mindless) llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=add,rediremote:" + (string)VOICE_CHANNEL + "=add,sendchannel=n,sendchannel:" + (string)VOICE_CHANNEL + "=add,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add,sendchannel:" + (string)SPEAK_CHANNEL + "=add,sendchannel:" + (string)COMMAND_CHANNEL + "=add");
-    else                               llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=rem,rediremote:" + (string)VOICE_CHANNEL + "=rem,sendchannel=y,sendchannel:" + (string)VOICE_CHANNEL + "=rem,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=rem,sendchannel:" + (string)SPEAK_CHANNEL + "=rem,sendchannel:" + (string)COMMAND_CHANNEL + "=rem");
+    if(name != "" || mute || mindless) llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=add,rediremote:" + (string)VOICE_CHANNEL + "=add");
+    else                               llOwnerSay("@redirchat:" + (string)VOICE_CHANNEL + "=rem,rediremote:" + (string)VOICE_CHANNEL + "=rem");
 }
 
 default

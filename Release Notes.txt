@@ -115,3 +115,4 @@ Version 3.0.1:
  - Improve mantras in slave when combined with objectification.
  - Add resize blocking for slave.
  - Improve slave updating.
+ - Major improvement in chat redirection.

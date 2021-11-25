@@ -51,7 +51,7 @@ default
                     if(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i))) 
                     {
                         llRegionSayTo(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)), MANTRA_CHANNEL, "onball " + (string)llGetKey());
-                        llRegionSayTo(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)) + ",@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add|@sendchannel_sec=n|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add");
+                        llRegionSayTo(llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(llList2Integer(sitTargetLinks, i)) + ",@unsit=n|@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add");
                     }
                 }
                 llSetTimerEvent(0.5);

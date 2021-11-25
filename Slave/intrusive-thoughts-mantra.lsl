@@ -12,6 +12,7 @@ integer tempDisable = FALSE;
 
 integer intensity = 0;
 string statement = "";
+string lastattempt = "";
 
 integer onball = FALSE;
 
@@ -57,7 +58,7 @@ doMantra()
     llMessageLinked(LINK_SET, S_API_MANTRA_START, "", NULL_KEY);
     llSetTimerEvent(0.0);
     llOwnerSay("@clear");
-    llOwnerSay("@detach=n,redirchat:" + (string)(VOICE_CHANNEL+1) + "=add,rediremote:" + (string)(VOICE_CHANNEL+1) + "=add,sendchannel=n,sendchannel:" + (string)(VOICE_CHANNEL+1) + "=add,sendchannel:" + (string)COMMAND_CHANNEL + "=add");
+    llOwnerSay("@detach=n,redirchat:" + (string)(VOICE_CHANNEL+1) + "=add,rediremote:" + (string)(VOICE_CHANNEL+1) + "=add");
     llOwnerSay("@clear=setsphere,setsphere=n,setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:128=force,setsphere_tween:5=force,setsphere_distmax:16=force,setsphere_tween=force");
     llOwnerSay("@fly=n,temprun=n,alwaysrun=n,sendgesture=n,tplocal=n,tplm=n,tploc=n,tplure=n,sittp=n,tprequest=n,tprequest:" + (string)primary + "=add,tplure:" + (string)primary + "=add,accepttp:" + (string)primary + "=add,accepttprequest:" + (string)primary + "=add");
     if(llGetAgentInfo(llGetOwner()) & AGENT_SITTING) llOwnerSay("@unsit=n");
@@ -68,16 +69,19 @@ doMantra()
     llSetObjectName("");
     llOwnerSay("You feel a compulsion to say *exactly* '" + statement + "'...");
     llSetObjectName(old);
-    if(onball) llOwnerSay("@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add,rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add");
+    if(onball) llOwnerSay("@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add,rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add");
     sensortimer(30.0);
 }
 
 checkMantra(string m)
 {
+    if(statement == "") return;
     m = llStringTrim(m, STRING_TRIM);
+    if(m == lastattempt) return;
     if(m == statement)
     {
         statement = "";
+        lastattempt = "";
         llSetTimerEvent(0.0);
         sensortimer(0.0);
         llOwnerSay("@clear");
@@ -100,6 +104,7 @@ checkMantra(string m)
         llSetObjectName("");
         llOwnerSay("A mantra is ringing through your mind and you feel compelled to repeat it before saying anything else. It's '" + statement + "'...");
         llSetObjectName(old);
+        lastattempt = m;
     }
 }
 
@@ -153,7 +158,7 @@ default
         }
         else if(num == S_API_DISABLE)
         {
-            if(onball == FALSE && statement != "") llOwnerSay("@redirchat:" + (string)GAZE_REN_CHANNEL + "=add,rediremote:" + (string)GAZE_REN_CHANNEL + "=add,sendchannel:" + (string)GAZE_REN_CHANNEL + "=add");
+            if(onball == FALSE && statement != "") llOwnerSay("@redirchat:" + (string)GAZE_REN_CHANNEL + "=add,rediremote:" + (string)GAZE_REN_CHANNEL + "=add");
             onball = TRUE;
         }
     }
@@ -163,6 +168,10 @@ default
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         setupVoiceChannel();
         llListen(VOICE_CHANNEL+1, "", llGetOwner(), "");
+        llListen(DUMMY_CHANNEL, "", llGetOwner(), "");
+        llListen(GAZE_CHAT_CHANNEL, "", llGetOwner(), "");
+        llListen(GAZE_REN_CHANNEL, "", llGetOwner(), "");
+        llListen(0, "", llGetOwner(), "");
     }
 
     attach(key id)
@@ -214,6 +223,7 @@ default
     no_sensor()
     {
         intensify();
+        lastattempt = "";
     }
 
     timer()

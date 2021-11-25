@@ -68,10 +68,10 @@ applyIm()
 
 applySpeech()
 {
-    llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@redirchat=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@redirchat:" + (string)DUMMY_CHANNEL + "=rem|@rediremote=y|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)DUMMY_CHANNEL + "=rem|@sendchannel_sec=y|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel_sec:" + (string)DUMMY_CHANNEL + "=rem");
-    if(speechRestrict == 0) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@redirchat=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add|@sendchannel_sec=n|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add");
-    if(speechRestrict == 1) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@redirchat=n|@redirchat:" + (string)DUMMY_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add|@sendchannel_sec=n|@sendchannel_sec:" + (string)GAZE_CHAT_CHANNEL + "=add");
-    if(speechRestrict == 2) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@redirchat=n|@redirchat:" + (string)DUMMY_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)DUMMY_CHANNEL + "=add|@sendchannel_sec=n");
+    llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@redirchat=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@redirchat:" + (string)DUMMY_CHANNEL + "=rem|@rediremote=y|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)DUMMY_CHANNEL + "=rem");
+    if(speechRestrict == 0) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@redirchat=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add");
+    if(speechRestrict == 1) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@redirchat=n|@redirchat:" + (string)DUMMY_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add");
+    if(speechRestrict == 2) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@redirchat=n|@redirchat:" + (string)DUMMY_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)DUMMY_CHANNEL + "=add");
 }
 
 applyDaze()
@@ -202,7 +202,7 @@ default
                     captured = TRUE;
                 }
                 prefix = llToLower(llGetSubString(llGetUsername(firstavatar), 0, 1));
-                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@sendgesture=n|@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add|@sendchannel_sec:5=add");
+                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@sendgesture=n|@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add");
                 applyIm();
                 llRequestPermissions(llAvatarOnLinkSitTarget(volumelink), PERMISSION_TRIGGER_ANIMATION | PERMISSION_TAKE_CONTROLS);
             }

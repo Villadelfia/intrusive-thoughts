@@ -100,11 +100,11 @@ applyHearing()
 
 applySpeech()
 {
-    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@redirchat:" + (string)DUMMY_CHANNEL + "=rem|@redirchat:" + (string)GAZE_REN_CHANNEL + "=rem|@rediremote=y|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)DUMMY_CHANNEL + "=rem|@rediremote:" + (string)GAZE_REN_CHANNEL + "=rem|@sendchannel=y|@sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel:" + (string)DUMMY_CHANNEL + "=rem|@sendchannel:" + (string)GAZE_REN_CHANNEL + "=rem");
-    if(speechRestrict == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)GAZE_REN_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)GAZE_REN_CHANNEL + "=add|@sendchannel=n|@sendchannel:" + (string)GAZE_REN_CHANNEL + "=add");
-    if(speechRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add|@sendchannel=n|@sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add");
-    if(speechRestrict == 2) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)DUMMY_CHANNEL + "=add|@sendchannel=n|@sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add");
-    if(speechRestrict == 3) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)DUMMY_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)DUMMY_CHANNEL + "=add|@sendchannel=n");
+    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@redirchat:" + (string)DUMMY_CHANNEL + "=rem|@redirchat:" + (string)GAZE_REN_CHANNEL + "=rem|@rediremote=y|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)DUMMY_CHANNEL + "=rem|@rediremote:" + (string)GAZE_REN_CHANNEL + "=rem");
+    if(speechRestrict == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)GAZE_REN_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)GAZE_REN_CHANNEL + "=add");
+    if(speechRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add");
+    if(speechRestrict == 2) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)DUMMY_CHANNEL + "=add");
+    if(speechRestrict == 3) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)DUMMY_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)DUMMY_CHANNEL + "=add");
 }
 
 applyDaze()
@@ -249,7 +249,7 @@ default
                 }
 
                 // Apply RLV restrictions.
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@tplocal=n|@tplm=n|@tploc=n|@tplure=n|@showself=n|@sendgesture=n|@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add|@sendchannel:5=add|@sendchannel:1=add|@sendchannel:8=add|@sendchannel:7=add");
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@tplocal=n|@tplm=n|@tploc=n|@tplure=n|@showself=n|@sendgesture=n|@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add");
                 applyIm();
                 applyHearing();
                 applySpeech();
@@ -528,7 +528,6 @@ default
             {
                 llSetObjectName(objectprefix + name);
                 llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",@shownames=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y|@setcam_origindistmax:10=y|@buy=y|@pay=y|@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tplure=y|@showinv=y|@interact=y|@showself=y|@sendgesture=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@sendchannel=y|@sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=rem");
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "release," + (string)llAvatarOnSitTarget() + ",!release");
                 llSleep(0.5);
                 llUnSit(llAvatarOnSitTarget());

@@ -10,6 +10,7 @@ list restrictions = [];
 list filters = [];
 
 integer handlinghandover = FALSE;
+integer ismaster = FALSE;
 
 release()
 {
@@ -124,6 +125,25 @@ integer isAllowed(string c)
     return TRUE;
 }
 
+
+checkSend(string command)
+{
+    if(llListFindList(restrictions, ["sendchannel:1", "sendchannel:5", "sendchannel:7", "sendchannel:8", "sendchannel:9"]) != -1) return;
+    list subargs = llParseString2List(command, ["="], []);
+    string behav = llGetSubString(llList2String(subargs, 0), 1, -1);
+    integer index = llListFindList(restrictions, [behav]);
+    string comtype = llList2String(subargs, 1);
+    if(index != -1) return;
+    if(comtype == "y" || comtype == "rem") return;
+    if(startswith(behav, "sendchannel"))
+    {
+        restrictions += ["sendchannel:1", "sendchannel:5", "sendchannel:7", "sendchannel:8", "sendchannel:9"];
+        llOwnerSay("@sendchannel:1=add,sendchannel:5=add,sendchannel:7=add,sendchannel:8=add,sendchannel:9=add");
+    }
+}
+
+                
+
 handlerlvrc(string msg, integer echo)
 {
     list args = llParseStringKeepNulls(msg,[","],[]);
@@ -145,25 +165,26 @@ handlerlvrc(string msg, integer echo)
     for (i=0; i<nc; ++i) 
     {
         command = llList2String(commands,i);
-        if (llGetSubString(command,0,0)=="@") 
+        if(llGetSubString(command,0,0)=="@") 
         {
             if(command != "@detach=y" && command != "@permissive=y" && command != "@clear" && isAllowed(command) == TRUE)
             {
+                if(ismaster) checkSend(command);
                 llOwnerSay(command);
                 if(echo) llRegionSayTo(id, RLVRC, ident+","+(string)id+","+command+",ok");
                 list subargs = llParseString2List(command, ["="], []);
                 string behav = llGetSubString(llList2String(subargs, 0), 1, -1);
                 integer index = llListFindList(restrictions, [behav]);
                 string comtype = llList2String(subargs, 1);                
-                if (comtype == "n" || comtype == "add") 
+                if(comtype == "n" || comtype == "add") 
                 {
                     if(index == -1) restrictions += [behav];
                     if(behav == "unsit" && llGetAgentInfo(llGetOwner()) & AGENT_SITTING) llOwnerSay("@getsitid=" + (string)channel);
                 }
-                else if (comtype=="y" || comtype == "rem") 
+                else if(comtype == "y" || comtype == "rem") 
                 {
-                    if (index != -1) restrictions = llDeleteSubList(restrictions, index, index);
-                    if (behav == "unsit") sitid = NULL_KEY;
+                    if(index != -1) restrictions = llDeleteSubList(restrictions, index, index);
+                    if(behav == "unsit") sitid = NULL_KEY;
                 }
             }
         }
@@ -228,18 +249,15 @@ default
 
     link_message(integer sender_num, integer num, string str, key k)
     {
+        if(num < -999 && num > -2000) ismaster = FALSE;
+        if(num < -1999 && num > -3000) ismaster = TRUE;
+        
         if(num == RLV_API_HANDLE_CMD && (string)k == (string)rlvid && id != NULL_KEY)            handlerlvrc(str, TRUE);
         else if(num == RLV_API_HANDLE_CMD_QUIET && (string)k == (string)rlvid && id != NULL_KEY) handlerlvrc(str, FALSE);
         else if(num == RLV_API_GET_RESTRICTIONS)
         {
-            if(id)
-            {
-                llMessageLinked(LINK_SET, RLV_API_RESP_RESTRICTIONS, (string)rlvid, (key)(llDumpList2String(restrictions, "\n")));
-            }
-            else
-            {
-                llMessageLinked(LINK_SET, RLV_API_RESP_RESTRICTIONS, (string)rlvid, (key)"");
-            }
+            if(id) llMessageLinked(LINK_SET, RLV_API_RESP_RESTRICTIONS, (string)rlvid, (key)(llDumpList2String(restrictions, "\n")));
+            else   llMessageLinked(LINK_SET, RLV_API_RESP_RESTRICTIONS, (string)rlvid, (key)"");
         }
         else if(num == RLV_API_SET_FILTERS)
         {                    

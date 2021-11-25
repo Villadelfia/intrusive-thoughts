@@ -73,7 +73,7 @@ capture(key id)
     llSetObjectName("");
     llRegionSayTo(id, RLVRC, "c," + (string)id + ",@sit=n,ok");
     llRegionSayTo(id, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about is being objectified in a no-rez zone, please note that if you .");
-    llOwnerSay("@detach=n,fly=n,unsit=force,sit=n,tplocal=n,tplm=n,tploc=n,tplure=n,tplure:" + (string)llGetOwnerKey(objectifier) + "=add,accepttp:" + (string)llGetOwnerKey(objectifier) + "=add,showself=n,sendgesture=n,startim:" + (string)llGetOwnerKey(objectifier) + "=add,recvim:" + (string)llGetOwnerKey(objectifier) + "=add,sendchannel:5=add");
+    llOwnerSay("@detach=n,fly=n,unsit=force,sit=n,tplocal=n,tplm=n,tploc=n,tplure=n,tplure:" + (string)llGetOwnerKey(objectifier) + "=add,accepttp:" + (string)llGetOwnerKey(objectifier) + "=add,showself=n,sendgesture=n,startim:" + (string)llGetOwnerKey(objectifier) + "=add,recvim:" + (string)llGetOwnerKey(objectifier) + "=add");
     applyIm();
     applyHearing();
     applySpeech();
@@ -116,11 +116,11 @@ applyHearing()
 
 applySpeech()
 {
-    llOwnerSay("@redirchat=y,redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem,redirchat:" + (string)DUMMY_CHANNEL + "=rem,redirchat:" + (string)GAZE_REN_CHANNEL + "=rem,rediremote=y,rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem,rediremote:" + (string)DUMMY_CHANNEL + "=rem,rediremote:" + (string)GAZE_REN_CHANNEL + "=rem,sendchannel=y,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=rem,sendchannel:" + (string)DUMMY_CHANNEL + "=rem,sendchannel:" + (string)GAZE_REN_CHANNEL + "=rem");
-    if(speechRestrict == 0) llOwnerSay("@redirchat=n,redirchat:" + (string)GAZE_REN_CHANNEL + "=add,rediremote=n,rediremote:" + (string)GAZE_REN_CHANNEL + "=add,sendchannel=n,sendchannel:" + (string)GAZE_REN_CHANNEL + "=add");
-    if(speechRestrict == 1) llOwnerSay("@redirchat=n,redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add,rediremote=n,rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add,sendchannel=n,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add");
-    if(speechRestrict == 2) llOwnerSay("@redirchat=n,redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add,rediremote=n,rediremote:" + (string)DUMMY_CHANNEL + "=add,sendchannel=n,sendchannel:" + (string)GAZE_CHAT_CHANNEL + "=add");
-    if(speechRestrict == 3) llOwnerSay("@redirchat=n,redirchat:" + (string)DUMMY_CHANNEL + "=add,rediremote=n,rediremote:" + (string)DUMMY_CHANNEL + "=add,sendchannel=n");
+    llOwnerSay("@redirchat=y,redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem,redirchat:" + (string)DUMMY_CHANNEL + "=rem,redirchat:" + (string)GAZE_REN_CHANNEL + "=rem,rediremote=y,rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem,rediremote:" + (string)DUMMY_CHANNEL + "=rem,rediremote:" + (string)GAZE_REN_CHANNEL + "=rem");
+    if(speechRestrict == 0) llOwnerSay("@redirchat=n,redirchat:" + (string)GAZE_REN_CHANNEL + "=add,rediremote=n,rediremote:" + (string)GAZE_REN_CHANNEL + "=add");
+    if(speechRestrict == 1) llOwnerSay("@redirchat=n,redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add,rediremote=n,rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add");
+    if(speechRestrict == 2) llOwnerSay("@redirchat=n,redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add,rediremote=n,rediremote:" + (string)DUMMY_CHANNEL + "=add");
+    if(speechRestrict == 3) llOwnerSay("@redirchat=n,redirchat:" + (string)DUMMY_CHANNEL + "=add,rediremote=n,rediremote:" + (string)DUMMY_CHANNEL + "=add");
 }
 
 applyDaze()
