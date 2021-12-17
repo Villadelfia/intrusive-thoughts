@@ -95,12 +95,12 @@
 #define IT_CREATOR                "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9"
 
 //#define DEBUG
-#define RETAIL_MODE
+//#define RETAIL_MODE
 
-#define VERSION_S "IT-Slave v3.0.1d"
-#define VERSION_M "IT-Master v3.0.1d"
+#define VERSION_S "IT-Slave v3.0.1e"
+#define VERSION_M "IT-Master v3.0.1e"
 // major, 3 digits, minor, 3 digits, patch, 2 digits, revision, 2 digits with base = 00, a = 01, b = 02...
-#define VERSION_CMP "00300000104"
+#define VERSION_CMP "00300000105"
 #define VERSION_FULL "CF2D5D"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0

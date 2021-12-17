@@ -62,7 +62,7 @@ doSetup()
     if(locked)
     {
         llOwnerSay("@detach=n");
-        llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
+        if(llGetInventoryType("NO_HIDE") == INVENTORY_NONE) llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
     }
 }
 
@@ -158,14 +158,14 @@ default
             if(locked)
             {
                 ownersay(id, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.", 0);
-                llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
+                if(llGetInventoryType("NO_HIDE") == INVENTORY_NONE) llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
                 if(llGetInventoryType("NO_RESIZE") == INVENTORY_NONE) llSetScale(<0.4, 0.4, 0.4>);
                 llOwnerSay("@detach=n");
             }
             else
             {
                 ownersay(id, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is unlocked.", 0);
-                llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
+                if(llGetInventoryType("NO_HIDE") == INVENTORY_NONE) llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
                 if(llGetInventoryType("NO_RESIZE") == INVENTORY_NONE) llSetScale(<0.01, 0.01, 0.01>);
                 llOwnerSay("@detach=y");
             }
@@ -193,7 +193,7 @@ default
 
     state_entry()
     {
-        llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
+        if(llGetInventoryType("NO_HIDE") == INVENTORY_NONE) llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         name = llGetDisplayName(llGetOwner());
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");

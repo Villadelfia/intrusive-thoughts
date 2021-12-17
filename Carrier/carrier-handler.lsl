@@ -3,6 +3,7 @@ key rezzer;
 key urlt;
 string url = "null";
 string prefix = "??";
+string anim = "";
 key firstavatar = NULL_KEY;
 integer volumelink;
 key focuskey;
@@ -220,6 +221,7 @@ default
         llSleep(1.0);
         llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), COMMAND_CHANNEL, "*onball " + (string)llGetKey());
         llStartAnimation("sit");
+        anim = "sit";
         llSetObjectName("");
         llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, "You can restrict yourself further by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you are captured by the same person.");
         llRegionSayTo(rezzer, 0, "You can edit the restrictions on your victim by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you capture the same person.");
@@ -317,6 +319,16 @@ default
                 applyWorld();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
+            else if(startswith(m, prefix + "play"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength(prefix + "play"));
+                if(llGetInventoryType(m) == INVENTORY_ANIMATION && anim != m)
+                {
+                    llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's animation set to " + m + ".");
+                    llStopAnimation(anim);
+                    llStartAnimation(m);
+                }
+            }
         }
         else if(c == MANTRA_CHANNEL)
         {
@@ -362,9 +374,11 @@ default
             else if(startswith(m, "dissolve"))
             {
                 if(llAvatarOnLinkSitTarget(volumelink) == NULL_KEY) die();
+                if(dissolved) return;
                 llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "acid_dissolve|" + (string)firstavatar);
                 llStopAnimation("sit");
                 llStartAnimation("digest");
+                anim = "digest";
                 dissolved = TRUE;
                 llSetObjectName("The Acid");
                 llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, "/me in your predator's stomach has completely dissolved you.");
