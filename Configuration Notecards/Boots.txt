@@ -76,7 +76,7 @@ You blink slowly as your vision returns at your Wearer's whim, and you see clear
 █MIND_OFF_MSG
 As your Wearer levels her gaze upon you, you find your free will dwindle, reduced to only what she wills you to say.
 █MIND_ON_MSG
-Slowly, you can feel all your free will and returning.
+Slowly, you can feel all your free will returning.
 █MINDLESS_PHRASES
 yes=/me nods.
 no=/me shakes his head.

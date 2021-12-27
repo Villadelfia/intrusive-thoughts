@@ -116,3 +116,4 @@ Version 3.0.1:
  - Add resize blocking for slave.
  - Improve slave updating.
  - Major improvement in chat redirection.
+ - Fix potential script error in hud and furniture.

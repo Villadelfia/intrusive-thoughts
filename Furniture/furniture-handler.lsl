@@ -178,7 +178,16 @@ handleMenu()
         n = llGetListLength(targets);
         for(i = 0; i < n; i += 2)
         {
-            msg += (string)(i/2+1) + ". secondlife:///app/agent/" + (string)llList2Key(targets, i+1) + "/about\n";
+            if(n > 5)
+            {
+                string uname = llGetUsername(llList2Key(targets, i+1));
+                if(contains(uname, ".")) uname = llList2String(llParseString2List(uname, ["."], []), 0);
+                msg += (string)(i/2+1) + ". " + uname + "\n";
+            }
+            else
+            {
+                msg += (string)(i/2+1) + ". secondlife:///app/agent/" + (string)llList2Key(targets, i+1) + "/about\n";
+            }
             buttons += [(string)(i/2+1)];
         }
 

@@ -194,6 +194,8 @@ Carrier API — carrier-api
 3.0.1e:
 Master — intrusive-thoughts-ui
 Master — intrusive-thoughts-controller
+Master — intrusive-thoughts-objectification
 Slave — intrusive-thoughts-restrict
 Slave — intrusive-thoughts-controller
 Carrier — carrier-handler
+Furniture — furniture-handler

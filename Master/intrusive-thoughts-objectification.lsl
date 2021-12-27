@@ -64,6 +64,16 @@ givereleasemenu()
         buttons += [(string)i];
         prompt += "\n" + (string)i + ": " + llList2String(objectifiednames, i) + " (" + objectprefix + llList2String(objectifieddescriptions, i) + ")";
     }
+    if(getstringbytes(prompt) > 512)
+    {
+        buttons = [];
+        prompt = "Who will you release?\n";
+        for(i = 0; i < l; ++i)
+        {
+            buttons += [(string)i];
+            prompt += "\n" + (string)i + ": " + llList2String(objectifieddescriptions, i) + ")";
+        }
+    }
     while(llGetListLength(buttons) < 11) buttons += [" "];
     buttons += ["ALL"];
     dialog = 1;
@@ -89,6 +99,16 @@ giveeditmenu()
         buttons += [(string)i];
         prompt += "\n" + (string)i + ": " + llList2String(objectifiednames, i) + " (" + objectprefix + llList2String(objectifieddescriptions, i)+ ")";
     }
+    if(getstringbytes(prompt) > 512)
+    {
+        buttons = [];
+        prompt = "Whose position will you edit?\n";
+        for(i = 0; i < l; ++i)
+        {
+            buttons += [(string)i];
+            prompt += "\n" + (string)i + ": " + llList2String(objectifieddescriptions, i) + ")";
+        }
+    }
     while(llGetListLength(buttons) < 12) buttons += [" "];
     dialog = 2;
     llDialog(llGetOwner(), prompt, orderbuttons(buttons), O_DIALOG_CHANNEL);
@@ -112,6 +132,16 @@ givestoremenu()
     {
         buttons += [(string)i];
         prompt += "\n" + (string)i + ": " + llList2String(objectifiednames, i) + " (" + objectprefix + llList2String(objectifieddescriptions, i)+ ")";
+    }
+    if(getstringbytes(prompt) > 512)
+    {
+        buttons = [];
+        prompt = "Who will you store as '" + llList2String(llGetObjectDetails(lastseenobject, [OBJECT_NAME]), 0) + "'?\n";
+        for(i = 0; i < l; ++i)
+        {
+            buttons += [(string)i];
+            prompt += "\n" + (string)i + ": " + llList2String(objectifieddescriptions, i) + ")";
+        }
     }
     while(llGetListLength(buttons) < 12) buttons += [" "];
     dialog = 3;
