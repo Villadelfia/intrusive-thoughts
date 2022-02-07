@@ -336,6 +336,18 @@ state running
         llSetLinkAlpha(LINK_THIS, 0.0, ALL_SIDES);
     }
 
+    on_rez(integer start)
+    {
+        llOwnerSay("Fresh rez detected... Reinitializing.");
+        lockedAvatar = NULL_KEY;
+        storedobject = NULL_KEY;
+        storedavatar = NULL_KEY;
+        capturing = NULL_KEY;
+        storedname = "";
+        waitingForRez = FALSE;
+        state default;
+    }
+
     listen(integer c, string n, key id, string m)
     {
         if(c == MANTRA_CHANNEL)
