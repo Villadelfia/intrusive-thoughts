@@ -1,6 +1,7 @@
 #include <IT/globals.lsl>
 key closestavatar;
 key closestobject;
+integer hidden = FALSE;
 
 default
 {
@@ -55,7 +56,32 @@ default
         }
         else if(num == M_API_CONFIG_DONE)
         {
-            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA);
+            llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_TRIGGER_ANIMATION);
+            hidden = FALSE;
+        }
+        else if(num == M_API_TOGGLE_HIDE)
+        {
+            if(hidden)
+            {
+                hidden = FALSE;
+                llOwnerSay("You're visible again.");
+                llStopAnimation("hide");
+            }
+            else
+            {
+                hidden = TRUE;
+                llOwnerSay("You're invisible now.");
+                llStartAnimation("hide");
+            }
+        }
+        else if(num == M_API_HIDE_OFF)
+        {
+            if(hidden)
+            {
+                hidden = FALSE;
+                llOwnerSay("You're visible again.");
+                llStopAnimation("hide");
+            }
         }
     }
 

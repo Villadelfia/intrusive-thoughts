@@ -59,6 +59,8 @@
 #define M_API_STATUS_DONE         -2012
 #define M_API_PROVISION_REQUEST   -2013
 #define M_API_PROVISION_RESPONSE  -2014
+#define M_API_TOGGLE_HIDE         -2015
+#define M_API_HIDE_OFF            -2016
 
 #define RLV_API_SET_SRC           -3000
 #define RLV_API_CLR_SRC           -3001
@@ -97,10 +99,10 @@
 //#define DEBUG
 //#define RETAIL_MODE
 
-#define VERSION_S "IT-Slave v3.0.1e"
-#define VERSION_M "IT-Master v3.0.1e"
+#define VERSION_S "IT-Slave v3.0.1f"
+#define VERSION_M "IT-Master v3.0.1f"
 // major, 3 digits, minor, 3 digits, patch, 2 digits, revision, 2 digits with base = 00, a = 01, b = 02...
-#define VERSION_CMP "00300000105"
+#define VERSION_CMP "00300000106"
 #define VERSION_FULL "CF2D5D"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0

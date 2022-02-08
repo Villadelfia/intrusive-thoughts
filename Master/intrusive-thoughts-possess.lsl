@@ -12,6 +12,7 @@ integer configured = FALSE;
 integer possessState = 0;
 integer inControl = FALSE;
 integer gotCtrl = FALSE;
+integer hidden = FALSE;
 integer timerCtr = 0;
 key objectid;
 string objectname;
@@ -140,6 +141,7 @@ default
                         llRegionSayTo(possessionvictim, RLVRC, "release," + (string)possessionvictim + ",!release");
                         possessionvictim = NULL_KEY;
                         possessorobject = NULL_KEY;
+                        llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
                         llOwnerSay("Could not possess '" + victimname + "'. They did not accept the RLV request.");
                     }
                 }
@@ -164,13 +166,14 @@ default
                 llRegionSayTo(possessionvictim, RLVRC, "release," + (string)possessionvictim + ",!release");
                 possessionvictim = NULL_KEY;
                 possessorobject = NULL_KEY;
+                llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
                 llOwnerSay("Could not possess '" + victimname + "'. They are already being possessed.");
             }
             else if(m == "ctrlstarted " + (string)possessionvictim)
             {
                 gotCtrl = TRUE;
                 llMessageLinked(LINK_SET, M_API_SPOOF, "possesscapture", (key)(owner + "||| |||" + victimname));
-                llOwnerSay("You can talk through your victim's mouth by speaking in channel /7.");
+                llOwnerSay("You can talk through your victim's mouth by speaking in channel /7. You may also type /7hide to toggle your own visibility on/off.");
                 toggleControl();
             }
             else if(m == "ctrlended " + (string)possessionvictim)
@@ -178,6 +181,7 @@ default
                 llMessageLinked(LINK_SET, M_API_SPOOF, "possessrelease", (key)(owner + "||| |||" + victimname));
                 possessionvictim = NULL_KEY;
                 possessorobject = NULL_KEY;
+                llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
                 if(inControl) 
                 {
                     llReleaseControls();
@@ -222,13 +226,25 @@ default
                     llRegionSayTo(possessionvictim, RLVRC, "release," + (string)possessionvictim + ",!release");
                     possessionvictim = NULL_KEY;
                     possessorobject = NULL_KEY;
+                    llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
                     llOwnerSay("Could not possess '" + victimname + "'. Did not accept object, has Forbid Give to #RLV enabled, or RLV gave a bad response. Try again!");
                 }
             }
         }
         else if(c == 7)
         {
-            llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "ctrlsay " + m);
+            if(possessionvictim)
+            {
+                if(m == "hide")
+                {
+                    llMessageLinked(LINK_SET, M_API_TOGGLE_HIDE, "", NULL_KEY);
+                }
+                else
+                {
+                    llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "ctrlsay " + m);
+                }
+            }
+            
         }
     }
 
@@ -274,6 +290,7 @@ default
                 possessState = 0;
                 possessionvictim = NULL_KEY;
                 possessorobject = NULL_KEY;
+                llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
                 llMessageLinked(LINK_SET, M_API_SET_FILTER, "poss", (key)((string)FALSE));
                 possess();
             }
@@ -339,6 +356,7 @@ default
             llRegionSayTo(possessionvictim, RLVRC, "release," + (string)possessionvictim + ",!release");
             possessionvictim = NULL_KEY;
             possessorobject = NULL_KEY;
+            llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
             llOwnerSay("Could not possess '" + victimname + "'. They do not have an RLV relay or they did not respond to the request.");
         }
         else if(possessState == 2)
@@ -347,6 +365,7 @@ default
             llRegionSayTo(possessionvictim, RLVRC, "release," + (string)possessionvictim + ",!release");
             possessionvictim = NULL_KEY;
             possessorobject = NULL_KEY;
+            llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
             llOwnerSay("Could not possess '" + victimname + "'. No response to inventory request.");
         }
         else if(possessState == 3)
@@ -355,6 +374,7 @@ default
             llRegionSayTo(possessionvictim, RLVRC, "release," + (string)possessionvictim + ",!release");
             possessionvictim = NULL_KEY;
             possessorobject = NULL_KEY;
+            llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
             llOwnerSay("Could not possess '" + victimname + "'. Did not accept possessor object.");
         }
         else if(possessState == 4)
@@ -363,6 +383,7 @@ default
             llRegionSayTo(possessionvictim, RLVRC, "release," + (string)possessionvictim + ",!release");
             possessionvictim = NULL_KEY;
             possessorobject = NULL_KEY;
+            llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
             llOwnerSay("Could not possess '" + victimname + "'. Did not wear possessor object.");
         }
         else if(possessState == 5)
@@ -376,6 +397,7 @@ default
                     llRegionSayTo(possessionvictim, RLVRC, "release," + (string)possessionvictim + ",!release");
                     possessionvictim = NULL_KEY;
                     possessorobject = NULL_KEY;
+                    llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
                     inControl = FALSE;
                     llMessageLinked(LINK_SET, M_API_SET_FILTER, "poss", (key)((string)FALSE));
                 }
@@ -386,6 +408,7 @@ default
                 llRegionSayTo(possessionvictim, RLVRC, "release," + (string)possessionvictim + ",!release");
                 possessionvictim = NULL_KEY;
                 possessorobject = NULL_KEY;
+                llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
                 if(inControl) 
                 {
                     llReleaseControls();

@@ -199,3 +199,10 @@ Slave — intrusive-thoughts-restrict
 Slave — intrusive-thoughts-controller
 Carrier — carrier-handler
 Furniture — furniture-handler
+
+3.0.1f:
+Master — intrusive-thoughts-camera
+Master — intrusive-thoughts-possess
+Master — intrusive-thoughts-ui
+Master — intrusive-thoughts-controller
+Slave — intrusive-thoughts-controller

@@ -117,3 +117,4 @@ Version 3.0.1:
  - Improve slave updating.
  - Major improvement in chat redirection.
  - Fix potential script error in hud and furniture.
+ - Add "ghost" possession.
