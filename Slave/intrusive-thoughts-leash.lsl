@@ -16,6 +16,8 @@ integer awaycounter = -1;
 integer llength = 2;
 string prefix;
 string name;
+vector pcolor = <0.474, 0.057, 0.057>;
+vector pcolordefault = <0.474, 0.057, 0.057>;
 
 particles(key k)
 {
@@ -25,10 +27,24 @@ particles(key k)
     }
     else
     {
+        list data;
+        list uuids = llGetAttachedList(llGetOwner());
+        integer n = llGetListLength(uuids);
+        while(~--n)
+        {
+            data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_DESC]);
+            if(startswith((string)data[0], "itleash"))
+            {
+                pcolor = (vector)llDeleteSubString((string)data[0], 0, llStringLength("itleash"));
+                jump done;
+            }
+        }
+        pcolor = pcolordefault;
+        @done;
         llParticleSystem([
             PSYS_PART_FLAGS, PSYS_PART_FOLLOW_VELOCITY_MASK | PSYS_PART_TARGET_POS_MASK | PSYS_PART_FOLLOW_SRC_MASK | PSYS_PART_RIBBON_MASK,
             PSYS_PART_MAX_AGE, 3.5,
-            PSYS_PART_START_COLOR, <0.474, 0.057, 0.057>,
+            PSYS_PART_START_COLOR, pcolor,
             PSYS_PART_START_SCALE, <0.04,0.04,1.0>,
             PSYS_SRC_PATTERN, PSYS_SRC_PATTERN_DROP,
             PSYS_SRC_BURST_RATE, 0.0,
