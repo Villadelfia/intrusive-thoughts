@@ -4,7 +4,7 @@ key primary = NULL_KEY;
 list owners = [];
 integer publicaccess = FALSE;
 integer groupaccess = FALSE;
-string mode = "";
+string mode = "unset";
 string prefix = "";
 list commands = [];
 list commanddescription = [];
@@ -19,7 +19,7 @@ default
     {
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
-        
+
         // Parse through all other scripts, reset those not owner by creator and those starting with plugin.
         integer i;
         integer n = llGetInventoryNumber(INVENTORY_SCRIPT);
@@ -51,24 +51,32 @@ default
             publicaccess = (integer)str;
             groupaccess = (integer)((string)id);
         }
-
-        if(mode == "") return;
-        if(num == IT_PLUGIN_REGISTER)
+        else if(num == IT_PLUGIN_REGISTER)
         {
             key new = NULL_KEY;
             string command = llList2String(llParseString2List((string)id, [" "], []), 0);
-            if(llListFindList(commands, [(string)id]) == -1)
+            if(llListFindList(commandscript, [str]) != -1 && llListFindList(commands, [command]) != -1)
             {
-                new = llGenerateKey();
-                commands += [command];
-                commanddescription += [str];
-                commandscript += [str];
-                commanduuids += [new];
-                commandslaveallowed += [FALSE];
-                if(mode == "master") commandinteractor += [llGetOwner()];
-                else                 commandinteractor += [primary];
+                // Already cached.
+                integer idx = llListFindList(commands, [command]);
+                llMessageLinked(LINK_SET, IT_PLUGIN_RESPONSE, mode + "," + str + "," + command, llList2Key(commanduuids, idx));
             }
-            llMessageLinked(LINK_SET, IT_PLUGIN_RESPONSE, mode + "," + str + "," + command, new);
+            else
+            {
+                // Try to create new uuid.
+                if(llListFindList(commands, [command]) == -1)
+                {
+                    new = llGenerateKey();
+                    commands += [command];
+                    commanddescription += [str];
+                    commandscript += [str];
+                    commanduuids += [new];
+                    commandslaveallowed += [FALSE];
+                    if(mode != "slave") commandinteractor += [llGetOwner()];
+                    else                commandinteractor += [primary];
+                }
+                llMessageLinked(LINK_SET, IT_PLUGIN_RESPONSE, mode + "," + str + "," + command, new);
+            }
         }
         else if(num == IT_PLUGIN_DESCRIPTION)
         {
@@ -118,28 +126,37 @@ default
         }
         else if(num == M_API_LOCK)
         {
+            mode = "master";
             llMessageLinked(LINK_SET, IT_PLUGIN_LOCK, str, id);
         }
         else if(num == M_API_CAM_OBJECT)
         {
+            mode = "master";
             llMessageLinked(LINK_SET, IT_PLUGIN_OBJECT, str, id);
+        }
+        else if(num <= -1000 && num > -1999)
+        {
+            mode = "slave";
+        }
+        else if(num <= -2000 && num > -2999)
+        {
+            mode = "master";
         }
     }
 
     attach(key id)
     {
-        if(id == NULL_KEY) mode = "";
+        if(id == NULL_KEY) mode = "unset";
     }
 
     listen(integer c, string n, key id, string m)
     {
         // We haven't started up yet.
-        if(mode == "") return;
         if(llGetListLength(commands) == 0) return;
 
         // Filter on allowed users.
         id = llGetOwnerKey(id);
-        if(mode == "master" && id != llGetOwner()) return;
+        if(mode != "slave" && id != llGetOwner()) return;
         if(mode == "slave" && isowner(id) == FALSE && id != llGetOwner()) return;
 
         // If slave, check for prefix.

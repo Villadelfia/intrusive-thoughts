@@ -23,6 +23,12 @@ default
     {
         llSleep(5.0);
         llMessageLinked(LINK_SET, IT_PLUGIN_REGISTER, llGetScriptName(), chatcommand);
+        llSetTimerEvent(30.0);
+    }
+
+    timer()
+    {
+        llMessageLinked(LINK_SET, IT_PLUGIN_REGISTER, llGetScriptName(), chatcommand);
     }
 
     attach(key id)
@@ -33,7 +39,7 @@ default
             lockedkey = NULL_KEY;
         }
     }
-    
+
     link_message(integer sender_num, integer num, string str, key id)
     {
         // Register response.
@@ -41,9 +47,9 @@ default
         {
             list args = llParseString2List(str, [","], []);
             type = (string)args[0];
-            
+
             // We only support master.
-            if(type != "master")
+            if(type == "slave")
             {
                 llRemoveInventory(llGetScriptName());
                 return;
@@ -91,13 +97,16 @@ default
             if((string)id == "get" && lockedname != "")
             {
                 llMessageLinked(LINK_SET, IT_PLUGIN_OWNERSAY, lockedname + " is wearing:", assigneduuid);
+                string prefix = llToLower(llGetSubString(lockedname, 0, 1));
                 list data;
                 list uuids = llGetAttachedList(lockedkey);
+                string uuid;
                 integer n = llGetListLength(uuids);
                 while(~--n)
                 {
-                    data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_CREATOR]);
-                    llMessageLinked(LINK_SET, IT_PLUGIN_OWNERSAY, "» " + (string)data[0] + " « by secondlife:///app/agent/" + (string)((key)data[1]) + "/about", assigneduuid);
+                    uuid = llList2Key(uuids, n);
+                    data = llGetObjectDetails(uuid, [OBJECT_NAME, OBJECT_CREATOR]);
+                    llMessageLinked(LINK_SET, IT_PLUGIN_OWNERSAY, "» " + (string)data[0] + " ([secondlife:///app/chat/1/" + prefix + "@detach:" + uuid + "=force take off]) « by secondlife:///app/agent/" + (string)((key)data[1]) + "/about", assigneduuid);
                 }
             }
         }

@@ -206,3 +206,10 @@ Master — intrusive-thoughts-possess
 Master — intrusive-thoughts-ui
 Master — intrusive-thoughts-controller
 Slave — intrusive-thoughts-controller
+
+3.0.1g:
+Master — intrusive-thoughts-plugin-handler
+Master — intrusive-thoughts-ui
+Master — intrusive-thoughts-controller
+Slave — intrusive-thoughts-plugin-handler
+Slave — intrusive-thoughts-controller

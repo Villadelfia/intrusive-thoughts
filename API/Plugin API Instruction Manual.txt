@@ -13,6 +13,8 @@ Before you get started writing IT plugins, it's vital that you turn on the Fires
 #define IT_PLUGIN_DESCRIPTION -8009 // PLUGIN -> IT
 /////////////////////////////////////////////////////////////////////
 
+Alternatively, have a look at the two included example scripts.
+
 
 1. Getting started.
 In your state_entry, you should first sleep for about 10 seconds, and only then, you should call the following function once per desired chat command:
@@ -23,9 +25,9 @@ The API handler will respond with the IT_PLUGIN_RESPONSE call, once per requeste
 
         llMessageLinked(LINK_SET, IT_PLUGIN_RESPONSE, type + "," + scriptname + "," + chatcommand, assigneduuid);
 
-Type will be either master or slave, depending on which device the script has been dropped into. 
-Scriptname is your llGetScriptname(). 
-Chatcommand is your chat command. 
+Type will be either master or slave, depending on which device the script has been dropped into. At times it may be equal to "unset", which means that the plugin system does not (yet) know what device it is in. A script reset may help in this case.
+Scriptname is your llGetScriptname().
+Chatcommand is your chat command.
 Assigneduuid is an assigneduuid is a uuid you should save since it is your reference for further API calls.
 
 NOTE: If your chat command is already taken, the assigned UUID will be NULL_KEY and you should re-register with a number appended to your chat command.
@@ -35,6 +37,8 @@ At this point, your plugin(s) will be listed in the /1plugin command on the Mast
 You may, if you want, add a short description to be listed in front of the command. If not, the script name will be shown. It is done as such:
 
         llMessageLinked(LINK_SET, IT_PLUGIN_DESCRIPTION, description, assigneduuid);
+
+It is recommended to attempt to refresh your registration with the accepted chat command every 30 seconds or so.
 
 
 2. Interacting with the user.
@@ -48,23 +52,23 @@ Assigneduuid is the uuid of the chat command clicked.
 At this point, you should compile a help message that explains the settings and commands your plugin supports. Whenever you include %COMMAND% in this text, it will be replaced with the command needed to reach your plugin. For example, take the following text when you have registered with the chat command test:
 
         "This is a test plugin, type '%COMMAND% nothing' to do absolutely nothing!"
-        
+
 On a master, it would likely be replaced with:
 
         "This is a test plugin, type '/1test nothing' to do absolutely nothing!"
-        
+
 While on a slave it might become:
 
         "This is a test plugin, type '/1hatest nothing' to do absolutely nothing!"
-        
+
 In addition to %COMMAND%, there is also %APPCOMMAND%. This will be replaced with a clickable link, which might be useful if you do not require extra parameters in the command for ease of use. It is used like this. Note the extra spaces:
 
         "Click [%APPCOMMAND%" + llEscapeURL(" nothing 5") + " here] to do nothing five times."
-        
+
 When you have compiled the text, reply as such:
 
         llMessageLinked(LINK_SET, IT_PLUGIN_OWNERSAY, text, assigneduuid);
-        
+
 It is vital that you use this call and do not llOwnerSay() yourself, because despite the name suggesting the wearer of the Master or Slave, it gets reported to whoever made the call.
 
 
@@ -72,7 +76,7 @@ It is vital that you use this call and do not llOwnerSay() yourself, because des
 When the user types a chat command that begins with your prefix, it will be forwarded to you as such:
 
         llMessageLinked(LINK_SET, IT_PLUGIN_COMMAND, who + "," + assigneduuid, command);
-        
+
 Who is either "primaryowner", "secondaryowner", or "slave", depending on who called the command. On an IT Master, this will always be "primaryowner" and on an IT Slave, it will only be "slave" if you have allowed the command for the wearer.
 Command is the entire command typed, except for the prefix.
 Assigneduuid is the uuid of the chat command prefix.
@@ -84,7 +88,7 @@ You are not required to respond to this in any way, but just like with an INFORE
 If you want the wearer of the IT Slave to be able to access the commands as well, make the following call:
 
         llMessageLinked(LINK_SET, IT_PLUGIN_ALLOWSLAVE, allow, assigneduuid);
-        
+
 With allow being either "1" for yes, or "0" for no. On an IT Master, this command will do nothing.
 
 
@@ -92,11 +96,11 @@ With allow being either "1" for yes, or "0" for no. On an IT Master, this comman
 Correctly executed OWNERSAY, ALLOWSLAVE and DESCRIPTION will get the following response:
 
         llMessageLinked(LINK_SET, IT_PLUGIN_ACK, "OK", assigneduuid);
-        
+
 If the assigneduuid exists, but there was something wrong with your command, the response will be:
 
         llMessageLinked(LINK_SET, IT_PLUGIN_ACK, failreason, assigneduuid);
-        
+
 If assigneduuid does not exist, there will be no response.
 
 
@@ -116,7 +120,7 @@ Upon attaching, you must clear both the locked avatar and the looked at object.
         - Do not use channel 8.
         - If you need a listener, use a number from -2147483648 to -2000000000 or a number from 500000000 to 1000000000.
         - Do not llOwnerSay().
-        - Link messages for plugins to react to are only in the range -8000 to -8999.
+        - Link messages for plugins to react to are only in the range -8000 to -8499.
         - Plugins may use link message numbers above 1. Negative numbers are reserved for the IT system.
         - A hard reset of the HUD or Slave will reset your script.
         - A transfer of the Slave will reset your script.

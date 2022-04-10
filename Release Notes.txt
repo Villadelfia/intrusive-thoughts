@@ -1,6 +1,6 @@
 Version 2.6.0:
  - Initial Retail release.
- 
+
 Version 2.6.1:
  - Fix performance degradation in certain regions.
  - Add release notes to update notice.
@@ -36,7 +36,7 @@ Version 2.7.0:
  - Add option to send advanced commands via Master HUD.
  - Wearable focus target to make the slave focus on a specific piece of your avatar.
  - Adjustable focus distance.
- - Add requirelist to mirror blacklist. 
+ - Add requirelist to mirror blacklist.
  - Master HUD selective RLV relay and filtering. Type /1rlvmenu to learn more!
 
 Version 2.7.1:
@@ -45,7 +45,7 @@ Version 2.7.1:
  - Fix requirelist to only apply in non-emotes.
  - Add warning when update server cannot be reached.
  - Add method to specify that blacklist entries should only apply to full words.
- 
+
 Version 2.7.2:
  - Add ability to change vore carrier sounds.
  - Add carrier building kit.
@@ -118,3 +118,4 @@ Version 3.0.1:
  - Major improvement in chat redirection.
  - Fix potential script error in hud and furniture.
  - Add "ghost" possession.
+ - Improve plugin system.

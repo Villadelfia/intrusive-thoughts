@@ -99,10 +99,10 @@
 //#define DEBUG
 //#define RETAIL_MODE
 
-#define VERSION_S "IT-Slave v3.0.1f"
-#define VERSION_M "IT-Master v3.0.1f"
+#define VERSION_S "IT-Slave v3.0.1g"
+#define VERSION_M "IT-Master v3.0.1g"
 // major, 3 digits, minor, 3 digits, patch, 2 digits, revision, 2 digits with base = 00, a = 01, b = 02...
-#define VERSION_CMP "00300000106"
+#define VERSION_CMP "00300000107"
 #define VERSION_FULL "CF2D5D"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
@@ -145,19 +145,19 @@ resetother()
 }
 
 string formatfloat(float number, integer precision)
-{    
+{
     float roundingValue = llPow(10, -precision)*0.5;
     float rounded;
     if (number < 0) rounded = number - roundingValue;
     else            rounded = number + roundingValue;
- 
+
     if(precision < 1) // Rounding integer value
     {
         integer intRounding = (integer)llPow(10, -precision);
         rounded = (integer)rounded/intRounding*intRounding;
         precision = -1; // Don't truncate integer value
     }
- 
+
     string strNumber = (string)rounded;
     return llGetSubString(strNumber, 0, llSubStringIndex(strNumber, ".") + precision);
 }
@@ -193,9 +193,9 @@ string slurlp(string region, string x, string y, string z)
     return "http://maps.secondlife.com/secondlife/" + llEscapeURL(region) + "/" + x + "/" + y + "/" + z + "/";
 }
 
-string strreplace(string source, string pattern, string replace) 
+string strreplace(string source, string pattern, string replace)
 {
-    while (llSubStringIndex(source, pattern) > -1) 
+    while (llSubStringIndex(source, pattern) > -1)
     {
         integer len = llStringLength(pattern);
         integer pos = llSubStringIndex(source, pattern);
@@ -327,7 +327,7 @@ versioncheck(string report, integer master)
             if(pa > VERSION_PATCH) msg = ": There is a patch available for the Intrusive Thoughts System. ";
         }
     }
-    
+
     if(msg != "")
     {
         if(master) msg = VERSION_M + msg + "Please update the system and that of your slaves at your earliest convenience. A permanent redelivery terminal can be found at http://maps.secondlife.com/secondlife/Bedos/96/106/901. You may also type /1update or click [secondlife:///app/chat/1/update here] to get a remote delivery.";

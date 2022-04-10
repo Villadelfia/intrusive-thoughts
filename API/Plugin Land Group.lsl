@@ -9,6 +9,7 @@
 #define IT_PLUGIN_OBJECT      -8008 // IT -> PLUGIN
 #define IT_PLUGIN_DESCRIPTION -8009 // PLUGIN -> IT
 
+string fallback = "c5e06fde-9554-46bd-d82a-03ef34fa5f86";
 string chatcommand = "setgroup";
 integer enabled = TRUE;
 integer retryct = 0;
@@ -20,16 +21,29 @@ default
     {
         llSleep(5.0);
         llMessageLinked(LINK_SET, IT_PLUGIN_REGISTER, llGetScriptName(), chatcommand);
+        llSetTimerEvent(30.0);
     }
-    
+
+    timer()
+    {
+        llMessageLinked(LINK_SET, IT_PLUGIN_REGISTER, llGetScriptName(), chatcommand);
+    }
+
     changed(integer change)
     {
         if(change & CHANGED_TELEPORT)
         {
-            if(enabled) llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
+            if(enabled)
+            {
+                string group = (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0);
+                if(llGetRegionName() == "NRI") group = "c5e06fde-9554-46bd-d82a-03ef34fa5f86";
+                llOwnerSay("@setgroup:" + group + "=force");
+                llSleep(5.0);
+                if(!llSameGroup((key)group)) llOwnerSay("@setgroup:" + fallback + "=force");
+            }
         }
     }
-    
+
     link_message(integer sender_num, integer num, string str, key id)
     {
         // Register response.
