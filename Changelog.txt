@@ -213,3 +213,9 @@ Master — intrusive-thoughts-ui
 Master — intrusive-thoughts-controller
 Slave — intrusive-thoughts-plugin-handler
 Slave — intrusive-thoughts-controller
+
+3.0.1h:
+Ball — ball-handler
+Master — intrusive-thoughts-controller
+Master — intrusive-thoughts-ui
+Slave — intrusive-thoughts-controller

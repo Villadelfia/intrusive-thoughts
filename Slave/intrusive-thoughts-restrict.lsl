@@ -87,7 +87,7 @@ handlemenu(key k)
     // Stop animation
     ownersay(k, "[secondlife:///app/chat/1/" + prefix + "stop - Stop all animations.]", 0);
     ownersay(k, " ", 0);
-    
+
     // Emergency release.
     ownersay(k, "[secondlife:///app/chat/1/" + prefix + "emergency - Remove all restrictions in case of emergency.]", 0);
 
@@ -102,7 +102,7 @@ handlemenu(key k)
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "liststuff - List all stuff.]", 0);
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "stand - Stand up.]", 0);
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "leash - Leash]/[secondlife:///app/chat/1/" + prefix + "unleash unleash.]", 0);
-        if(llGetOwnerKey(k) == primary) 
+        if(llGetOwnerKey(k) == primary)
         {
             ownersay(k, "[secondlife:///app/chat/1/" + prefix + "ownerinfo - Add/remove secondary owners.]", 0);
             ownersay(k, "- Notification toggles: [secondlife:///app/chat/1/" + prefix + "tpnotify On teleport]/[secondlife:///app/chat/1/" + prefix + "lognotify On wear/detach].", 0);
@@ -204,7 +204,7 @@ default
 
     listen(integer c, string n, key k, string m)
     {
-        
+
         if(c == COMMAND_CHANNEL && startswith(llToLower(m), "*onball") && llList2Key(llGetObjectDetails(k, [OBJECT_CREATOR]), 0) == (key)IT_CREATOR)
         {
             llMessageLinked(LINK_SET, S_API_DISABLE, "", NULL_KEY);
@@ -216,7 +216,7 @@ default
 
         if(c == RLV_CHANNEL)
         {
-            if(path != "~") 
+            if(path != "~")
             {
                 list stuff = llParseString2List(m, [","], []);
                 stuff = llListSort(stuff, 1, TRUE);
@@ -307,7 +307,7 @@ default
             else if(startswith(m, "*") || startswith(m, "#")) m = llDeleteSubString(m, 0, 0);
             else                                              return;
         }
-        
+
         // Handle animation and menu commands.
         if(c == COMMAND_CHANNEL)
         {
@@ -370,7 +370,7 @@ default
                 ownersay(k, "[restrict]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
             }
         }
-        
+
         if(llToLower(m) == "noim")
         {
             if(noim)
@@ -436,7 +436,7 @@ default
         {
             path = llDeleteSubString(m, 0, llStringLength("form"));
             ownersay(k, "Stripping " + name + " of all clothes, then wearing form '" + path + "'.", 0);
-            llOwnerSay("@detach=force,attachover:" + formPrefix + "/" + path + "=force");
+            llOwnerSay("@detach=force,remoutfit=force,attachover:" + formPrefix + "/" + path + "=force");
         }
         else if(startswith(llToLower(m), "add"))
         {

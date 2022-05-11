@@ -139,14 +139,14 @@ doubleNotify(string s)
 
 string restrictionString()
 {
-    return (string)imRestrict + "," + 
-           (string)visionRestrict + "," + 
-           (string)hearingRestrict + "," + 
-           (string)speechRestrict + "," + 
-           (string)dazeRestrict + "," + 
-           (string)cameraRestrict + "," + 
-           (string)inventoryRestrict + "," + 
-           (string)worldRestrict + "," + 
+    return (string)imRestrict + "," +
+           (string)visionRestrict + "," +
+           (string)hearingRestrict + "," +
+           (string)speechRestrict + "," +
+           (string)dazeRestrict + "," +
+           (string)cameraRestrict + "," +
+           (string)inventoryRestrict + "," +
+           (string)worldRestrict + "," +
            (string)(animation == "hide_b");
 }
 
@@ -196,7 +196,7 @@ default
         editmode = FALSE;
         seatedoffset = ZERO_VECTOR;
         urlt = llRequestURL();
-        
+
         // Set the rezzer and default animation.
         rezzer = (key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0);
         animation = "hide_a";
@@ -241,8 +241,8 @@ default
 
                 // Set the prefix
                 prefix = llToLower(llGetSubString(llGetUsername(firstavatar), 0, 1));
-                
-                if(!captured) 
+
+                if(!captured)
                 {
                     llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "captured|" + (string)firstavatar + "|object");
                     captured = TRUE;
@@ -408,7 +408,7 @@ default
                 if(id == firstavatar && speechRestrict > (integer)llGetSubString(m, -1, -1)) return;
                 speechRestrict = (integer)llGetSubString(m, -1, -1);
                 if(speechRestrict < 0) speechRestrict = 0;
-                if(speechRestrict > 2) speechRestrict = 2;
+                if(speechRestrict > 3) speechRestrict = 3;
                 llSetObjectName("");
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
                 applySpeech();
@@ -618,7 +618,7 @@ default
                     die();
                     return;
                 }
-                
+
             }
             else
             {
@@ -645,10 +645,10 @@ default
             }
 
             timerctr++;
-            if(timerctr % 10 == 0) 
+            if(timerctr % 10 == 0)
             {
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
-                if(cameraRestrict != 0) 
+                if(cameraRestrict != 0)
                 {
                     list uuids = llGetAttachedList(rezzer);
                     integer n = llGetListLength(uuids);
@@ -683,7 +683,7 @@ default
         if(id == urlt)
         {
             urlt = NULL_KEY;
-            if(method == URL_REQUEST_GRANTED) 
+            if(method == URL_REQUEST_GRANTED)
             {
                 url = body;
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);

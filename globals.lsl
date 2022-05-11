@@ -99,10 +99,10 @@
 //#define DEBUG
 //#define RETAIL_MODE
 
-#define VERSION_S "IT-Slave v3.0.1g"
-#define VERSION_M "IT-Master v3.0.1g"
+#define VERSION_S "IT-Slave v3.0.1h"
+#define VERSION_M "IT-Master v3.0.1h"
 // major, 3 digits, minor, 3 digits, patch, 2 digits, revision, 2 digits with base = 00, a = 01, b = 02...
-#define VERSION_CMP "00300000107"
+#define VERSION_CMP "00300000108"
 #define VERSION_FULL "CF2D5D"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0

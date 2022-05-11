@@ -119,3 +119,4 @@ Version 3.0.1:
  - Fix potential script error in hud and furniture.
  - Add "ghost" possession.
  - Improve plugin system.
+ - Fix small bug in objectification system regarding speech level three.
