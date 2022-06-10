@@ -165,13 +165,17 @@ default
             }
             else if(m == "DENY")
             {
+                llSetObjectName("");
                 llOwnerSay("RLV relay request denied.");
+                llSetObjectName(slave_base);
                 llSetTimerEvent(0.0);
                 handlingk = NULL_KEY;
             }
             else if(m == "BLOCK")
             {
+                llSetObjectName("");
                 llOwnerSay("RLV relay request blocked. You can type ((blocklist)) to clear the block list.");
+                llSetObjectName(slave_base);
                 llSetTimerEvent(0.0);
                 if(llListFindList(blacklist, [handlingk]) == -1) blacklist += [handlingk];
                 handlingk = NULL_KEY;
@@ -193,18 +197,24 @@ default
             if(!isowner(id)) return;
             if(m == "CLEAR")
             {
+                llSetObjectName("");
                 if(llGetAgentSize(llGetOwnerKey(id)) != ZERO_VECTOR) ownersay(id, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared.", 0);
+                llSetObjectName(slave_base);
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
             }
-            else if(m == "FORCECLEAR")    
+            else if(m == "FORCECLEAR")
             {
+                llSetObjectName("");
                 if(llGetAgentSize(llGetOwnerKey(id)) != ZERO_VECTOR) ownersay(id, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been cleared and detached.", 0);
+                llSetObjectName(slave_base);
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 llOwnerSay("@clear,detachme=force");
             }
-            else if(m == "RESETRELAY")    
+            else if(m == "RESETRELAY")
             {
+                llSetObjectName("");
                 if(llGetAgentSize(llGetOwnerKey(id)) != ZERO_VECTOR) ownersay(id, "The " + VERSION_S + " relay worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about has been reset and has been rebuilt.", 0);
+                llSetObjectName(slave_base);
                 llMessageLinked(LINK_SET, S_API_HARD_RESET, "", "");
             }
         }
@@ -213,36 +223,36 @@ default
             if(region == "NRI") return;
             if(contains(llToLower(m), "((red))"))
             {
+                llSetObjectName("");
                 llOwnerSay("You've safeworded. You're free from all RLV devices that grabbed you.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
-                string oldn = llGetObjectName();
-                llSetObjectName("");
                 if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " relay has been safeworded by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
                 else
                 {
-                    llSetObjectName(oldn);
+                    llSetObjectName(slave_base);
                     llInstantMessage(primary, "The " + VERSION_S + " relay has been safeworded by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
                 }
-                llSetObjectName(oldn);
+                llSetObjectName(slave_base);
             }
             else if(contains(llToLower(m), "((forcered))"))
             {
+                llSetObjectName("");
                 llOwnerSay("You've used the hard safeword. Freeing you and detaching.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
-                string oldn = llGetObjectName();
-                llSetObjectName("");
                 if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " been detached by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + " because of safeword.", 0);
                 else
                 {
-                    llSetObjectName(oldn);
+                    llSetObjectName(slave_base);
                     llInstantMessage(primary, "The " + VERSION_S + " been detached by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + " because of safeword.");
                 }
-                llSetObjectName(oldn);
+                llSetObjectName(slave_base);
                 llOwnerSay("@clear,detachme=force");
             }
             else if(contains(llToLower(m), "((blocklist))"))
             {
+                llSetObjectName("");
                 llOwnerSay("Clearing the block list.");
+                llSetObjectName(slave_base);
                 blacklist = [];
             }
         }

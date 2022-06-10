@@ -16,17 +16,16 @@ default
     {
         if(change & CHANGED_OWNER) resetscripts();
         if(!notifyTeleport) return;
-        if(change & CHANGED_TELEPORT) 
+        if(change & CHANGED_TELEPORT)
         {
-            string oldn = llGetObjectName();
             llSetObjectName("");
             if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".", 0);
             else
             {
-                llSetObjectName(oldn);
+                llSetObjectName(slave_base);
                 llInstantMessage(primary, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has arrived at " + slurl() + ".");
             }
-            llSetObjectName(oldn);
+            llSetObjectName(slave_base);
         }
     }
 
@@ -39,8 +38,10 @@ default
             llMessageLinked(LINK_SET, S_API_STARTED, llDumpList2String(owners, ","), primary);
             if(notifyLogon)
             {
+                llSetObjectName("");
                 if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
                 else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                llSetObjectName(slave_base);
             }
             http = llHTTPRequest(UPDATE_URL, [], "");
         }
@@ -48,8 +49,10 @@ default
         {
             if(notifyLogon)
             {
+                llSetObjectName("");
                 if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
                 else llInstantMessage(primary, "The " + VERSION_S + " has been taken off by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                llSetObjectName(slave_base);
             }
         }
     }
@@ -66,11 +69,13 @@ default
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         llSetObjectDesc((string)primary);
         llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
+        llSetObjectName("");
         if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
         else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
         llOwnerSay("Your primary owner has been detected as secondlife:///app/agent/" + (string)primary + "/about. If this is incorrect, detach me immediately because this person can configure me and add additional owners.");
+        llSetObjectName(slave_base);
         llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
-        http = llHTTPRequest(UPDATE_URL, [], ""); 
+        http = llHTTPRequest(UPDATE_URL, [], "");
     }
 
     link_message(integer sender_num, integer num, string str, key id )
@@ -99,8 +104,7 @@ default
         // Only allow prefixed access.
         if(startswith(m, prefix)) m = llDeleteSubString(m, 0, 1);
         else                      return;
-        
-        string oldn = llGetObjectName();
+
         llSetObjectName("");
 
         k = llGetOwnerKey(k);
@@ -148,6 +152,7 @@ default
             if(n < 0 || n >= llGetListLength(owners))
             {
                 ownersay(k, "Invalid number given for secondary owner deletion: " + (string)n + ".", 0);
+                llSetObjectName(slave_base);
                 return;
             }
             else
@@ -188,7 +193,7 @@ default
             ownersay(k, "Teleport notifications " + status + ". Click [secondlife:///app/chat/1/" + prefix + "tpnotify here] to toggle.", 0);
         }
 
-        llSetObjectName(oldn);
+        llSetObjectName(slave_base);
     }
 
     http_response(key id, integer status, list metadata, string body)

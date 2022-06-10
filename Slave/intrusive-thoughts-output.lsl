@@ -39,7 +39,6 @@ handleSelfDescribe(string message)
         message = llDeleteSubString(message, 0, 0);
         firstSpace = llSubStringIndex(message, " ");
     }
-    string currentObjectName = llGetObjectName();
     if(firstSpace == -1)
     {
         llSetObjectName(".");
@@ -51,12 +50,11 @@ handleSelfDescribe(string message)
         message = llDeleteSubString(message, 0, firstSpace);
         llOwnerSay("/me " + message);
     }
-    llSetObjectName(currentObjectName);
+    llSetObjectName(slave_base);
 }
 
 handleSelfSay(string name, string message)
 {
-    string currentObjectName = llGetObjectName();
     llSetObjectName(name);
     integer bytes = getstringbytes(message);
     while(bytes > 0)
@@ -77,7 +75,7 @@ handleSelfSay(string name, string message)
             bytes = getstringbytes(message);
         }
     }
-    llSetObjectName(currentObjectName);
+    llSetObjectName(slave_base);
 }
 
 handleSay(string name, string message, integer excludeSelf)
@@ -94,7 +92,7 @@ handleSay(string name, string message, integer excludeSelf)
         pos = llGetPos();
         range = 20.0;
 
-        if(startswith(message, "/whisper")) 
+        if(startswith(message, "/whisper"))
         {
             message = llDeleteSubString(message, 0, 7);
             range = 10.0;
@@ -104,7 +102,7 @@ handleSay(string name, string message, integer excludeSelf)
             message = llDeleteSubString(message, 0, 5);
             range = 100.0;
         }
- 
+
         for(; l >= 0; --l)
         {
             vector target = llList2Vector(llGetObjectDetails(llList2Key(agents,l), [OBJECT_POS]), 0);
@@ -112,7 +110,6 @@ handleSay(string name, string message, integer excludeSelf)
         }
     }
 
-    string currentObjectName = llGetObjectName();
     llSetObjectName(name);
     integer bytes = getstringbytes(message);
     while(bytes > 0)
@@ -125,7 +122,7 @@ handleSay(string name, string message, integer excludeSelf)
                 for(; l >= 0; --l)
                 {
                     key a = llList2Key(agents,l);
-                    if(a == llGetOwner()) 
+                    if(a == llGetOwner())
                     {
                         if(excludeSelf == FALSE) llRegionSayTo(a, 0, message);
                     }
@@ -175,7 +172,7 @@ handleSay(string name, string message, integer excludeSelf)
             bytes = getstringbytes(message);
         }
     }
-    llSetObjectName(currentObjectName);
+    llSetObjectName(slave_base);
 }
 
 focusToggle(key target)
@@ -183,8 +180,10 @@ focusToggle(key target)
     target = llGetOwnerKey(target);
     focustarget = target;
     focus = !focus;
+    llSetObjectName("");
     if(focus) ownersay(target, name + " is now forced to look at you.", 0);
     else      ownersay(target, name + " is no longer forced to look at you.", 0);
+    llSetObjectName(slave_base);
     llSetTimerEvent(0.1);
 }
 
@@ -268,8 +267,10 @@ default
         else if(num == S_API_FOCUS_LEVEL)
         {
             currentFocus = (float)str;
+            llSetObjectName("");
             if(name != "") ownersay(id, name + " has had their focus distance adjusted to " + formatfloat(currentFocus, 2) + " meters.", 0);
             else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has had their focus distance adjusted to " + formatfloat(currentFocus, 2) + " meters.", 0);
+            llSetObjectName(slave_base);
         }
         else if(num == S_API_MANTRA_START)
         {
@@ -285,7 +286,7 @@ default
         else if(num == S_API_ENABLE)                disabled = FALSE;
         else if(num == S_API_DISABLE)               disabled = TRUE;
         else if(num == S_API_SELF_SAY && str != "") handleSelfSay((string)id, str);
-        
+
         if(disabled) return;
 
         if(num == S_API_SAY && str != "")                  handleSay((string)id, prefixfilter(str), FALSE);
@@ -367,7 +368,9 @@ default
         }
         else if(m == "END")
         {
+            llSetObjectName("");
             ownersay(k, "[output]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
+            llSetObjectName(slave_base);
         }
     }
 }

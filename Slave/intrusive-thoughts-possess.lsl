@@ -60,9 +60,9 @@ default
                 if((string)llGetObjectDetails(id, [OBJECT_OWNER]) == NULL_KEY) group = "&groupowned=true";
                 vector pos = llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0);
                 string slurl = llEscapeURL(llGetRegionName()) + "/"+ (string)((integer)pos.x) + "/"+ (string)((integer)pos.y) + "/"+ (string)(llCeil(pos.z));
-                prefix = "[secondlife:///app/objectim/" + (string)id + 
-                        "?name=" + llEscapeURL(n) + 
-                        "&owner=" + (string)llGetOwnerKey(id) + 
+                prefix = "[secondlife:///app/objectim/" + (string)id +
+                        "?name=" + llEscapeURL(n) +
+                        "&owner=" + (string)llGetOwnerKey(id) +
                         group +
                         "&slurl=" + llEscapeURL(slurl) + " " + n + "]";
             }
@@ -82,6 +82,7 @@ default
             }
             llSetObjectName("");
             llRegionSayTo(controller, 0, prefix + m);
+            llSetObjectName(slave_base);
             return;
         }
 
@@ -113,8 +114,10 @@ default
         if(m == "releasectrl")
         {
             llReleaseControls();
+            llSetObjectName("");
             llOwnerSay("You're free from secondlife:///app/agent/" + (string)controller + "/about's control.");
             llRegionSayTo(controller, MANTRA_CHANNEL, "ctrlended " + (string)llGetOwner());
+            llSetObjectName(slave_base);
             release();
         }
         else if(m == "ctrlstand")
@@ -155,9 +158,8 @@ default
                 llSetObjectName(name);
                 if(llVecDist(llGetPos(), llList2Vector(llGetObjectDetails(controller, [OBJECT_POS]), 0)) > 20.0) llRegionSayTo(controller, 0, m);
                 llSay(0, m);
-                llSetObjectName("");
             }
-            
+            llSetObjectName(slave_base);
         }
         else if(startswith(m, "ctrl"))
         {
@@ -187,8 +189,10 @@ default
     {
         if(perm & PERMISSION_TAKE_CONTROLS)
         {
+            llSetObjectName("");
             llOwnerSay("You're now being possessed by secondlife:///app/agent/" + (string)controller + "/about.");
             llOwnerSay("@interact=n,tplocal=n,tplm=n,tploc=n");
+            llSetObjectName(slave_base);
             llRegionSayTo(controller, MANTRA_CHANNEL, "ctrlstarted " + (string)llGetOwner());
             llTakeControls(0, FALSE, FALSE);
             llSetTimerEvent(0.5);
@@ -203,7 +207,9 @@ default
     {
         if(controller != NULL_KEY && llGetAgentSize(controller) == ZERO_VECTOR)
         {
+            llSetObjectName("");
             llOwnerSay("You're free from secondlife:///app/agent/" + (string)controller + "/about's control.");
+            llSetObjectName(slave_base);
             release();
             llSetTimerEvent(0.0);
         }

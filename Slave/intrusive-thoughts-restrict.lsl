@@ -69,7 +69,6 @@ doSetup()
 handlemenu(key k)
 {
     if(isowner(k) == FALSE && llGetOwnerKey(k) != llGetOwner()) return;
-    string oldn = llGetObjectName();
     llSetObjectName("");
 
     // Greeting
@@ -120,7 +119,7 @@ handlemenu(key k)
         ownersay(k, "- /1" + prefix + "focusset <distance>: Directly set focus distance in meters.", 0);
     }
 
-    llSetObjectName(oldn);
+    llSetObjectName(slave_base);
 }
 
 default
@@ -155,6 +154,7 @@ default
         else if(num == S_API_SET_LOCK)
         {
             locked = (integer)str;
+            llSetObjectName("");
             if(locked)
             {
                 ownersay(id, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is locked.", 0);
@@ -169,6 +169,7 @@ default
                 if(llGetInventoryType("NO_RESIZE") == INVENTORY_NONE) llSetScale(<0.01, 0.01, 0.01>);
                 llOwnerSay("@detach=y");
             }
+            llSetObjectName(slave_base);
         }
         else if(num == S_API_SCHEDULE_DETACH)
         {
@@ -224,7 +225,6 @@ default
                 string thing;
                 integer l;
                 integer i;
-                string old = llGetObjectName();
                 llSetObjectName("");
                 if(path == formPrefix)
                 {
@@ -286,11 +286,13 @@ default
                     }
                     ownersay(requester, " ", 0);
                 }
-                llSetObjectName(old);
+                llSetObjectName(slave_base);
             }
             else
             {
+                llSetObjectName("");
                 ownersay(requester, "RLV command response for " + name + ":\n" + m, 0);
+                llSetObjectName(slave_base);
             }
             llRegionSay(RLV_CHANNEL, m);
             return;
@@ -326,9 +328,11 @@ default
             }
             else if(llToLower(m) == "emergency")
             {
+                llSetObjectName("");
                 ownersay(k, "Removing all RLV restrictions, nullifying your filters until next relog, and notifying your primary owner...", 0);
                 if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been emergency reset by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
                 else llInstantMessage(primary, "The " + VERSION_S + " has been emergency reset by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+                llSetObjectName(slave_base);
                 softReset();
                 llMessageLinked(LINK_SET, S_API_EMERGENCY, name, "");
             }
@@ -367,7 +371,9 @@ default
             }
             else if(m == "END")
             {
+                llSetObjectName("");
                 ownersay(k, "[restrict]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
+                llSetObjectName(slave_base);
             }
         }
 
@@ -388,7 +394,9 @@ default
         }
         else if(llToLower(m) == "strip")
         {
+            llSetObjectName("");
             ownersay(k, "Stripping " + name + " of all clothes.", 0);
+            llSetObjectName(slave_base);
             llOwnerSay("@detach=force,remoutfit=force");
         }
         else if(llToLower(m) == "afkcheck")
@@ -423,31 +431,41 @@ default
         else if(startswith(llToLower(m), "outfitstrip"))
         {
             path = llDeleteSubString(m, 0, llStringLength("outfitstrip"));
+            llSetObjectName("");
             ownersay(k, "Stripping " + name + " of everything, then wearing outfit '" + path + "'.", 0);
+            llSetObjectName(slave_base);
             llOwnerSay("@detach=force,remoutfit=force,attachover:" + outfitPrefix + "/" + path + "=force");
         }
         else if(startswith(llToLower(m), "outfit"))
         {
             path = llDeleteSubString(m, 0, llStringLength("outfit"));
+            llSetObjectName("");
             ownersay(k, "Stripping " + name + " of her outfits, then wearing outfit '" + path + "'.", 0);
+            llSetObjectName(slave_base);
             llOwnerSay("@detachall:" + outfitPrefix + "=force,attachover:" + outfitPrefix + "/" + path + "=force");
         }
         else if(startswith(llToLower(m), "form"))
         {
             path = llDeleteSubString(m, 0, llStringLength("form"));
+            llSetObjectName("");
             ownersay(k, "Stripping " + name + " of all clothes, then wearing form '" + path + "'.", 0);
+            llSetObjectName(slave_base);
             llOwnerSay("@detach=force,remoutfit=force,attachover:" + formPrefix + "/" + path + "=force");
         }
         else if(startswith(llToLower(m), "add"))
         {
             path = llDeleteSubString(m, 0, llStringLength("add"));
+            llSetObjectName("");
             ownersay(k, "Wearing '" + stuffPrefix + "/" + path + "' on " + name + ".", 0);
+            llSetObjectName(slave_base);
             llOwnerSay("@attachover:" + stuffPrefix + "/" + path + "=force");
         }
         else if(startswith(llToLower(m), "remove"))
         {
             path = llDeleteSubString(m, 0, llStringLength("remove"));
+            llSetObjectName("");
             ownersay(k, "Removing '" + stuffPrefix + "/" + path + "' from " + name + ".", 0);
+            llSetObjectName(slave_base);
             llOwnerSay("@detachall:" + stuffPrefix + "/" + path + "=force");
         }
         else if(startswith(m, "think"))
@@ -517,6 +535,7 @@ default
         }
         else if(llToLower(m) == "daze")
         {
+            llSetObjectName("");
             if(daze)
             {
                 daze = FALSE;
@@ -529,6 +548,7 @@ default
                 ownersay(k, name + " is now dazed.", 0);
                 llOwnerSay("@shownames_sec=n,showhovertextworld=n,showworldmap=n,showminimap=n,showloc=n,fartouch=n,camunlock=n,alwaysrun=n,temprun=n");
             }
+            llSetObjectName(slave_base);
         }
         else if(llToLower(m) == "focus")
         {
@@ -596,7 +616,9 @@ default
         {
             m = strreplace(m, "RLV_CHANNEL", (string)RLV_CHANNEL);
             path = "~";
+            llSetObjectName("");
             ownersay(k, "Executing RLV command '" + m + "' on " + name + ".", 0);
+            llSetObjectName(slave_base);
             llOwnerSay(m);
         }
     }

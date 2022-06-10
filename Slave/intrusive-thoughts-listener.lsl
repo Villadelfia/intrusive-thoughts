@@ -17,7 +17,7 @@ string correctAnswer = "";
 afkCheck()
 {
     sensortimer(0.0);
-    if(tempListen != -1) 
+    if(tempListen != -1)
     {
         llListenRemove(tempListen);
         tempListen = -1;
@@ -60,9 +60,11 @@ default
         }
         else if(num == S_API_AFK_CHECK)
         {
-            afkChecker = llGetOwnerKey(id);                
+            afkChecker = llGetOwnerKey(id);
+            llSetObjectName("");
             if(llGetAgentSize(afkChecker) != ZERO_VECTOR) llRegionSayTo(afkChecker, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been given an AFK check. They have 30 seconds to succeed.");
             else                                          llInstantMessage(afkChecker, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been given an AFK check. They have 30 seconds to succeed.");
+            llSetObjectName(slave_base);
             afkCheck();
         }
         else if(num == S_API_SET_LOCK)
@@ -80,6 +82,7 @@ default
     {
         if(c == MANTRA_CHANNEL)
         {
+            llSetObjectName("");
             if(startswith(m, "CHECKPOS") == TRUE && llGetOwnerKey(k) == llGetOwner())
             {
                 list params = llParseString2List(m, [" "], []);
@@ -160,11 +163,12 @@ default
             }
             else if(m == "AFKCHECK")
             {
-                afkChecker = llGetOwnerKey(k);                
+                afkChecker = llGetOwnerKey(k);
                 if(llGetAgentSize(afkChecker) != ZERO_VECTOR) llRegionSayTo(afkChecker, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been given an AFK check. They have 30 seconds to succeed.");
                 else                                          llInstantMessage(afkChecker, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been given an AFK check. They have 30 seconds to succeed.");
                 afkCheck();
             }
+            llSetObjectName(slave_base);
         }
         else if(c == COMMAND_CHANNEL)
         {
@@ -172,7 +176,7 @@ default
             if(m == correctAnswer)
             {
                 sensortimer(0.0);
-                if(tempListen != -1) 
+                if(tempListen != -1)
                 {
                     llListenRemove(tempListen);
                     tempListen = -1;
@@ -191,11 +195,11 @@ default
     no_sensor()
     {
         sensortimer(0.0);
-        if(tempListen != -1) 
+        if(tempListen != -1)
         {
             llListenRemove(tempListen);
             tempListen = -1;
-        }                
+        }
         llDialog(llGetOwner(), "Too bad. You're out of time. What will your owner think of that?", ["Uh-oh..."], COMMAND_CHANNEL);
         if(llGetAgentSize(afkChecker) != ZERO_VECTOR) llRegionSayTo(afkChecker, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about FAILED their AFK check.");
         else                                          llInstantMessage(afkChecker, "secondlife:///app/agent/" + (string)llGetOwner() + "/about FAILED their AFK check.");

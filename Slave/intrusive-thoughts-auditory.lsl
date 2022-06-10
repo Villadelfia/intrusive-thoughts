@@ -84,22 +84,26 @@ handleHear(key skey, string sender, string message)
             {
                 if(contains(llToLower(message), llList2String(undeafencmd, l1)))
                 {
+                    llSetObjectName("");
                     deaf = FALSE;
-                    llMessageLinked(LINK_SET, S_API_SELF_DESC, undeafenmsg, NULL_KEY);
                     ownersay(skey, name + " can hear the conversation again.", 0);
+                    llSetObjectName(slave_base);
+                    llMessageLinked(LINK_SET, S_API_SELF_DESC, undeafenmsg, NULL_KEY);
                     jump cont1;
                 }
             }
         }
-        
+
         // Handle deafen exceptions.
         l1 = llGetListLength(deafenexcept);
         while(~--l1)
         {
             if(contains(llToLower(message), llList2String(deafenexcept, l1)))
             {
-                llMessageLinked(LINK_SET, S_API_SELF_DESC, undeafenmsg, NULL_KEY);
+                llSetObjectName("");
                 ownersay(skey, name + " heard that message because of exceptions.", 0);
+                llSetObjectName(slave_base);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, undeafenmsg, NULL_KEY);
                 jump cont1;
             }
         }
@@ -118,9 +122,9 @@ handleHear(key skey, string sender, string message)
         }
         vector pos = llList2Vector(llGetObjectDetails(skey, [OBJECT_POS]), 0);
         string slurl = llEscapeURL(llGetRegionName()) + "/"+ (string)((integer)pos.x) + "/"+ (string)((integer)pos.y) + "/"+ (string)(llCeil(pos.z));
-        prefix = "[secondlife:///app/objectim/" + (string)skey + 
-                 "?name=" + llEscapeURL(sender) + 
-                 "&owner=" + (string)llGetOwnerKey(skey) + 
+        prefix = "[secondlife:///app/objectim/" + (string)skey +
+                 "?name=" + llEscapeURL(sender) +
+                 "&owner=" + (string)llGetOwnerKey(skey) +
                  group +
                  "&slurl=" + llEscapeURL(slurl) + " " + sender + "]";
     }
@@ -148,8 +152,10 @@ handleHear(key skey, string sender, string message)
             if(contains(llToLower(message), llList2String(deafencmd, l1)))
             {
                 deaf = TRUE;
-                llMessageLinked(LINK_SET, S_API_SELF_DESC, deafenmsg, NULL_KEY);
+                llSetObjectName("");
                 ownersay(skey, name + " can no longer hear the conversation.", 0);
+                llSetObjectName(slave_base);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, deafenmsg, NULL_KEY);
                 jump cont2;
             }
         }
@@ -178,7 +184,7 @@ handleHear(key skey, string sender, string message)
                 inurl = TRUE;
             }
         }
-        
+
         message += llGetSubString(messagecopy, 0, 0);
         messagecopy = llDeleteSubString(messagecopy, 0, 0);
     }
@@ -192,7 +198,7 @@ handleHear(key skey, string sender, string message)
     l1 = llGetListLength(auditorybimbooverride);
     while(~--l1)
     {
-        if(contains(llToLower(message), llList2String(auditorybimbooverride, l1))) 
+        if(contains(llToLower(message), llList2String(auditorybimbooverride, l1)))
         {
             tryBimbofy = FALSE;
             jump goOn;
@@ -204,7 +210,7 @@ handleHear(key skey, string sender, string message)
         word = llList2String(llParseStringKeepNulls(messagecopy, [" ", ",", "\"", ";", ":", ".", "?", "!"], []), 0);
         oldword = word;
 
-        if(startswith(oldword, "[[[")) 
+        if(startswith(oldword, "[[["))
         {
             word = llGetSubString(word, 3, -1);
             inurl++;
@@ -220,8 +226,8 @@ handleHear(key skey, string sender, string message)
 
         // Then we bimbofy if the word is unchanged, too long and not in the exception list.
         else if(tryBimbofy &&
-                auditorybimbolimit > 0 && 
-                llStringLength(word) >= auditorybimbolimit && 
+                auditorybimbolimit > 0 &&
+                llStringLength(word) >= auditorybimbolimit &&
                 llListFindList(auditorybimboexcept, [llToLower(word)]) == -1 &&
                 (emote == FALSE || quotecnt % 2 != 0))
         {
@@ -340,17 +346,21 @@ default
             if(deaf)
             {
                 deaf = FALSE;
-                llMessageLinked(LINK_SET, S_API_SELF_DESC, undeafenmsg, NULL_KEY);
+                llSetObjectName("");
                 if(name != "") ownersay(id, name + " can hear the conversation again.", 0);
                 else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can hear the conversation again.", 0);
+                llSetObjectName(slave_base);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, undeafenmsg, NULL_KEY);
                 checkSetup();
             }
             else
             {
                 deaf = TRUE;
-                llMessageLinked(LINK_SET, S_API_SELF_DESC, deafenmsg, NULL_KEY);
+                llSetObjectName("");
                 if(name != "") ownersay(id, name + " can no longer hear the conversation.", 0);
                 else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer hear the conversation.", 0);
+                llSetObjectName(slave_base);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, deafenmsg, NULL_KEY);
                 checkSetup();
             }
         }
@@ -451,7 +461,9 @@ default
         }
         else if(m == "END")
         {
+            llSetObjectName("");
             ownersay(k, "[auditory]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
+            llSetObjectName(slave_base);
         }
     }
 }

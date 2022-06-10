@@ -44,8 +44,10 @@ handleHear(key skey, string sender, string message)
                 if(contains(llToLower(message), llList2String(unblindcmd, l1)))
                 {
                     blind = FALSE;
-                    llMessageLinked(LINK_SET, S_API_SELF_DESC, unblindmsg, NULL_KEY);
+                    llSetObjectName("");
                     ownersay(skey, name + " can see again.", 0);
+                    llSetObjectName(slave_base);
+                    llMessageLinked(LINK_SET, S_API_SELF_DESC, unblindmsg, NULL_KEY);
                     checkSetup(0, 0);
                 }
             }
@@ -61,8 +63,10 @@ handleHear(key skey, string sender, string message)
                 if(contains(llToLower(message), llList2String(blindcmd, l1)))
                 {
                     blind = TRUE;
-                    llMessageLinked(LINK_SET, S_API_SELF_DESC, blindmsg, NULL_KEY);
+                    llSetObjectName("");
                     ownersay(skey, name + " can no longer see.", 0);
+                    llSetObjectName(slave_base);
+                    llMessageLinked(LINK_SET, S_API_SELF_DESC, blindmsg, NULL_KEY);
                     checkSetup(128, currentVision);
                 }
             }
@@ -72,7 +76,7 @@ handleHear(key skey, string sender, string message)
 
 checkSetup(float from, float to)
 {
-    if(blind) 
+    if(blind)
     {
         llOwnerSay("@clear=setsphere,setsphere=n,"+
                    "setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:" + (string)from + "=force,"+
@@ -121,17 +125,21 @@ default
             if(blind)
             {
                 blind = FALSE;
-                llMessageLinked(LINK_SET, S_API_SELF_DESC, unblindmsg, NULL_KEY);
+                llSetObjectName("");
                 if(name != "") ownersay(id, name + " can see again.", 0);
                 else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can see again.", 0);
+                llSetObjectName(slave_base);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, unblindmsg, NULL_KEY);
                 checkSetup(0, 0);
             }
             else
             {
                 blind = TRUE;
-                llMessageLinked(LINK_SET, S_API_SELF_DESC, blindmsg, NULL_KEY);
+                llSetObjectName("");
                 if(name != "") ownersay(id, name + " can no longer see.", 0);
                 else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer see.", 0);
+                llSetObjectName(slave_base);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, blindmsg, NULL_KEY);
                 checkSetup(128, currentVision);
             }
         }
@@ -139,8 +147,10 @@ default
         {
             checkSetup(currentVision, (float)str);
             currentVision = (float)str;
+            llSetObjectName("");
             if(name != "") ownersay(id, name + " has had their vision distance adjusted to " + formatfloat(currentVision, 2) + " meters.", 0);
             else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has had their vision distance adjusted to " + formatfloat(currentVision, 2) + " meters.", 0);
+            llSetObjectName(slave_base);
         }
         else if(num == S_API_EMERGENCY)
         {
@@ -172,12 +182,11 @@ default
             else
             {
                 llSetTimerEvent(0.0);
-                string oldn = llGetObjectName();
                 llSetObjectName("");
                 if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.", 0);
                 else                                       llInstantMessage(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
-                llSetObjectName(oldn);
                 llOwnerSay("Hey! Your RLV is (probably) turned off and I won't work properly until you turn it on and relog. If it is on, you're just experiencing some lag and you shouldn't worry about it.");
+                llSetObjectName(slave_base);
                 llMessageLinked(LINK_THIS, S_API_RLV_CHECK, "", "");
             }
         }
@@ -192,13 +201,15 @@ default
         if(c == RLV_CHECK_CHANNEL && gotreply == FALSE)
         {
             string prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
+            llSetObjectName("");
             llOwnerSay("Intrusive thoughts is good to go! Type /1" + prefix + " or click [secondlife:///app/chat/1/" + prefix + " here] to see your available actions.\nNote that, if present, you can type ((RED)) to clear the RLV relay, or ((FORCERED)) to clear and detach it.");
+            llSetObjectName(slave_base);
             gotreply = TRUE;
             rlvtries = 0;
             llSetTimerEvent(0.0);
             llMessageLinked(LINK_THIS, S_API_RLV_CHECK, "", "");
         }
-        if(c == 0) 
+        if(c == 0)
         {
             handleHear(k, n, m);
             return;
@@ -235,7 +246,9 @@ default
         }
         else if(m == "END")
         {
+            llSetObjectName("");
             ownersay(k, "[vision]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
+            llSetObjectName(slave_base);
         }
     }
 }

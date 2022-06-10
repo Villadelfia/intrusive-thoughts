@@ -65,10 +65,9 @@ doMantra()
     else                                             llOwnerSay("@sit=n");
     intensity = 0;
     statement = llStringTrim(llList2String(statements, llFloor(llFrand(llGetListLength(statements)))), STRING_TRIM);
-    string old = llGetObjectName();
     llSetObjectName("");
     llOwnerSay("You feel a compulsion to say *exactly* '" + statement + "'...");
-    llSetObjectName(old);
+    llSetObjectName(slave_base);
     if(onball) llOwnerSay("@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add,rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add");
     sensortimer(30.0);
 }
@@ -85,7 +84,6 @@ checkMantra(string m)
         llSetTimerEvent(0.0);
         sensortimer(0.0);
         llOwnerSay("@clear");
-        string old = llGetObjectName();
         llSetObjectName("");
         llOwnerSay("The compulsion to repeat the mantra fades... For now.");
         if(onball == FALSE)
@@ -93,27 +91,25 @@ checkMantra(string m)
             if(name == "") llSetObjectName(llGetDisplayName(llGetOwner()));
             else           llSetObjectName(name);
             llSay(0, m);
-            llSetObjectName(old);
-        }        
+        }
+        llSetObjectName(slave_base);
         llMessageLinked(LINK_SET, S_API_MANTRA_DONE, "", NULL_KEY);
         checkSetup();
     }
     else
     {
-        string old = llGetObjectName();
         llSetObjectName("");
         llOwnerSay("A mantra is ringing through your mind and you feel compelled to repeat it before saying anything else. It's '" + statement + "'...");
-        llSetObjectName(old);
+        llSetObjectName(slave_base);
         lastattempt = m;
     }
 }
 
 intensify()
 {
-    string old = llGetObjectName();
     llSetObjectName("");
     llOwnerSay("You feel a compulsion to say *exactly* '" + statement + "'... The compulsion grows...");
-    llSetObjectName(old);
+    llSetObjectName(slave_base);
     intensity++;
     if(intensity == 1) llOwnerSay("@clear=setsphere,setsphere=n,setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:16=force,setsphere_tween:5=force,setsphere_distmax:8=force,setsphere_tween=force");
     if(intensity == 2) llOwnerSay("@clear=setsphere,setsphere=n,setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:8=force,setsphere_tween:5=force,setsphere_distmax:4=force,setsphere_tween=force,interact=n");
@@ -194,7 +190,9 @@ default
             }
             else if(m == "END")
             {
+                llSetObjectName("");
                 ownersay(k, "[mantra]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
+                llSetObjectName(slave_base);
             }
             else if(startswith(m, "MANTRA_TIMER"))
             {

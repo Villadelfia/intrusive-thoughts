@@ -153,6 +153,7 @@ string restrictionString()
 toggleedit()
 {
     if(editmode == FALSE && (keyisavatar == FALSE || (llGetAgentInfo(rezzer) & AGENT_SITTING) == 0)) return;
+    if(animation == "hide_b") return;
     editmode = !editmode;
     if(editmode)
     {
@@ -599,6 +600,7 @@ default
             vector my = llGetPos();
             vector offset = ZERO_VECTOR;
             if(keyisavatar) offset = seatedoffset;
+            if(animation == "hide_b") offset = <0.0, 0.0, -5.0>;
 
             if((keyisavatar == TRUE && llGetAgentSize(rezzer) == ZERO_VECTOR) || (keyisavatar == FALSE && llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) == ZERO_VECTOR))
             {
@@ -724,9 +726,9 @@ default
             if(worldRestrict != 1) doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's World restrictions set to level " + (string)worldRestrict + ".");
             if(isHidden && animation != "hide_b")
             {
-                llStopAnimation(animation);
+                if(llGetPermissions() & PERMISSION_TRIGGER_ANIMATION) llStopAnimation(animation);
                 animation = "hide_b";
-                llStartAnimation(animation);
+                if(llGetPermissions() & PERMISSION_TRIGGER_ANIMATION) llStartAnimation(animation);
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
             }
             applyIm();

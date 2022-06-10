@@ -57,7 +57,7 @@ particles(key k)
     }
 }
 
-checkSetup() 
+checkSetup()
 {
     if(leasherinrange != FALSE && leashedto != NULL_KEY)
     {
@@ -69,7 +69,7 @@ checkSetup()
     }
 }
 
-leash(key target) 
+leash(key target)
 {
     llRegionSayTo(target, LEASH_CHANNEL, "leashed");
 
@@ -78,7 +78,7 @@ leash(key target)
     particles(target);
 
     llSetTimerEvent(3.0);
-    
+
     leashtarget = llList2Vector(llGetObjectDetails(leashedto, [OBJECT_POS]), 0);
     llTargetRemove(leashinghandle);
     llStopMoveToTarget();
@@ -86,7 +86,7 @@ leash(key target)
     if(leashtarget != ZERO_VECTOR)
     {
         llMoveToTarget(leashtarget, 0.7);
-    }    
+    }
     leasherinrange=TRUE;
     checkSetup();
 }
@@ -203,8 +203,10 @@ default
             else                                              return;
             if(llToLower(m) == "leash")
             {
+                llSetObjectName("");
                 llOwnerSay("Your leash has been grabbed by secondlife:///app/agent/" + (string)llGetOwnerKey(k) + "/about.");
                 ownersay(k, "You've grabbed the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.", 0);
+                llSetObjectName(slave_base);
                 if(llGetOwnerKey(k) == primary)
                 {
                     if(primaryleashpoint)
@@ -243,8 +245,10 @@ default
             else if(llToLower(m) == "unleash")
             {
                 unleash();
+                llSetObjectName("");
                 llOwnerSay("Your leash has been released by secondlife:///app/agent/" + (string)llGetOwnerKey(k) + "/about.");
                 ownersay(k, "You've released the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.", 0);
+                llSetObjectName(slave_base);
             }
             else if(llToLower(m) == "yank")
             {
@@ -283,13 +287,13 @@ default
         }
     }
 
-    not_at_target() 
+    not_at_target()
     {
         justmoved = 1;
-        if(leashedto) 
+        if(leashedto)
         {
             vector newpos = llList2Vector(llGetObjectDetails(leashedto, [OBJECT_POS]), 0);
-            if(leashtarget != newpos) 
+            if(leashtarget != newpos)
             {
                 llTargetRemove(leashinghandle);
                 leashtarget = newpos;
@@ -304,8 +308,8 @@ default
                 llStopMoveToTarget();
                 llTargetRemove(leashinghandle);
             }
-        } 
-        else 
+        }
+        else
         {
             llStopMoveToTarget();
             llTargetRemove(leashinghandle);
@@ -318,10 +322,10 @@ default
         vector leashedtopos = llList2Vector(llGetObjectDetails(leashedto, [OBJECT_POS]), 0);
         integer isinsim = TRUE;
         if(leashedtopos == ZERO_VECTOR || llVecDist(llGetPos(), leashedtopos) > 255) isinsim = FALSE;
-        
-        if(isinsim && llVecDist(llGetPos(), leashedtopos) < (60 + llength)) 
+
+        if(isinsim && llVecDist(llGetPos(), leashedtopos) < (60 + llength))
         {
-            if(!leasherinrange) 
+            if(!leasherinrange)
             {
                 leasherinrange = TRUE;
                 llTargetRemove(leashinghandle);
@@ -330,10 +334,10 @@ default
                 if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 0.8);
                 checkSetup();
             }
-        } 
-        else 
+        }
+        else
         {
-            if(leasherinrange) 
+            if(leasherinrange)
             {
                 llTargetRemove(leashinghandle);
                 llStopMoveToTarget();

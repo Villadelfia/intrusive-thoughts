@@ -78,9 +78,11 @@ handleHear(key skey, string sender, string message)
                 if(contains(llToLower(message), llList2String(unmutecmd, l1)))
                 {
                     mute = FALSE;
+                    llSetObjectName("");
+                    ownersay(skey, name + " can speak again.", 0);
+                    llSetObjectName(slave_base);
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, unmutemsg, NULL_KEY);
                     llMessageLinked(LINK_SET, S_API_MUTE_SYNC, "0", NULL_KEY);
-                    ownersay(skey, name + " can speak again.", 0);
                 }
             }
         }
@@ -95,9 +97,11 @@ handleHear(key skey, string sender, string message)
                 if(contains(llToLower(message), llList2String(mutecmd, l1)))
                 {
                     mute = TRUE;
+                    llSetObjectName("");
+                    ownersay(skey, name + " can no longer speak.", 0);
+                    llSetObjectName(slave_base);
                     llMessageLinked(LINK_SET, S_API_SELF_DESC, mutemsg, NULL_KEY);
                     llMessageLinked(LINK_SET, S_API_MUTE_SYNC, "1", NULL_KEY);
-                    ownersay(skey, name + " can no longer speak.", 0);
                 }
             }
         }
@@ -123,7 +127,7 @@ handleSay(string message)
     string newword;
     integer replaceidx;
     integer quotecnt = 0;
-    
+
     // In case of a blacklisted word, replace the message and emit the replacement message. Skip the entire rest of the process.
     l1 = llGetListLength(speechblacklistfrom)-1;
     for(;l1 >= 0; --l1)
@@ -203,7 +207,7 @@ handleSay(string message)
                 }
             }
         }
-        
+
         message += llGetSubString(messagecopy, 0, 0);
         messagecopy = llDeleteSubString(messagecopy, 0, 0);
 
@@ -225,7 +229,7 @@ handleSay(string message)
         word = llList2String(llParseStringKeepNulls(messagecopy, [" ", ",", "\"", ";", ":", ".", "!", "?"], []), 0);
         oldword = word;
 
-        if(startswith(oldword, "[[[")) 
+        if(startswith(oldword, "[[["))
         {
             word = llGetSubString(word, 3, -1);
             inurl++;
@@ -237,8 +241,8 @@ handleSay(string message)
         {
             word = llList2String(speechfilterto, replaceidx);
         }
-        else if(vocalbimbolimit > 0 && 
-                llStringLength(word) >= vocalbimbolimit && 
+        else if(vocalbimbolimit > 0 &&
+                llStringLength(word) >= vocalbimbolimit &&
                 word != "" &&
                 llFrand(1.0) >= vocalbimboodds &&
                 (emote == FALSE || quotecnt % 2 != 0))
@@ -272,7 +276,7 @@ handleSay(string message)
     //   - If muted, and type is set to CENSOR, show original line to wearer, but output a replacement with every word replaced with random words to outside world.
     @blacklisttripped;
     integer bypass = emote == TRUE && llToLower(llStringTrim(message, STRING_TRIM)) != "/me" && contains(message, "\"") == FALSE;
-    if(mute == FALSE || bypass == TRUE) 
+    if(mute == FALSE || bypass == TRUE)
     {
         llMessageLinked(LINK_SET, S_API_SAY, message, (key)name);
     }
@@ -376,18 +380,22 @@ default
             if(mute)
             {
                 mute = FALSE;
-                llMessageLinked(LINK_SET, S_API_SELF_DESC, unmutemsg, NULL_KEY);
+                llSetObjectName("");
                 if(name != "") ownersay(id, name + " can speak again.", 0);
                 else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.", 0);
+                llSetObjectName(slave_base);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, unmutemsg, NULL_KEY);
                 llMessageLinked(LINK_SET, S_API_MUTE_SYNC, "0", NULL_KEY);
                 checkSetup();
             }
             else
             {
                 mute = TRUE;
-                llMessageLinked(LINK_SET, S_API_SELF_DESC, mutemsg, NULL_KEY);
+                llSetObjectName("");
                 if(name != "") ownersay(id, name + " can no longer speak.", 0);
                 else           ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.", 0);
+                llSetObjectName(slave_base);
+                llMessageLinked(LINK_SET, S_API_SELF_DESC, mutemsg, NULL_KEY);
                 llMessageLinked(LINK_SET, S_API_MUTE_SYNC, "1", NULL_KEY);
                 checkSetup();
             }
@@ -528,7 +536,9 @@ default
         }
         else if(m == "END")
         {
+            llSetObjectName("");
             ownersay(k, "[vocal]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
+            llSetObjectName(slave_base);
         }
     }
 }
