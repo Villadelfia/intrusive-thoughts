@@ -415,7 +415,7 @@ default
                 givemenu();
             }
         }
-        else if(num == M_API_CONFIG_DONE)
+        else if(num == M_API_CONFIG_DONE_2)
         {
             if(rlvclients == []) enabled = FALSE;
             llMessageLinked(LINK_SET, RLV_API_SET_FILTERS, llDumpList2String(filters, "\n"), (key)"");

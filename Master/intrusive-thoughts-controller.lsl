@@ -167,6 +167,7 @@ default
             llOwnerSay(VERSION_M + ": Startup complete. Welcome to your Intrusive Thoughts system. Click and hold any button for more than a second to get basic usage information. For more documentation read the included Instruction Manual notecard.");
             if(llGetPermissions() & PERMISSION_TAKE_CONTROLS == 0) llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
             llSetObjectName(master_base);
+            llMessageLinked(LINK_SET, M_API_CONFIG_DONE_2, "", NULL_KEY);
         }
         else if(num == M_API_LOCK)
         {

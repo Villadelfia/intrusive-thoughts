@@ -61,6 +61,7 @@
 #define M_API_PROVISION_RESPONSE  -2014
 #define M_API_TOGGLE_HIDE         -2015
 #define M_API_HIDE_OFF            -2016
+#define M_API_CONFIG_DONE_2       -2017
 
 #define RLV_API_SET_SRC           -3000
 #define RLV_API_CLR_SRC           -3001
