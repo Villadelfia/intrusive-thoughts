@@ -122,5 +122,5 @@ Version 3.0.1:
  - Fix small bug in objectification system regarding speech level three.
 
 Version 3.0.2:
- - Improve compatibility with Whim.
+ - Improve compatibility with Silenced Whim.
  - Major refactoring of code.

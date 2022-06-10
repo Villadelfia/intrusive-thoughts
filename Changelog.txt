@@ -219,3 +219,6 @@ Ball — ball-handler
 Master — intrusive-thoughts-controller
 Master — intrusive-thoughts-ui
 Slave — intrusive-thoughts-controller
+
+3.0.2:
+Every single script was changed.
