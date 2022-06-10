@@ -120,3 +120,7 @@ Version 3.0.1:
  - Add "ghost" possession.
  - Improve plugin system.
  - Fix small bug in objectification system regarding speech level three.
+
+Version 3.0.2:
+ - Improve compatibility with Whim.
+ - Major refactoring of code.

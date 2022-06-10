@@ -172,7 +172,9 @@ addobject(string desc)
     if(desc == "") desc = "object";
     if(startswith(llToLower(desc), llToLower(objectprefix))) desc = llGetSubString(desc, llStringLength(objectprefix), -1);
     targetdescription = desc;
+    llSetObjectName("");
     llOwnerSay("Capturing '" + lockedname + "'.");
+    llSetObjectName(master_base);
     target = lockedavatar;
     targetname = lockedname;
     llMessageLinked(LINK_SET, M_API_PROVISION_REQUEST, targetname + "|||" + desc + "|||" + (string)hideopt, target);
@@ -180,6 +182,7 @@ addobject(string desc)
 
 handlequeue()
 {
+    llSetObjectName("");
     if(objectificationqueue == [])
     {
         llOwnerSay("Done recapturing!");
@@ -192,7 +195,7 @@ handlequeue()
         targetname = llList2String(objectificationqueue, 1);
         targetdescription = llList2String(objectificationqueue, 2);
         objectificationqueue = llDeleteSubList(objectificationqueue, 0, 2);
-        if(llGetAgentSize(target) == ZERO_VECTOR) 
+        if(llGetAgentSize(target) == ZERO_VECTOR)
         {
             llOwnerSay("Skipping " + targetname + ". Not present.");
             handlequeue();
@@ -204,6 +207,7 @@ handlequeue()
             llMessageLinked(LINK_SET, M_API_PROVISION_REQUEST, targetname + "|||" + targetdescription + "|||" + (string)hideopt, target);
         }
     }
+    llSetObjectName(master_base);
 }
 
 default
@@ -252,6 +256,7 @@ default
         {
             if(startswith(m, "furniture"))
             {
+                llSetObjectName("");
                 storingon = n;
                 if(store == -1)
                 {
@@ -280,6 +285,7 @@ default
                     objectifieddescriptions = llDeleteSubList(objectifieddescriptions, store, store);
                     objectifiedurls = llDeleteSubList(objectifiedurls, store, store);
                 }
+                llSetObjectName(master_base);
             }
             else if(startswith(m, "puton"))
             {
@@ -300,7 +306,7 @@ default
             {
                 m = llDeleteSubString(m, 0, llStringLength("objrename"));
                 integer i = llListFindList(objectifiedballs, [id]);
-                if(i != -1) 
+                if(i != -1)
                 {
                     detachobject(llList2String(objectifieddescriptions, i));
                     attachobject(m);
@@ -325,6 +331,8 @@ default
 
             if(identifier == await && await == "c")
             {
+                key creator = llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0);
+                if((string)creator == "bc50a813-5b31-4cbe-9ae6-0031d1b7d53e" && accept == FALSE) return;
                 if(accept == TRUE)
                 {
                     llMessageLinked(LINK_SET, M_API_SPOOF, "objcapture", (key)(owner + "|||" + targetdescription + "|||" + targetname));
@@ -332,7 +340,9 @@ default
                 }
                 else
                 {
+                    llSetObjectName("");
                     llOwnerSay("Could not capture '" + lockedname + "'.");
+                    llSetObjectName(master_base);
                 }
                 await = "";
                 llRegionSayTo(lastrezzed, MANTRA_CHANNEL, "check");
@@ -343,16 +353,16 @@ default
             integer i = llListFindList(objectifiedavatars, [id]);
             string obj = llList2String(objectifieddescriptions, i);
             if(i == -1) return;
-            
+
             llSetObjectName(objectprefix + obj);
             if(llToLower(llStringTrim(m, STRING_TRIM)) != "/me" && startswith(m, "/me") == TRUE && contains(m, "\"") == FALSE) llSay(0, m);
-            else 
+            else
             {
                 integer n = llGetListLength(objectifiedavatars);
                 while(~--n) llRegionSayTo(llList2Key(objectifiedballs, n), GAZE_ECHO_CHANNEL, m);
                 llOwnerSay(m);
             }
-            llSetObjectName("");
+            llSetObjectName(master_base);
         }
     }
 
@@ -376,7 +386,7 @@ default
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == M_API_CONFIG_DONE) 
+        if(num == M_API_CONFIG_DONE)
         {
             lockedavatar = NULL_KEY;
             lockedname = "";
@@ -393,7 +403,7 @@ default
                 hideopt = 1;
             }
 
-            if(str == "name") 
+            if(str == "name")
             {
                 owner = (string)id;
                 if(owner == "" || owner == "Avatar") owner = guessname();
@@ -459,7 +469,9 @@ default
             }
             else
             {
+                llSetObjectName("");
                 llOwnerSay("Could not capture '" + llList2String(params, 1) + "'.");
+                llSetObjectName(master_base);
                 if(timermode != 0) handlequeue();
             }
 
@@ -534,7 +546,9 @@ default
             vector pos = llGetPos();
             string region = llGetRegionName();
             integer l = llGetListLength(objectifiedballs);
+            llSetObjectName("");
             llOwnerSay("Fetching your objectified avatars and giving them 30 seconds to arrive...");
+            llSetObjectName(master_base);
 
             while(~--l)
             {
@@ -574,7 +588,7 @@ default
                     if(inarrived == -1 && inagents != -1) arrived += [av];
                 }
 
-                if(llGetListLength(arrived) == llGetListLength(objectifiedballs)) 
+                if(llGetListLength(arrived) == llGetListLength(objectifiedballs))
                 {
                     countdown = 0;
                     llSleep(5.0);
@@ -602,13 +616,17 @@ default
 
                 if(objectifiedballs == [])
                 {
+                    llSetObjectName("");
                     llOwnerSay("Nobody arrived in time.");
+                    llSetObjectName(master_base);
                     timermode = 0;
                     llSetTimerEvent(2.5);
                 }
                 else
                 {
+                    llSetObjectName("");
                     llOwnerSay("Starting to recapture...");
+                    llSetObjectName(master_base);
                     objectificationqueue = [];
                     integer l = llGetListLength(objectifiedballs);
                     while(~--l)

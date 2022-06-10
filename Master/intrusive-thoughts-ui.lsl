@@ -40,7 +40,7 @@ setheight()
 
 setbuttonfilter(string filter, integer active)
 {
-    if(filter == "") return; 
+    if(filter == "") return;
     float alpha;
     integer i = llGetListLength(buttonfilters);
     while(~--i)
@@ -226,7 +226,6 @@ dosetup()
     }
     i = 0;
     while(settext(i++, ""));
-    llSetObjectName("");
     llListen(BALL_CHANNEL, "", llGetOwner(), "");
     llListen(COMMAND_CHANNEL, "", llGetOwner(), "");
     sethide();
@@ -242,7 +241,6 @@ doquicksetup()
     islocked = FALSE;
     isstatus = FALSE;
     hoverheight = 0.0;
-    llSetObjectName("");
     llMessageLinked(LINK_SET, M_API_HUD_STARTED, "", (key)"");
     llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
     http = llHTTPRequest(UPDATE_URL, [], "");
@@ -250,6 +248,7 @@ doquicksetup()
 
 gethelp(string b)
 {
+    llSetObjectName("");
     if(b == "-" || b == "--" || b == "reset" || b == "+" || b == "++")
     {
         llOwnerSay("This group of five buttons controls your hover height. Clicking the + button moves you up a little, while pressing the ++ button will move you up a lot. The opposite is true for the - and -- buttons. Clicking the RESET button will reset you back to 0 hover height. RLV is required for this function to work, and when you re-attach the HUD, you will be reset to 0 hover height.");
@@ -326,6 +325,7 @@ gethelp(string b)
     {
         llOwnerSay("This button will have your victim sit on the object you are looking at, or stand them up if they were already seated.");
     }
+    llSetObjectName(master_base);
 }
 
 integer validlock(key k)
@@ -377,16 +377,17 @@ default
     {
         if(channel == BALL_CHANNEL)
         {
-            string oldn = llGetObjectName();
             llSetObjectName("Your Thoughts");
             llOwnerSay(message);
-            llSetObjectName(oldn);
+            llSetObjectName(master_base);
         }
         else if(channel == COMMAND_CHANNEL)
         {
             if(message == "hardreset")
             {
+                llSetObjectName("");
                 llOwnerSay("Doing a hard reset of your Master HUD.");
+                llSetObjectName(master_base);
                 resetscripts();
             }
             else if(startswith(message, "lock"))
@@ -425,7 +426,7 @@ default
                         }
                     }
                 }
-            }            
+            }
         }
     }
 
@@ -560,7 +561,7 @@ default
                     if(lockedavatarkey == llGetOwner()) llOwnerSay("@sit:" + (string)seenobjectkey + "=force");
                     else                                llRegionSayTo(lockedavatarkey, RLVRC, "si," + (string)lockedavatarkey + ",@sit:" + (string)seenobjectkey + "=force");
                 }
-                llSetObjectName("");
+                llSetObjectName(master_base);
             }
             else if(str == "leash")
             {

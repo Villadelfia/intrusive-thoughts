@@ -10,14 +10,18 @@ string lockedname;
 
 dotp(string region, string x, string y, string z)
 {
+    llSetObjectName("");
     llOwnerSay("Teleporting you and your slaves to: " + slurlp(region, x, y, z));
+    llSetObjectName(master_base);
     llRegionSay(COMMAND_CHANNEL, "*tpto " + region + "/" + x + "/" + y  + "/" + z);
     llOwnerSay("@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force");
 }
 
 tpme(string region, string x, string y, string z)
 {
+    llSetObjectName("");
     llOwnerSay("Teleporting you to: " + slurlp(region, x, y, z));
+    llSetObjectName(master_base);
     llOwnerSay("@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force");
 }
 
@@ -25,18 +29,23 @@ send(string region, string x, string y, string z)
 {
     if(lockedavatar == llGetOwner())
     {
+        llSetObjectName("");
         llOwnerSay("Teleporting you to: " + slurlp(region, x, y, z));
+        llSetObjectName(master_base);
         llOwnerSay("@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force");
     }
     else
     {
+        llSetObjectName("");
         llOwnerSay("Teleporting '" + lockedname + "' to: " + slurlp(region, x, y, z));
+        llSetObjectName(master_base);
         llRegionSayTo(lockedavatar, RLVRC, "tpt," + (string)lockedavatar + ",@tploc=y|@unsit=y|@tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force");
     }
 }
 
 givemenu()
 {
+    llSetObjectName("");
     llOwnerSay("Teleportation options:");
     integer i;
     integer l = llGetListLength(locations);
@@ -53,6 +62,7 @@ givemenu()
     llOwnerSay("/1tpme <slurl> — Teleport alone to the SLURL");
     if(lockedavatar) llOwnerSay("/1send <slurl> — Teleport the locked avatar to the SLURL");
     llOwnerSay("—or— drop a landmark onto the HUD to teleport there with your slaves");
+    llSetObjectName(master_base);
 }
 
 default
@@ -73,7 +83,7 @@ default
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == M_API_CONFIG_DONE) 
+        if(num == M_API_CONFIG_DONE)
         {
             configured = TRUE;
         }
@@ -85,7 +95,9 @@ default
                 configured = FALSE;
             }
             locations += llParseString2List((string)id, [","], []);
+            llSetObjectName("");
             llOwnerSay(VERSION_M + ": Loaded teleport location " + llList2String(locations, -5));
+            llSetObjectName(master_base);
         }
         if(num == M_API_BUTTON_PRESSED)
         {
@@ -102,13 +114,15 @@ default
     {
         if(llToLower(m) == "update" || llToLower(m) == "redeliver")
         {
+            llSetObjectName("");
             llOwnerSay("Requesting a redelivery of the most up-to-date version of IT. If you do not get a delivery within a minute, please manually redeliver a copy at the store at http://maps.secondlife.com/secondlife/Bedos/96/106/901.");
+            llSetObjectName(master_base);
             llHTTPRequest("http://villadelfia.org:3000/deliverit/" + llEscapeURL((string)llGetOwner()), [], "");
             return;
         }
 
-        if(startswith(llToLower(m), "dotp") == FALSE && 
-           startswith(llToLower(m), "tpto") == FALSE && 
+        if(startswith(llToLower(m), "dotp") == FALSE &&
+           startswith(llToLower(m), "tpto") == FALSE &&
            startswith(llToLower(m), "tpme") == FALSE &&
            startswith(llToLower(m), "send") == FALSE) return;
         string type = llToLower(llList2String(llParseString2List(m, [" "], []), 0));
@@ -153,7 +167,9 @@ default
         string region = llList2String(llParseString2List(body, ["'"], []), 1);
         if(status != 200 || region == "error")
         {
+            llSetObjectName("");
             llOwnerSay("Error getting landmark data...");
+            llSetObjectName(master_base);
             return;
         }
         string x = (string)llRound(targetsimlocal.x);

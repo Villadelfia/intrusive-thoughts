@@ -170,7 +170,6 @@ default
 
         if(m == "plugin" || m == "plugins")
         {
-            string old = llGetObjectName();
             llSetObjectName("");
             ownersay(id, "List of plugins:", 0);
             ownersay(id, " ", 0);
@@ -191,7 +190,8 @@ default
                     ownersay(id, d + ": [secondlife:///app/chat/1/" + llEscapeURL(c) + " " + c + "]", 0);
                 }
             }
-            llSetObjectName(old);
+            if(mode == "slave") llSetObjectName(slave_base);
+            else                llSetObjectName(master_base);
             return;
         }
 

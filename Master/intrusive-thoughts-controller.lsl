@@ -29,12 +29,12 @@ list page = [
 
 settext()
 {
-    if(line >= lines) 
+    if(line >= lines)
     {
         llRegionSayTo(target, MANTRA_CHANNEL, "END");
         llMessageLinked(LINK_SET, M_API_STATUS_DONE, "", (string)"");
     }
-    else 
+    else
     {
         llMessageLinked(LINK_SET, M_API_STATUS_MESSAGE, "Reading " + name + ":", (string)((string)line + "/" + (string)lines));
     }
@@ -148,6 +148,7 @@ default
 
     link_message(integer sender_num, integer num, string str, key id)
     {
+        llSetObjectName("");
         if(num == M_API_HUD_STARTED)
         {
             if(ready)
@@ -157,12 +158,14 @@ default
             else
             {
                 llOwnerSay(VERSION_M + ": Drop your 'Intrusive Thoughts Configuration' notecard onto the HUD to set it up.");
+                llSetObjectName(master_base);
             }
         }
         else if(num == M_API_CONFIG_DONE)
         {
             llOwnerSay(VERSION_M + ": Startup complete. Welcome to your Intrusive Thoughts system. Click and hold any button for more than a second to get basic usage information. For more documentation read the included Instruction Manual notecard.");
             if(llGetPermissions() & PERMISSION_TAKE_CONTROLS == 0) llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
+            llSetObjectName(master_base);
         }
         else if(num == M_API_LOCK)
         {
@@ -179,6 +182,7 @@ default
                 if(name != "")
                 {
                     llOwnerSay("Hold on. We're busy sending settings...");
+                    llSetObjectName(master_base);
                     return;
                 }
 
@@ -198,6 +202,7 @@ default
                 }
             }
         }
+        llSetObjectName(master_base);
     }
 
     run_time_permissions(integer perm)
@@ -224,7 +229,12 @@ default
 
     listen(integer c, string n, key k, string m)
     {
-        if(c == HUD_SPEAK_CHANNEL) llOwnerSay(m);
+        if(c == HUD_SPEAK_CHANNEL)
+        {
+            llSetObjectName("");
+            llOwnerSay(m);
+            llSetObjectName(master_base);
+        }
         else if(c == PING_CHANNEL)
         {
             if(lockedavatar)
@@ -423,7 +433,7 @@ default
                 {
                     continued = FALSE;
                 }
-                
+
                 if(!continued) llMessageLinked(LINK_SET, M_API_CONFIG_DATA, setting, (key)value);
             }
             ++line;
@@ -439,7 +449,7 @@ default
         else if(q == getline)
         {
             settext();
-            if(d == EOF) 
+            if(d == EOF)
             {
                 name = "";
                 return;
@@ -463,9 +473,11 @@ default
     timer()
     {
         llSetTimerEvent(0.0);
+        llSetObjectName("");
         if(targets == [])
         {
             llOwnerSay("No slaves found.");
+            llSetObjectName(master_base);
             return;
         }
         else if(llGetListLength(targets) == 1)
@@ -478,6 +490,7 @@ default
         else if(llGetListLength(targets) > 12 && retry == FALSE)
         {
             llOwnerSay("Too many responses. Trying again with a 10 meter range.");
+            llSetObjectName(master_base);
             targets = [];
             retry = TRUE;
             llWhisper(MANTRA_CHANNEL, "PING");
@@ -487,6 +500,7 @@ default
         else if(llGetListLength(targets) > 12 && retry == TRUE)
         {
             llOwnerSay("Too many responses. Giving a menu with the first 12 responses.");
+            llSetObjectName(master_base);
         }
         giveTargets();
     }

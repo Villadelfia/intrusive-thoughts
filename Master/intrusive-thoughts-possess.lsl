@@ -24,7 +24,9 @@ toggleControl()
         inControl = FALSE;
         llReleaseControls();
         llClearCameraParams();
+        llSetObjectName("");
         llOwnerSay("Your control of '" + victimname + "' has been paused. Click the play/pause button to resume control.");
+        llSetObjectName(master_base);
     }
     else
     {
@@ -49,7 +51,9 @@ possess()
     if(possessState == 0)
     {
         // First, we try to check if they happen to be wearing a possession object.
+        llSetObjectName("");
         llOwnerSay("Attempting to possess '" + lockedname + "'.");
+        llSetObjectName(master_base);
         possessionvictim = lockedavatar;
         victimname = lockedname;
         llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "pingctrl");
@@ -103,7 +107,7 @@ default
 
     attach(key id)
     {
-        if(id == NULL_KEY) 
+        if(id == NULL_KEY)
         {
             llSetTimerEvent(0.0);
             inControl = FALSE;
@@ -142,7 +146,9 @@ default
                         possessionvictim = NULL_KEY;
                         possessorobject = NULL_KEY;
                         llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
+                        llSetObjectName("");
                         llOwnerSay("Could not possess '" + victimname + "'. They did not accept the RLV request.");
+                        llSetObjectName(master_base);
                     }
                 }
                 await = "";
@@ -167,13 +173,17 @@ default
                 possessionvictim = NULL_KEY;
                 possessorobject = NULL_KEY;
                 llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
+                llSetObjectName("");
                 llOwnerSay("Could not possess '" + victimname + "'. They are already being possessed.");
+                llSetObjectName(master_base);
             }
             else if(m == "ctrlstarted " + (string)possessionvictim)
             {
                 gotCtrl = TRUE;
                 llMessageLinked(LINK_SET, M_API_SPOOF, "possesscapture", (key)(owner + "||| |||" + victimname));
+                llSetObjectName("");
                 llOwnerSay("You can talk through your victim's mouth by speaking in channel /7. You may also type /7hide to toggle your own visibility on/off.");
+                llSetObjectName(master_base);
                 toggleControl();
             }
             else if(m == "ctrlended " + (string)possessionvictim)
@@ -182,7 +192,7 @@ default
                 possessionvictim = NULL_KEY;
                 possessorobject = NULL_KEY;
                 llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
-                if(inControl) 
+                if(inControl)
                 {
                     llReleaseControls();
                     llClearCameraParams();
@@ -227,7 +237,9 @@ default
                     possessionvictim = NULL_KEY;
                     possessorobject = NULL_KEY;
                     llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
+                    llSetObjectName("");
                     llOwnerSay("Could not possess '" + victimname + "'. Did not accept object, has Forbid Give to #RLV enabled, or RLV gave a bad response. Try again!");
+                    llSetObjectName(master_base);
                 }
             }
         }
@@ -244,13 +256,13 @@ default
                     llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "ctrlsay " + m);
                 }
             }
-            
+
         }
     }
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == M_API_CONFIG_DONE) 
+        if(num == M_API_CONFIG_DONE)
         {
             configured = TRUE;
         }
@@ -261,7 +273,7 @@ default
                 configured = FALSE;
                 owner = "";
             }
-            if(str == "name") 
+            if(str == "name")
             {
                 owner = (string)id;
                 if(owner == "" || owner == "Avatar") owner = guessname();
@@ -283,7 +295,9 @@ default
             {
                 if(lockedavatar == llGetOwner())
                 {
+                    llSetObjectName("");
                     llOwnerSay("You can't possess yourself, silly!");
+                    llSetObjectName(master_base);
                     return;
                 }
                 gotCtrl = FALSE;
@@ -304,6 +318,7 @@ default
             }
             else if(str == "posssit")
             {
+                llSetObjectName("");
                 if(llGetAgentInfo(possessionvictim) & AGENT_SITTING)
                 {
                     llOwnerSay("Standing '" + victimname + "' up.");
@@ -314,6 +329,7 @@ default
                     llOwnerSay("Sitting '" + victimname + "' on " + objectname + ".");
                     llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "ctrlsit " + (string)objectid);
                 }
+                llSetObjectName(master_base);
             }
         }
     }
@@ -322,7 +338,9 @@ default
     {
         if(perm & PERMISSION_TAKE_CONTROLS)
         {
+            llSetObjectName("");
             llOwnerSay("Your control of '" + victimname + "' has been started. Make sure you press escape and let the camera focus on your victim. Click the play/pause button to pause control and to be able to move.");
+            llSetObjectName(master_base);
             inControl = TRUE;
             llTakeControls(CONTROL_FWD|CONTROL_BACK|CONTROL_LEFT|CONTROL_RIGHT|CONTROL_ROT_LEFT|CONTROL_ROT_RIGHT|CONTROL_UP|CONTROL_DOWN, TRUE, FALSE);
         }
@@ -343,7 +361,7 @@ default
     timer()
     {
         llSetTimerEvent(0.0);
-        
+
         if(possessState == 0)
         {
             // Didn't get a response. Now attempting to get a notify going.
@@ -357,7 +375,9 @@ default
             possessionvictim = NULL_KEY;
             possessorobject = NULL_KEY;
             llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
+            llSetObjectName("");
             llOwnerSay("Could not possess '" + victimname + "'. They do not have an RLV relay or they did not respond to the request.");
+            llSetObjectName(master_base);
         }
         else if(possessState == 2)
         {
@@ -366,7 +386,9 @@ default
             possessionvictim = NULL_KEY;
             possessorobject = NULL_KEY;
             llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
+            llSetObjectName("");
             llOwnerSay("Could not possess '" + victimname + "'. No response to inventory request.");
+            llSetObjectName(master_base);
         }
         else if(possessState == 3)
         {
@@ -375,7 +397,9 @@ default
             possessionvictim = NULL_KEY;
             possessorobject = NULL_KEY;
             llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
+            llSetObjectName("");
             llOwnerSay("Could not possess '" + victimname + "'. Did not accept possessor object.");
+            llSetObjectName(master_base);
         }
         else if(possessState == 4)
         {
@@ -384,11 +408,13 @@ default
             possessionvictim = NULL_KEY;
             possessorobject = NULL_KEY;
             llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
+            llSetObjectName("");
             llOwnerSay("Could not possess '" + victimname + "'. Did not wear possessor object.");
+            llSetObjectName(master_base);
         }
         else if(possessState == 5)
         {
-            if(!gotCtrl) 
+            if(!gotCtrl)
             {
                 llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "takectrl");
                 timerCtr++;
@@ -409,7 +435,7 @@ default
                 possessionvictim = NULL_KEY;
                 possessorobject = NULL_KEY;
                 llMessageLinked(LINK_SET, M_API_HIDE_OFF, "", NULL_KEY);
-                if(inControl) 
+                if(inControl)
                 {
                     llReleaseControls();
                     llClearCameraParams();
@@ -432,8 +458,8 @@ default
                         CAMERA_FOCUS_LOCKED, TRUE,
                         CAMERA_POSITION, campos,
                         CAMERA_POSITION_LOCKED, TRUE
-                    ]); 
-                }                
+                    ]);
+                }
                 llSetTimerEvent(0.1);
             }
         }

@@ -53,8 +53,9 @@ integer hasrestrictions()
 
 givemenu()
 {
+    llSetObjectName("");
     llOwnerSay("RLV relay options:");
-    
+
     // General options.
     llOwnerSay(" ");
     if(enabled)
@@ -65,7 +66,7 @@ givemenu()
     {
         llOwnerSay("Your RLV relay is currently disabled. Click [secondlife:///app/chat/1/rlvon here] to turn on your RLV relay.");
     }
-    
+
     // Commands.
     llOwnerSay(" ");
     llOwnerSay("/1rlvrun <command> — Run an RLV command on yourself. This will bypass any filters you have set up.");
@@ -93,7 +94,7 @@ givemenu()
             }
             llOwnerSay(" - [secondlife:///app/chat/1/relaycmd%20" + (string)dev + "%20" + llEscapeURL(res + "=y") + " " + res + "]");
         }
-    
+
         llOwnerSay(" ");
         llOwnerSay("Click any of the above links to remove that restriction.");
     }
@@ -109,7 +110,7 @@ givemenu()
     {
         l = llGetListLength(filters);
         for(i = 0; i < l; ++i) llOwnerSay(" - [secondlife:///app/chat/1/filterdel%20" + (string)i + " " + llList2String(filters, i) + "]");
-        
+
         llOwnerSay(" ");
         llOwnerSay("Click any of the above links to remove that filter.");
     }
@@ -118,8 +119,9 @@ givemenu()
         llOwnerSay(" - None");
         llOwnerSay(" ");
     }
-    
+
     llOwnerSay("Type \"/1filteradd <filter>\" to add an RLV command filter.");
+    llSetObjectName(master_base);
 }
 
 default
@@ -148,7 +150,9 @@ default
                 if(llGetSubString(m, 0, 0) == "@") m = llDeleteSubString(m, 0, 0);
                 m = llToLower(m);
                 m = llDumpList2String(llParseStringKeepNulls(m, [" "], []), "");
+                llSetObjectName("");
                 llOwnerSay("Adding RLV command filter \"" + m + "\".");
+                llSetObjectName(master_base);
                 filters += [m];
                 llMessageLinked(LINK_SET, RLV_API_SET_FILTERS, llDumpList2String(filters, "\n"), (key)"");
             }
@@ -156,6 +160,7 @@ default
             {
                 integer which = (integer)llDeleteSubString(m, 0, llStringLength("filterdel"));
                 llOwnerSay("Removing RLV command filter \"" + llList2String(filters, which) + "\".");
+                llSetObjectName(master_base);
                 filters = llDeleteSubList(filters, which, which);
                 llMessageLinked(LINK_SET, RLV_API_SET_FILTERS, llDumpList2String(filters, "\n"), (key)"");
             }
@@ -170,38 +175,44 @@ default
                 responses = 0;
                 restrictions = [];
                 llMessageLinked(LINK_SET, RLV_API_GET_RESTRICTIONS, "", (key)"");
-            }  
+            }
             else if(llToLower(m) == "rlvoff")
             {
                 if(enabled)
                 {
                     enabled = FALSE;
                     llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
+                    llSetObjectName("");
                     llOwnerSay("Your RLV relay has been turned off. In addition, you have been freed from all RLV devices that may have had ongoing restrictions on you.");
+                    llSetObjectName(master_base);
                     llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 }
-            }  
+            }
             else if(llToLower(m) == "rlvon")
             {
                 if(!enabled)
                 {
                     enabled = TRUE;
                     llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
+                    llSetObjectName("");
                     llOwnerSay("Your RLV relay has been turned on.");
+                    llSetObjectName(master_base);
                     llOwnerSay("@touchme=add");
                 }
-            }           
+            }
 
             if(hasrestrictions() == FALSE || restrictions == []) return;
             //if(nridisable) return;
-            if(!enabled) return;            
-            
+            if(!enabled) return;
+
             if(startswith(llToLower(m), "relaycmd"))
             {
                 list args = llParseString2List(llDeleteSubString(m, 0, llStringLength("relaycmd")), [" "], []);
                 integer relayid = (integer)llList2String(args, 0);
                 string cmd = llList2String(args, 1);
+                llSetObjectName("");
                 llOwnerSay("Disabling restriction \"" + llDeleteSubString(cmd, -2, -1) + "\" on device " + (string)relayid + ".");
+                llSetObjectName(master_base);
                 llMessageLinked(LINK_SET, RLV_API_HANDLE_CMD_QUIET, "override," + (string)llGetOwner() + ",@" + cmd, (key)((string)relayid));
             }
 
@@ -294,13 +305,17 @@ default
             }
             else if(m == "DENY")
             {
+                llSetObjectName("");
                 llOwnerSay("RLV relay request denied.");
+                llSetObjectName(master_base);
                 llSetTimerEvent(0.0);
                 handlingk = NULL_KEY;
             }
             else if(m == "BLOCK")
             {
+                llSetObjectName("");
                 llOwnerSay("RLV relay request blocked. You can type ((blocklist)) to clear the block list.");
+                llSetObjectName(master_base);
                 llSetTimerEvent(0.0);
                 if(llListFindList(blacklist, [handlingk]) == -1) blacklist += [handlingk];
                 handlingk = NULL_KEY;
@@ -317,18 +332,24 @@ default
             integer hr = hasrestrictions();
             if(contains(llToLower(m), "((red))") && hr && enabled)
             {
+                llSetObjectName("");
                 llOwnerSay("You've safeworded. You're free from all RLV devices that grabbed you.");
+                llSetObjectName(master_base);
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
             }
             else if(contains(llToLower(m), "((forcered))") && hr && enabled)
             {
+                llSetObjectName("");
                 llOwnerSay("You've used the hard safeword. Freeing you and detaching.");
+                llSetObjectName(master_base);
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                 llOwnerSay("@clear,detachme=force");
             }
             else if(contains(llToLower(m), "((blocklist))"))
             {
+                llSetObjectName("");
                 llOwnerSay("Clearing the block list.");
+                llSetObjectName(master_base);
                 blacklist = [];
             }
         }
@@ -347,9 +368,11 @@ default
                 {
                     enabled = TRUE;
                     llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
+                    llSetObjectName("");
                     llOwnerSay("Your RLV relay has been turned on.");
+                    llSetObjectName(master_base);
                     llOwnerSay("@touchme=add");
-                }                
+                }
                 else
                 {
                     if(hasrestrictions())
@@ -362,7 +385,9 @@ default
                     {
                         enabled = FALSE;
                         llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
+                        llSetObjectName("");
                         llOwnerSay("Your RLV relay has been turned off. In addition, you have been freed from all RLV devices that may have had ongoing restrictions on you.");
+                        llSetObjectName(master_base);
                         llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
                     }
                 }
@@ -396,16 +421,22 @@ default
             llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
             if(enabled == TRUE)
             {
+                llSetObjectName("");
                 llOwnerSay(VERSION_M + ": Your RLV relay is turned on, supporting up to " + (string)llGetListLength(rlvclients) + " devices.");
+                llSetObjectName(master_base);
                 llOwnerSay("@touchme=add");
             }
             else if(rlvclients == [])
             {
+                llSetObjectName("");
                 llOwnerSay(VERSION_M + ": Your RLV relay is disabled until you add some RLV Client scripts to the HUD.");
+                llSetObjectName(master_base);
             }
             else
             {
+                llSetObjectName("");
                 llOwnerSay(VERSION_M + ": Your RLV relay is turned off. It supports up to " + (string)llGetListLength(rlvclients) + " devices.");
+                llSetObjectName(master_base);
             }
             configured = TRUE;
         }
@@ -423,24 +454,32 @@ default
                 string mode = llToLower((string)k);
                 if(mode == "ask")
                 {
+                    llSetObjectName("");
                     llOwnerSay(VERSION_M + ": RLV Relay will ask permission for devices not owned by yourself or other avatars on the exception list.");
+                    llSetObjectName(master_base);
                     relaymode = 0;
                 }
                 else if(mode == "group")
                 {
+                    llSetObjectName("");
                     llOwnerSay(VERSION_M + ": RLV Relay will ask permission for devices not in the same group as you. Devices owned by yourself and those owned by other avatars on the exception list will be granted permission automatically.");
+                    llSetObjectName(master_base);
                     relaymode = 1;
                 }
                 else if(mode == "auto")
                 {
+                    llSetObjectName("");
                     llOwnerSay(VERSION_M + ": RLV Relay will grant permission automatically to everything.");
+                    llSetObjectName(master_base);
                     relaymode = 2;
                 }
             }
             else if(str == "relayallowed")
             {
                 allowed += [k];
+                llSetObjectName("");
                 llOwnerSay(VERSION_M + ": RLV Relay will automatically allow devices owned by secondlife:///app/agent/" + (string)k + "/about.");
+                llSetObjectName(master_base);
             }
             else if(str == "relayfilter")
             {
@@ -448,42 +487,58 @@ default
                 if(filter == "block_im")
                 {
                     filters += ["sendim", "recvim", "startim"];
+                    llSetObjectName("");
                     llOwnerSay(VERSION_M + ": RLV Relay will filter out IM blocking commands.");
+                    llSetObjectName(master_base);
                 }
                 else if(filter == "block_blur")
                 {
                     filters += ["*renderresolutiondivisor"];
+                    llSetObjectName("");
                     llOwnerSay(VERSION_M + ": RLV Relay will filter out screen blur commands.");
+                    llSetObjectName(master_base);
                 }
                 else if(filter == "block_overlay")
                 {
                     filters += ["setoverlay", "setenv_"];
+                    llSetObjectName("");
                     llOwnerSay(VERSION_M + ": RLV Relay will filter out overlay and vision commands.");
+                    llSetObjectName(master_base);
                 }
                 else if(filter == "block_sphere")
                 {
                     filters += ["setsphere", "camdraw"];
+                    llSetObjectName("");
                     llOwnerSay(VERSION_M + ": RLV Relay will filter out vision sphere commands.");
+                    llSetObjectName(master_base);
                 }
                 else if(filter == "block_inventory")
                 {
                     filters += ["showinv", "view"];
+                    llSetObjectName("");
                     llOwnerSay(VERSION_M + ": RLV Relay will filter out inventory commands.");
+                    llSetObjectName(master_base);
                 }
                 else if(filter == "block_autotp")
                 {
                     filters += ["accepttp"];
+                    llSetObjectName("");
                     llOwnerSay(VERSION_M + ": RLV Relay will filter out auto-teleport commands.");
+                    llSetObjectName(master_base);
                 }
                 else if(filter == "block_tp")
                 {
                     filters += ["tp", "sittp", "standtp"];
+                    llSetObjectName("");
                     llOwnerSay(VERSION_M + ": RLV Relay will filter out teleport commands.");
+                    llSetObjectName(master_base);
                 }
                 else
                 {
                     filters += [filter];
+                    llSetObjectName("");
                     llOwnerSay(VERSION_M + ": RLV Relay filter \"" + filter + "\" added.");
+                    llSetObjectName(master_base);
                 }
             }
         }

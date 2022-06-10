@@ -19,7 +19,8 @@ default
     {
         if(num == M_API_CONFIG_DATA)
         {
-            if(str == "name") 
+            llSetObjectName("");
+            if(str == "name")
             {
                 string owner = (string)id;
                 if(owner == "" || owner == "Avatar") owner = guessname();
@@ -40,7 +41,7 @@ default
             else if(str == "unvore") llOwnerSay(VERSION_M + ": Set unvore phrase to '" + (string)id + "'");
             else if(str == "possess") llOwnerSay(VERSION_M + ": Set possess phrase to '" + (string)id + "'");
             else if(str == "unpossess") llOwnerSay(VERSION_M + ": Set unpossess phrase to '" + (string)id + "'");
-            else if(str == "ball" && ((string)id == "1" || (string)id == "2")) 
+            else if(str == "ball" && ((string)id == "1" || (string)id == "2"))
             {
                 if((integer)((string)id) == 1)
                 {
@@ -53,6 +54,7 @@ default
             }
             else if(startswith(str, "capture:")) llOwnerSay(VERSION_M + ": Set capture phrase for '" + llGetSubString(str, 8, -1) + "' to '" + (string)id + "'");
             else if(startswith(str, "release:")) llOwnerSay(VERSION_M + ": Set release phrase for '" + llGetSubString(str, 8, -1) + "' to '" + (string)id + "'");
+            llSetObjectName(master_base);
         }
         else if(num == M_API_CONFIG_DONE)
         {
@@ -61,6 +63,7 @@ default
         }
         else if(num == M_API_TOGGLE_HIDE)
         {
+            llSetObjectName("");
             if(hidden)
             {
                 hidden = FALSE;
@@ -73,15 +76,18 @@ default
                 llOwnerSay("You're invisible now.");
                 llStartAnimation("hide");
             }
+            llSetObjectName(master_base);
         }
         else if(num == M_API_HIDE_OFF)
         {
+            llSetObjectName("");
             if(hidden)
             {
                 hidden = FALSE;
                 llOwnerSay("You're visible again.");
                 llStopAnimation("hide");
             }
+            llSetObjectName(master_base);
         }
     }
 
@@ -98,15 +104,15 @@ default
 
         list agents = llGetAgentList(AGENT_LIST_REGION, []);
         integer num = llGetListLength(agents);
- 
+
         if(!num) return;
- 
+
         integer i;
         while(i < num)
         {
             key id = llList2Key(agents, i);
             float dist = llVecDist(endpos, llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0));
-            if(dist < closest) 
+            if(dist < closest)
             {
                 newclosest = id;
                 closest = dist;

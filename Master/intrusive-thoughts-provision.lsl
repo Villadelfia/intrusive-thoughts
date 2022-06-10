@@ -175,14 +175,16 @@ default
             {
                 if(parcelid != lastparcel)
                 {
+                    llSetObjectName("");
                     llOwnerSay("Cannot rez on this parcel. Trying to set land group. If that fails I will perform a no-rez capture.");
+                    llSetObjectName(master_base);
                     llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(pos, [PARCEL_DETAILS_GROUP]), 0) + "=force");
                     llSleep(2.5);
                 }
             }
             lastparcel = parcelid;
 
-            if(!canrez(pos)) 
+            if(!canrez(pos))
             {
                 // If not, try no-rez objectification.
                 provision();

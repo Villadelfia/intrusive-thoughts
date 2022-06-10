@@ -18,7 +18,7 @@ default
 {
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == M_API_CONFIG_DONE) 
+        if(num == M_API_CONFIG_DONE)
         {
             configured = TRUE;
         }
@@ -40,12 +40,12 @@ default
             else if(str == "unvore")    voreReleaseSpoof = (string)id;
             else if(str == "possess")   possessCaptureSpoof = (string)id;
             else if(str == "unpossess") possessReleaseSpoof = (string)id;
-            else if(startswith(str, "capture:")) 
+            else if(startswith(str, "capture:"))
             {
                 customCaptureSpoofNames += [llToLower(llGetSubString(str, 8, -1))];
                 customCaptureSpoofs += [(string)id];
             }
-            else if(startswith(str, "release:")) 
+            else if(startswith(str, "release:"))
             {
                 customReleaseSpoofNames += [llToLower(llGetSubString(str, 8, -1))];
                 customReleaseSpoofs += [(string)id];
@@ -83,7 +83,9 @@ default
             spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%OBJ%"], []), obj);
             spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%VIC%"], []), vic);
             spoof = llDumpList2String(llParseStringKeepNulls(spoof, ["%TAR%"], []), tar);
+            llSetObjectName("");
             llSay(0, spoof);
+            llSetObjectName(master_base);
         }
     }
 }

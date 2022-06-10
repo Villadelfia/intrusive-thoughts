@@ -64,7 +64,8 @@ unvore()
 vore()
 {
     if(lockedavatar == llGetOwner()) return;
-    
+    llSetObjectName("");
+
     if(!canrez(llGetPos()))
     {
         llOwnerSay("Can't rez here, trying to set land group.");
@@ -72,13 +73,15 @@ vore()
         llSleep(2.5);
     }
 
-    if(!canrez(llGetPos())) 
+    if(!canrez(llGetPos()))
     {
         llOwnerSay("Can't rez here. Not eating.");
+        llSetObjectName(master_base);
         return;
     }
 
     llOwnerSay("Eating '" + lockedname + "'.");
+    llSetObjectName(master_base);
     target = lockedavatar;
     targetname = lockedname;
     llRezAtRoot("carrier", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, 1);
@@ -111,14 +114,18 @@ default
 
             if(identifier == await && await == "cv")
             {
+                key creator = llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0);
+                if((string)creator == "bc50a813-5b31-4cbe-9ae6-0031d1b7d53e" && accept == FALSE) return;
                 if(accept == TRUE)
                 {
                     llMessageLinked(LINK_SET, M_API_SPOOF, "vorecapture", (key)(owner + "|||" + foodname + "|||" + vorename));
                     attachbelly();
                 }
-                else 
+                else
                 {
+                    llSetObjectName("");
                     llOwnerSay("Could not eat '" + lockedname + "'.");
+                    llSetObjectName(master_base);
                 }
                 llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "check");
                 await = "";
@@ -129,7 +136,7 @@ default
             if(llGetOwnerKey(id) != vorevictim) return;
             llSetObjectName(objectprefix + foodname);
             llSay(0, m);
-            llSetObjectName("");
+            llSetObjectName(master_base);
         }
         else if(c == MANTRA_CHANNEL)
         {
@@ -155,7 +162,9 @@ default
         }
         else
         {
+            llSetObjectName("");
             llOwnerSay("Done re-eating!");
+            llSetObjectName(master_base);
             timermode = 0;
             llSetTimerEvent(2.5);
         }
@@ -164,7 +173,7 @@ default
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        if(num == M_API_CONFIG_DONE) 
+        if(num == M_API_CONFIG_DONE)
         {
             llSetTimerEvent(2.5);
             configured = TRUE;
@@ -178,7 +187,7 @@ default
                 objectprefix = "";
                 foodname = "Food";
             }
-            if(str == "name") 
+            if(str == "name")
             {
                 owner = (string)id;
                 if(owner == "" || owner == "Avatar") owner = guessname();
@@ -214,12 +223,16 @@ default
                 {
                     fillfactor = 100;
                     llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "dissolve");
+                    llSetObjectName("");
                     llOwnerSay("Your " + foodname + " has been fully digested.");
+                    llSetObjectName(master_base);
                 }
                 else
                 {
                     llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
+                    llSetObjectName("");
                     llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
+                    llSetObjectName(master_base);
                 }
                 if(old != fillfactor) bellypercent(old, fillfactor);
             }
@@ -229,7 +242,9 @@ default
                 fillfactor -= 5;
                 if(fillfactor < 0) fillfactor = 0;
                 llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "acidlevel " + (string)fillfactor);
+                llSetObjectName("");
                 llOwnerSay("Set stomach acid level to " + (string)fillfactor + "%");
+                llSetObjectName(master_base);
                 if(old != fillfactor) bellypercent(old, fillfactor);
             }
         }
@@ -240,7 +255,7 @@ default
         llSetTimerEvent(0.0);
         if(timermode == 0)
         {
-            integer differentRegion = lastregion != llGetRegionName();        
+            integer differentRegion = lastregion != llGetRegionName();
             list req = llGetObjectDetails(vorecarrier, [OBJECT_CREATOR]);
             if(vorecarrier != NULL_KEY && (req == [] || llList2Key(req, 0) != llGetCreator()))
             {
@@ -293,14 +308,18 @@ default
             string region = llGetRegionName();
             if(!canrez(llGetPos()))
             {
+                llSetObjectName("");
                 llOwnerSay("Can't rez here, trying to set land group.");
+                llSetObjectName(master_base);
                 llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
                 llSleep(2.5);
             }
 
             integer teleportothers = canrez(llGetPos());
+            llSetObjectName("");
             if(teleportothers) llOwnerSay("Fetching your vore victim and giving them 30 seconds to arrive...");
             else               llOwnerSay("Can't rez here, not fetching your vore victim...");
+            llSetObjectName(master_base);
 
             if(voreurl == "null")
             {
@@ -335,7 +354,7 @@ default
 
                 integer arrived = llListFindList(llGetAgentList(AGENT_LIST_REGION, []), [vorevictim]);
 
-                if(arrived != -1) 
+                if(arrived != -1)
                 {
                     countdown = 0;
                     llSleep(5.0);
@@ -357,13 +376,17 @@ default
 
                 if(vorecarrier == NULL_KEY)
                 {
+                    llSetObjectName("");
                     llOwnerSay("Your vore victim didn't arrive in time.");
+                    llSetObjectName(master_base);
                     timermode = 0;
                     llSetTimerEvent(2.5);
                 }
                 else
                 {
+                    llSetObjectName("");
                     llOwnerSay("Re-eating " + vorename + "...");
+                    llSetObjectName(master_base);
                     timermode = 3;
                     target = vorevictim;
                     targetname = vorename;
@@ -375,6 +398,7 @@ default
         else if(timermode == 3)
         {
             llOwnerSay("Could not re-eat!");
+            llSetObjectName(master_base);
             timermode = 0;
             llSetTimerEvent(2.5);
         }
