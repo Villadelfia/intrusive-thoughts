@@ -287,6 +287,7 @@ default
         llSetObjectName("");
         llRegionSayTo(llAvatarOnSitTarget(), 0, "You can restrict yourself further by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you are captured by the same person.");
         llRegionSayTo(llGetOwnerKey(rezzer), 0, "You can edit the restrictions on your victim by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you capture the same person.");
+        llSetObjectName("ball");
 
         // And start a timer loop.
         llSetTimerEvent(0.5);
@@ -317,17 +318,20 @@ default
             {
                 llSay(0, m);
             }
+            llSetObjectName("ball");
         }
         else if(c == GAZE_REN_CHANNEL)
         {
             llSetObjectName(objectprefix + name);
             llSay(0, m);
+            llSetObjectName("ball");
         }
         else if(c == GAZE_ECHO_CHANNEL)
         {
             if(hearingRestrict > 1) return;
             llSetObjectName(n);
             llRegionSayTo(llAvatarOnSitTarget(), 0, m);
+            llSetObjectName("ball");
         }
         else if(c == BALL_CHANNEL)
         {
@@ -335,6 +339,7 @@ default
             if(hearingRestrict == 3) return;
             llSetObjectName("Wearer's Thoughts");
             llRegionSayTo(llAvatarOnSitTarget(), 0, m);
+            llSetObjectName("ball");
         }
         else if(c == 5)
         {
@@ -350,6 +355,7 @@ default
                     llStartAnimation(animation);
                     llSetObjectName("");
                     doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about will now be rendered visible again, but it will require a relog.");
+                    llSetObjectName("ball");
                     llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
                 }
                 else
@@ -359,6 +365,7 @@ default
                     llStartAnimation(animation);
                     llSetObjectName("");
                     doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
+                    llSetObjectName("ball");
                     llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
                 }
             }
@@ -369,6 +376,7 @@ default
                 name = m;
                 llSetObjectName("");
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about is now " + objectprefix + m + ".");
+                llSetObjectName("ball");
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "objrename " + m);
             }
             else if(startswith(m, prefix + "im"))
@@ -379,6 +387,7 @@ default
                 if(imRestrict > 3) imRestrict = 3;
                 llSetObjectName("");
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's IM restrictions set to level " + (string)imRestrict + ".");
+                llSetObjectName("ball");
                 applyIm();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -390,6 +399,7 @@ default
                 if(visionRestrict > 7) visionRestrict = 7;
                 llSetObjectName("");
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Vision restrictions set to level " + (string)visionRestrict + ".");
+                llSetObjectName("ball");
                 applyVision();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -401,6 +411,7 @@ default
                 if(hearingRestrict > 3) hearingRestrict = 3;
                 llSetObjectName("");
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Hearing restrictions set to level " + (string)hearingRestrict + ".");
+                llSetObjectName("ball");
                 applyHearing();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -412,6 +423,7 @@ default
                 if(speechRestrict > 3) speechRestrict = 3;
                 llSetObjectName("");
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
+                llSetObjectName("ball");
                 applySpeech();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -423,6 +435,7 @@ default
                 if(dazeRestrict > 1) dazeRestrict = 1;
                 llSetObjectName("");
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Daze restrictions set to level " + (string)dazeRestrict + ".");
+                llSetObjectName("ball");
                 applyDaze();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -434,6 +447,7 @@ default
                 if(cameraRestrict > 1) cameraRestrict = 1;
                 llSetObjectName("");
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Camera restrictions set to level " + (string)cameraRestrict + ".");
+                llSetObjectName("ball");
                 applyCamera();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -445,6 +459,7 @@ default
                 if(inventoryRestrict > 1) inventoryRestrict = 1;
                 llSetObjectName("");
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Inventory restrictions set to level " + (string)inventoryRestrict + ".");
+                llSetObjectName("ball");
                 applyInventory();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -456,6 +471,7 @@ default
                 if(worldRestrict > 1) worldRestrict = 1;
                 llSetObjectName("");
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's World restrictions set to level " + (string)worldRestrict + ".");
+                llSetObjectName("ball");
                 applyWorld();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -554,6 +570,7 @@ default
                 {
                     llSetObjectName("");
                     llRegionSayTo(firstavatar, 0, m);
+                    llSetObjectName("ball");
                     llReleaseControls();
                     struggleFailed = TRUE;
                 }
@@ -566,6 +583,7 @@ default
                 {
                     llSetObjectName("");
                     llRegionSayTo(firstavatar, 0, m);
+                    llSetObjectName("ball");
                     llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0));
                     llRegionSayTo(firstavatar, RLVRC, "release," + (string)firstavatar + ",!release");
                     llSleep(0.5);
@@ -731,6 +749,7 @@ default
                 if(llGetPermissions() & PERMISSION_TRIGGER_ANIMATION) llStartAnimation(animation);
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
             }
+            llSetObjectName("ball");
             applyIm();
             applyVision();
             applyHearing();

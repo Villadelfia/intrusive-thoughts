@@ -62,6 +62,7 @@ sitterMenu()
     else                         llRegionSayTo(firstavatar, 0, " - No restrictions.");
     if(worldRestrict < 1)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "wo1 No world interaction.]");
     else if(worldRestrict == 1)  llRegionSayTo(firstavatar, 0, " * No world interaction.");
+    llSetObjectName("carrier");
 }
 
 ownerMenu()
@@ -112,6 +113,7 @@ ownerMenu()
     else                    llOwnerSay(" * No restrictions.");
     if(worldRestrict != 1)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "wo1 No world interaction.]");
     else                    llOwnerSay(" * No world interaction.");
+    llSetObjectName("carrier");
 }
 
 default

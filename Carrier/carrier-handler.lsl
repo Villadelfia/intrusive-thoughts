@@ -16,8 +16,8 @@ integer captured = FALSE;
 integer firstattempt = TRUE;
 integer timerctr = 0;
 
-list whitelist = ["boot",    "top",      "bangle", "armband", "bracer", "thigh",  "ring", 
-                  "suit",    "lingerie", "bra",    "shoe",    "glove",  "sock",   "stocking", 
+list whitelist = ["boot",    "top",      "bangle", "armband", "bracer", "thigh",  "ring",
+                  "suit",    "lingerie", "bra",    "shoe",    "glove",  "sock",   "stocking",
                   "leotard", "tight",    "skirt",  "warmers", "robe",   "kimono", "pant",
                   "sandal",  "jean",     "string", "bikini",  "heel",   "dress",  "sarong",
                   "glasses", "corset",   "tube",   "dress",   "legging"];
@@ -102,11 +102,11 @@ applyWorld()
 
 string restrictionString()
 {
-    return (string)imRestrict + "," + 
-           (string)speechRestrict + "," + 
-           (string)dazeRestrict + "," + 
-           (string)cameraRestrict + "," + 
-           (string)inventoryRestrict + "," + 
+    return (string)imRestrict + "," +
+           (string)speechRestrict + "," +
+           (string)dazeRestrict + "," +
+           (string)cameraRestrict + "," +
+           (string)inventoryRestrict + "," +
            (string)worldRestrict;
 }
 
@@ -130,6 +130,7 @@ detachrandom()
                 llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "acid," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@remattach:" + (string)k + "=force");
                 llSetObjectName("The Acid");
                 llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, "/me in your predator's stomach has dissolved your '" + name + "'.");
+                llSetObjectName("carrier");
                 return;
             }
         }
@@ -196,7 +197,7 @@ default
                     }
                 }
                 if(focuskey == NULL_KEY) focuskey = llAvatarOnLinkSitTarget(volumelink);
-                if(!captured) 
+                if(!captured)
                 {
                     llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "captured|" + (string)firstavatar + "|vore");
                     llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "acid_level|" + (string)firstavatar + "|" + (string)fillfactor);
@@ -225,11 +226,12 @@ default
         llSetObjectName("");
         llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, "You can restrict yourself further by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you are captured by the same person.");
         llRegionSayTo(rezzer, 0, "You can edit the restrictions on your victim by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you capture the same person.");
+        llSetObjectName("carrier");
         llTakeControls(CONTROL_FWD | CONTROL_BACK | CONTROL_LEFT | CONTROL_RIGHT | CONTROL_ROT_LEFT | CONTROL_ROT_RIGHT | CONTROL_UP | CONTROL_DOWN, TRUE, TRUE);
         llResetTime();
         llSetTimerEvent(0.5);
     }
-    
+
     control(key id, integer level, integer edge)
     {
         integer start = level & edge;
@@ -243,6 +245,7 @@ default
             if(llGetOwnerKey(id) != rezzer) return;
             llSetObjectName("Predator's Thoughts");
             llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, m);
+            llSetObjectName("carrier");
         }
         else if(c == 5)
         {
@@ -257,6 +260,7 @@ default
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's IM restrictions set to level " + (string)imRestrict + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's IM restrictions set to level " + (string)imRestrict + ".");
+                llSetObjectName("carrier");
                 applyIm();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -269,6 +273,7 @@ default
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
+                llSetObjectName("carrier");
                 applySpeech();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -281,6 +286,7 @@ default
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Daze restrictions set to level " + (string)dazeRestrict + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Daze restrictions set to level " + (string)dazeRestrict + ".");
+                llSetObjectName("carrier");
                 applyDaze();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -292,6 +298,7 @@ default
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Camera restrictions set to level " + (string)cameraRestrict + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Camera restrictions set to level " + (string)cameraRestrict + ".");
+                llSetObjectName("carrier");
                 applyCamera();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -304,6 +311,7 @@ default
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's Inventory restrictions set to level " + (string)inventoryRestrict + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Inventory restrictions set to level " + (string)inventoryRestrict + ".");
+                llSetObjectName("carrier");
                 applyInventory();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -316,6 +324,7 @@ default
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's World restrictions set to level " + (string)worldRestrict + ".");
                 llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's World restrictions set to level " + (string)worldRestrict + ".");
+                llSetObjectName("carrier");
                 applyWorld();
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -324,7 +333,9 @@ default
                 m = llDeleteSubString(m, 0, llStringLength(prefix + "play"));
                 if(llGetInventoryType(m) == INVENTORY_ANIMATION && anim != m)
                 {
+                    llSetObjectName("");
                     llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's animation set to " + m + ".");
+                    llSetObjectName("carrier");
                     llStopAnimation(anim);
                     llStartAnimation(m);
                 }
@@ -340,10 +351,9 @@ default
                 llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + <0.0, 0.0, 10.0>);
                 if(dissolved)
                 {
-                    string oldn = llGetObjectName();
                     llSetObjectName("");
                     llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, put on something and then take it off again. If this doesn't help, relog.");
-                    llSetObjectName(oldn);
+                    llSetObjectName("carrier");
                 }
                 llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "release," + (string)llAvatarOnLinkSitTarget(volumelink) + ",!release");
                 llSleep(0.5);
@@ -382,6 +392,7 @@ default
                 dissolved = TRUE;
                 llSetObjectName("The Acid");
                 llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), 0, "/me in your predator's stomach has completely dissolved you.");
+                llSetObjectName("carrier");
             }
         }
         else if(c == RLVRC)
@@ -414,6 +425,7 @@ default
                 {
                     llSetObjectName("");
                     llRegionSayTo(firstavatar, 0, m);
+                    llSetObjectName("carrier");
                     llReleaseControls();
                     struggleFailed = FALSE;
                 }
@@ -429,6 +441,7 @@ default
                     llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
                     llSetRegionPos(llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + <0.0, 0.0, 10.0>);
                     if(dissolved) llRegionSayTo(firstavatar, 0, "Note: The animation currently making you invisible can be a little tricky to get rid of. If you remain invisible after you are freed, put on something and then take it off again. If this doesn't help, relog.");
+                    llSetObjectName("carrier");
                     llRegionSayTo(firstavatar, RLVRC, "release," + (string)firstavatar + ",!release");
                     llSleep(0.5);
                     llUnSit(firstavatar);
@@ -480,7 +493,7 @@ default
             else
             {
                 firstattempt = TRUE;
-            }            
+            }
 
             if(dist > 60.0)
             {
@@ -515,7 +528,7 @@ default
         if(id == urlt)
         {
             urlt = NULL_KEY;
-            if(method == URL_REQUEST_GRANTED) 
+            if(method == URL_REQUEST_GRANTED)
             {
                 url = body;
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
@@ -563,6 +576,7 @@ default
             if(inventoryRestrict != 1) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's Inventory restrictions set to level " + (string)inventoryRestrict + ".");
             if(worldRestrict != 1) llOwnerSay("secondlife:///app/agent/" + (string)firstavatar + "/about's World restrictions set to level " + (string)worldRestrict + ".");
             if(worldRestrict != 1) llRegionSayTo(firstavatar, 0, "secondlife:///app/agent/" + (string)firstavatar + "/about's World restrictions set to level " + (string)worldRestrict + ".");
+            llSetObjectName("carrier");
             applyIm();
             applySpeech();
             applyDaze();

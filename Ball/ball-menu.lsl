@@ -15,14 +15,14 @@ integer isHidden = 0;
 
 string restrictionString()
 {
-    return (string)imRestrict + "," + 
-           (string)visionRestrict + "," + 
-           (string)hearingRestrict + "," + 
-           (string)speechRestrict + "," + 
-           (string)dazeRestrict + "," + 
-           (string)cameraRestrict + "," + 
-           (string)inventoryRestrict + "," + 
-           (string)worldRestrict + "," + 
+    return (string)imRestrict + "," +
+           (string)visionRestrict + "," +
+           (string)hearingRestrict + "," +
+           (string)speechRestrict + "," +
+           (string)dazeRestrict + "," +
+           (string)cameraRestrict + "," +
+           (string)inventoryRestrict + "," +
+           (string)worldRestrict + "," +
            (string)isHidden;
 }
 
@@ -120,6 +120,7 @@ sitterMenu()
     else          llRegionSayTo(firstavatar, 0, " * Under the ground, nameplate visible.");
     if(!isHidden) llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.]");
     else          llRegionSayTo(firstavatar, 0, " * Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.");
+    llSetObjectName("ball");
 }
 
 ownerMenu()
@@ -208,6 +209,7 @@ ownerMenu()
     llOwnerSay("Other Options:");
     llOwnerSay(" - Type /5" + prefix + "name <new name> to rename this object.");
     llOwnerSay(" - If there is a purple cylinder present, you can move it to change the object's nameplate, then click it to hide it.");
+    llSetObjectName("ball");
 }
 
 default
