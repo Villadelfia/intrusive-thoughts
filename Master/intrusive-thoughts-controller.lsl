@@ -148,7 +148,6 @@ default
 
     link_message(integer sender_num, integer num, string str, key id)
     {
-        llSetObjectName("");
         if(num == M_API_HUD_STARTED)
         {
             if(ready)
@@ -157,12 +156,14 @@ default
             }
             else
             {
+                llSetObjectName("");
                 llOwnerSay(VERSION_M + ": Drop your 'Intrusive Thoughts Configuration' notecard onto the HUD to set it up.");
                 llSetObjectName(master_base);
             }
         }
         else if(num == M_API_CONFIG_DONE)
         {
+            llSetObjectName("");
             llOwnerSay(VERSION_M + ": Startup complete. Welcome to your Intrusive Thoughts system. Click and hold any button for more than a second to get basic usage information. For more documentation read the included Instruction Manual notecard.");
             if(llGetPermissions() & PERMISSION_TAKE_CONTROLS == 0) llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
             llSetObjectName(master_base);
@@ -181,6 +182,7 @@ default
             {
                 if(name != "")
                 {
+                    llSetObjectName("");
                     llOwnerSay("Hold on. We're busy sending settings...");
                     llSetObjectName(master_base);
                     return;
@@ -188,13 +190,17 @@ default
 
                 if(lockedavatar)
                 {
+                    llSetObjectName("");
                     llOwnerSay("Displaying the menu for the Intrusive Thoughts slave worn by '" + lockedname + "'.");
+                    llSetObjectName(master_base);
                     llRegionSayTo(lockedavatar, MANTRA_CHANNEL, "PING");
                     llRegionSayTo(lockedavatar, COMMAND_CHANNEL, "*");
                 }
                 else
                 {
+                    llSetObjectName("");
                     llOwnerSay("Pinging the region for Intrusive Thoughts slaves under your control...");
+                    llSetObjectName(master_base);
                     targets = [];
                     retry = FALSE;
                     llRegionSay(MANTRA_CHANNEL, "PING");
@@ -202,7 +208,6 @@ default
                 }
             }
         }
-        llSetObjectName(master_base);
     }
 
     run_time_permissions(integer perm)

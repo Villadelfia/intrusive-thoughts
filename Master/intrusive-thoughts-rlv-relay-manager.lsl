@@ -159,6 +159,7 @@ default
             else if(startswith(llToLower(m), "filterdel"))
             {
                 integer which = (integer)llDeleteSubString(m, 0, llStringLength("filterdel"));
+                llSetObjectName("");
                 llOwnerSay("Removing RLV command filter \"" + llList2String(filters, which) + "\".");
                 llSetObjectName(master_base);
                 filters = llDeleteSubList(filters, which, which);
