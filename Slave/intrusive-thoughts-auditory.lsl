@@ -378,7 +378,11 @@ default
 
     listen(integer c, string n, key k, string m)
     {
-        if(c == 0) handleHear(k, n, m);
+        if(c == 0)
+        {
+            handleHear(k, n, m);
+            return;
+        }
         if(!isowner(k)) return;
         if(m == "RESET")
         {

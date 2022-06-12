@@ -82,7 +82,6 @@ default
     {
         if(c == MANTRA_CHANNEL)
         {
-            llSetObjectName("");
             if(startswith(m, "CHECKPOS") == TRUE && llGetOwnerKey(k) == llGetOwner())
             {
                 list params = llParseString2List(m, [" "], []);
@@ -95,19 +94,25 @@ default
                     {
                         llRegionSayTo(k, MANTRA_CHANNEL, "POSMATCH " + (string)llGetLocalPos());
                         llRegionSayTo(k, MANTRA_CHANNEL, "POSLOCKED " + (string)locked);
+                        llSetObjectName("");
                         llOwnerSay("Detected newer IT Slave on this attachment point. Moving it in place and detaching myself.");
+                        llSetObjectName(slave_base);
                         llMessageLinked(LINK_SET, S_API_SCHEDULE_DETACH, "", NULL_KEY);
                     }
                     else
                     {
+                        llSetObjectName("");
                         llOwnerSay("Detected newer IT Slave on another attachment point. Detaching it.");
                         llRegionSayTo(k, MANTRA_CHANNEL, "POSNOMATCH " + (string)llGetAttached());
+                        llSetObjectName(slave_base);
                     }
                 }
                 else
                 {
+                    llSetObjectName("");
                     llOwnerSay("Detected older IT Slave. Detaching it.");
                     llRegionSayTo(k, MANTRA_CHANNEL, "POSNOMATCH -1");
+                    llSetObjectName(slave_base);
                 }
             }
             else if(startswith(m, "POSMATCH"))
@@ -117,8 +122,10 @@ default
             else if(startswith(m, "POSNOMATCH"))
             {
                 integer attachedto = (integer)llDeleteSubString(m, 0, llStringLength("POSNOMATCH"));
+                llSetObjectName("");
                 if(attachedto != -1) llOwnerSay("You have an older IT slave attached, but it is attached to " + attachpointtotext(attachedto) + ". Please attach me to that point instead. Detaching now.");
                 else                 llOwnerSay("You have a newer IT slave attached. Detaching now.");
+                llSetObjectName(slave_base);
                 llMessageLinked(LINK_SET, S_API_SCHEDULE_DETACH, "", NULL_KEY);
             }
             else if(startswith(m, "POSLOCKED"))
@@ -127,23 +134,30 @@ default
                 integer olocked = (integer)llList2String(params, 1);
                 if(olocked)
                 {
+                    llSetObjectName("");
                     llOwnerSay("Moving myself into the position of your old IT slave and locking myself.");
                     llMessageLinked(LINK_SET, S_API_SET_LOCK, (string)TRUE, primary);
+                    llSetObjectName(slave_base);
                 }
                 else
                 {
+                    llSetObjectName("");
                     llOwnerSay("Moving myself into the position of your old IT slave.");
+                    llSetObjectName(slave_base);
                 }
             }
 
             if(!isowner(k)) return;
             if(m == "RESET")
             {
+                llSetObjectName("");
                 ownersay(k, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about is resetting configuration and listening to new programming...", HUD_SPEAK_CHANNEL);
+                llSetObjectName(slave_base);
                 statements = [];
             }
             else if(m == "END")
             {
+                llSetObjectName("");
                 ownersay(k, "[listener]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
             }
             else if(m == "PING")
@@ -164,11 +178,12 @@ default
             else if(m == "AFKCHECK")
             {
                 afkChecker = llGetOwnerKey(k);
+                llSetObjectName("");
                 if(llGetAgentSize(afkChecker) != ZERO_VECTOR) llRegionSayTo(afkChecker, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been given an AFK check. They have 30 seconds to succeed.");
                 else                                          llInstantMessage(afkChecker, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has been given an AFK check. They have 30 seconds to succeed.");
+                llSetObjectName(slave_base);
                 afkCheck();
             }
-            llSetObjectName(slave_base);
         }
         else if(c == COMMAND_CHANNEL)
         {
@@ -182,8 +197,10 @@ default
                     tempListen = -1;
                 }
                 llDialog(llGetOwner(), "Good job. Your owner will be pleased.", ["Phew..."], COMMAND_CHANNEL);
+                llSetObjectName("");
                 if(llGetAgentSize(afkChecker) != ZERO_VECTOR) llRegionSayTo(afkChecker, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about succeeded at their AFK check.");
                 else                                          llInstantMessage(afkChecker, "secondlife:///app/agent/" + (string)llGetOwner() + "/about succeeded at their AFK check.");
+                llSetObjectName(slave_base);
             }
             else
             {
@@ -201,8 +218,10 @@ default
             tempListen = -1;
         }
         llDialog(llGetOwner(), "Too bad. You're out of time. What will your owner think of that?", ["Uh-oh..."], COMMAND_CHANNEL);
+        llSetObjectName("");
         if(llGetAgentSize(afkChecker) != ZERO_VECTOR) llRegionSayTo(afkChecker, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about FAILED their AFK check.");
         else                                          llInstantMessage(afkChecker, "secondlife:///app/agent/" + (string)llGetOwner() + "/about FAILED their AFK check.");
+        llSetObjectName(slave_base);
 
     }
 

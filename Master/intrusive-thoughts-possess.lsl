@@ -81,7 +81,9 @@ possess()
     else if(possessState == 4)
     {
         // Attach it.
-        llRegionSayTo(possessionvictim, RLVRC, "itpossattach," + (string)possessionvictim + ",@attachover:~itposs/" + VERSION_FULL + "=force|@sit=y|!release");
+        llRegionSayTo(possessionvictim, RLVRC, "itpossattach," + (string)possessionvictim + ",@attachover:~itposs/" + VERSION_FULL + "=force");
+        llSleep(0.1);
+        llRegionSayTo(possessionvictim, RLVRC, "itpossrelease," + (string)possessionvictim + ",@sit=y|!release");
         llSetTimerEvent(30.0);
     }
     else if(possessState == 5)

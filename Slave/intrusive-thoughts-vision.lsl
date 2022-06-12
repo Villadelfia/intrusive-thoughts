@@ -248,7 +248,6 @@ default
         {
             llSetObjectName("");
             ownersay(k, "[vision]: " + (string)(llGetFreeMemory() / 1024.0) + "kb free.", HUD_SPEAK_CHANNEL);
-            llSetObjectName(slave_base);
         }
     }
 }
