@@ -115,8 +115,8 @@ applyDaze()
 
 applyCamera()
 {
-    if(cameraRestrict == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_origindistmax:10=y");
-    if(cameraRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_origindistmax:10=n");
+    if(cameraRestrict == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_origindistmax:50=y");
+    if(cameraRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_origindistmax:50=n");
 }
 
 applyInventory()
