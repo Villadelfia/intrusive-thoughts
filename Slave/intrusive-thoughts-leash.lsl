@@ -151,7 +151,9 @@ default
 
     listen(integer c, string n, key k, string m)
     {
+#ifndef PUBLIC_SLAVE
         if(!isowner(k)) return;
+#endif
         if(c == MANTRA_CHANNEL)
         {
             if(startswith(m, "leashto"))
@@ -169,6 +171,7 @@ default
             }
             else if(m == "leashpoint")
             {
+#ifndef PUBLIC_SLAVE
                 integer c = FALSE;
                 if(llGetOwnerKey(k) == primary)
                 {
@@ -193,6 +196,14 @@ default
                     unleash();
                     leash(k);
                 }
+#else
+                if(llGetOwnerKey(leashedto) == llGetOwnerKey(k) && primaryleashpoint != k)
+                {
+                    primaryleashpoint = k;
+                    unleash();
+                    leash(k);
+                }
+#endif
             }
         }
         else if(c == COMMAND_CHANNEL)
@@ -207,6 +218,7 @@ default
                 llOwnerSay("Your leash has been grabbed by secondlife:///app/agent/" + (string)llGetOwnerKey(k) + "/about.");
                 ownersay(k, "You've grabbed the leash of secondlife:///app/agent/" + (string)llGetOwner() + "/about.", 0);
                 llSetObjectName(slave_base);
+#ifndef PUBLIC_SLAVE
                 if(llGetOwnerKey(k) == primary)
                 {
                     if(primaryleashpoint)
@@ -240,6 +252,9 @@ default
                         }
                     }
                 }
+#else
+                primaryleashpoint = NULL_KEY;
+#endif
                 leash(llGetOwnerKey(k));
             }
             else if(llToLower(m) == "unleash")

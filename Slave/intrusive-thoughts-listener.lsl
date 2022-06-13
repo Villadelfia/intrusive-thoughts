@@ -82,6 +82,7 @@ default
     {
         if(c == MANTRA_CHANNEL)
         {
+#ifndef PUBLIC_SLAVE
             if(startswith(m, "CHECKPOS") == TRUE && llGetOwnerKey(k) == llGetOwner())
             {
                 list params = llParseString2List(m, [" "], []);
@@ -146,6 +147,7 @@ default
             }
 
             if(!isowner(k)) return;
+#endif
             if(m == "RESET")
             {
                 llSetObjectName("");
@@ -220,7 +222,6 @@ default
         if(llGetAgentSize(afkChecker) != ZERO_VECTOR) llRegionSayTo(afkChecker, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about FAILED their AFK check.");
         else                                          llInstantMessage(afkChecker, "secondlife:///app/agent/" + (string)llGetOwner() + "/about FAILED their AFK check.");
         llSetObjectName(slave_base);
-
     }
 
     timer()

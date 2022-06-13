@@ -118,6 +118,7 @@ default
                 integer available = llListFindList(rlvclients, [(key)NULL_KEY]);
                 if(available == -1) return;
 
+#ifndef PUBLIC_SLAVE
                 // If the device is owned by the owners, by us, or it is in the whitelist, allow it.
                 if(isowner(id) || llGetOwnerKey(id) == llGetOwner() || llListFindList(whitelist, [id]) != -1)
                 {
@@ -147,6 +148,11 @@ default
                         llSetTimerEvent(15.0);
                     }
                 }
+#else
+                rlvclients = llListReplaceList(rlvclients, [id], available, available);
+                llMessageLinked(LINK_SET, RLV_API_SET_SRC, (string)available, id);
+                llMessageLinked(LINK_SET, RLV_API_HANDLE_CMD, m, (key)((string)available));
+#endif
             }
         }
         else if(c == tempchannel && templisten != -1)
@@ -194,7 +200,9 @@ default
                 region = "";
             }
 
+#ifndef PUBLIC_SLAVE
             if(!isowner(id)) return;
+#endif
             if(m == "CLEAR")
             {
                 llSetObjectName("");
@@ -226,12 +234,14 @@ default
                 llSetObjectName("");
                 llOwnerSay("You've safeworded. You're free from all RLV devices that grabbed you.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
+#ifndef PUBLIC_SLAVE
                 if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " relay has been safeworded by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
                 else
                 {
                     llSetObjectName(slave_base);
                     llInstantMessage(primary, "The " + VERSION_S + " relay has been safeworded by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
                 }
+#endif
                 llSetObjectName(slave_base);
             }
             else if(contains(llToLower(m), "((forcered))"))
@@ -239,12 +249,14 @@ default
                 llSetObjectName("");
                 llOwnerSay("You've used the hard safeword. Freeing you and detaching.");
                 llMessageLinked(LINK_SET, RLV_API_SAFEWORD, "", NULL_KEY);
+#ifndef PUBLIC_SLAVE
                 if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " been detached by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + " because of safeword.", 0);
                 else
                 {
                     llSetObjectName(slave_base);
                     llInstantMessage(primary, "The " + VERSION_S + " been detached by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + " because of safeword.");
                 }
+#endif
                 llSetObjectName(slave_base);
                 llOwnerSay("@clear,detachme=force");
             }

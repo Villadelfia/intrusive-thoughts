@@ -336,7 +336,9 @@ default
 
     listen(integer c, string n, key k, string m)
     {
+#ifndef PUBLIC_SLAVE
         if(!isowner(k)) return;
+#endif
         if(m == "RESET")
         {
             hardReset();

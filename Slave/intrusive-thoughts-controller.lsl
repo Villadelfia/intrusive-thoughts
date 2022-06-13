@@ -15,6 +15,7 @@ default
     changed(integer change)
     {
         if(change & CHANGED_OWNER) resetscripts();
+#ifndef PUBLIC_SLAVE
         if(!notifyTeleport) return;
         if(change & CHANGED_TELEPORT)
         {
@@ -27,6 +28,7 @@ default
             }
             llSetObjectName(slave_base);
         }
+#endif
     }
 
     // This script bootstraps the entire IT Slave system.
@@ -36,6 +38,7 @@ default
         {
             if(wearer != llGetOwner()) return;
             llMessageLinked(LINK_SET, S_API_STARTED, llDumpList2String(owners, ","), primary);
+#ifndef PUBLIC_SLAVE
             if(notifyLogon)
             {
                 llSetObjectName("");
@@ -44,6 +47,7 @@ default
                 llSetObjectName(slave_base);
             }
             http = llHTTPRequest(UPDATE_URL, [], "");
+#endif
         }
         else
         {
@@ -70,12 +74,19 @@ default
         llSetObjectDesc((string)primary);
         llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
         llSetObjectName("");
+#ifndef PUBLIC_SLAVE
         if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
         else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
         llOwnerSay("Your primary owner has been detected as secondlife:///app/agent/" + (string)primary + "/about. If this is incorrect, detach me immediately because this person can configure me and add additional owners.");
         llSetObjectName(slave_base);
         llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
         http = llHTTPRequest(UPDATE_URL, [], "");
+#else
+        llOwnerSay("This version of the IT Slave can be configured by *anyone* (including yourself). If this is incorrect, detach me immediately.");
+        llSetObjectName(slave_base);
+        started = TRUE;
+        llMessageLinked(LINK_SET, S_API_STARTED, "", NULL_KEY);
+#endif
     }
 
     link_message(integer sender_num, integer num, string str, key id )
@@ -96,6 +107,7 @@ default
         }
     }
 
+#ifndef PUBLIC_SLAVE
     listen(integer c, string n, key k, string m)
     {
         // Only allow privileged access.
@@ -211,4 +223,5 @@ default
     {
         if(id == http && status == 200) versioncheck(body, FALSE);
     }
+#endif
 }

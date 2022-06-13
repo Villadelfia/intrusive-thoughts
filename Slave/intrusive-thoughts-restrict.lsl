@@ -99,7 +99,11 @@ softReset()
 
 doSetup()
 {
+#ifndef PUBLIC_SLAVE
     llOwnerSay("@accepttp:" + (string)primary + "=add,accepttprequest:" + (string)primary + "=add,acceptpermission=add");
+#else
+    llOwnerSay("@accepttp=add,accepttprequest=add,acceptpermission=add");
+#endif
 
     if(daze) llOwnerSay("@shownames_sec=n,showhovertextworld=n,showworldmap=n,showminimap=n,showloc=n,fartouch=n,camunlock=n,alwaysrun=n,temprun=n");
     else     llOwnerSay("@shownames_sec=y,showhovertextworld=y,showworldmap=y,showminimap=y,showloc=y,fartouch=y,camunlock=y,alwaysrun=y,temprun=y");
@@ -107,11 +111,19 @@ doSetup()
     if(noim)
     {
         llMessageLinked(LINK_SET, S_API_SAY, "/me can not IM with people within 20 meters of them.", (key)name);
+#ifndef PUBLIC_SLAVE
         llOwnerSay("@recvim:20=n,sendim:20=n,sendim:" + (string)primary + "=add,recvim:" + (string)primary + "=add");
+#else
+        llOwnerSay("@recvim:20=n,sendim:20=n");
+#endif
     }
     else
     {
+#ifndef PUBLIC_SLAVE
         llOwnerSay("@recvim:20=y,sendim:20=y,sendim:" + (string)primary + "=rem,recvim:" + (string)primary + "=rem");
+#else
+        llOwnerSay("@recvim:20=y,sendim:20=y");
+#endif
     }
 
     if(outfitlocked)
@@ -157,8 +169,10 @@ handlemenu(key k)
     ownersay(k, "[secondlife:///app/chat/1/" + prefix + "emergency - Remove all restrictions in case of emergency.]", 0);
 
     // Owner commands.
+#ifndef PUBLIC_SLAVE
     if(isowner(k))
     {
+#endif
         ownersay(k, " ", 0);
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "noim - Toggle local IMs.]", 0);
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "strip - Strip all clothes.]", 0);
@@ -185,7 +199,9 @@ handlemenu(key k)
         ownersay(k, "- /1" + prefix + "leashlength <meters>: Set the leash length.", 0);
         ownersay(k, "- /1" + prefix + "blindset <distance>: Directly set distance of sight radius in meters.", 0);
         ownersay(k, "- /1" + prefix + "focusset <distance>: Directly set focus distance in meters.", 0);
+#ifndef PUBLIC_SLAVE
     }
+#endif
 
     llSetObjectName(slave_base);
 }
@@ -400,8 +416,10 @@ default
             return;
         }
 
+#ifndef PUBLIC_SLAVE
         // We only accept commands from the owner or the wearer.
         if(llGetOwnerKey(k) != llGetOwner() && isowner(k) == FALSE) return;
+#endif
 
         // Detect prefix.
         if(c == COMMAND_CHANNEL)
@@ -431,9 +449,13 @@ default
             else if(llToLower(m) == "emergency")
             {
                 llSetObjectName("");
+#ifndef PUBLIC_SLAVE
                 ownersay(k, "Removing all RLV restrictions, nullifying your filters until next relog, and notifying your primary owner...", 0);
                 if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been emergency reset by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
                 else llInstantMessage(primary, "The " + VERSION_S + " has been emergency reset by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+#else
+                ownersay(k, "Removing all RLV restrictions, nullifying your filters until next relog...", 0);
+#endif
                 llSetObjectName(slave_base);
                 softReset();
                 llMessageLinked(LINK_SET, S_API_EMERGENCY, name, "");
@@ -445,7 +467,9 @@ default
         }
 
         // Starting here, only the Domme may give commands.
+#ifndef PUBLIC_SLAVE
         if(!isowner(k)) return;
+#endif
         requester = k;
 
         if(c == MANTRA_CHANNEL)
@@ -483,13 +507,21 @@ default
             if(noim)
             {
                 llMessageLinked(LINK_SET, S_API_SAY, "/me can IM with people within 20 meters of them again.", (key)name);
+#ifndef PUBLIC_SLAVE
                 llOwnerSay("@recvim:20=y,sendim:20=y,sendim:" + (string)primary + "=rem,recvim:" + (string)primary + "=rem");
+#else
+                llOwnerSay("@recvim:20=y,sendim:20=y");
+#endif
                 noim = FALSE;
             }
             else
             {
                 llMessageLinked(LINK_SET, S_API_SAY, "/me can no longer IM with people within 20 meters of them.", (key)name);
+#ifndef PUBLIC_SLAVE
                 llOwnerSay("@recvim:20=n,sendim:20=n,sendim:" + (string)primary + "=add,recvim:" + (string)primary + "=add");
+#else
+                llOwnerSay("@recvim:20=n,sendim:20=n");
+#endif
                 noim = TRUE;
             }
         }

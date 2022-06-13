@@ -77,8 +77,10 @@ handleHear(key skey, string sender, string message)
     if(deaf)
     {
         // Handle undeafening by owner.
+#ifndef PUBLIC_SLAVE
         if(isowner(skey))
         {
+#endif
             l1 = llGetListLength(undeafencmd);
             while(~--l1)
             {
@@ -92,7 +94,9 @@ handleHear(key skey, string sender, string message)
                     jump cont1;
                 }
             }
+#ifndef PUBLIC_SLAVE
         }
+#endif
 
         // Handle deafen exceptions.
         l1 = llGetListLength(deafenexcept);
@@ -144,8 +148,10 @@ handleHear(key skey, string sender, string message)
     }
 
     // Handle deafening by owner.
+#ifndef PUBLIC_SLAVE
     if(isowner(skey) && deaf == FALSE)
     {
+#endif
         l1 = llGetListLength(deafencmd);
         while(~--l1)
         {
@@ -159,7 +165,9 @@ handleHear(key skey, string sender, string message)
                 jump cont2;
             }
         }
+#ifndef PUBLIC_SLAVE
     }
+#endif
     @cont2;
 
     // Handle URLS.
@@ -383,7 +391,9 @@ default
             handleHear(k, n, m);
             return;
         }
+#ifdef PUBLIC_SLAVE
         if(!isowner(k)) return;
+#endif
         if(m == "RESET")
         {
             hardReset();

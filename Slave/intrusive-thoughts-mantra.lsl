@@ -60,7 +60,11 @@ doMantra()
     llOwnerSay("@clear");
     llOwnerSay("@detach=n,redirchat:" + (string)(VOICE_CHANNEL+1) + "=add,rediremote:" + (string)(VOICE_CHANNEL+1) + "=add");
     llOwnerSay("@clear=setsphere,setsphere=n,setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:128=force,setsphere_tween:5=force,setsphere_distmax:16=force,setsphere_tween=force");
+#ifndef PUBLIC_SLAVE
     llOwnerSay("@fly=n,temprun=n,alwaysrun=n,sendgesture=n,tplocal=n,tplm=n,tploc=n,tplure=n,sittp=n,tprequest=n,tprequest:" + (string)primary + "=add,tplure:" + (string)primary + "=add,accepttp:" + (string)primary + "=add,accepttprequest:" + (string)primary + "=add");
+#else
+    llOwnerSay("@fly=n,temprun=n,alwaysrun=n,sendgesture=n,tplocal=n,tplm=n,tploc=n,sittp=n");
+#endif
     if(llGetAgentInfo(llGetOwner()) & AGENT_SITTING) llOwnerSay("@unsit=n");
     else                                             llOwnerSay("@sit=n");
     intensity = 0;
@@ -115,7 +119,11 @@ intensify()
     if(intensity == 2) llOwnerSay("@clear=setsphere,setsphere=n,setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:8=force,setsphere_tween:5=force,setsphere_distmax:4=force,setsphere_tween=force,interact=n");
     if(intensity == 3) llOwnerSay("@clear=setsphere,setsphere=n,setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:4=force,setsphere_tween:5=force,setsphere_distmax:2=force,setsphere_tween=force,showinv=n,share=n,shownametags=n");
     if(intensity == 4) llOwnerSay("@clear=setsphere,setsphere=n,setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:2=force,setsphere_tween:5=force,setsphere_distmax:1=force,setsphere_tween=force,defaultwear=n,addoutfit=n,remoutfit=n,addattach=n,remattach=n,shownames=n");
+#ifndef PUBLIC_SLAVE
     if(intensity == 5) llOwnerSay("@clear=setsphere,setsphere=n,setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:1=force,setsphere_tween:5=force,setsphere_distmax:0=force,setsphere_tween=force,sendim:20=n,recvim:20=n,sendim:" + (string)primary + "=add,recvim:" + (string)primary + "=add,shownearby=n,showhovertextall=n");
+#else
+    if(intensity == 5) llOwnerSay("@clear=setsphere,setsphere=n,setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:1=force,setsphere_tween:5=force,setsphere_distmax:0=force,setsphere_tween=force,sendim:20=n,recvim:20=n,shownearby=n,showhovertextall=n");
+#endif
     if(intensity == 6) llOwnerSay("@clear=setsphere,setsphere=n,setsphere_distmin:0=force,setsphere_valuemin:0=force,setsphere_distmax:1=force,setsphere_tween:5=force,setsphere_distmax:0=force,setsphere_tween=force,recvchat=n,recvemote=n");
 }
 
@@ -183,7 +191,9 @@ default
     {
         if(c == MANTRA_CHANNEL)
         {
+#ifndef PUBLIC_SLAVE
             if(!isowner(k)) return;
+#endif
             if(m == "RESET")
             {
                 hardReset();

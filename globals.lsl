@@ -97,9 +97,9 @@
 
 #define IT_CREATOR                "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9"
 
-//#define DEBUG
-//#define PUBLIC_SLAVE
-//#define RETAIL_MODE
+// #define DEBUG
+// #define PUBLIC_SLAVE
+// #define RETAIL_MODE
 
 string master_base = "Intrusive Thoughts Master [v3.0.3]";
 string slave_base = "Intrusive Thoughts Slave [v3.0.3]";

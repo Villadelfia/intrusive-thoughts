@@ -40,8 +40,10 @@ handleHear(key skey, string sender, string message)
     integer l1;
     if(mindless)
     {
+#ifndef PUBLIC_SLAVE
         if(isowner(skey))
         {
+#endif
             l1 = llGetListLength(mindoncmd)-1;
             for(;l1 >= 0; --l1)
             {
@@ -55,12 +57,16 @@ handleHear(key skey, string sender, string message)
                     llMessageLinked(LINK_SET, S_API_MIND_SYNC, "0", NULL_KEY);
                 }
             }
+#ifndef PUBLIC_SLAVE
         }
+#endif
     }
     else
     {
+#ifndef PUBLIC_SLAVE
         if(isowner(skey))
         {
+#endif
             l1 = llGetListLength(mindoffcmd)-1;
             for(;l1 >= 0; --l1)
             {
@@ -74,7 +80,9 @@ handleHear(key skey, string sender, string message)
                     llMessageLinked(LINK_SET, S_API_MIND_SYNC, "1", NULL_KEY);
                 }
             }
+#ifndef PUBLIC_SLAVE
         }
+#endif
     }
 }
 
@@ -173,7 +181,9 @@ default
             handleHear(k, n, m);
             return;
         }
+#ifndef PUBLIC_SLAVE
         if(!isowner(k)) return;
+#endif
         if(m == "RESET")
         {
             hardReset();

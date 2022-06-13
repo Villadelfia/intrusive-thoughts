@@ -36,8 +36,10 @@ handleHear(key skey, string sender, string message)
     integer l1;
     if(blind)
     {
+#ifndef PUBLIC_SLAVE
         if(isowner(skey))
         {
+#endif
             l1 = llGetListLength(unblindcmd)-1;
             for(;l1 >= 0; --l1)
             {
@@ -51,12 +53,16 @@ handleHear(key skey, string sender, string message)
                     checkSetup(0, 0);
                 }
             }
+#ifndef PUBLIC_SLAVE
         }
+#endif
     }
     else
     {
+#ifndef PUBLIC_SLAVE
         if(isowner(skey))
         {
+#endif
             l1 = llGetListLength(blindcmd)-1;
             for(;l1 >= 0; --l1)
             {
@@ -70,7 +76,9 @@ handleHear(key skey, string sender, string message)
                     checkSetup(128, currentVision);
                 }
             }
+#ifndef PUBLIC_SLAVE
         }
+#endif
     }
 }
 
@@ -183,8 +191,10 @@ default
             {
                 llSetTimerEvent(0.0);
                 llSetObjectName("");
+#ifndef PUBLIC_SLAVE
                 if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.", 0);
                 else                                       llInstantMessage(primary, "The " + VERSION_S + " worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about does not have RLV enabled.");
+#endif
                 llOwnerSay("Hey! Your RLV is (probably) turned off and I won't work properly until you turn it on and relog. If it is on, you're just experiencing some lag and you shouldn't worry about it.");
                 llSetObjectName(slave_base);
                 llMessageLinked(LINK_THIS, S_API_RLV_CHECK, "", "");
@@ -208,13 +218,16 @@ default
             rlvtries = 0;
             llSetTimerEvent(0.0);
             llMessageLinked(LINK_THIS, S_API_RLV_CHECK, "", "");
+            return;
         }
         if(c == 0)
         {
             handleHear(k, n, m);
             return;
         }
+#ifndef PUBLIC_SLAVE
         if(!isowner(k)) return;
+#endif
         if(m == "RESET")
         {
             hardReset();

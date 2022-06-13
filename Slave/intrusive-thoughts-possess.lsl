@@ -88,7 +88,9 @@ default
         }
 
         id = llGetOwnerKey(id);
+#ifndef PUBLIC_SLAVE
         if(isowner(id) == FALSE) return;
+#endif
         if(m == "RESET")
         {
             name = "";
