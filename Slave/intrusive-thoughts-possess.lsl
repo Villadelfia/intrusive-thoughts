@@ -1,5 +1,6 @@
 #include <IT/globals.lsl>
 #define IMPULSE 1.6
+integer muted = FALSE;
 key controller = NULL_KEY;
 key primary = NULL_KEY;
 string name = "";
@@ -10,7 +11,7 @@ integer groupaccess = FALSE;
 release()
 {
     llReleaseControls();
-    llOwnerSay("@interact=y,tplocal=y,tplm=y,tploc=y,unsit=y");
+    llOwnerSay("@interact=y,tplocal=y,tplm=y,tploc=y,unsit=y,sendchat=y,sendchannel=y");
     controller = NULL_KEY;
     llSetTimerEvent(0.0);
 }
@@ -100,6 +101,7 @@ default
 
         if(m == "takectrl" && controller == NULL_KEY)
         {
+            muted = FALSE;
             controller = id;
             llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
         }
@@ -123,6 +125,21 @@ default
         else if(m == "ctrlstand")
         {
             llOwnerSay("@unsit=force,unsit=y");
+        }
+        else if(m == "ctrlmute")
+        {
+            if(muted)
+            {
+                muted = FALSE;
+                llOwnerSay("@sendchat=y,sendchannel=y");
+                ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.", 0);
+            }
+            else
+            {
+                muted = TRUE;
+                llOwnerSay("@sendchat=n,sendchannel=n");
+                ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.", 0);
+            }
         }
         else if(startswith(m, "ctrlsit"))
         {

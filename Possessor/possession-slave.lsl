@@ -2,6 +2,7 @@
 #define IMPULSE 1.6
 key controller = NULL_KEY;
 key objectifier = NULL_KEY;
+integer muted = FALSE;
 integer struggleEvents = 0;
 integer struggleFailed = FALSE;
 
@@ -17,6 +18,7 @@ default
     attach(key id)
     {
         llSetTimerEvent(0.0);
+        muted = FALSE;
         struggleEvents = 0;
         struggleFailed = FALSE;
         controller = NULL_KEY;
@@ -40,7 +42,7 @@ default
                     llOwnerSay("@clear,detachme=force");
                 }
             }
-            
+
             if(controller == NULL_KEY) return;
             if(llVecDist(llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0), llList2Vector(llGetObjectDetails(controller, [OBJECT_POS]), 0)) <= 20.0) return;
             string prefix = "";
@@ -50,9 +52,9 @@ default
                 if((string)llGetObjectDetails(id, [OBJECT_OWNER]) == NULL_KEY) group = "&groupowned=true";
                 vector pos = llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0);
                 string slurl = llEscapeURL(llGetRegionName()) + "/"+ (string)((integer)pos.x) + "/"+ (string)((integer)pos.y) + "/"+ (string)(llCeil(pos.z));
-                prefix = "[secondlife:///app/objectim/" + (string)id + 
-                        "?name=" + llEscapeURL(n) + 
-                        "&owner=" + (string)llGetOwnerKey(id) + 
+                prefix = "[secondlife:///app/objectim/" + (string)id +
+                        "?name=" + llEscapeURL(n) +
+                        "&owner=" + (string)llGetOwnerKey(id) +
                         group +
                         "&slurl=" + llEscapeURL(slurl) + " " + n + "]";
             }
@@ -78,6 +80,7 @@ default
             if(m == "takectrl" && controller == NULL_KEY && objectifier == NULL_KEY)
             {
                 controller = llGetOwnerKey(id);
+                muted = FALSE;
                 llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
             }
             else if(startswith(m, "sit") && controller == NULL_KEY && objectifier == NULL_KEY)
@@ -111,6 +114,21 @@ default
             else if(m == "ctrlstand")
             {
                 llOwnerSay("@unsit=force,unsit=y");
+            }
+            else if(m == "ctrlmute")
+            {
+                if(muted)
+                {
+                    muted = FALSE;
+                    llOwnerSay("@sendchat=y,sendchannel=y");
+                    ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.");
+                }
+                else
+                {
+                    muted = TRUE;
+                    llOwnerSay("@sendchat=n,sendchannel=n");
+                    ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.");
+                }
             }
             else if(startswith(m, "ctrlsit"))
             {
