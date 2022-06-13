@@ -14,6 +14,7 @@ string path = "";
 string playing = "";
 integer daze = FALSE;
 integer locked = FALSE;
+integer outfitlocked = FALSE;
 float currentVision = 4.0;
 float currentFocus = 2.0;
 
@@ -26,6 +27,9 @@ hardReset()
     name = llGetDisplayName(llGetOwner());
     noim = FALSE;
     daze = FALSE;
+    outfitlocked = FALSE;
+    currentVision = 4.0;
+    currentFocus = 2.0;
     outfitPrefix = "~outfit";
     stuffPrefix = "~stuff";
     formPrefix = "~form";
@@ -38,6 +42,10 @@ softReset()
 {
     noim = FALSE;
     daze = FALSE;
+    outfitlocked = FALSE;
+    currentVision = 4.0;
+    currentFocus = 2.0;
+
     if(playing != "") llStopAnimation(playing);
     doSetup();
 }
@@ -57,6 +65,15 @@ doSetup()
     else
     {
         llOwnerSay("@recvim:20=y,sendim:20=y,sendim:" + (string)primary + "=rem,recvim:" + (string)primary + "=rem");
+    }
+
+    if(outfitlocked)
+    {
+        llOwnerSay("@addattach=n,remattach=n,addoutfit=n,remoutfit=n");
+    }
+    else
+    {
+        llOwnerSay("@addattach=y,remattach=y,addoutfit=y,remoutfit=y");
     }
 
     if(locked)
@@ -107,7 +124,9 @@ handlemenu(key k)
             ownersay(k, "- Notification toggles: [secondlife:///app/chat/1/" + prefix + "tpnotify On teleport]/[secondlife:///app/chat/1/" + prefix + "lognotify On wear/detach].", 0);
         }
         ownersay(k, " ", 0);
-        ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting]/[secondlife:///app/chat/1/" + prefix + "mind mindlessness]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing]/[secondlife:///app/chat/1/" + prefix + "lock lock].", 0);
+        ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting].", 0);
+        ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "mind mindlessness]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing].", 0);
+        ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "lock IT lock]/[secondlife:///app/chat/1/" + prefix + "outfitlock outfit lock].", 0);
         ownersay(k, "- Sight radius: [secondlife:///app/chat/1/" + prefix + "b--- ---] [secondlife:///app/chat/1/" + prefix + "b-- --] [secondlife:///app/chat/1/" + prefix + "b- -] " + formatfloat(currentVision, 2) + " meters [secondlife:///app/chat/1/" + prefix + "b+ +] [secondlife:///app/chat/1/" + prefix + "b++ ++] [secondlife:///app/chat/1/" + prefix + "b+++ +++]", 0);
         ownersay(k, "- Focus distance: [secondlife:///app/chat/1/" + prefix + "f--- ---] [secondlife:///app/chat/1/" + prefix + "f-- --] [secondlife:///app/chat/1/" + prefix + "f- -] " + formatfloat(currentFocus, 2) + " meters [secondlife:///app/chat/1/" + prefix + "f+ +] [secondlife:///app/chat/1/" + prefix + "f++ ++] [secondlife:///app/chat/1/" + prefix + "f+++ +++]", 0);
         ownersay(k, " ", 0);
@@ -546,6 +565,23 @@ default
                 daze = TRUE;
                 ownersay(k, name + " is now dazed.", 0);
                 llOwnerSay("@shownames_sec=n,showhovertextworld=n,showworldmap=n,showminimap=n,showloc=n,fartouch=n,camunlock=n,alwaysrun=n,temprun=n");
+            }
+            llSetObjectName(slave_base);
+        }
+        else if(llToLower(m) == "outfitlock")
+        {
+            llSetObjectName("");
+            if(outfitlocked)
+            {
+                outfitlocked = FALSE;
+                ownersay(k, name + " is no longer prevented from changing their outfit.", 0);
+                llOwnerSay("@addattach=y,remattach=y,addoutfit=y,remoutfit=y");
+            }
+            else
+            {
+                outfitlocked = TRUE;
+                ownersay(k, name + " can no longer change their outfit.", 0);
+                llOwnerSay("@addattach=n,remattach=n,addoutfit=n,remoutfit=n");
             }
             llSetObjectName(slave_base);
         }

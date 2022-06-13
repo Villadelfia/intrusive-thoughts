@@ -124,3 +124,5 @@ Version 3.0.1:
 Version 3.0.2:
  - Improve compatibility with Silenced Whim.
  - Major refactoring of code.
+ - Add object name to API message.
+ - Add toggle to lock outfit on slave.
