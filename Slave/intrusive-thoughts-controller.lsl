@@ -105,13 +105,12 @@ default
         if(startswith(m, prefix)) m = llDeleteSubString(m, 0, 1);
         else                      return;
 
-        llSetObjectName("");
-
         k = llGetOwnerKey(k);
 
         // Owner info
         if(m == "ownerinfo")
         {
+            llSetObjectName("");
             ownersay(k, "Owner information for " + llGetDisplayName(wearer) + ".", 0);
             ownersay(k, "Primary owner: secondlife:///app/agent/" + (string)primary + "/about", 0);
             integer n = llGetListLength(owners);
@@ -129,11 +128,13 @@ default
             if(publicaccess) publicstatus = "ENABLED";
             ownersay(k, "Group access " + groupstatus + ". Click [secondlife:///app/chat/1/" + prefix + "groupaccess here] to toggle.", 0);
             ownersay(k, "Public access " + publicstatus + ". Click [secondlife:///app/chat/1/" + prefix + "publicaccess here] to toggle.", 0);
+            llSetObjectName(slave_base);
         }
         else if(startswith(m, "owneradd"))
         {
             m = llDeleteSubString(m, 0, llStringLength("owneradd"));
             key new = llName2Key(m);
+            llSetObjectName("");
             if(new)
             {
                 ownersay(k, "Added secondary owner secondlife:///app/agent/" + (string)new + "/about.", 0);
@@ -145,10 +146,12 @@ default
             {
                 ownersay(k, "There is no user in the same region with the username " + m + ".", 0);
             }
+            llSetObjectName(slave_base);
         }
         else if(startswith(m, "ownerdel"))
         {
             integer n = (integer)llDeleteSubString(m, 0, llStringLength("ownerdel"));
+            llSetObjectName("");
             if(n < 0 || n >= llGetListLength(owners))
             {
                 ownersay(k, "Invalid number given for secondary owner deletion: " + (string)n + ".", 0);
@@ -161,13 +164,16 @@ default
                 owners = llDeleteSubList(owners, n, n);
                 llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
             }
+            llSetObjectName(slave_base);
         }
         else if(m == "groupaccess")
         {
             groupaccess = !groupaccess;
             string groupstatus = "DISABLED";
             if(groupaccess) groupstatus = "ENABLED";
+            llSetObjectName("");
             ownersay(k, "Group access " + groupstatus + ". Click [secondlife:///app/chat/1/" + prefix + "groupaccess here] to toggle.", 0);
+            llSetObjectName(slave_base);
             llMessageLinked(LINK_SET, S_API_OTHER_ACCESS, (string)publicaccess, (key)((string)groupaccess));
         }
         else if(m == "publicaccess")
@@ -175,7 +181,9 @@ default
             publicaccess = !publicaccess;
             string publicstatus = "DISABLED";
             if(publicaccess) publicstatus = "ENABLED";
+            llSetObjectName("");
             ownersay(k, "Public access " + publicstatus + ". Click [secondlife:///app/chat/1/" + prefix + "publicaccess here] to toggle.", 0);
+            llSetObjectName(slave_base);
             llMessageLinked(LINK_SET, S_API_OTHER_ACCESS, (string)publicaccess, (key)((string)groupaccess));
         }
         else if(m == "lognotify")
@@ -183,17 +191,20 @@ default
             notifyLogon = !notifyLogon;
             string status = "DISABLED";
             if(notifyLogon) status = "ENABLED";
+            llSetObjectName("");
             ownersay(k, "Wear/take off notifications " + status + ". Click [secondlife:///app/chat/1/" + prefix + "lognotify here] to toggle.", 0);
+            llSetObjectName(slave_base);
         }
         else if(m == "tpnotify")
         {
             notifyTeleport = !notifyTeleport;
             string status = "DISABLED";
             if(notifyTeleport) status = "ENABLED";
+            llSetObjectName("");
             ownersay(k, "Teleport notifications " + status + ". Click [secondlife:///app/chat/1/" + prefix + "tpnotify here] to toggle.", 0);
+            llSetObjectName(slave_base);
         }
 
-        llSetObjectName(slave_base);
     }
 
     http_response(key id, integer status, list metadata, string body)
