@@ -59,8 +59,8 @@ For the wearer of a Slave device:
  - #RLV/~outfit/...: The contents of the ~outfit folder can browsed by any owner of the slave. When worn, just the contents of the ~outfit folder will be stripped, and then the chosen outfit will be added. This is suitable for outfits on top of a base form.
  - #RLV/~stuff/...: The contents of the ~stuff folder can browsed by any owner of the slave. Any subfolder can be worn or removed individually.
  - The ~form, ~outfit, and ~stuff prefixes can be changed via the applier notecard.
- 
- 
+
+
 5. About the Objectification system.
 There are a few nuances to the objectification system. When you objectify someone, they can still emote. But if they try to talk, or emote with spoken text in it, only they, the other objects worn by you, and yourself will be able to see that. In addition, you as a wearer may speak into channel /8 (think of it like a magic 8-ball) to 'think' to the objects you are wearing. When you store an object as furniture, you can no longer think to them, and they can no longer speak to anyone except themselves, or with other furniture in the region that has the same group.
 
@@ -151,7 +151,7 @@ AFKCHECK: Sends a message to the selected slave and if they do not respond in ti
 
 
 18. How do I change the sound of the vore carrier?
-Rez your hud onto the ground and take the "carrier" out of it, rez that as well. 
+Rez your hud onto the ground and take the "carrier" out of it, rez that as well.
 
 Edit the carrier and select the link with the acid-anim script. Placing a sound file here will replace the gurgling sound.
 Edit the carrier and select the link with the stomach-anim script. Placing a sound file here will replace the heartbeat sound.
@@ -163,7 +163,7 @@ Take it back to your inventory and replace it in your HUD.
 The struggle API communicates on channel 997611882, hereafter called STRUGGLE_CHANNEL. The struggle API is present in the included vore carrier, the objectification ball, and the furniture ball. Messages will be sent to the person wearing the IT hud that rezzed the vore carrier or objectification ball, or the furniture prim in the case of furniture.
 
 The following messages will be sent from the carrier/ball to the hud wearer/furniture:
- - captured|<uuid>|<type> — Sent when a new victim is captured. Uuid is the victim's uuid. Type is 'vore', 'object', or 'possess' depending on what they are a victim of.
+ - captured|<uuid>|<type>|<what> — Sent when a new victim is captured. Uuid is the victim's uuid. Type is 'vore', 'object', or 'possess' depending on what they are a victim of. What is only added in the case of object type and is the name of the object they have become.
  - released|<uuid> — Sent when a victim is released for any reason. Uuid is the released victim's uuid.
  - acid_level|<uuid>|<level> — Sent when a vore victim is captured and whenever the acid level is changed thereafter. Uuid is the victim's uuid. Level is a floating point number between 0.0 and 1.0.
  - acid_dissolve|<uuid> — Sent when the acid level is pushed over the max. The victim is considered dissolved by the carrier at this point. Uuid is the victim's uuid.
