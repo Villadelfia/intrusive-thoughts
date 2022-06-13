@@ -22,6 +22,8 @@ string outfitPrefix = "~outfit";
 string stuffPrefix = "~stuff";
 string formPrefix = "~form";
 
+list wearState = ["⮽", "⬜", "⬔", "⬛"];
+
 hardReset()
 {
     name = llGetDisplayName(llGetOwner());
@@ -126,7 +128,7 @@ handlemenu(key k)
         ownersay(k, " ", 0);
         ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting].", 0);
         ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "mind mindlessness]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing].", 0);
-        ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "lock IT lock]/[secondlife:///app/chat/1/" + prefix + "outfitlock outfit lock].", 0);
+        ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "lock IT lock]/[secondlife:///app/chat/1/" + prefix + "lockoutfit outfit lock].", 0);
         ownersay(k, "- Sight radius: [secondlife:///app/chat/1/" + prefix + "b--- ---] [secondlife:///app/chat/1/" + prefix + "b-- --] [secondlife:///app/chat/1/" + prefix + "b- -] " + formatfloat(currentVision, 2) + " meters [secondlife:///app/chat/1/" + prefix + "b+ +] [secondlife:///app/chat/1/" + prefix + "b++ ++] [secondlife:///app/chat/1/" + prefix + "b+++ +++]", 0);
         ownersay(k, "- Focus distance: [secondlife:///app/chat/1/" + prefix + "f--- ---] [secondlife:///app/chat/1/" + prefix + "f-- --] [secondlife:///app/chat/1/" + prefix + "f- -] " + formatfloat(currentFocus, 2) + " meters [secondlife:///app/chat/1/" + prefix + "f+ +] [secondlife:///app/chat/1/" + prefix + "f++ ++] [secondlife:///app/chat/1/" + prefix + "f+++ +++]", 0);
         ownersay(k, " ", 0);
@@ -224,7 +226,6 @@ default
 
     listen(integer c, string n, key k, string m)
     {
-
         if(c == COMMAND_CHANNEL && startswith(llToLower(m), "*onball") && llList2Key(llGetObjectDetails(k, [OBJECT_CREATOR]), 0) == (key)IT_CREATOR)
         {
             llMessageLinked(LINK_SET, S_API_DISABLE, "", NULL_KEY);
@@ -241,7 +242,9 @@ default
                 list stuff = llParseString2List(m, [","], []);
                 stuff = llListSort(stuff, 1, TRUE);
                 string message;
+                list item;
                 string thing;
+                string worn;
                 integer l;
                 integer i;
                 llSetObjectName("");
@@ -252,8 +255,15 @@ default
                     l = llGetListLength(stuff);
                     for(i = 0; i < l; ++i)
                     {
-                        thing = llList2String(stuff, i);
-                        ownersay(requester, "[secondlife:///app/chat/1/" + prefix + llEscapeURL("form " + thing) + " " + thing + "]", 0);
+                        item = llParseStringKeepNulls(llList2String(stuff, i), ["|"], []);
+                        thing = llList2String(item, 0);
+                        worn = llList2String(item, 1);
+                        if(thing != "")
+                        {
+                            message  = llList2String(wearState, (integer)llGetSubString(worn, 0, 0)) + llList2String(wearState, (integer)llGetSubString(worn, 1, 1)) + " ";
+                            message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("form " + thing) + " " + thing + "]";
+                            ownersay(requester, message, 0);
+                        }
                     }
                     ownersay(requester, " ", 0);
                     ownersay(requester, "[secondlife:///app/chat/1/" + prefix + "! Back to command list...]", 0);
@@ -265,10 +275,16 @@ default
                     l = llGetListLength(stuff);
                     for(i = 0; i < l; ++i)
                     {
-                        thing = llList2String(stuff, i);
-                        message  = "[secondlife:///app/chat/1/" + prefix + llEscapeURL("outfit " + thing) + " " + thing + "] ";
-                        message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("outfitstrip " + thing) + " (strip first)]";
-                        ownersay(requester, message, 0);
+                        item = llParseStringKeepNulls(llList2String(stuff, i), ["|"], []);
+                        thing = llList2String(item, 0);
+                        worn = llList2String(item, 1);
+                        if(thing != "")
+                        {
+                            message  = llList2String(wearState, (integer)llGetSubString(worn, 0, 0)) + llList2String(wearState, (integer)llGetSubString(worn, 1, 1)) + " ";
+                            message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("outfit " + thing) + " " + thing + "] ";
+                            message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("outfitstrip " + thing) + " (strip first)]";
+                            ownersay(requester, message, 0);
+                        }
                     }
                     ownersay(requester, " ", 0);
                     ownersay(requester, "[secondlife:///app/chat/1/" + prefix + "! Back to command list...]", 0);
@@ -280,11 +296,17 @@ default
                     l = llGetListLength(stuff);
                     for(i = 0; i < l; ++i)
                     {
-                        thing = llList2String(stuff, i);
-                        message =  thing + " ";
-                        message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("add " + thing) + " (+) ]";
-                        message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("remove " + thing) + " (-)]";
-                        ownersay(requester, message, 0);
+                        item = llParseStringKeepNulls(llList2String(stuff, i), ["|"], []);
+                        thing = llList2String(item, 0);
+                        worn = llList2String(item, 1);
+                        if(thing != "")
+                        {
+                            message  = llList2String(wearState, (integer)llGetSubString(worn, 0, 0)) + llList2String(wearState, (integer)llGetSubString(worn, 1, 1)) + " ";
+                            message += thing + " ";
+                            message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("add " + thing) + " (+) ]";
+                            message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("remove " + thing) + " (-)]";
+                            ownersay(requester, message, 0);
+                        }
                     }
                     ownersay(requester, " ", 0);
                     ownersay(requester, "[secondlife:///app/chat/1/" + prefix + "! Back to command list...]", 0);
@@ -297,11 +319,17 @@ default
                     l = llGetListLength(stuff);
                     for(i = 0; i < l; ++i)
                     {
-                        thing = llList2String(stuff, i);
-                        message =  "[secondlife:///app/chat/1/" + prefix + llEscapeURL("list " + path + thing) + " " + thing + "] ";
-                        message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("+ " + path + thing) + " (+)] ";
-                        message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("- " + path + thing) + " (-)]";
-                        ownersay(requester, message, 0);
+                        item = llParseStringKeepNulls(llList2String(stuff, i), ["|"], []);
+                        thing = llList2String(item, 0);
+                        worn = llList2String(item, 1);
+                        if(thing != "")
+                        {
+                            message  = llList2String(wearState, (integer)llGetSubString(worn, 0, 0)) + llList2String(wearState, (integer)llGetSubString(worn, 1, 1)) + " ";
+                            message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("list " + path + thing) + " " + thing + "] ";
+                            message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("+ " + path + thing) + " (+)] ";
+                            message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("- " + path + thing) + " (-)]";
+                            ownersay(requester, message, 0);
+                        }
                     }
                     ownersay(requester, " ", 0);
                 }
@@ -424,27 +452,27 @@ default
         else if(llToLower(m) == "list")
         {
             path = "";
-            llOwnerSay("@getinv=" + (string)RLV_CHANNEL);
+            llOwnerSay("@getinvworn=" + (string)RLV_CHANNEL);
         }
         else if(llToLower(m) == "listoutfit")
         {
             path = outfitPrefix;
-            llOwnerSay("@getinv:" + outfitPrefix + "=" + (string)RLV_CHANNEL);
+            llOwnerSay("@getinvworn:" + outfitPrefix + "=" + (string)RLV_CHANNEL);
         }
         else if(llToLower(m) == "liststuff")
         {
             path = stuffPrefix;
-            llOwnerSay("@getinv:" + stuffPrefix + "=" + (string)RLV_CHANNEL);
+            llOwnerSay("@getinvworn:" + stuffPrefix + "=" + (string)RLV_CHANNEL);
         }
         else if(llToLower(m) == "listform")
         {
             path = formPrefix;
-            llOwnerSay("@getinv:" + formPrefix + "=" + (string)RLV_CHANNEL);
+            llOwnerSay("@getinvworn:" + formPrefix + "=" + (string)RLV_CHANNEL);
         }
         else if(startswith(llToLower(m), "list"))
         {
             path = llDeleteSubString(m, 0, llStringLength("list"));
-            llOwnerSay("@getinv:" + path + "=" + (string)RLV_CHANNEL);
+            llOwnerSay("@getinvworn:" + path + "=" + (string)RLV_CHANNEL);
         }
         else if(startswith(llToLower(m), "outfitstrip"))
         {
@@ -568,7 +596,7 @@ default
             }
             llSetObjectName(slave_base);
         }
-        else if(llToLower(m) == "outfitlock")
+        else if(llToLower(m) == "lockoutfit")
         {
             llSetObjectName("");
             if(outfitlocked)
