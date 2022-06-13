@@ -121,13 +121,13 @@ default
                 {
                     muted = FALSE;
                     llOwnerSay("@sendchat=y,sendchannel=y");
-                    ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.");
+                    ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.", 0);
                 }
                 else
                 {
                     muted = TRUE;
                     llOwnerSay("@sendchat=n,sendchannel=n");
-                    ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.");
+                    ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.", 0);
                 }
             }
             else if(startswith(m, "ctrlsit"))
