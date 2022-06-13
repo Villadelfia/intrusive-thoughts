@@ -245,7 +245,7 @@ default
 
                 if(!captured)
                 {
-                    llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "captured|" + (string)firstavatar + "|object");
+                    llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "captured|" + (string)firstavatar + "|object|" + name);
                     captured = TRUE;
                 }
 
