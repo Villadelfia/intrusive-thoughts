@@ -22,7 +22,50 @@ string outfitPrefix = "~outfit";
 string stuffPrefix = "~stuff";
 string formPrefix = "~form";
 
+list lockedList = [];
 list wearState = ["⮽", "⬜", "⬔", "⬛"];
+
+clearLockList()
+{
+    integer i = llGetListLength(lockedList);
+    while(~--i)
+    {
+        string entry = llList2String(lockedList, i);
+        llOwnerSay("@detachallthis:" + entry + "=y,attachallthis:" + entry + "=y");
+    }
+    lockedList = [];
+}
+
+applyLockList()
+{
+    integer i = llGetListLength(lockedList);
+    while(~--i)
+    {
+        string entry = llList2String(lockedList, i);
+        llOwnerSay("@detachallthis:" + entry + "=n,attachallthis:" + entry + "=n");
+    }
+}
+
+toggleLockEntry(string what, key who)
+{
+    integer pos = llListFindList(lockedList, [what]);
+    if(pos == -1)
+    {
+        lockedList += [what];
+        llOwnerSay("@detachallthis:" + what + "=n,attachallthis:" + what + "=n");
+        llSetObjectName("");
+        ownersay(who, "The folder \"#RLV/" + what + "\" is now locked in its current state.", 0);
+        llSetObjectName(slave_base);
+    }
+    else
+    {
+        lockedList = llDeleteSubList(lockedList, pos, pos);
+        llOwnerSay("@detachallthis:" + what + "=y,attachallthis:" + what + "=y");
+        llSetObjectName("");
+        ownersay(who, "The folder \"#RLV/" + what + "\" is no longer locked in its current state.", 0);
+        llSetObjectName(slave_base);
+    }
+}
 
 hardReset()
 {
@@ -32,6 +75,7 @@ hardReset()
     outfitlocked = FALSE;
     currentVision = 4.0;
     currentFocus = 2.0;
+    clearLockList();
     outfitPrefix = "~outfit";
     stuffPrefix = "~stuff";
     formPrefix = "~form";
@@ -47,6 +91,7 @@ softReset()
     outfitlocked = FALSE;
     currentVision = 4.0;
     currentFocus = 2.0;
+    clearLockList();
 
     if(playing != "") llStopAnimation(playing);
     doSetup();
@@ -83,6 +128,8 @@ doSetup()
         llOwnerSay("@detach=n");
         if(llGetInventoryType("NO_HIDE") == INVENTORY_NONE) llSetLinkAlpha(LINK_SET, 0.0, ALL_SIDES);
     }
+
+    applyLockList();
 }
 
 handlemenu(key k)
@@ -262,6 +309,8 @@ default
                         {
                             message  = llList2String(wearState, (integer)llGetSubString(worn, 0, 0)) + llList2String(wearState, (integer)llGetSubString(worn, 1, 1)) + " ";
                             message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("form " + thing) + " " + thing + "]";
+                            if(llListFindList(lockedList, [path + "/" + thing]) == -1) message += " [secondlife:///app/chat/1/" + prefix + llEscapeURL("toggleitemlock " + path + "/" + thing) + " (lock)]";
+                            else                                                       message += " [secondlife:///app/chat/1/" + prefix + llEscapeURL("toggleitemlock " + path + "/" + thing) + " (unlock)]";
                             ownersay(requester, message, 0);
                         }
                     }
@@ -283,6 +332,8 @@ default
                             message  = llList2String(wearState, (integer)llGetSubString(worn, 0, 0)) + llList2String(wearState, (integer)llGetSubString(worn, 1, 1)) + " ";
                             message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("outfit " + thing) + " " + thing + "] ";
                             message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("outfitstrip " + thing) + " (strip first)]";
+                            if(llListFindList(lockedList, [path + "/" + thing]) == -1) message += " [secondlife:///app/chat/1/" + prefix + llEscapeURL("toggleitemlock " + path + "/" + thing) + " (lock)]";
+                            else                                                       message += " [secondlife:///app/chat/1/" + prefix + llEscapeURL("toggleitemlock " + path + "/" + thing) + " (unlock)]";
                             ownersay(requester, message, 0);
                         }
                     }
@@ -305,6 +356,8 @@ default
                             message += thing + " ";
                             message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("add " + thing) + " (+) ]";
                             message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("remove " + thing) + " (-)]";
+                            if(llListFindList(lockedList, [path + "/" + thing]) == -1) message += " [secondlife:///app/chat/1/" + prefix + llEscapeURL("toggleitemlock " + path + "/" + thing) + " (lock)]";
+                            else                                                       message += " [secondlife:///app/chat/1/" + prefix + llEscapeURL("toggleitemlock " + path + "/" + thing) + " (unlock)]";
                             ownersay(requester, message, 0);
                         }
                     }
@@ -328,6 +381,8 @@ default
                             message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("list " + path + thing) + " " + thing + "] ";
                             message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("+ " + path + thing) + " (+)] ";
                             message += "[secondlife:///app/chat/1/" + prefix + llEscapeURL("- " + path + thing) + " (-)]";
+                            if(llListFindList(lockedList, [path + thing]) == -1) message += " [secondlife:///app/chat/1/" + prefix + llEscapeURL("toggleitemlock " + path + thing) + " (lock)]";
+                            else                                                 message += " [secondlife:///app/chat/1/" + prefix + llEscapeURL("toggleitemlock " + path + thing) + " (unlock)]";
                             ownersay(requester, message, 0);
                         }
                     }
@@ -473,6 +528,11 @@ default
         {
             path = llDeleteSubString(m, 0, llStringLength("list"));
             llOwnerSay("@getinvworn:" + path + "=" + (string)RLV_CHANNEL);
+        }
+        else if(startswith(m, "toggleitemlock"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("toggleitemlock"));
+            toggleLockEntry(m, k);
         }
         else if(startswith(llToLower(m), "outfitstrip"))
         {
