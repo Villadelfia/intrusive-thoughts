@@ -94,25 +94,16 @@ default
                     {
                         llRegionSayTo(k, MANTRA_CHANNEL, "POSMATCH " + (string)llGetLocalPos());
                         llRegionSayTo(k, MANTRA_CHANNEL, "POSLOCKED " + (string)locked);
-                        llSetObjectName("");
-                        llOwnerSay("Detected newer IT Slave on this attachment point. Moving it in place and detaching myself.");
-                        llSetObjectName(slave_base);
                         llMessageLinked(LINK_SET, S_API_SCHEDULE_DETACH, "", NULL_KEY);
                     }
                     else
                     {
-                        llSetObjectName("");
-                        llOwnerSay("Detected newer IT Slave on another attachment point. Detaching it.");
                         llRegionSayTo(k, MANTRA_CHANNEL, "POSNOMATCH " + (string)llGetAttached());
-                        llSetObjectName(slave_base);
                     }
                 }
                 else
                 {
-                    llSetObjectName("");
-                    llOwnerSay("Detected older IT Slave. Detaching it.");
                     llRegionSayTo(k, MANTRA_CHANNEL, "POSNOMATCH -1");
-                    llSetObjectName(slave_base);
                 }
             }
             else if(startswith(m, "POSMATCH"))
@@ -123,7 +114,12 @@ default
             {
                 integer attachedto = (integer)llDeleteSubString(m, 0, llStringLength("POSNOMATCH"));
                 llSetObjectName("");
-                if(attachedto != -1) llOwnerSay("You have an older IT slave attached, but it is attached to " + attachpointtotext(attachedto) + ". Please attach me to that point instead. Detaching now.");
+                if(attachedto != -1)
+                {
+                    llOwnerSay("You have an older IT slave attached, but it is attached to " + attachpointtotext(attachedto) + ". Please attach me to that point instead. Detaching now.");
+                    if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has an older version of IT attached, but it is attached to " + attachpointtotext(attachedto) + ". Cannot complete upgrade until attached to the same point.");
+                    else                                       llInstantMessage(primary, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has an older version of IT attached, but it is attached to " + attachpointtotext(attachedto) + ". Cannot complete upgrade until attached to the same point.");
+                }
                 else                 llOwnerSay("You have a newer IT slave attached. Detaching now.");
                 llSetObjectName(slave_base);
                 llMessageLinked(LINK_SET, S_API_SCHEDULE_DETACH, "", NULL_KEY);
@@ -145,6 +141,8 @@ default
                     llOwnerSay("Moving myself into the position of your old IT slave.");
                     llSetObjectName(slave_base);
                 }
+                if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's IT has been upgraded.");
+                else                                       llInstantMessage(primary, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's IT has been upgraded.");
             }
 
             if(!isowner(k)) return;
