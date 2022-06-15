@@ -49,6 +49,7 @@ default
             http = llHTTPRequest(UPDATE_URL, [], "");
 #endif
         }
+#ifndef PUBLIC_SLAVE
         else
         {
             if(notifyLogon)
@@ -59,6 +60,7 @@ default
                 llSetObjectName(slave_base);
             }
         }
+#endif
     }
 
     // Set up the owner and prefix on first wear.
