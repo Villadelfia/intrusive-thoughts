@@ -28,13 +28,13 @@ key lockedAvatar = NULL_KEY;
 integer menuState = 0;
 list targets = [];
 
-float fCos(float x, float y, float t) 
+float fCos(float x, float y, float t)
 {
     float F = (1-llCos(t*PI))/2;
     return (x*(1-F))+(y*F);
 }
 
-vector vCos(vector x, vector y, float t) 
+vector vCos(vector x, vector y, float t)
 {
     float F = (1-llCos(t*PI))/2;
     return (x*(1-F))+(y*F);
@@ -75,7 +75,7 @@ saytoobject(string n, string m)
 {
     string old = llGetObjectName();
     llSetObjectName(n);
-    llRegionSayTo(storedavatar, GAZE_ECHO_CHANNEL, m);
+    llRegionSayTo(storedavatar, 0, m);
     llSetObjectName(old);
 }
 
@@ -87,7 +87,7 @@ handleMenu()
         list buttons = [];
         if(storedobject)
         {
-            if(lockedAvatar) 
+            if(lockedAvatar)
             {
                 msg += "This furniture is currently locked to secondlife:///app/agent/" + (string)lockedAvatar + "/about.\n \n";
                 buttons += [" ", "UNLOCK", " "];
@@ -100,7 +100,7 @@ handleMenu()
         }
         else
         {
-            if(lockedAvatar) 
+            if(lockedAvatar)
             {
                 msg += "This furniture is currently locked to secondlife:///app/agent/" + (string)lockedAvatar + "/about.\n \n";
                 buttons += [" ", "UNLOCK", " "];
@@ -111,13 +111,13 @@ handleMenu()
                 buttons += ["CAPTURE", " ",  " "];
             }
         }
-        
+
         msg += " ▶ This furniture is named " + llGetObjectName() + ".\n";
         if(objectGroup == "") msg += " ▶ This furniture is not in a group. Set a group to allow objects stored on grouped furniture to communicate.\n";
         else                  msg += " ▶ This furniture is in the \"" + objectGroup+ "\" group. Objects stored on this furniture can communicate with objects stored on other furniture in the same group.\n";
         buttons += ["RENAME", "GROUP"];
-        
-        if(furnitureIsAlwaysVisible) 
+
+        if(furnitureIsAlwaysVisible)
         {
             msg += " ▶ The furniture is always visible, even when not occupied.\n \n";
             buttons += ["INVISIBLE"];
@@ -130,7 +130,7 @@ handleMenu()
 
         buttons += [" ", " ", " "];
 
-        if(objectIsMute) 
+        if(objectIsMute)
         {
             msg += " ▶ Stored objects cannot speak in local chat.\n";
             buttons += ["CAN SPEAK"];
@@ -171,7 +171,7 @@ handleMenu()
             onsim = llDeleteSubList(onsim, -1, -1);
         }
         targets = llList2List(llListSort(targets, 2, TRUE), 0, 23);
-        
+
         string msg = "Who do you wish to capture?\n \n";
         list buttons = [];
         integer i;
@@ -242,9 +242,9 @@ default
         llRequestPermissions(llGetOwner(), PERMISSION_CHANGE_LINKS);
     }
 
-    run_time_permissions(integer perm) 
+    run_time_permissions(integer perm)
     {
-        if(perm & PERMISSION_CHANGE_LINKS) 
+        if(perm & PERMISSION_CHANGE_LINKS)
         {
             list     info = llGetObjectDetails(linkTarget, [OBJECT_POS, OBJECT_ROT, OBJECT_NAME, OBJECT_DESC]) + llGetBoundingBox(linkTarget);
             vector   pos  = llList2Vector(info, 0);
@@ -448,10 +448,16 @@ state running
             if(objectIsMute)
             {
                 // If the source was the object we're storing, forward to the region.
-                if(storedavatar == id) llRegionSay(GAZE_CHAT_CHANNEL, m);
+                if(storedavatar == id)
+                {
+                    llRegionSay(GAZE_CHAT_CHANNEL, m);
+                }
 
                 // If the source was an object with a matching description to ours, forward the message to the object we're storing.
-                else if(objectGroup == llList2String(llGetObjectDetails(id, [OBJECT_DESC]), 0)) saytoobject(n, m);
+                else if(objectGroup == llList2String(llGetObjectDetails(id, [OBJECT_DESC]), 0))
+                {
+                    saytoobject(n, m);
+                }
             }
             else
             {
@@ -628,16 +634,16 @@ state running
                 llSetTimerEvent(15.0);
             }
 
-            // Otherwise, give up. 
+            // Otherwise, give up.
             else
             {
                 waitingForRez = FALSE;
                 if(lockedAvatar) sensortimer(5.0);
                 return;
-            }            
+            }
         }
-        
-        if(llGetObjectDetails(storedobject, [OBJECT_POS]) == []) 
+
+        if(llGetObjectDetails(storedobject, [OBJECT_POS]) == [])
         {
             storedavatar = NULL_KEY;
             storedobject = NULL_KEY;
