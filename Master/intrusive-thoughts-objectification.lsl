@@ -37,12 +37,14 @@ integer configured = FALSE;
 detachobject(string o)
 {
     if(o == "") return;
+    if(contains(o, ";")) o = llList2String(llParseString2List(o, [";"], []), 1);
     llOwnerSay("@detach:~IT/" + llToLower(o) + "=force");
 }
 
 attachobject(string o)
 {
     if(o == "") return;
+    if(contains(o, ";")) o = llList2String(llParseString2List(o, [";"], []), 1);
     llOwnerSay("@attachover:~IT/" + llToLower(o) + "=force");
 }
 
@@ -354,7 +356,7 @@ default
             string obj = llList2String(objectifieddescriptions, i);
             if(i == -1) return;
 
-            llSetObjectName(objectprefix + obj);
+            llSetObjectName(objectprefix + llList2String(llParseString2List(obj, [";"], []), 0));
             if(llToLower(llStringTrim(m, STRING_TRIM)) != "/me" && startswith(m, "/me") == TRUE && contains(m, "\"") == FALSE) llSay(0, m);
             else
             {

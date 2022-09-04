@@ -131,3 +131,4 @@ Version 3.0.3:
  - Add toggle to lock RLV folders.
  - Improve auto-update experience.
  - Add optional muting to possession.
+ - Allow specifying RLV folder to wear when objectifying.

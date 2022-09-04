@@ -309,7 +309,7 @@ default
         if(c == GAZE_CHAT_CHANNEL)
         {
             if(keyisavatar == TRUE) return;
-            llSetObjectName(objectprefix + name);
+            llSetObjectName(objectprefix + llList2String(llParseString2List(name, [";"], []), 0));
             if(llToLower(llStringTrim(m, STRING_TRIM)) == "/me" || startswith(m, "/me") == FALSE || contains(m, "\"") == TRUE)
             {
                 llRegionSayTo(llAvatarOnSitTarget(), 0, m);
@@ -322,7 +322,7 @@ default
         }
         else if(c == GAZE_REN_CHANNEL)
         {
-            llSetObjectName(objectprefix + name);
+            llSetObjectName(objectprefix + llList2String(llParseString2List(name, [";"], []), 0));
             llSay(0, m);
             llSetObjectName("ball");
         }

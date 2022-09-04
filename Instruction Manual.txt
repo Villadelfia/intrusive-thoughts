@@ -198,3 +198,7 @@ You can also rename the object a specific name to make that specific object look
 
 23. Can I stop the IT slave from resizing?
 Yes, just put anything (texture, sound, notecard...) inside of it with the name NO_RESIZE, and it won't.
+
+
+24. How do I have multiple types of, for example, sneakers, in my RLV folders and choose which pair will be worn when objectifying someone into sneakers?
+By default, IT will wear "#RLV/~IT/sneakers" when you turn someone into sneakers. But if you want to have multiple pairs, like for example a folder called "sneakers 11", you can objectify them instead into "Sneakers;sneakers 11". They will still speak as "Sneakers", but IT will instead put on the "sneakers 11" folder.
