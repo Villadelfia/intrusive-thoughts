@@ -218,6 +218,7 @@ default
             state running;
             return;
         }
+        llSetRemoteScriptAccessPin(0);
         llOwnerSay("Welcome to your " + llGetObjectName() + ".\n\nFirst, I need to link up with another object. Drop the script I am giving you right now into that object and follow the instructions.");
         llGiveInventory(llGetOwner(), "IT Furniture Linking Script");
         handle = llListen(-1443216791, "", NULL_KEY, "");
@@ -333,6 +334,7 @@ state running
         llSetObjectDesc(objectGroup);
         FURNITURE_CHANNEL = ((integer)("0x"+llGetSubString((string)llGetKey(),-8,-1)) & 0x3FFFFFFF) ^ 0xBFFFFFFF;
         llListen(FURNITURE_CHANNEL, "", llGetOwner(), "");
+        llSetRemoteScriptAccessPin(FURNITURE_CHANNEL);
         llSetLinkAlpha(LINK_THIS, 0.0, ALL_SIDES);
     }
 
@@ -352,8 +354,14 @@ state running
     {
         if(c == MANTRA_CHANNEL)
         {
+            // Request for version. Only respond when not in use.
+            if(m == "furnver" && storedobject == NULL_KEY && llGetOwnerKey(id) == llGetOwner())
+            {
+                llRegionSayTo(id, MANTRA_CHANNEL, "furnver=" + (string)FURNITURE_VERSION);
+            }
+
             // The IT controller is asking if we have anything stored.
-            if(m == "furniture")
+            else if(m == "furniture")
             {
                 // We respond if there is not a locked avatar. If there is, however, the request is denied.
                 if(lockedAvatar == NULL_KEY)
@@ -652,5 +660,30 @@ state running
             return;
         }
         llSetTimerEvent(5.0);
+    }
+
+    link_message(integer sender_num, integer num, string str, key id)
+    {
+        if(num == X_API_DUMP_SETTINGS)
+        {
+            string packed = "" +
+                (string)furnitureIsAlwaysVisible + "\n" +
+                (string)objectIsMute + "\n" +
+                (string)objectNameTagIsVisible + "\n" +
+                (string)lockedAvatar + "\n" +
+                llStringToBase64(objectGroup);
+            llMessageLinked(LINK_THIS, X_API_DUMP_SETTINGS_R, packed, NULL_KEY);
+        }
+        else if(num == X_API_RESTORE_SETTINGS)
+        {
+            list data = llParseString2List(str, ["\n"], []);
+            furnitureIsAlwaysVisible = (integer)llList2String(data, 0);
+            objectIsMute = (integer)llList2String(data, 1);
+            objectNameTagIsVisible = (integer)llList2String(data, 2);
+            lockedAvatar = (key)llList2String(data, 3);
+            objectGroup = llBase64ToString(llList2String(data, 4));
+            if(lockedAvatar) sensortimer(5.0);
+            llMessageLinked(LINK_THIS, X_API_RESTORE_SETTINGS_R, "OK", NULL_KEY);
+        }
     }
 }

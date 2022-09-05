@@ -78,6 +78,10 @@
 #define X_API_SETTINGS_SAVE       -4002
 #define X_API_GIVE_MENU           -4003
 #define X_API_SET_OBJECTIFIER     -4004
+#define X_API_DUMP_SETTINGS       -4005
+#define X_API_RESTORE_SETTINGS    -4006
+#define X_API_DUMP_SETTINGS_R     -4007
+#define X_API_RESTORE_SETTINGS_R  -4008
 
 #define IT_PLUGIN_REGISTER        -8000
 #define IT_PLUGIN_RESPONSE        -8001
@@ -111,6 +115,7 @@ string slave_base = "Intrusive Thoughts Slave [v3.0.3]";
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
 #define VERSION_PATCH 3
+#define FURNITURE_VERSION 1
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG
