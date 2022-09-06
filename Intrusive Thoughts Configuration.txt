@@ -11,7 +11,7 @@
 ## Name and identity settings ##
 #####################
 # The prefix for your objects. By default, it's set to "Avatar's", if you capture someone
-# as "Heels", with the default settings, they'd appear as "Avatar's Heels". You likely want 
+# as "Heels", with the default settings, they'd appear as "Avatar's Heels". You likely want
 # to set it to the possessive form of your name.
 objectprefix = Avatar's
 
@@ -44,7 +44,7 @@ ball = 1
 # %OBJ% is replaced with the name of the object they're turning into or being released from.
 # %TAR% is the name of the target rezzed furniture. Only used in puton and putdown.
 #
-# Note that notecard lines are limited to 255 characters, but if you end a line with "\", the next 
+# Note that notecard lines are limited to 1024 characters, but if you end a line with "\", the next
 # line will be seen as a continuation of the current line.
 
 # The capture and release phrases used when someone is turned into an object

@@ -213,6 +213,11 @@ default
 
     state_entry()
     {
+        if(llGetAttached() != 0)
+        {
+            llOwnerSay("Please rez me instead of wearing me.");
+            return;
+        }
         if(llGetLinkNumber() != 0)
         {
             state running;

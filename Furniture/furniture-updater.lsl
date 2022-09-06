@@ -46,10 +46,17 @@ default
     state_entry()
     {
         if(llGetStartParameter() == 1) state slave;
-        llOwnerSay("This object will scan for, and apply, updates to any rezzed IT Furniture in this region. Scanning for updatable furniture right now...");
-        llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
-        llRegionSay(MANTRA_CHANNEL, "furnver");
-        llSetTimerEvent(10.0);
+        if(llGetAttached() != 0)
+        {
+            llOwnerSay("Please rez me instead of wearing me.");
+        }
+        else
+        {
+            llOwnerSay("This object will scan for, and apply, updates to any rezzed IT Furniture in this region. Scanning for updatable furniture right now...");
+            llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+            llRegionSay(MANTRA_CHANNEL, "furnver");
+            llSetTimerEvent(5.0);
+        }
     }
 
     listen(integer channel, string name, key id, string message)
@@ -59,6 +66,8 @@ default
             if(FURNITURE_VERSION > (integer)llList2String(llParseString2List(message, ["="], []), 1))
             {
                 updatable += [id];
+                llSetTimerEvent(0.0);
+                llSetTimerEvent(5.0);
             }
         }
     }
@@ -68,7 +77,13 @@ default
         llSetTimerEvent(0.0);
         if(updatable == [])
         {
-            llOwnerSay("No updatable furniture found. Self-desctructing!");
+            llOwnerSay(
+                "No updatable furniture found. This can mean one of three things:\n\n" +
+                " - There is no IT Furniture rezzed on this region that is owned by you.\n" +
+                " - There is IT Furniture rezzed on this region that is owned by you, but its version is older than version 3.0.4. You need to update it manually. Please consult the instruction manual for information on this process.\n" +
+                " - There is updatable IT Furniture rezzed on this region, but it is currently occupied. It is not possible to update IT Furniture that currently has someone captured.\n\n" +
+                "Please verify and rectify the above issues, then rez me again. I am now deleting myself."
+            );
             if(llGetOwner() != (key)IT_CREATOR)
             {
                 llSleep(5.0);

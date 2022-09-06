@@ -7,6 +7,7 @@ Inside of your package you will find:
  - Intrusive Thoughts Configuration: You will be editing this notecard and dropping it onto the HUD to set it up before first usage and whenever you wish to change the settings.
  - Intrusive Thoughts Focus Target: The focus target, to be used to make a slave or object look at a specific point on your body.
  - Intrusive Thoughts Furniture: Rez this to make an object 'furniture' for the IT system.
+ - Intrusive Thoughts Furniture Updater: Rez this to upgrade any 'furniture' on the region to the newest version.
  - Intrusive Thoughts Master: The Master HUD, to be worn by you.
  - Intrusive Thoughts Slave: The Slave HUD, to be given to your submissives.
 
@@ -202,3 +203,9 @@ Yes, just put anything (texture, sound, notecard...) inside of it with the name 
 
 24. How do I have multiple types of, for example, sneakers, in my RLV folders and choose which pair will be worn when objectifying someone into sneakers?
 By default, IT will wear "#RLV/~IT/sneakers" when you turn someone into sneakers. But if you want to have multiple pairs, like for example a folder called "sneakers 11", you can objectify them instead into "Sneakers;sneakers 11". They will still speak as "Sneakers", but IT will instead put on the "sneakers 11" folder.
+
+
+25. How do I upgrade IT Furniture?
+To upgrade furniture starting from version 3.0.4 to any higher version, simply rez the "Intrusive Thoughts Furniture Updater" and let it do its thing. Messages will be posted in local chat to notify you of its progress and any potential issues.
+
+To upgrade older furniture, unlink the root prim from the rezzed furniture and delete that unlinked prim, then rez a fresh copy of the IT Furniture and recreate it.
