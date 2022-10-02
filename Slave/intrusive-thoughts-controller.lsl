@@ -41,10 +41,13 @@ default
 #ifndef PUBLIC_SLAVE
             if(notifyLogon)
             {
-                llSetObjectName("");
-                if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
+                if(llGetAgentSize(primary) != ZERO_VECTOR)
+                {
+                    llSetObjectName("");
+                    ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
+                    llSetObjectName(slave_base);
+                }
                 else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
-                llSetObjectName(slave_base);
             }
             http = llHTTPRequest(UPDATE_URL, [], "");
 #endif
@@ -77,8 +80,16 @@ default
         llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
         llSetObjectName("");
 #ifndef PUBLIC_SLAVE
-        if(llGetAgentSize(primary) != ZERO_VECTOR) ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
-        else llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+        if(llGetAgentSize(primary) != ZERO_VECTOR)
+        {
+            ownersay(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".", 0);
+        }
+        else
+        {
+            llSetObjectName(slave_base);
+            llInstantMessage(primary, "The " + VERSION_S + " has been worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about at " + slurl() + ".");
+            llSetObjectName("");
+        }
         llOwnerSay("Your primary owner has been detected as secondlife:///app/agent/" + (string)primary + "/about. If this is incorrect, detach me immediately because this person can configure me and add additional owners.");
         llSetObjectName(slave_base);
         llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
