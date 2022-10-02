@@ -1,8 +1,9 @@
 #include <IT/globals.lsl>
 float fillfactor = 0.25;
 integer volumelink = 1;
+float curvol = 0.5;
 
-float finterp(float x, float y, float t) 
+float finterp(float x, float y, float t)
 {
     return x*(1-t) + y*t;
 }
@@ -25,6 +26,26 @@ calculateFill()
     llSetLinkPrimitiveParamsFast(LINK_THIS, [PRIM_POS_LOCAL, localpos, PRIM_SIZE, thissize]);
 }
 
+float getVolume()
+{
+    float vol = 0.5;
+    integer n = llGetInventoryNumber(INVENTORY_NOTECARD);
+    while(~--n)
+    {
+        string nm = llGetInventoryName(INVENTORY_NOTECARD, n);
+        if(startswith(nm, "~volume")) vol = (float)llList2String(llParseString2List(nm, ["="], []), 1);
+    }
+    return vol;
+}
+
+playSound()
+{
+    curvol = getVolume();
+    llStopSound();
+    if(llGetInventoryName(INVENTORY_SOUND, 0) == "") llLoopSound("38510ac5-5338-ec76-1a6c-c2115538aa8d", curvol);
+    else                                             llLoopSound(llGetInventoryName(INVENTORY_SOUND, 0), curvol);
+}
+
 default
 {
     state_entry()
@@ -39,9 +60,8 @@ default
                 llOwnerSay("Volume link found at link number " + (string)i + ".");
             }
         }
-        if(llGetInventoryName(INVENTORY_SOUND, 0) == "") llLoopSound("38510ac5-5338-ec76-1a6c-c2115538aa8d", 0.5);
-        else                                             llLoopSound(llGetInventoryName(INVENTORY_SOUND, 0), 0.5);
         calculateFill();
+        playSound();
     }
 
     link_message(integer sender_num, integer num, string str, key id )
@@ -56,5 +76,16 @@ default
     changed(integer change)
     {
         if(change & CHANGED_SCALE) calculateFill();
+    }
+
+    timer()
+    {
+        if(curvol != getVolume()) playSound();
+    }
+
+    on_rez(integer start_param)
+    {
+        playSound();
+        llSetTimerEvent(5.0);
     }
 }
