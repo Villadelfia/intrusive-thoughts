@@ -88,8 +88,10 @@ default
                 list params = llParseString2List(m, [" "], []);
                 integer attachedto = (integer)llList2String(params, 1);
                 string oversion = llList2String(params, 2);
+                key oprimary = llList2Key(llGetObjectDetails(k, [OBJECT_LAST_OWNER_ID]), 0);
+                key mprimary = llList2Key(llGetObjectDetails(llGetKey(), [OBJECT_LAST_OWNER_ID]), 0);
                 if(llGetListLength(params) < 3) oversion = "00000000000";
-                if(ishigherversion(oversion))
+                if(ishigherversion(oversion) && oprimary == mprimary)
                 {
                     if(attachedto == llGetAttached())
                     {
@@ -121,7 +123,7 @@ default
                     if(llGetAgentSize(primary) != ZERO_VECTOR) llRegionSayTo(primary, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has an older version of IT attached, but it is attached to " + attachpointtotext(attachedto) + ". Cannot complete upgrade until attached to the same point.");
                     else                                       llInstantMessage(primary, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has an older version of IT attached, but it is attached to " + attachpointtotext(attachedto) + ". Cannot complete upgrade until attached to the same point.");
                 }
-                else                 llOwnerSay("You have a newer IT slave attached. Detaching now.");
+                else llOwnerSay("You have a newer IT slave attached or you are trying to upgrade to an IT slave with a different primary owner. Detaching now.");
                 llSetObjectName(slave_base);
                 llMessageLinked(LINK_SET, S_API_SCHEDULE_DETACH, "", NULL_KEY);
             }
