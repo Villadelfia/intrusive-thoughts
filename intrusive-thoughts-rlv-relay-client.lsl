@@ -17,7 +17,7 @@ release()
     if(restrictions != [])
     {
         integer l = llGetListLength(restrictions)-1;
-        while(l >= 0) 
+        while(l >= 0)
         {
             llOwnerSay("@" + llList2String(restrictions, l) + "=y");
             --l;
@@ -41,7 +41,7 @@ dohandover(key target, integer keep)
         if(restrictions != [])
         {
             integer l = llGetListLength(restrictions)-1;
-            while(l >= 0) 
+            while(l >= 0)
             {
                 llOwnerSay("@" + llList2String(restrictions, l) + "=y");
                 --l;
@@ -112,7 +112,7 @@ integer isAllowed(string c)
 
             // If we are at the end of the filter, and have not rejected the filter, that means it must be accepted.
             @skiploop;
-            if(j == fl-1) 
+            if(j == fl-1)
             {
                 llOwnerSay("Command \"" + c + "\" denied due to filter \"" + testing + "\".");
                 return FALSE;
@@ -124,7 +124,6 @@ integer isAllowed(string c)
     // No filter matched. Allow the command.
     return TRUE;
 }
-
 
 checkSend(string command)
 {
@@ -141,8 +140,6 @@ checkSend(string command)
         llOwnerSay("@sendchannel:1=add,sendchannel:5=add,sendchannel:7=add,sendchannel:8=add,sendchannel:9=add");
     }
 }
-
-                
 
 handlerlvrc(string msg, integer echo)
 {
@@ -162,26 +159,26 @@ handlerlvrc(string msg, integer echo)
     string command;
     integer nc = llGetListLength(commands);
 
-    for (i=0; i<nc; ++i) 
+    for (i=0; i<nc; ++i)
     {
         command = llList2String(commands,i);
-        if(llGetSubString(command,0,0)=="@") 
+        if(llGetSubString(command,0,0)=="@")
         {
+            if(echo) llRegionSayTo(id, RLVRC, ident+","+(string)id+","+command+",ok");
             if(command != "@detach=y" && command != "@permissive=y" && command != "@clear" && isAllowed(command) == TRUE)
             {
                 if(ismaster) checkSend(command);
                 llOwnerSay(command);
-                if(echo) llRegionSayTo(id, RLVRC, ident+","+(string)id+","+command+",ok");
                 list subargs = llParseString2List(command, ["="], []);
                 string behav = llGetSubString(llList2String(subargs, 0), 1, -1);
                 integer index = llListFindList(restrictions, [behav]);
-                string comtype = llList2String(subargs, 1);                
-                if(comtype == "n" || comtype == "add") 
+                string comtype = llList2String(subargs, 1);
+                if(comtype == "n" || comtype == "add")
                 {
                     if(index == -1) restrictions += [behav];
                     if(behav == "unsit" && llGetAgentInfo(llGetOwner()) & AGENT_SITTING) llOwnerSay("@getsitid=" + (string)channel);
                 }
-                else if(comtype == "y" || comtype == "rem") 
+                else if(comtype == "y" || comtype == "rem")
                 {
                     if(index != -1) restrictions = llDeleteSubList(restrictions, index, index);
                     if(behav == "unsit") sitid = NULL_KEY;
@@ -251,7 +248,7 @@ default
     {
         if(num < -999 && num > -2000) ismaster = FALSE;
         if(num < -1999 && num > -3000) ismaster = TRUE;
-        
+
         if(num == RLV_API_HANDLE_CMD && (string)k == (string)rlvid && id != NULL_KEY)            handlerlvrc(str, TRUE);
         else if(num == RLV_API_HANDLE_CMD_QUIET && (string)k == (string)rlvid && id != NULL_KEY) handlerlvrc(str, FALSE);
         else if(num == RLV_API_GET_RESTRICTIONS)
@@ -260,19 +257,19 @@ default
             else   llMessageLinked(LINK_SET, RLV_API_RESP_RESTRICTIONS, (string)rlvid, (key)"");
         }
         else if(num == RLV_API_SET_FILTERS)
-        {                    
+        {
             str = llToLower(str);
             str = llDumpList2String(llParseStringKeepNulls(str, [" "], []), "");
             filters = llParseString2List(str, ["\n"], []);
         }
-        else if(num == RLV_API_SET_SRC && str == (string)rlvid)                        
+        else if(num == RLV_API_SET_SRC && str == (string)rlvid)
         {
             if(id != NULL_KEY) release();
             id = k;
             llSetTimerEvent(5.0);
             objectname = llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0);
         }
-        else if(num == RLV_API_SAFEWORD)                                               
+        else if(num == RLV_API_SAFEWORD)
         {
             release();
         }
@@ -282,16 +279,22 @@ default
         }
     }
 
-    on_rez(integer i) 
+    on_rez(integer i)
     {
-        if(id) 
+        if(id)
         {
+            llSetTimerEvent(0.0);
             llSleep(30.0);
             llRegionSayTo(id, RLVRC, "ping,"+(string)id+",ping,ping");
             llSetTimerEvent(30.0);
         }
     }
- 
+
+    attach(key id)
+    {
+        if(id == NULL_KEY) llSetTimerEvent(0.0);
+    }
+
     timer()
     {
         llSetTimerEvent(0.0);
@@ -300,7 +303,7 @@ default
             handlinghandover = FALSE;
             release();
         }
-        
+
         if(id)
         {
             if(llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0) == ZERO_VECTOR)
@@ -308,7 +311,7 @@ default
                 release();
             }
         }
-        
+
         if(id) llSetTimerEvent(5.0);
     }
 }
