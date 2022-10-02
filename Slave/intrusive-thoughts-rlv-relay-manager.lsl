@@ -12,7 +12,6 @@ string handlingm;
 integer handlingi;
 integer templisten = -1;
 integer tempchannel = DEBUG_CHANNEL;
-string region = "";
 
 makelisten(key who)
 {
@@ -45,12 +44,6 @@ default
     changed(integer change)
     {
         if(change & CHANGED_INVENTORY) buildclients();
-        if(change & CHANGED_REGION)    region = "";
-    }
-
-    on_rez(integer start_param)
-    {
-        region = "";
     }
 
     link_message(integer sender_num, integer num, string str, key k)
@@ -87,7 +80,6 @@ default
     {
         if(c == RLVRC)
         {
-            if(region == "NRI") return;
             if(rlvclients == []) return;
             list args = llParseStringKeepNulls(m, [","], []);
 
@@ -157,7 +149,6 @@ default
         }
         else if(c == tempchannel && templisten != -1)
         {
-            if(region == "NRI") return;
             if(handlingk == NULL_KEY) return;
             if(m == "ALLOW")
             {
@@ -189,17 +180,6 @@ default
         }
         else if(c == MANTRA_CHANNEL)
         {
-            if(m == "NRIREGION")
-            {
-                if(llGetCreator() != llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0)) return;
-                region = "NRI";
-            }
-            else if(m == "NRINORLV")
-            {
-                if(llGetCreator() != llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0)) return;
-                region = "";
-            }
-
 #ifndef PUBLIC_SLAVE
             if(!isowner(id)) return;
 #endif
@@ -228,7 +208,6 @@ default
         }
         else if(c == 0)
         {
-            if(region == "NRI") return;
             if(contains(llToLower(m), "((red))"))
             {
                 llSetObjectName("");
