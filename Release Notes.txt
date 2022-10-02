@@ -135,3 +135,9 @@ Version 3.0.3:
 Version 3.0.4:
  - Allow specifying RLV folder to wear when objectifying.
  - Introduce easy-update system for furniture. (You'll still have to upgrade to this version manually.)
+
+Version 3.0.5:
+ - Remove special fixes that are no longer needed due to updated SL.
+ - Add volume control to vore carrier.
+ - Logic fix in RLV client.
+ - Object name should now always be correct for the IT Slave.
