@@ -143,24 +143,24 @@ applyInventory()
 
 applyWorld()
 {
-    if(worldRestrict == 0) llOwnerSay("@interact=y");
-    if(worldRestrict == 1) llOwnerSay("@interact=n");
+    if(worldRestrict == 0) llOwnerSay("@touchall=y,edit=y,rez=y");
+    if(worldRestrict == 1) llOwnerSay("@touchall=n,edit=n,rez=n");
 }
 
 string restrictionString()
 {
-    return (string)imRestrict + "," + 
-           (string)visionRestrict + "," + 
-           (string)hearingRestrict + "," + 
-           (string)speechRestrict + "," + 
-           (string)dazeRestrict + "," + 
-           (string)cameraRestrict + "," + 
-           (string)inventoryRestrict + "," + 
-           (string)worldRestrict + "," + 
+    return (string)imRestrict + "," +
+           (string)visionRestrict + "," +
+           (string)hearingRestrict + "," +
+           (string)speechRestrict + "," +
+           (string)dazeRestrict + "," +
+           (string)cameraRestrict + "," +
+           (string)inventoryRestrict + "," +
+           (string)worldRestrict + "," +
            (string)(animation == "hide_b");
 }
 
-leash() 
+leash()
 {
     leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
     llTargetRemove(leashinghandle);
@@ -497,12 +497,12 @@ default
         leashinghandle = llTarget(leashtarget, 2.0);
     }
 
-    not_at_target() 
+    not_at_target()
     {
-        if(objectifier) 
+        if(objectifier)
         {
             vector newpos = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
-            if(leashtarget != newpos) 
+            if(leashtarget != newpos)
             {
                 llTargetRemove(leashinghandle);
                 leashtarget = newpos;
@@ -518,7 +518,7 @@ default
                 llTargetRemove(leashinghandle);
             }
         }
-        else 
+        else
         {
             llStopMoveToTarget();
             llTargetRemove(leashinghandle);
@@ -575,11 +575,11 @@ default
         {
             firstoutrange = TRUE;
         }
-        llTargetRemove(leashinghandle);        
+        llTargetRemove(leashinghandle);
         leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
         leashinghandle = llTarget(leashtarget, 2.0);
         if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 1.5);
-        if(cameraRestrict != 0) 
+        if(cameraRestrict != 0)
         {
             list uuids = llGetAttachedList(objectifier);
             integer n = llGetListLength(uuids);
@@ -612,7 +612,7 @@ default
         if(id == urlt)
         {
             urlt = NULL_KEY;
-            if(method == URL_REQUEST_GRANTED) 
+            if(method == URL_REQUEST_GRANTED)
             {
                 url = body;
                 llRegionSayTo(objectifier, MANTRA_CHANNEL, "objurl " + url);

@@ -227,7 +227,7 @@ default
         if(perm & PERMISSION_TAKE_CONTROLS)
         {
             llOwnerSay("You're now being possessed by secondlife:///app/agent/" + (string)controller + "/about.");
-            llOwnerSay("@detach=n,interact=n,tplocal=n,tplm=n,tploc=n,setcam_mouselook=n");
+            llOwnerSay("@detach=n,touchall=n,edit=n,rez=n,tplocal=n,tplm=n,tploc=n,setcam_mouselook=n");
             llRegionSayTo(controller, MANTRA_CHANNEL, "ctrlstarted " + (string)llGetOwner());
             llRegionSayTo(controller, STRUGGLE_CHANNEL, "captured|" + (string)llGetOwner() + "|possess");
             llTakeControls(CONTROL_FWD | CONTROL_BACK | CONTROL_LEFT | CONTROL_RIGHT | CONTROL_ROT_LEFT | CONTROL_ROT_RIGHT | CONTROL_UP | CONTROL_DOWN | CONTROL_LBUTTON | CONTROL_ML_LBUTTON, TRUE, FALSE);

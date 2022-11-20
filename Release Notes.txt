@@ -141,3 +141,6 @@ Version 3.0.5:
  - Add volume control to vore carrier.
  - Logic fix in RLV client.
  - Object name should now always be correct for the IT Slave.
+ - Change interact restriction to allow interaction with own huds for usability.
+ - Allow adding secondary owners by uuid.
+ - Added a few missed permissions for secondary owners.

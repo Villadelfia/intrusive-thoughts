@@ -127,8 +127,8 @@ applyInventory()
 
 applyWorld()
 {
-    if(worldRestrict == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@interact=y");
-    if(worldRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@interact=n");
+    if(worldRestrict == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@touchall=y|@edit=y|@rez=y");
+    if(worldRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@touchall=n|@edit=n|@rez=n");
 }
 
 doubleNotify(string s)

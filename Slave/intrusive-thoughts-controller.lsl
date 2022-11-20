@@ -145,7 +145,7 @@ default
                 ownersay(k, "Secondary owner " + (string)i + ": secondlife:///app/agent/" + (string)llList2Key(owners, i) + "/about", 0);
             }
             ownersay(k, " ", 0);
-            ownersay(k, "To add a secondary owner, type /1" + prefix + "owneradd username. The user MUST be present on the same region.", 0);
+            ownersay(k, "To add a secondary owner, type /1" + prefix + "owneradd username/uuid. The user MUST be present on the same region in case of username.", 0);
             if(n != 0) ownersay(k, "To remove a secondary owner, type /1" + prefix + "ownerdel number.", 0);
             string groupstatus = "DISABLED";
             string publicstatus = "DISABLED";
@@ -157,8 +157,10 @@ default
         }
         else if(startswith(m, "owneradd"))
         {
-            m = llDeleteSubString(m, 0, llStringLength("owneradd"));
-            key new = llName2Key(m);
+            m = llStringTrim(llDeleteSubString(m, 0, llStringLength("owneradd")), STRING_TRIM);
+            key new = NULL_KEY;
+            if(llStringLength(m) == 36) new = (key)m;
+            else                        new = llName2Key(m);
             llSetObjectName("");
             if(new)
             {

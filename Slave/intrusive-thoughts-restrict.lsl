@@ -101,6 +101,12 @@ doSetup()
 {
 #ifndef PUBLIC_SLAVE
     llOwnerSay("@accepttp:" + (string)primary + "=add,accepttprequest:" + (string)primary + "=add,acceptpermission=add");
+    integer i = llGetListLength(owners);
+    while(~--i)
+    {
+        key who = (string)llList2Key(owners, i);
+        llOwnerSay("@accepttp:" + (string)who + "=add,accepttprequest:" + (string)who + "=add");
+    }
 #else
     llOwnerSay("@accepttp=add,accepttprequest=add,acceptpermission=add");
 #endif
@@ -225,6 +231,13 @@ default
                 owners += [(key)llList2String(new, n)];
             }
             primary = id;
+            llOwnerSay("@accepttp:" + (string)primary + "=add,accepttprequest:" + (string)primary + "=add");
+            integer i = llGetListLength(owners);
+            while(~--i)
+            {
+                key who = (string)llList2Key(owners, i);
+                llOwnerSay("@accepttp:" + (string)who + "=add,accepttprequest:" + (string)who + "=add");
+            }
         }
         else if(num == S_API_OTHER_ACCESS)
         {

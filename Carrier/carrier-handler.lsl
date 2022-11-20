@@ -96,8 +96,8 @@ applyInventory()
 
 applyWorld()
 {
-    if(worldRestrict == 0) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@interact=y");
-    if(worldRestrict == 1) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@interact=n");
+    if(worldRestrict == 0) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@touchall=y|@edit=y|@rez=y");
+    if(worldRestrict == 1) llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@touchall=n|@edit=n|@rez=n");
 }
 
 string restrictionString()

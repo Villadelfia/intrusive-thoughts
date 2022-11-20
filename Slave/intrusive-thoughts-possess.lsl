@@ -210,7 +210,7 @@ default
         {
             llSetObjectName("");
             llOwnerSay("You're now being possessed by secondlife:///app/agent/" + (string)controller + "/about.");
-            llOwnerSay("@interact=n,tplocal=n,tplm=n,tploc=n");
+            llOwnerSay("@touchall=n,edit=n,rez=n,tplocal=n,tplm=n,tploc=n");
             llSetObjectName(slave_base);
             llRegionSayTo(controller, MANTRA_CHANNEL, "ctrlstarted " + (string)llGetOwner());
             llTakeControls(0, FALSE, FALSE);
