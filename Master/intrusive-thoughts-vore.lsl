@@ -124,7 +124,7 @@ default
                 else
                 {
                     llSetObjectName("");
-                    llOwnerSay("Could not eat '" + lockedname + "'.");
+                    llOwnerSay("Could not eat '" + lockedname + "'. RLV Permission denied.");
                     llSetObjectName(master_base);
                 }
                 llRegionSayTo(vorecarrier, MANTRA_CHANNEL, "check");

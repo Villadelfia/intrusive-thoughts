@@ -347,7 +347,7 @@ default
                 else
                 {
                     llSetObjectName("");
-                    llOwnerSay("Could not capture '" + lockedname + "'.");
+                    llOwnerSay("Could not capture '" + lockedname + "'. RLV Permission denied.");
                     llSetObjectName(master_base);
                 }
                 await = "";
@@ -476,7 +476,7 @@ default
             else
             {
                 llSetObjectName("");
-                llOwnerSay("Could not capture '" + llList2String(params, 1) + "'.");
+                llOwnerSay("Could not capture '" + llList2String(params, 1) + "'. Rezless provisioning failed.");
                 llSetObjectName(master_base);
                 if(timermode != 0) handlequeue();
             }

@@ -167,11 +167,10 @@ default
             list params = llParseString2List(str, ["|||"], []);
             provisionname = llList2String(params, 0);
             provisiondesc = llList2String(params, 1);
-            vector pos = llGetPos();
-            key parcelid = llList2Key(llGetParcelDetails(pos, [PARCEL_DETAILS_ID]), 0);
+            key parcelid = llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_ID]), 0);
 
             // Check if we can rez.
-            integer rezmode = canrez(pos);
+            integer rezmode = canrez(llGetPos());
             if(!rezmode)
             {
                 if(parcelid != lastparcel)
@@ -179,9 +178,9 @@ default
                     llSetObjectName("");
                     llOwnerSay("Cannot rez on this parcel. Trying to set land group. If that fails I will perform a no-rez capture.");
                     llSetObjectName(master_base);
-                    llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(pos, [PARCEL_DETAILS_GROUP]), 0) + "=force");
+                    llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
                     llSleep(2.5);
-                    rezmode = canrez();
+                    rezmode = canrez(llGetPos());
                 }
             }
             lastparcel = parcelid;
@@ -195,7 +194,7 @@ default
             {
                 // If we can, throw control back to the mother script.
                 provisiontarget = NULL_KEY;
-                llRezAtRoot("ball", pos - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, (integer)llList2String(params, 2));
+                llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, (integer)llList2String(params, 2));
             }
         }
     }
