@@ -122,7 +122,13 @@ string slave_base = "Intrusive Thoughts Slave [v3.0.5b]";
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG
-debug(string m) {llOwnerSay("[" + llGetScriptName() + "]: " + m);}
+debug(string m)
+{
+    string n = llGetObjectName();
+    llSetObjectName("IT-DEBUG");
+    llOwnerSay("[" + llGetScriptName() + "] " + m);
+    llSetObjectName(n);
+}
 #else
 #define debug(dummy)
 #endif

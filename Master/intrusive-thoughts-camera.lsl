@@ -5,13 +5,20 @@ integer hidden = FALSE;
 
 default
 {
+    state_entry()
+    {
+        debug("[state_entry] Script start");
+    }
+
     attach(key id)
     {
+        debug("[attach] Entry, id: " + (string)id);
         llSetTimerEvent(0.0);
     }
 
     run_time_permissions(integer perm)
     {
+        debug("[run_time_permissions] Entry, perm: " + (string)perm);
         if(perm & PERMISSION_TRACK_CAMERA) llSetTimerEvent(0.5);
     }
 
@@ -19,6 +26,7 @@ default
     {
         if(num == M_API_CONFIG_DATA)
         {
+            debug("[link_message] M_API_CONFIG_DATA, key: \"" + str + "\", value: \"" + (string)id + "\"");
             llSetObjectName("");
             if(str == "name")
             {
@@ -58,11 +66,13 @@ default
         }
         else if(num == M_API_CONFIG_DONE)
         {
+            debug("[link_message] M_API_CONFIG_DONE");
             llRequestPermissions(llGetOwner(), PERMISSION_TRACK_CAMERA | PERMISSION_TRIGGER_ANIMATION);
             hidden = FALSE;
         }
         else if(num == M_API_TOGGLE_HIDE)
         {
+            debug("[link_message] M_API_TOGGLE_HIDE, old_hidden: " + (string)hidden);
             llSetObjectName("");
             if(hidden)
             {
@@ -80,6 +90,7 @@ default
         }
         else if(num == M_API_HIDE_OFF)
         {
+            debug("[link_message] M_API_HIDE_OFF");
             llSetObjectName("");
             if(hidden)
             {
@@ -133,6 +144,7 @@ default
             key target = llList2Key(results, 0);
             if(target != NULL_KEY)
             {
+                if(target != closestavatar) debug("[timer] New closest cammed avatar, target: " + (string)target);
                 closestavatar = target;
                 llMessageLinked(LINK_SET, M_API_CAM_AVATAR, llGetDisplayName(closestavatar), closestavatar);
             }
@@ -141,6 +153,7 @@ default
         {
             if(newclosest != NULL_KEY)
             {
+                if(newclosest != closestavatar) debug("[timer] New closest distance avatar, target: " + (string)newclosest);
                 closestavatar = newclosest;
                 llMessageLinked(LINK_SET, M_API_CAM_AVATAR, llGetDisplayName(closestavatar), closestavatar);
             }
@@ -158,6 +171,7 @@ default
             key target = llList2Key(results, 0);
             list data = llGetObjectDetails(target, [OBJECT_NAME]);
             string name = llList2String(data, 0);
+            if(target != closestobject) debug("[timer] New closest cammed object, target: " + (string)target);
             closestobject = target;
             llMessageLinked(LINK_SET, M_API_CAM_OBJECT, name, target);
         }
