@@ -171,7 +171,8 @@ default
             key parcelid = llList2Key(llGetParcelDetails(pos, [PARCEL_DETAILS_ID]), 0);
 
             // Check if we can rez.
-            if(!canrez(pos))
+            integer rezmode = canrez(pos);
+            if(!rezmode)
             {
                 if(parcelid != lastparcel)
                 {
@@ -180,11 +181,12 @@ default
                     llSetObjectName(master_base);
                     llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(pos, [PARCEL_DETAILS_GROUP]), 0) + "=force");
                     llSleep(2.5);
+                    rezmode = canrez();
                 }
             }
             lastparcel = parcelid;
 
-            if(!canrez(pos))
+            if(!rezmode)
             {
                 // If not, try no-rez objectification.
                 provision();
