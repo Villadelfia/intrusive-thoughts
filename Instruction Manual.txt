@@ -209,3 +209,9 @@ By default, IT will wear "#RLV/~IT/sneakers" when you turn someone into sneakers
 To upgrade furniture starting from version 3.0.4 to any higher version, simply rez the "Intrusive Thoughts Furniture Updater" and let it do its thing. Messages will be posted in local chat to notify you of its progress and any potential issues.
 
 To upgrade older furniture, unlink the root prim from the rezzed furniture and delete that unlinked prim, then rez a fresh copy of the IT Furniture and recreate it.
+
+
+26. What is this "EZPlay Relay"?
+It's an RLV relay that's meant to facilitate easy play that don't have a relay for themselves and that don't want to commit to a full IT slave. If you give it to someone and they activate it, you can use any of the IT Objectification, Vore, or Possession features on them without further prompt.
+
+In addition it will save the last Furniture they were stored in and also allow that one free access. This means it can be used as a sort of "permanent-light" TF tool because it doesn't lock onto them and has a powerful safeword. With this feature they can have a character of theirs permanently TFed, but not their entire account.

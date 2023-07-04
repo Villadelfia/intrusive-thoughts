@@ -82,6 +82,11 @@
 #define X_API_RESTORE_SETTINGS    -4006
 #define X_API_DUMP_SETTINGS_R     -4007
 #define X_API_RESTORE_SETTINGS_R  -4008
+#define X_API_SET_CONTROLLER      -4009
+#define X_API_ACTIVATE            -4010
+#define X_API_REMEMBER_FURNITURE  -4011
+#define X_API_RELEASE             -4012
+#define X_API_SET_RELAY           -4013
 
 #define IT_PLUGIN_REGISTER        -8000
 #define IT_PLUGIN_RESPONSE        -8001
