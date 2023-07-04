@@ -145,3 +145,4 @@ Version 3.0.5:
  - Allow adding secondary owners by uuid.
  - Added a few missed permissions for secondary owners.
  - Fixed an issue where multiple objectifications in quick succession could gum up the works as well as defensively avoiding similar issues in the future.
+ - Add EZPlay Relay.
