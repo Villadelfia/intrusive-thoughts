@@ -183,6 +183,18 @@ addobject(string desc)
     llMessageLinked(LINK_SET, M_API_PROVISION_REQUEST, targetname + "|||" + desc + "|||" + (string)hideopt, target);
 }
 
+addobjectdirect(string desc, key who)
+{
+    if(desc == "") desc = "object";
+    if(startswith(llToLower(desc), llToLower(objectprefix))) desc = llGetSubString(desc, llStringLength(objectprefix), -1);
+    target = who;
+    targetname = llGetDisplayName(who);
+    llSetObjectName("");
+    llOwnerSay("Automatically capturing '" + targetname + "' because of an EZPlay Relay request.");
+    llSetObjectName(master_base);
+    llMessageLinked(LINK_SET, M_API_PROVISION_REQUEST, targetname + "|||" + desc + "|||" + (string)hideopt, target);
+}
+
 handlequeue()
 {
     llSetObjectName("");
@@ -324,6 +336,11 @@ default
                 m = llDeleteSubString(m, 0, llStringLength("objurl"));
                 integer i = llListFindList(objectifiedballs, [id]);
                 if(i != -1) objectifiedurls = llListReplaceList(objectifiedurls, [m], i, i);
+            }
+            else if(startswith(m, "tfrequest|||"))
+            {
+                m = llStringTrim(llList2String(llParseString2List(m, ["|||"], []), 1), STRING_TRIM);
+                addobjectdirect(m, llGetOwnerKey(id));
             }
         }
         else if(c == RLVRC)

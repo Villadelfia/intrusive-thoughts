@@ -87,6 +87,37 @@ vore()
     llRezAtRoot("carrier", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, 1);
 }
 
+voredirect(string carrier, key who)
+{
+    if(vorecarrier != NULL_KEY) return;
+
+    // We ignore the "carrier" argument for now. We don't have full multiple carrier support yet.
+
+    llSetObjectName("");
+
+    target = who;
+    targetname = llGetDisplayName(who);
+    llSetObjectName("");
+    llOwnerSay("Automatically eating '" + targetname + "' because of an EZPlay Relay request.");
+
+    if(!canrez(llGetPos()))
+    {
+        llOwnerSay("Can't rez here, trying to set land group.");
+        llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
+        llSleep(2.5);
+    }
+
+    if(!canrez(llGetPos()))
+    {
+        llOwnerSay("Can't rez here. Not eating.");
+        llSetObjectName(master_base);
+        return;
+    }
+
+    llSetObjectName(master_base);
+    llRezAtRoot("carrier", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, 1);
+}
+
 default
 {
     state_entry()
@@ -144,6 +175,11 @@ default
             {
                 m = llDeleteSubString(m, 0, llStringLength("objurl"));
                 if(vorecarrier == id) voreurl = m;
+            }
+            else if(startswith(m, "vorerequest|||"))
+            {
+                m = llStringTrim(llList2String(llParseString2List(m, ["|||"], []), 1), STRING_TRIM);
+                voredirect(m, llGetOwnerKey(id));
             }
         }
     }

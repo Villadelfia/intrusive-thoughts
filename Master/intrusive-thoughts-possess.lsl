@@ -97,6 +97,16 @@ possess()
     }
 }
 
+directpossess(key who)
+{
+    possessionvictim = llGetOwnerKey(who);
+    possessorobject = who;
+    llOwnerSay("Automatically possessing '" + llGetDisplayName(possessionvictim) + "' because of an EZPlay Relay request.");
+    llMessageLinked(LINK_SET, M_API_LOCK, "", NULL_KEY);
+    llMessageLinked(LINK_SET, M_API_SET_FILTER, "poss", (key)((string)TRUE));
+    llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "takectrl");
+}
+
 default
 {
     state_entry()
@@ -158,6 +168,11 @@ default
         }
         else if(c == MANTRA_CHANNEL)
         {
+            if(m == "possessrequest")
+            {
+                possessdirect(id);
+            }
+
             if(llGetOwnerKey(id) != possessionvictim) return;
 
             if(m == "ctrlready " + (string)possessionvictim)
