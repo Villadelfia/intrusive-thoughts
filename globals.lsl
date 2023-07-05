@@ -87,6 +87,7 @@
 #define X_API_REMEMBER_FURNITURE  -4011
 #define X_API_RELEASE             -4012
 #define X_API_SET_RELAY           -4013
+#define X_API_SET_LAST_FORM       -4014
 
 #define IT_PLUGIN_REGISTER        -8000
 #define IT_PLUGIN_RESPONSE        -8001

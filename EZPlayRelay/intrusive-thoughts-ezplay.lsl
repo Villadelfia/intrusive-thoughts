@@ -7,6 +7,9 @@ key controller = NULL_KEY;
 key objectifier = NULL_KEY;
 key rememberedFurniture = NULL_KEY;
 integer relayInUse = FALSE;
+string lastForm = "";
+integer pendingForm = FALSE;
+integer expectingTp = FALSE;
 
 notifyPrimary()
 {
@@ -17,10 +20,12 @@ notifyPrimary()
 release(integer propagate)
 {
     llSetTimerEvent(0.0);
+    sensortimer(0.0);
     muted = FALSE;
     controller = NULL_KEY;
     objectifier = NULL_KEY;
     relayInUse = FALSE;
+    pendingForm = FALSE;
     llOwnerSay("@clear");
     llOwnerSay("@accepttp:" + (string)primary + "=add,accepttprequest:" + (string)primary + "=add,acceptpermission=add");
     if(propagate) llMessageLinked(LINK_SET, X_API_RELEASE, "", NULL_KEY);
@@ -31,10 +36,108 @@ checkDetach()
     if(objectifier != NULL_KEY || controller != NULL_KEY || relayInUse == TRUE)
     {
         llOwnerSay("@detach=n");
+        pendingForm = FALSE;
     }
     else
     {
         llOwnerSay("@detach=y");
+    }
+}
+
+regainForm()
+{
+    // Lastform can be one of four things:
+    // object|||furniture|||name|||furniture_uuid|||furniture_region|||furniture_region_pos
+    // object|||avatar|||name|||avatar_uuid
+    // vore|||carrier_name|||avatar_uuid
+    // possession|||avatar_uuid
+    // We do our best here to regain that form.
+
+    // Of course if there's nothing to regain just return.
+    if(lastForm == "") pendingForm = FALSE;
+    if(pendingForm == FALSE) return;
+
+    list tokens = llParseString2List(lastForm, ["|||"], []);
+    string superType = llList2String(tokens, 0);
+
+    // If we want to be objectified...
+    if(superType == "object")
+    {
+        string subType = llList2String(tokens, 1);
+        string what = llList2String(tokens, 2);
+        key who = (key)llList2String(tokens, 3);
+
+        // Depending on whether it was furniture or a person.
+        if(subType == "avatar")
+        {
+            // If we were objectified by an avatar, and they're on the same region as us, request a TF from them.
+            if(llGetAgentSize(who) != ZERO_VECTOR)
+            {
+                llRegionSayTo(who, MANTRA_CHANNEL, "tfrequest|||" + what);
+                sensortimer(20.0);
+            }
+            // If they're not on our region, just keep looking.
+            else
+            {
+                sensortimer(5.0);
+            }
+        }
+        else
+        {
+            // If we were objectified by furniture, check if it's in the region.
+            // If so, tell it to take us.
+            if(llList2Vector(llGetObjectDetails(who, [OBJECT_POS]), 0) != ZERO_VECTOR)
+            {
+                llRegionSayTo(who, MANTRA_CHANNEL, "capture " + (string)llGetOwner());
+                sensortimer(20.0);
+            }
+            // If not, we try to TP there.
+            else
+            {
+                string region = llList2String(tokens, 4);
+                vector pos = (vector)llList2String(tokens, 5);
+                llOwnerSay("@tpto:" + region + "/" + (string)((integer)pos.x) + "/" + (string)((integer)pos.y) + "/" + (string)((integer)pos.z) + "=force");
+                expectingTp = TRUE;
+                // The change handler will detect the tp.
+            }
+        }
+    }
+
+    // If we want to be eaten...
+    else if(superType == "vore")
+    {
+        string carrier = llList2String(tokens, 2);
+        key who = (key)llList2String(tokens, 3);
+
+        // If our pred is in range.
+        if(llGetAgentSize(who) != ZERO_VECTOR)
+        {
+            llRegionSayTo(who, MANTRA_CHANNEL, "vorerequest|||" + carrier);
+            sensortimer(20.0);
+        }
+        // If they're not on our region, just keep looking.
+        else
+        {
+            sensortimer(5.0);
+        }
+    }
+
+    // And finally if we want to be possessed...
+    else if(superType == "possession")
+    {
+        key who = (key)llList2String(tokens, 1);
+
+        // If our possessor is in range.
+        if(llGetAgentSize(who) != ZERO_VECTOR)
+        {
+            llRegionSayTo(who, MANTRA_CHANNEL, "possessrequest");
+            sensortimer(20.0);
+        }
+        // If they're not on our region, just keep looking.
+        else
+        {
+            sensortimer(5.0);
+        }
     }
 }
 
@@ -110,12 +213,31 @@ state active
             notifyPrimary();
             llSleep(1.0);
             llMessageLinked(LINK_SET, X_API_ACTIVATE, "", NULL_KEY);
+
+            // Try to regain our last form on attach.
+            pendingForm = TRUE;
+            regainForm();
         }
     }
 
     changed(integer change)
     {
-        if(change & CHANGED_OWNER) llResetScript();
+        if(change & CHANGED_OWNER)
+        {
+            llResetScript();
+        }
+        if(change & CHANGED_TELEPORT || change & CHANGED_REGION)
+        {
+            if(!expectingTp) return;
+            expectingTp = FALSE;
+            regainForm();
+        }
+    }
+
+    no_sensor()
+    {
+        sensortimer(0.0);
+        regainForm();
     }
 
     listen(integer c, string n, key id, string m)
@@ -182,6 +304,7 @@ state active
             if(m == "takectrl" && controller == NULL_KEY && objectifier == NULL_KEY)
             {
                 controller = llGetOwnerKey(id);
+                lastForm = "possession|||" + (string)controller;
                 llMessageLinked(LINK_SET, X_API_SET_CONTROLLER, "", controller);
                 muted = FALSE;
                 llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
@@ -336,6 +459,10 @@ state active
         {
             relayInUse = id != NULL_KEY;
             checkDetach();
+        }
+        else if(num == X_API_SET_LAST_FORM)
+        {
+            lastForm = str;
         }
     }
 }

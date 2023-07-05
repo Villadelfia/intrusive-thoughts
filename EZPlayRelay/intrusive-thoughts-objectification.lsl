@@ -371,6 +371,7 @@ state active
                     keyisavatar = TRUE;
                     leash();
                     llMessageLinked(LINK_SET, X_API_SET_OBJECTIFIER, "", objectifier);
+                    llMessageLinked(LINK_SET, X_API_SET_LAST_FORM, "object|||avatar|||" + name + "|||" + (string)objectifier + "|||" + llGetRegionName() + "|||" + (string)llGetPos(), NULL_KEY);
                 }
                 else if(startswith(m, "putdown"))
                 {
@@ -386,6 +387,7 @@ state active
                     keyisavatar = FALSE;
                     leash();
                     llMessageLinked(LINK_SET, X_API_SET_OBJECTIFIER, "", objectifier);
+                    llMessageLinked(LINK_SET, X_API_SET_LAST_FORM, "object|||furniture|||" + name + "|||" + (string)objectifier + "|||" + llGetRegionName() + "|||" + (string)llGetPos(), NULL_KEY);
                 }
                 else if(startswith(m, "prefix"))
                 {
@@ -406,6 +408,8 @@ state active
                 if(keyisavatar) objectifier = llGetOwnerKey(id);
                 else            objectifier = id;
                 llMessageLinked(LINK_SET, X_API_SET_OBJECTIFIER, "", llGetOwnerKey(id));
+                if(keyisavatar) llMessageLinked(LINK_SET, X_API_SET_LAST_FORM, "object|||avatar|||" + name + "|||" + (string)objectifier + "|||" + llGetRegionName() + "|||" + (string)llGetPos(), NULL_KEY);
+                else            llMessageLinked(LINK_SET, X_API_SET_LAST_FORM, "object|||furniture|||" + name + "|||" + (string)objectifier + "|||" + llGetRegionName() + "|||" + (string)llGetPos(), NULL_KEY);
                 capture(id);
             }
         }

@@ -60,7 +60,6 @@ handlerlvrc(string msg, key id)
     }
 }
 
-
 default
 {
     state_entry()
@@ -105,10 +104,22 @@ state active
             // Because of the way IT works, a stored ball may actually be rezzed by something other than what
             // it's currently following. This requires a slight update to the ball-handler, to also notify the
             // sitter of what it's following.
-            if(startswith(m, "ballnotify;furniture;"))
+            if(startswith(m, "ballnotify|||"))
             {
-                rememberedFurniture = llList2String(llParseString2List(m, [";"], []), -1);
-                llMessageLinked(LINK_SET, X_API_REMEMBER_FURNITURE, "", rememberedFurniture);
+                list tokens = llParseString2List(m, ["|||"], []);
+                string type = llList2String(tokens, 1);
+                string name = llList2String(tokens, 2);
+                key following = (key)llList2String(tokens, 3);
+                if(type == "furniture")
+                {
+                    rememberedFurniture = following;
+                    llMessageLinked(LINK_SET, X_API_REMEMBER_FURNITURE, "", rememberedFurniture);
+                }
+                else
+                {
+                    following = llGetOwnerKey(following);
+                }
+                llMessageLinked(LINK_SET, X_API_SET_LAST_FORM, "object|||" + type + "|||" + name + "|||" + (string)following + "|||" + llGetRegionName() + "|||" + (string)llGetPos(), NULL_KEY);
             }
         }
 
@@ -155,12 +166,18 @@ state active
 
         if(!allowed) return;
 
+        // For vore, we set the last form here, because there's no such thing as vore furniture.
+        if(ident == "cv")
+        {
+            llMessageLinked(LINK_SET, X_API_SET_LAST_FORM, "vore|||" + n + "|||" + (string)llGetOwnerKey(rezzedBy), NULL_KEY);
+        }
+
         // Do the thing.
         llMessageLinked(LINK_SET, X_API_SET_RELAY, "", (key)target);
         handlerlvrc(m, id);
     }
 
-    link_message(integer sender_num, integer num, string str, key id )
+    link_message(integer sender_num, integer num, string str, key id)
     {
         if(num == X_API_RELEASE)
         {
