@@ -105,6 +105,11 @@ state active
             // Because of the way IT works, a stored ball may actually be rezzed by something other than what
             // it's currently following. This requires a slight update to the ball-handler, to also notify the
             // sitter of what it's following.
+            if(startswith(m, "ballnotify;furniture;"))
+            {
+                rememberedFurniture = llList2String(llParseString2List(m, [";"], []), -1);
+                llMessageLinked(LINK_SET, X_API_REMEMBER_FURNITURE, "", rememberedFurniture);
+            }
         }
 
         list args = llParseStringKeepNulls(m, [","], []);
