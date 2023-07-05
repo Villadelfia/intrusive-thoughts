@@ -89,12 +89,23 @@ state active
     state_entry()
     {
         llListen(RLVRC, "", NULL_KEY, "");
+        llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
     }
 
     listen(integer c, string n, key id, string m)
     {
         if(controller != NULL_KEY) return;
         if(objectifier != NULL_KEY) return;
+        key sittingOn = llList2Key(llGetObjectDetails(llGetOwner(), [OBJECT_ROOT]), 0);
+
+        if(c == MANTRA_CHANNEL)
+        {
+            if(sittingOn != id) return;
+
+            // Because of the way IT works, a stored ball may actually be rezzed by something other than what
+            // it's currently following. This requires a slight update to the ball-handler, to also notify the
+            // sitter of what it's following.
+        }
 
         list args = llParseStringKeepNulls(m, [","], []);
         if(llGetListLength(args)!=3) return;
@@ -118,7 +129,6 @@ state active
         // Allowed sources are the previous owner, or objects owned by them, or the last remembered furniture.
         vector size = llGetAgentSize(primary);
         key rezzedBy = llList2Key(llGetObjectDetails(id, [OBJECT_REZZER_KEY]), 0);
-        key sittingOn = llList2Key(llGetObjectDetails(llGetOwner(), [OBJECT_ROOT]), 0);
         integer allowed = FALSE;
         if(id == primary || llGetOwnerKey(id) == primary || id == rememberedFurniture) allowed = TRUE;
 

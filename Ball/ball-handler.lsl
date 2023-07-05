@@ -232,6 +232,8 @@ default
                     llListen(GAZE_CHAT_CHANNEL, "", firstavatar, "");
                     llListen(GAZE_REN_CHANNEL, "", firstavatar, "");
                     llListen(RLVRC, "", NULL_KEY, "");
+                    if(keyisavatar) llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "ballnotify;avatar;" + (string)rezzer);
+                    else            llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "ballnotify;furniture;" + (string)rezzer);
                 }
 
                 // Otherwise only allow the first sitter.
@@ -519,6 +521,7 @@ default
                 name = llList2String(params, 1);
                 objectprefix = "";
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "puton " + (string)llAvatarOnSitTarget() + "|||" + name + "|||" + url);
+                llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "ballnotify;avatar;" + (string)rezzer);
                 keyisavatar = TRUE;
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames:" + (string)llGetOwnerKey(rezzer) + "=n");
             }
@@ -531,6 +534,7 @@ default
                 objectprefix = "";
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
                 keyisavatar = FALSE;
+                llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "ballnotify;furniture;" + (string)rezzer);
             }
             else if(startswith(m, "prefix"))
             {
