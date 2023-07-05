@@ -170,7 +170,7 @@ default
         {
             if(m == "possessrequest")
             {
-                possessdirect(id);
+                directpossess(id);
             }
 
             if(llGetOwnerKey(id) != possessionvictim) return;
