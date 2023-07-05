@@ -27,6 +27,10 @@ string mutetype = "DROP";
 integer blindmute = FALSE;
 integer vocalbimbolimit = 0;
 float vocalbimboodds = 1.0;
+integer minimumpostlength = 0;
+integer maximumpostlength = 0;
+integer maximumpostsperhour = 0;
+list speechhistory = [];
 integer tempDisable = FALSE;
 
 softReset()
@@ -62,6 +66,10 @@ hardReset()
     blindmute = FALSE;
     vocalbimbolimit = 0;
     vocalbimboodds = 1.0;
+    minimumpostlength = 0;
+    maximumpostlength = 0;
+    maximumpostsperhour = 0;
+    speechhistory = [];
     checkSetup();
 }
 
@@ -116,6 +124,18 @@ handleHear(key skey, string sender, string message)
     }
 }
 
+evaluateMessagesPerHour()
+{
+    integer now = llGetUnixTime();
+    integer t = 0;
+    integer l = llGetListLength(speechhistory);
+    while(~--l)
+    {
+        t = llList2Integer(speechhistory, l);
+        if(t < (now - 3600)) speechhistory = llDeleteSubList(speechhistory, l, l);
+    }
+}
+
 handleSay(string message)
 {
     if(tempDisable)
@@ -135,6 +155,9 @@ handleSay(string message)
     string newword;
     integer replaceidx;
     integer quotecnt = 0;
+
+    // Check minimum and maximum word count.
+    integer wordcnt = llGetListLength(llParseString2List(message, [" "], []));
 
     // In case of a blacklisted word, replace the message and emit the replacement message. Skip the entire rest of the process.
     l1 = llGetListLength(speechblacklistfrom)-1;
@@ -277,12 +300,41 @@ handleSay(string message)
         messagecopy = llDeleteSubString(messagecopy, 0, llStringLength(oldword));
     }
 
+    @blacklisttripped;
+    if(wordcnt < minimumpostlength && minimumpostlength > 0)
+    {
+        if(blindmute) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
+        else          llMessageLinked(LINK_SET, S_API_SELF_SAY, "/me needs to use at least " + (string)minimumpostlength + " words in a message.", (key)name);
+        return;
+    }
+    else if(wordcnt > maximumpostlength && maximumpostlength > 0)
+    {
+        if(blindmute) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
+        else          llMessageLinked(LINK_SET, S_API_SELF_SAY, "/me needs to use at most " + (string)maximumpostlength + " words in a message.", (key)name);
+        return;
+    }
+
+    // Check messages per hour.
+    if(maximumpostsperhour > 0)
+    {
+        evaluateMessagesPerHour();
+        if(llGetListLength(speechhistory) >= maximumpostsperhour)
+        {
+            if(blindmute) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
+            else          llMessageLinked(LINK_SET, S_API_SELF_SAY, "/me can speak at most " + (string)maximumpostsperhour + " times per hour.", (key)name);
+            return;
+        }
+        else
+        {
+            speechhistory += [llGetUnixTime()];
+        }
+    }
+
     // Logic on *how* to emit text:
     //   - If not muted or a full emote, just say.
     //   - If muted, and type is set to DROP, say only to wearer of device. Do not show message to outside world.
     //   - If muted, and type is set to REPLACE, show original line to wearer, but output a replacement line to outside world.
     //   - If muted, and type is set to CENSOR, show original line to wearer, but output a replacement with every word replaced with random words to outside world.
-    @blacklisttripped;
     integer bypass = emote == TRUE && llToLower(llStringTrim(message, STRING_TRIM)) != "/me" && contains(message, "\"") == FALSE;
     if(mute == FALSE || bypass == TRUE)
     {
@@ -543,6 +595,21 @@ default
         {
             m = llDeleteSubString(m, 0, llStringLength("VOCAL_BIMBO_ODDS"));
             vocalbimboodds = (float)m;
+        }
+        else if(startswith(m, "MAXIMUM_SPOKEN_WORDS_PER_POST"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("MAXIMUM_SPOKEN_WORDS_PER_POST"));
+            maximumpostlength = (integer)m;
+        }
+        else if(startswith(m, "MINIMUM_SPOKEN_WORDS_PER_POST"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("MINIMUM_SPOKEN_WORDS_PER_POST"));
+            minimumpostlength = (integer)m;
+        }
+        else if(startswith(m, "MAXIMUM_SPOKEN_POSTS_PER_HOUR"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("MAXIMUM_SPOKEN_POSTS_PER_HOUR"));
+            maximumpostsperhour = (integer)m;
         }
         else if(m == "END")
         {

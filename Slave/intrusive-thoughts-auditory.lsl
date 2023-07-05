@@ -19,6 +19,8 @@ string undeafenmsg = "";
 list deafencmd = [];
 list undeafencmd = [];
 list deafenexcept = [];
+integer maximumpostsperhour = 0;
+list hearinghistory = [];
 integer setup = FALSE;
 integer tempDisable = FALSE;
 
@@ -47,8 +49,22 @@ hardReset()
     deafencmd = [];
     undeafencmd = [];
     deafenexcept = [];
+    maximumpostsperhour = 0;
+    hearinghistory = [];
     setup = FALSE;
     checkSetup();
+}
+
+evaluateMessagesPerHour()
+{
+    integer now = llGetUnixTime();
+    integer t = 0;
+    integer l = llGetListLength(hearinghistory);
+    while(~--l)
+    {
+        t = llList2Integer(hearinghistory, l);
+        if(t < (now - 3600)) hearinghistory = llDeleteSubList(hearinghistory, l, l);
+    }
 }
 
 handleHear(key skey, string sender, string message)
@@ -295,6 +311,20 @@ handleHear(key skey, string sender, string message)
         messagecopy = llDeleteSubString(messagecopy, 0, llStringLength(oldword));
     }
 
+    // Check messages per hour.
+    if(maximumpostsperhour > 0)
+    {
+        evaluateMessagesPerHour();
+        if(llGetListLength(hearinghistory) >= maximumpostsperhour)
+        {
+            return;
+        }
+        else
+        {
+            hearinghistory += [llGetUnixTime()];
+        }
+    }
+
     message = prefix + message;
     llMessageLinked(LINK_SET, S_API_SELF_SAY, message, "");
 }
@@ -472,6 +502,11 @@ default
         {
             m = llDeleteSubString(m, 0, llStringLength("DEAFEN_EXCEPT"));
             deafenexcept += [llToLower(m)];
+        }
+        else if(startswith(m, "MAXIMUM_HEARD_POSTS_PER_HOUR"))
+        {
+            m = llDeleteSubString(m, 0, llStringLength("MAXIMUM_HEARD_POSTS_PER_HOUR"));
+            maximumpostsperhour = (integer)m;
         }
         else if(m == "END")
         {

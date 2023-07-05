@@ -146,3 +146,5 @@ Version 3.0.5:
  - Added a few missed permissions for secondary owners.
  - Fixed an issue where multiple objectifications in quick succession could gum up the works as well as defensively avoiding similar issues in the future.
  - Add EZPlay Relay.
+ - Add word count limitations to speech.
+ - Add messages per hour limit to speech and hearing.

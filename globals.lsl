@@ -111,15 +111,15 @@
 // #define PUBLIC_SLAVE
 // #define RETAIL_MODE
 
-string master_base = "Intrusive Thoughts Master [v3.0.5c]";
-string slave_base = "Intrusive Thoughts Slave [v3.0.5c]";
-#define VERSION_S "IT-Slave v3.0.5c"
-#define VERSION_M "IT-Master v3.0.5c"
+string master_base = "Intrusive Thoughts Master [v3.0.5d]";
+string slave_base = "Intrusive Thoughts Slave [v3.0.5d]";
+#define VERSION_S "IT-Slave v3.0.5d"
+#define VERSION_M "IT-Master v3.0.5d"
 // 3 digits for major
 // 3 digits for minor
 // 3 digits for patch
 // 2 digits for revision with base = 00, a = 01, b = 02...
-#define VERSION_CMP "00300000503"
+#define VERSION_CMP "00300000504"
 #define VERSION_FULL "893DE2"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0

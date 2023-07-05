@@ -1,7 +1,7 @@
 # Every line starting with # will be ignored by the notecard parser. These comment lines
 # will be used to document the configuration format, but should be removed when you are
 # Finished to speed up loading. Removing empty lines also increases loading time.
-# Lines starting with █ should not be altered as they denote the sections, but they can be 
+# Lines starting with █ should not be altered as they denote the sections, but they can be
 # removed if that section is not required.
 
 # Intrusive Thoughts consists of four big sections.
@@ -112,8 +112,8 @@ mistress
 /me forgot to use the magic word...
 
 # What follows is a list of letter sequences to be replaced in the submissive's speech, in the format
-# original=replacement. Unlike SPEECH_FILTER below, this list will be processed on a character by 
-# character basis, and they will be executed from top to bottom. This means that more specific 
+# original=replacement. Unlike SPEECH_FILTER below, this list will be processed on a character by
+# character basis, and they will be executed from top to bottom. This means that more specific
 # filters that start with the same letters as other filters should be listed first. This is ran BEFORE the
 # SPEECH_FILTER filtering.
 █SPEECH_FILTER_PARTIAL
@@ -165,7 +165,7 @@ enable voice
 █MUTE_TYPE
 CENSOR
 
-# The list of lines or words in the MUTE_CENSOR setting is used when MUTE_TYPE is set 
+# The list of lines or words in the MUTE_CENSOR setting is used when MUTE_TYPE is set
 # to CENSOR or REPLACE.
 █MUTE_CENSOR
 blah
@@ -194,8 +194,8 @@ Suddenly, you feel your vocal chords re-attaching to your neural interface. You 
 █VOCAL_BIMBO_LIMIT
 10
 
-# Odds of a word not getting shuffled when the vocal bimbo limit is tripped. 0.80 means 80% 
-# chance the word is kept intact when it is is too long. Setting this to 1.0 will disable the 
+# Odds of a word not getting shuffled when the vocal bimbo limit is tripped. 0.80 means 80%
+# chance the word is kept intact when it is is too long. Setting this to 1.0 will disable the
 # vocal bimbo filter.
 █VOCAL_BIMBO_ODDS
 0.80
@@ -216,7 +216,7 @@ Suddenly, you feel your vocal chords re-attaching to your neural interface. You 
 *snort*
 
 # If any of these statements are found in a statement said by the owner, the submissive will
-# be rendered mindless. One per line. If no mindlessness commands are listed, the mindlessness 
+# be rendered mindless. One per line. If no mindlessness commands are listed, the mindlessness
 # system will be disabled. While mindless, the submissive can not communicate in any way except
 # for the limited set of responses configured below. Not even emotes will be allowed.
 █MIND_OFF_CMD
@@ -224,7 +224,7 @@ mind off
 disable mind
 
 # If any of these statements are found in a statement said by the owner, the submissive will
-# have their mind re-enabled. One per line. The mindlessness system can be active without any 
+# have their mind re-enabled. One per line. The mindlessness system can be active without any
 # mind enabling commands configured, making mindlessness a one-way trip.
 █MIND_ON_CMD
 mind on
@@ -247,6 +247,23 @@ yes=/me nods her head.
 no=/me shakes her head.
 explain=/me speaks in a robotic tone, "This unit's free will has been disabled and is currently restricted to a limited set of actions."
 
+# The submissive can be limited to a maximum of pre-filter words per message. If BLIND_MUTE
+# is off, they will be informed of the maximum. Otherwise the message will be dropped unknown
+# to themselves.
+█MAXIMUM_SPOKEN_WORDS_PER_POST
+40
+
+# The submissive can be limited to a minimum of pre-filter words per message. If BLIND_MUTE
+# is off, they will be informed of the minimum. Otherwise the message will be dropped unknown
+# to themselves.
+█MINIMUM_SPOKEN_WORDS_PER_POST
+5
+
+# The submissive can be limited to a maximum amount of posts per hour. If BLIND_MUTE
+# is off, they will be informed how long until they can say the next thing. Otherwise
+# the message will be dropped unknown to themselves.
+█MAXIMUM_SPOKEN_POSTS_PER_HOUR
+5
 
 ######################
 # SECTION 3: AUDITORY FILTERING #
@@ -291,7 +308,7 @@ hiffi's=«Big Sister's»
 0.80
 
 # A comma separated list of symbols that will replace letters when words are too long.
-# Note that these do not have to be single symbols. If left undefined, every dropped 
+# Note that these do not have to be single symbols. If left undefined, every dropped
 # character will be replaced with an underscore.
 █AUDITORY_BIMBO_CENSOR
 _,⚠,•,₪,☉,☍,☓,☡,☢,☣,☯,♅,♫,♲,♻,♾,⚉,⚑,⚗,⚛,⚡,⚭,⚶,⚹,⛆,⛒,⛝,⛧,⛬,⛶,⛔︎,⛺︎,░,▒,▓,█,‽
@@ -362,7 +379,10 @@ You blink slowly as the noises of the world slowly return to you once more.
 A//ice:
 Alice:
 
-
+# The submissive can be limited to a maximum amount of posts per hour they can hear. Any
+# posts beyond the limit are dropped.
+█MAXIMUM_HEARD_POSTS_PER_HOUR
+30
 
 ####################
 # SECTION 4: VISION FILTERING #
