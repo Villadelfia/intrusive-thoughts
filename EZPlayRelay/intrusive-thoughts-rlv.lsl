@@ -117,14 +117,23 @@ state active
         // Or if it's not one of the allowed sources.
         // Allowed sources are the previous owner, or objects owned by them, or the last remembered furniture.
         vector size = llGetAgentSize(primary);
+        key rezzedBy = llList2Key(llGetObjectDetails(id, [OBJECT_REZZER_KEY]), 0);
+        key sittingOn = llList2Key(llGetObjectDetails(llGetOwner(), [OBJECT_ROOT]), 0);
         integer allowed = FALSE;
         if(id == primary || llGetOwnerKey(id) == primary || id == rememberedFurniture) allowed = TRUE;
+
+        // We also allow anything that was rezzed by our owner, anything that was rezzed by something owned by our owner,
+        // And anything rezzed by our remembered furniture.
+        if(rezzedBy == primary || llGetOwnerKey(rezzedBy) == primary || rezzedBy == rememberedFurniture) allowed = TRUE;
+
+        // Finally, if we're sitting on it, and we already have restrictions, allow that too.
+        if(restrictions != [] && sittingOn == id) allowed = TRUE;
 
         // If the primary owner is present and none of the above hold, we also allow objects created by the same creator.
         // This is then assumed to be furniture.
         if(allowed == FALSE && size != ZERO_VECTOR && llGetCreator() == llList2Key(llGetObjectDetails(id, [OBJECT_CREATOR]), 0))
         {
-            rememberedFurniture = id;
+            rememberedFurniture = rezzedBy;
             allowed = TRUE;
             llMessageLinked(LINK_SET, X_API_REMEMBER_FURNITURE, "", rememberedFurniture);
         }
