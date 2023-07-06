@@ -1,10 +1,13 @@
 #include <IT/globals.lsl>
 string target = "";
 list locations = [];
+list locationstatusses = [];
+integer currentupdate = 0;
 integer configured = FALSE;
 vector targetsimcorner;
 vector targetsimlocal;
 key ds;
+key dsstatus;
 key lockedavatar;
 string lockedname;
 
@@ -43,6 +46,13 @@ send(string region, string x, string y, string z)
     }
 }
 
+getnextstatus()
+{
+    if(llGetListLength(locationstatusses) == 0) return;
+    if(currentupdate >= llGetListLength(locationstatusses)) currentupdate = 0;
+    dsstatus = llRequestSimulatorData((string)locations[(currentupdate*5)+1], DATA_SIM_STATUS);
+}
+
 givemenu()
 {
     llSetObjectName("");
@@ -52,7 +62,8 @@ givemenu()
     for(i = 0; i < l; i += 5)
     {
         string dest = llList2String(locations, i);
-        string say = dest + " — [secondlife:///app/chat/1/tpto%20" + dest + " (together)] [secondlife:///app/chat/1/tpme%20" + dest + " (alone)]";
+        string status = llList2String(locationstatusses, (integer)(i/5));
+        string say = dest + " (" + status + ") — [secondlife:///app/chat/1/tpto%20" + dest + " (together)] [secondlife:///app/chat/1/tpme%20" + dest + " (alone)]";
         if(lockedavatar) say = say + " [secondlife:///app/chat/1/send%20" + dest + " (send locked avatar)]";
         llOwnerSay(say);
     }
@@ -86,15 +97,18 @@ default
         if(num == M_API_CONFIG_DONE)
         {
             configured = TRUE;
+            llSetTimerEvent(5.0);
         }
         else if(num == M_API_CONFIG_DATA && str == "tp")
         {
             if(configured)
             {
                 locations = [];
+                locationstatusses = [];
                 configured = FALSE;
             }
             locations += llParseString2List((string)id, [","], []);
+            locationstatusses += ["Status: Fetching..."];
             llSetObjectName("");
             llOwnerSay(VERSION_M + ": Loaded teleport location " + llList2String(locations, -5));
             llSetObjectName(master_base);
@@ -108,6 +122,12 @@ default
             lockedavatar = id;
             lockedname = str;
         }
+    }
+
+    timer()
+    {
+        getnextstatus();
+        llSetTimerEvent(60.0);
     }
 
     listen(integer c, string n, key id, string m)
@@ -180,14 +200,24 @@ default
 
     dataserver(key q, string d)
     {
-        if(q != ds) return;
-        vector relative = (vector)d;
-        vector global = llGetRegionCorner() + relative;
-        targetsimcorner = <256.0 * (float) ((integer)(global.x / 256.0)), 256.0 * (float) ((integer)(global.y / 256.0)), 0.0>;
-        targetsimlocal = global - targetsimcorner;
-        targetsimcorner /= 256;
-        string url = "https://cap.secondlife.com/cap/0/b713fe80-283b-4585-af4d-a3b7d9a32492?var=region&grid_x=" + (string)llRound(targetsimcorner.x) + "&grid_y=" + (string)llRound(targetsimcorner.y);
-        ds = llHTTPRequest(url, [], "");
-        while(llGetInventoryNumber(INVENTORY_LANDMARK) > 0) llRemoveInventory(llGetInventoryName(INVENTORY_LANDMARK, 0));
+        if(q == ds)
+        {
+            ds = NULL_KEY;
+            vector relative = (vector)d;
+            vector global = llGetRegionCorner() + relative;
+            targetsimcorner = <256.0 * (float) ((integer)(global.x / 256.0)), 256.0 * (float) ((integer)(global.y / 256.0)), 0.0>;
+            targetsimlocal = global - targetsimcorner;
+            targetsimcorner /= 256;
+            string url = "https://cap.secondlife.com/cap/0/b713fe80-283b-4585-af4d-a3b7d9a32492?var=region&grid_x=" + (string)llRound(targetsimcorner.x) + "&grid_y=" + (string)llRound(targetsimcorner.y);
+            ds = llHTTPRequest(url, [], "");
+            while(llGetInventoryNumber(INVENTORY_LANDMARK) > 0) llRemoveInventory(llGetInventoryName(INVENTORY_LANDMARK, 0));
+        }
+        else if(q == dsstatus)
+        {
+            dsstatus = NULL_KEY;
+            locationstatusses = llListReplaceList(locationstatusses, ["Status: " + llToUpper(llGetSubString(d, 0, 0)) + llGetSubString(d, 1, -1)], currentupdate, currentupdate);
+            currentupdate += 1;
+            llSetTimerEvent(5.0);
+        }
     }
 }
