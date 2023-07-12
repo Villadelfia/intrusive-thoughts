@@ -78,6 +78,7 @@ unpossess = %ME% releases her control over %VIC%, as they find their control ove
 ##################
 # Tp lines configure pre-set locations for the tpto and tpme commands
 # The format is: tp = shortname,region,x,y,z
+# Or: tp = shortname,slurl
 # You can have as many of these lines as you want. One line per destination.
 tp = nri,Bedos,97,99,901
 

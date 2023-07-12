@@ -107,7 +107,14 @@ default
                 locationstatusses = [];
                 configured = FALSE;
             }
-            locations += llParseString2List((string)id, [","], []);
+            // Heuristic. If it has a slash, it's probably an slurl. But this way supports both.
+            list elements = llParseString2List((string)id, [",", "/"], []);
+            string shortname = llList2String(elements, 0);
+            string z = llList2String(elements, -1);
+            string y = llList2String(elements, -2);
+            string x = llList2String(elements, -3);
+            string region = llList2String(elements, -4);
+            locations += [shortname, llUnescapeURL(region), (string)((integer)x), (string)((integer)y), (string)((integer)z)];
             locationstatusses += ["Status: Fetching..."];
             llSetObjectName("");
             llOwnerSay(VERSION_M + ": Loaded teleport location " + llList2String(locations, -5));
