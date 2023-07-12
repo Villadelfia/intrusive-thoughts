@@ -68,12 +68,30 @@ die()
     llOwnerSay("@clear,detachme=force");
 }
 
-capture(key id)
+capture()
 {
     llSetObjectName("");
-    llRegionSayTo(id, RLVRC, "c," + (string)id + ",@sit=n,ok");
-    llRegionSayTo(id, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about is being objectified in a no-rez zone, please note that if you .");
-    llOwnerSay("@detach=n,fly=n,unsit=force,sit=n,tplocal=n,tplm=n,tploc=n,tplure=n,tplure:" + (string)llGetOwnerKey(objectifier) + "=add,accepttp:" + (string)llGetOwnerKey(objectifier) + "=add,showself=n,sendgesture=n,startim:" + (string)llGetOwnerKey(objectifier) + "=add,recvim:" + (string)llGetOwnerKey(objectifier) + "=add");
+
+    // If I'm objectifying for an avatar, let them know.
+    if(keyisavatar) llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about is being objectified in a no-rez zone.");
+
+    // Basic RLV restrictions:
+    //  - No detaching.
+    //  - No flying.
+    //  - Forced stand up and no sitting.
+    //  - No teleporting or getting teleported.
+    //  - Hide self.
+    //  - No gestures.
+    llOwnerSay("@detach=n,fly=n,unsit=force,sit=n,tplocal=n,tplm=n,tploc=n,tplure_sec=n,showself=n,sendgesture=n");
+
+    // If I'm objectifying for an avatar, also add teleport exceptions and IM exceptions for them ahead of time.
+    if(keyisavatar)
+    {
+        llOwnerSay("@tplure:" + (string)objectifier + "=add,accepttp:" + (string)objectifier + "=add");
+        llOwnerSay("@startim:" + (string)objectifier + "=add,recvim:" + (string)objectifier + "=add,sendim:" + (string)objectifier + "=add");
+    }
+
+    // Apply the saved settings loaded from the server.
     applyIm();
     applyHearing();
     applySpeech();
@@ -82,8 +100,14 @@ capture(key id)
     applyCamera();
     applyInventory();
     applyWorld();
+
+    // "leash" to the capturer.
     leash();
+
+    // Get a URL to handle TP following in case of avatar.
     urlt = llRequestURL();
+
+    // And finally, block movement and hide avatar.
     llRequestPermissions(llGetOwner(), PERMISSION_TRIGGER_ANIMATION | PERMISSION_TAKE_CONTROLS);
 }
 
@@ -416,15 +440,25 @@ default
             else if(startswith(m, "sit"))
             {
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("sit")), ["|||"], []);
-                objectifier = llGetOwnerKey(id);
+
+                // The objectifier is an avatar if the object sending the message has an attachment point.
+                // Otherwise it's IT furniture.
+                keyisavatar = llList2Integer(llGetObjectDetails(id, [OBJECT_ATTACHED_POINT]), 0) != 0;
+
+                // If the objectifier is an avatar, we want the avatar, not the hud. Otherwise the object is fine.
+                if(keyisavatar) objectifier = llGetOwnerKey(id);
+                else            objectifier = id;
+
+                // Name and prefix of what we're becoming.
                 name = llList2String(params, 1);
                 objectprefix = llList2String(params, 2);
                 if(objectprefix == "NULL") objectprefix = "";
-                keyisavatar = llList2Integer(llGetObjectDetails(id, [OBJECT_ATTACHED_POINT]), 0) != 0;
-                if(keyisavatar) objectifier = llGetOwnerKey(id);
-                else            objectifier = id;
+
+                // Let the other scripts know that we're busy.
                 llMessageLinked(LINK_SET, X_API_SET_OBJECTIFIER, "", llGetOwnerKey(id));
-                capture(id);
+
+                // And do the capture.
+                capture();
             }
             else if(startswith(m, "puton"))
             {
