@@ -112,6 +112,8 @@
 // #define PUBLIC_SLAVE
 // #define RETAIL_MODE
 
+#define BUTTON_TRANSPARENCY 0.4
+
 string master_base = "Intrusive Thoughts Master [v3.0.5e]";
 string slave_base = "Intrusive Thoughts Slave [v3.0.5e]";
 #define VERSION_S "IT-Slave v3.0.5e"

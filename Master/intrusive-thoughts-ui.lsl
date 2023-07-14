@@ -50,7 +50,7 @@ setbuttonfilter(string filter, integer active)
         {
             buttonstates = llListReplaceList(buttonstates, [active], i, i);
             if(active) alpha = 0.0;
-            else       alpha = 0.7;
+            else       alpha = BUTTON_TRANSPARENCY;
             llSetLinkAlpha(llList2Integer(buttonlinks, i), alpha, 4);
         }
     }
@@ -61,7 +61,7 @@ setbuttonfilter(string filter, integer active)
     {
         i = llListFindList(buttons, ["vore"]);
         buttonstates = llListReplaceList(buttonstates, [FALSE], i, i);
-        llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, 4);
+        llSetLinkAlpha(llList2Integer(buttonlinks, i), BUTTON_TRANSPARENCY, 4);
     }
     else
     {
@@ -76,7 +76,7 @@ setbuttonfilter(string filter, integer active)
         {
             i = llListFindList(buttons, ["vore"]);
             buttonstates = llListReplaceList(buttonstates, [FALSE], i, i);
-            llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, 4);
+            llSetLinkAlpha(llList2Integer(buttonlinks, i), BUTTON_TRANSPARENCY, 4);
         }
     }
 
@@ -86,7 +86,7 @@ setbuttonfilter(string filter, integer active)
     {
         i = llListFindList(buttons, ["possess"]);
         buttonstates = llListReplaceList(buttonstates, [FALSE], i, i);
-        llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, 4);
+        llSetLinkAlpha(llList2Integer(buttonlinks, i), BUTTON_TRANSPARENCY, 4);
     }
     else
     {
@@ -101,7 +101,7 @@ setbuttonfilter(string filter, integer active)
         {
             i = llListFindList(buttons, ["possess"]);
             buttonstates = llListReplaceList(buttonstates, [FALSE], i, i);
-            llSetLinkAlpha(llList2Integer(buttonlinks, i), 0.7, 4);
+            llSetLinkAlpha(llList2Integer(buttonlinks, i), BUTTON_TRANSPARENCY, 4);
         }
     }
 
@@ -219,7 +219,7 @@ dosetup()
             {
                 buttonstates += [FALSE];
                 llSetLinkAlpha(i, 0.0, ALL_SIDES);
-                llSetLinkAlpha(i, 0.7, 4);
+                llSetLinkAlpha(i, BUTTON_TRANSPARENCY, 4);
             }
         }
         --i;
