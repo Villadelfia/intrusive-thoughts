@@ -149,3 +149,5 @@ Version 3.0.5:
  - Add word count limitations to speech.
  - Add messages per hour limit to speech and hearing.
  - Fix reliability issue in no-rez tf.
+ - Fix IM blocking oversight.
+ - Fix bouncing in no-rez tf.

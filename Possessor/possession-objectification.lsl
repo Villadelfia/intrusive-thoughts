@@ -189,7 +189,7 @@ leash()
     leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
     llTargetRemove(leashinghandle);
     llStopMoveToTarget();
-    leashinghandle = llTarget(leashtarget, 2.0);
+    leashinghandle = llTarget(leashtarget, 5.0);
     if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 1.5);
 }
 
@@ -464,8 +464,10 @@ default
             {
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("puton")), ["|||"], []);
                 llOwnerSay("@tplure:" + (string)llGetOwnerKey(objectifier) + "=rem,accepttp:" + (string)llGetOwnerKey(objectifier) + "=rem");
+                llOwnerSay("@startim:" + (string)objectifier + "=rem,recvim:" + (string)objectifier + "=rem,sendim:" + (string)objectifier + "=rem");
                 objectifier = (key)llList2String(params, 0);
                 llOwnerSay("@tplure:" + (string)llGetOwnerKey(objectifier) + "=add,accepttp:" + (string)llGetOwnerKey(objectifier) + "=add");
+                llOwnerSay("@startim:" + (string)objectifier + "=add,recvim:" + (string)objectifier + "=add,sendim:" + (string)objectifier + "=add");
                 name = llList2String(params, 1);
                 objectprefix = "";
                 llRegionSayTo(objectifier, MANTRA_CHANNEL, "puton " + (string)llAvatarOnSitTarget() + "|||" + name + "|||" + url);
@@ -477,8 +479,10 @@ default
             {
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("putdown")), ["|||"], []);
                 llOwnerSay("@tplure:" + (string)llGetOwnerKey(objectifier) + "=rem,accepttp:" + (string)llGetOwnerKey(objectifier) + "=rem");
+                llOwnerSay("@startim:" + (string)objectifier + "=rem,recvim:" + (string)objectifier + "=rem,sendim:" + (string)objectifier + "=rem");
                 objectifier = (key)llList2String(params, 0);
                 llOwnerSay("@tplure:" + (string)llGetOwnerKey(objectifier) + "=add,accepttp:" + (string)llGetOwnerKey(objectifier) + "=add");
+                llOwnerSay("@startim:" + (string)objectifier + "=add,recvim:" + (string)objectifier + "=add,sendim:" + (string)objectifier + "=add");
                 name = llList2String(params, 1);
                 objectprefix = "";
                 llRegionSayTo(objectifier, MANTRA_CHANNEL, "objurl " + url);
@@ -528,7 +532,7 @@ default
         llStopMoveToTarget();
         llTargetRemove(leashinghandle);
         leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
-        leashinghandle = llTarget(leashtarget, 2.0);
+        leashinghandle = llTarget(leashtarget, 5.0);
     }
 
     not_at_target()
@@ -540,7 +544,7 @@ default
             {
                 llTargetRemove(leashinghandle);
                 leashtarget = newpos;
-                leashinghandle = llTarget(leashtarget, 2.0);
+                leashinghandle = llTarget(leashtarget, 5.0);
             }
             if(leashtarget != ZERO_VECTOR)
             {
@@ -611,7 +615,7 @@ default
         }
         llTargetRemove(leashinghandle);
         leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
-        leashinghandle = llTarget(leashtarget, 2.0);
+        leashinghandle = llTarget(leashtarget, 5.0);
         if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 1.5);
         if(cameraRestrict != 0)
         {
