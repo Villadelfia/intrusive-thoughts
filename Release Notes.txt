@@ -151,3 +151,4 @@ Version 3.0.5:
  - Fix reliability issue in no-rez tf.
  - Fix IM blocking oversight.
  - Fix bouncing in no-rez tf.
+ - No chat spam on TP following.

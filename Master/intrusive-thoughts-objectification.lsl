@@ -180,7 +180,7 @@ addobject(string desc)
     llSetObjectName(master_base);
     target = lockedavatar;
     targetname = lockedname;
-    llMessageLinked(LINK_SET, M_API_PROVISION_REQUEST, targetname + "|||" + desc + "|||" + (string)hideopt, target);
+    llMessageLinked(LINK_SET, M_API_PROVISION_REQUEST, targetname + "|||" + desc + "|||" + (string)hideopt + "|||0", target);
 }
 
 addobjectdirect(string desc, key who)
@@ -192,7 +192,7 @@ addobjectdirect(string desc, key who)
     llSetObjectName("");
     llOwnerSay("Automatically capturing '" + targetname + "' because of an EZPlay Relay request.");
     llSetObjectName(master_base);
-    llMessageLinked(LINK_SET, M_API_PROVISION_REQUEST, targetname + "|||" + desc + "|||" + (string)hideopt, target);
+    llMessageLinked(LINK_SET, M_API_PROVISION_REQUEST, targetname + "|||" + desc + "|||" + (string)hideopt + "|||0", target);
 }
 
 handlequeue()
@@ -219,7 +219,7 @@ handlequeue()
         {
             llOwnerSay("Recapturing " + targetname + ".");
             llSetTimerEvent(60.0);
-            llMessageLinked(LINK_SET, M_API_PROVISION_REQUEST, targetname + "|||" + targetdescription + "|||" + (string)hideopt, target);
+            llMessageLinked(LINK_SET, M_API_PROVISION_REQUEST, targetname + "|||" + targetdescription + "|||" + (string)hideopt + "|||8", target);
         }
     }
     llSetObjectName(master_base);
@@ -436,7 +436,11 @@ default
                 objectprefix = (string)id + " ";
                 if(objectprefix == " " || objectprefix == "Avatar's ") objectprefix = guessprefix();
             }
-            else if(str == "ball") hideopt = (integer)((string)id);
+            else if(str == "ball")
+            {
+                hideopt = (integer)((string)id);
+                if(hideopt != 1 && hideopt != 2) hideopt = 1;
+            }
         }
         else if(num == M_API_LOCK)
         {

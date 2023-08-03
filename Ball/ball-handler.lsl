@@ -15,6 +15,7 @@ integer struggleEvents = 0;
 integer struggleFailed = FALSE;
 integer captured = FALSE;
 integer firstattempt = TRUE;
+integer notify = TRUE;
 string prefix = "??";
 integer timerctr = 0;
 
@@ -193,6 +194,7 @@ default
         // Sanitize all default parameters.
         firstavatar = NULL_KEY;
         keyisavatar = TRUE;
+        notify = TRUE;
         saton = FALSE;
         editmode = FALSE;
         seatedoffset = ZERO_VECTOR;
@@ -205,6 +207,7 @@ default
         // Set certain settings based on the start parameter.
         if(start_param & 2) animation = "hide_b";
         if(start_param & 4) keyisavatar = FALSE;
+        if(start_param & 8) notify = FALSE;
 
         // If the rezzer is an avatar, make sure we actually have the uuid of the avatar and not the hud.
         // Otherwise set the name this object will use to talk.
@@ -286,10 +289,13 @@ default
         llTakeControls(CONTROL_FWD | CONTROL_BACK | CONTROL_LEFT | CONTROL_RIGHT | CONTROL_ROT_LEFT | CONTROL_ROT_RIGHT | CONTROL_UP | CONTROL_DOWN, TRUE, TRUE);
 
         // Notify of menu.
-        llSetObjectName("");
-        llRegionSayTo(llAvatarOnSitTarget(), 0, "You can restrict yourself further by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you are captured by the same person.");
-        llRegionSayTo(llGetOwnerKey(rezzer), 0, "You can edit the restrictions on your victim by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you capture the same person.");
-        llSetObjectName("ball");
+        if(notify)
+        {
+            llSetObjectName("");
+            llRegionSayTo(llAvatarOnSitTarget(), 0, "You can restrict yourself further by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you are captured by the same person.");
+            llRegionSayTo(llGetOwnerKey(rezzer), 0, "You can edit the restrictions on your victim by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you capture the same person.");
+            llSetObjectName("ball");
+        }
 
         // And start a timer loop.
         llSetTimerEvent(0.5);

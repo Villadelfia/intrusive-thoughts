@@ -194,7 +194,7 @@ default
             {
                 // If we can, throw control back to the mother script.
                 provisiontarget = NULL_KEY;
-                llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, (integer)llList2String(params, 2));
+                llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, (integer)llList2String(params, 2) | (integer)llList2String(params, 3));
             }
         }
     }
