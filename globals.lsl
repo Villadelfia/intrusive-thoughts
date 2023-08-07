@@ -110,7 +110,7 @@
 
 // #define DEBUG
 // #define PUBLIC_SLAVE
-#define RETAIL_MODE
+// #define RETAIL_MODE
 
 #define BUTTON_TRANSPARENCY 0.4
 
