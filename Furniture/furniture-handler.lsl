@@ -39,6 +39,20 @@ integer cameraMode = 0;
 key camPosKey = NULL_KEY;
 key camFocusKey = NULL_KEY;
 
+scanCamera()
+{
+    camPosKey = NULL_KEY;
+    camFocusKey = NULL_KEY;
+    integer i = llGetLinkNumber() != 0;
+    integer x = llGetNumberOfPrims() + i;
+    for(; i < x; ++i)
+    {
+        if(llGetLinkName(i) == "cam_pos") camPosKey = llGetLinkKey(i);
+        if(llGetLinkName(i) == "cam_focus") camFocusKey = llGetLinkKey(i);
+    }
+    broadcastCamera();
+}
+
 broadcastCamera()
 {
     if(storedobject == NULL_KEY) return;
@@ -369,22 +383,14 @@ state running
         llListen(FURNITURE_CHANNEL, "", llGetOwner(), "");
         llSetRemoteScriptAccessPin(FURNITURE_CHANNEL);
         llSetLinkAlpha(LINK_THIS, 0.0, ALL_SIDES);
+        scanCamera();
     }
 
     changed(integer change)
     {
         if(change & CHANGED_LINK)
         {
-            camPosKey = NULL_KEY;
-            camFocusKey = NULL_KEY;
-            integer i = llGetLinkNumber() != 0;
-            integer x = llGetNumberOfPrims() + i;
-            for(; i < x; ++i)
-            {
-                if(llGetLinkName(i) == "cam_pos") camPosKey = llGetLinkKey(i);
-                if(llGetLinkName(i) == "cam_focus") camFocusKey = llGetLinkKey(i);
-            }
-            broadcastCamera();
+            scanCamera();
         }
     }
 
@@ -742,7 +748,8 @@ state running
                 (string)objectIsMute + "\n" +
                 (string)objectNameTagIsVisible + "\n" +
                 (string)lockedAvatar + "\n" +
-                llStringToBase64(objectGroup);
+                llStringToBase64(objectGroup) + "\n" +
+                (string)cameraMode;
             llMessageLinked(LINK_THIS, X_API_DUMP_SETTINGS_R, packed, NULL_KEY);
         }
         else if(num == X_API_RESTORE_SETTINGS)
@@ -753,7 +760,9 @@ state running
             objectNameTagIsVisible = (integer)llList2String(data, 2);
             lockedAvatar = (key)llList2String(data, 3);
             objectGroup = llBase64ToString(llList2String(data, 4));
+            cameraMode = (integer)llList2String(data, 5);
             if(lockedAvatar) sensortimer(5.0);
+            scanCamera();
             llMessageLinked(LINK_THIS, X_API_RESTORE_SETTINGS_R, "OK", NULL_KEY);
         }
     }
