@@ -281,7 +281,7 @@ default
 
     run_time_permissions(integer perm)
     {
-        if(perm & PERMISSION_TAKE_CONTROLS) llTakeControls(CONTROL_FWD, FALSE, TRUE);
+        if(perm & PERMISSION_TAKE_CONTROLS) llTakeControls(CONTROL_FWD, TRUE, TRUE);
     }
 
     touch_start(integer num)
