@@ -230,7 +230,7 @@ default
     run_time_permissions(integer perm)
     {
         debug("[run_time_permissions] Entry, perm: " + (string)perm);
-        if(perm & PERMISSION_TAKE_CONTROLS) llTakeControls(CONTROL_FWD, FALSE, TRUE);
+        if(perm & PERMISSION_TAKE_CONTROLS) llTakeControls(CONTROL_FWD, TRUE, TRUE);
     }
 
     changed(integer change)
