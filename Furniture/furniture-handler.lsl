@@ -28,6 +28,23 @@ key lockedAvatar = NULL_KEY;
 integer menuState = 0;
 list targets = [];
 
+// To use these features, two prims must be linked to the linkset:
+//  - cam_pos
+//  - cam_focus
+//
+// If 'cameraMode' is set to 0, then the regular focusing will be used.
+// If it's set to 1, then the camera will be locked at cam_pos and aimed at cam_focus.
+// If it's set to 2, it will act the same, except when an avatar comes within
+integer cameraMode = 0;
+key camPosKey = NULL_KEY;
+key camFocusKey = NULL_KEY;
+
+broadcastCamera()
+{
+    if(storedobject == NULL_KEY) return;
+    llRegionSayTo(storedobject, MANTRA_CHANNEL, "furniturecamera;" + (string)cameraMode + ";" + (string)camPosKey + ";" + (string)camFocusKey);
+}
+
 float fCos(float x, float y, float t)
 {
     float F = (1-llCos(t*PI))/2;
@@ -128,7 +145,18 @@ handleMenu()
             buttons += ["VISIBLE"];
         }
 
-        buttons += [" ", " ", " "];
+        if(camPosKey != NULL_KEY && camFocusKey != NULL_KEY)
+        {
+            if(cameraMode == 0) msg += " ▶ Camera follows normal rules.\n";
+            if(cameraMode == 1) msg += " ▶ Camera focuses on object.\n";
+            if(cameraMode == 2) msg += " ▶ Camera focuses on nearby avatars or on object when nobody is nearby.\n";
+            buttons += ["NORM CAM", "OBJ CAM", "FPV CAM"];
+        }
+        else
+        {
+            buttons += [" ", " ", " "];
+        }
+
 
         if(objectIsMute)
         {
@@ -343,6 +371,23 @@ state running
         llSetLinkAlpha(LINK_THIS, 0.0, ALL_SIDES);
     }
 
+    changed(integer change)
+    {
+        if(change & CHANGED_LINK)
+        {
+            camPosKey = NULL_KEY;
+            camFocusKey = NULL_KEY;
+            integer i = llGetLinkNumber() != 0;
+            integer x = llGetNumberOfPrims() + i;
+            for(; i < x; ++i)
+            {
+                if(llGetLinkName(i) == "cam_pos") camPosKey = llGetLinkKey(i);
+                if(llGetLinkName(i) == "cam_focus") camFocusKey = llGetLinkKey(i);
+            }
+            broadcastCamera();
+        }
+    }
+
     on_rez(integer start)
     {
         llOwnerSay("Fresh rez detected... Reinitializing.");
@@ -531,6 +576,24 @@ state running
                     objectNameTagIsVisible = !objectNameTagIsVisible;
                     handleMenu();
                 }
+                else if(m == "NORM CAM")
+                {
+                    cameraMode = 0;
+                    broadcastCamera();
+                    handleMenu();
+                }
+                else if(m == "OBJ CAM")
+                {
+                    cameraMode = 1;
+                    broadcastCamera();
+                    handleMenu();
+                }
+                else if(m == "FPV CAM")
+                {
+                    cameraMode = 2;
+                    broadcastCamera();
+                    handleMenu();
+                }
                 else if(m == "OBJ MENU")
                 {
                     string prefix = llGetSubString(llGetUsername(storedavatar), 0, 1);
@@ -645,6 +708,7 @@ state running
                 llRezAtRoot("ball", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, option);
                 waitingForRez = TRUE;
                 llSetTimerEvent(15.0);
+                return;
             }
 
             // Otherwise, give up.
@@ -664,6 +728,8 @@ state running
             if(lockedAvatar) sensortimer(5.0);
             return;
         }
+
+        broadcastCamera();
         llSetTimerEvent(5.0);
     }
 

@@ -110,24 +110,24 @@
 
 // #define DEBUG
 // #define PUBLIC_SLAVE
-// #define RETAIL_MODE
+#define RETAIL_MODE
 
 #define BUTTON_TRANSPARENCY 0.4
 
-string master_base = "Intrusive Thoughts Master [v3.0.5g]";
-string slave_base = "Intrusive Thoughts Slave [v3.0.5e]";
-#define VERSION_S "IT-Slave v3.0.5e"
-#define VERSION_M "IT-Master v3.0.5g"
+string master_base = "Intrusive Thoughts Master [v3.0.6]";
+string slave_base = "Intrusive Thoughts Slave [v3.0.6]";
+#define VERSION_S "IT-Slave v3.0.6"
+#define VERSION_M "IT-Master v3.0.6"
 // 3 digits for major
 // 3 digits for minor
 // 3 digits for patch
 // 2 digits for revision with base = 00, a = 01, b = 02...
-#define VERSION_CMP "00300000507"
-#define VERSION_FULL "31CA55"
+#define VERSION_CMP "00300000600"
+#define VERSION_FULL "31CAF1"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
-#define VERSION_PATCH 5
-#define FURNITURE_VERSION 3
+#define VERSION_PATCH 6
+#define FURNITURE_VERSION 4
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG

@@ -15,14 +15,14 @@ integer isHidden = 0;
 
 string restrictionString()
 {
-    return (string)imRestrict + "," + 
-           (string)visionRestrict + "," + 
-           (string)hearingRestrict + "," + 
-           (string)speechRestrict + "," + 
-           (string)dazeRestrict + "," + 
-           (string)cameraRestrict + "," + 
-           (string)inventoryRestrict + "," + 
-           (string)worldRestrict + "," + 
+    return (string)imRestrict + "," +
+           (string)visionRestrict + "," +
+           (string)hearingRestrict + "," +
+           (string)speechRestrict + "," +
+           (string)dazeRestrict + "," +
+           (string)cameraRestrict + "," +
+           (string)inventoryRestrict + "," +
+           (string)worldRestrict + "," +
            (string)isHidden;
 }
 
@@ -64,8 +64,14 @@ sitterMenu()
     if(visionRestrict < 6)        llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi6 Light fog at 2 meters.]");
     else if(visionRestrict == 6)  llOwnerSay(" * Light fog at 2 meters.");
     else                          llOwnerSay(" - Light fog at 2 meters.");
-    if(visionRestrict < 7)        llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi7 Blind.]");
-    else if(visionRestrict == 7)  llOwnerSay(" * Blind.");
+    if(visionRestrict < 7)        llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi7 Dark fog at 0.5 meters.]");
+    else if(visionRestrict == 7)  llOwnerSay(" * Dark fog at 2 meters.");
+    else                          llOwnerSay(" - Dark fog at 2 meters.");
+    if(visionRestrict < 8)        llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi8 Light fog at 0.5 meters.]");
+    else if(visionRestrict == 8)  llOwnerSay(" * Light fog at 2 meters.");
+    else                          llOwnerSay(" - Light fog at 2 meters.");
+    if(visionRestrict < 9)        llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "vi9 Blind.]");
+    else if(visionRestrict == 9)  llOwnerSay(" * Blind.");
     llOwnerSay(" ");
     llOwnerSay("Hearing Options:");
     if(hearingRestrict == 0)       llOwnerSay(" * No restrictions.");
@@ -152,7 +158,11 @@ ownerMenu()
     else                     llRegionSayTo(objectifier, 0, " * Dark fog at 2 meters.");
     if(visionRestrict != 6)  llRegionSayTo(objectifier, 0, " - [secondlife:///app/chat/5/" + prefix + "vi6 Light fog at 2 meters.]");
     else                     llRegionSayTo(objectifier, 0, " * Light fog at 2 meters.");
-    if(visionRestrict != 7)  llRegionSayTo(objectifier, 0, " - [secondlife:///app/chat/5/" + prefix + "vi7 Blind.]");
+    if(visionRestrict != 7)  llRegionSayTo(objectifier, 0, " - [secondlife:///app/chat/5/" + prefix + "vi7 Dark fog at 0.5 meters.]");
+    else                     llRegionSayTo(objectifier, 0, " * Dark fog at 2 meters.");
+    if(visionRestrict != 8)  llRegionSayTo(objectifier, 0, " - [secondlife:///app/chat/5/" + prefix + "vi8 Light fog at 0.5 meters.]");
+    else                     llRegionSayTo(objectifier, 0, " * Light fog at 2 meters.");
+    if(visionRestrict != 9)  llRegionSayTo(objectifier, 0, " - [secondlife:///app/chat/5/" + prefix + "vi9 Blind.]");
     else                     llRegionSayTo(objectifier, 0, " * Blind.");
     llRegionSayTo(objectifier, 0, " ");
     llRegionSayTo(objectifier, 0, "Hearing Options:");
@@ -216,7 +226,7 @@ default
     {
         prefix = llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1));
     }
-    
+
     changed(integer change)
     {
         if(change & CHANGED_OWNER) prefix = llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1));

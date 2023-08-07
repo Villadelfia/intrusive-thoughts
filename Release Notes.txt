@@ -152,3 +152,8 @@ Version 3.0.5:
  - Fix IM blocking oversight.
  - Fix bouncing in no-rez tf.
  - No chat spam on TP following.
+
+Version 3.0.6:
+ - Fix issue with fog on objectification.
+ - Add more camera options on furniture.
+ - Add more fog options on objectification.

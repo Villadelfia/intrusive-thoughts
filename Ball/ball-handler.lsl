@@ -19,6 +19,10 @@ integer notify = TRUE;
 string prefix = "??";
 integer timerctr = 0;
 
+integer furnitureCameraMode = 0;
+key furnitureCameraPos = NULL_KEY;
+key furnitureCameraFocus = NULL_KEY;
+
 // 0 = Nothing extra.
 // 1 = Cannot open IM sessions.
 // 2 = Cannot send IMs.
@@ -32,7 +36,9 @@ integer imRestrict = 0;
 // 4 = Light fog at 5 meters.
 // 5 = Dark fog at 2 meters.
 // 6 = Light fog at 2 meters.
-// 7 = Blind.
+// 7 = Dark fog at 0.5 meters.
+// 8 = Light fog at 0.5 meters.
+// 9 = Blind.
 integer visionRestrict = 0;
 
 // 0 = Nothing extra.
@@ -86,10 +92,11 @@ applyVision()
     float dist = 10.0;
     if(visionRestrict > 2) dist = 5.0;
     if(visionRestrict > 4) dist = 2.0;
-    if(visionRestrict > 6) dist = 0.0;
+    if(visionRestrict > 6) dist = 0.5;
+    if(visionRestrict > 8) dist = 0.0;
     string color = "0/0/0";
     if(visionRestrict % 2 == 0) color = "1/1/1";
-    if(visionRestrict > 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_distmin:" + (string)(dist/4) + "=force|@setsphere_valuemin:0=force|@setsphere_distmax:" + (string)dist + "=force|@setsphere_param:" + color + "/0=force");
+    if(visionRestrict > 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_origin:1=force|@setsphere_distmin:" + (string)(dist/4) + "=force|@setsphere_valuemin:0=force|@setsphere_distmax:" + (string)dist + "=force|@setsphere_param:" + color + "/0=force");
 }
 
 applyHearing()
@@ -266,7 +273,7 @@ default
                 applyWorld();
 
                 // And animate the sat avatar.
-                llRequestPermissions(llAvatarOnSitTarget(), PERMISSION_TRIGGER_ANIMATION | PERMISSION_TAKE_CONTROLS);
+                llRequestPermissions(llAvatarOnSitTarget(), PERMISSION_TRIGGER_ANIMATION | PERMISSION_TAKE_CONTROLS | PERMISSION_CONTROL_CAMERA | PERMISSION_TRACK_CAMERA);
             }
         }
         if(change & CHANGED_REGION)
@@ -404,7 +411,7 @@ default
                 if(id == firstavatar && visionRestrict > (integer)llGetSubString(m, -1, -1)) return;
                 visionRestrict = (integer)llGetSubString(m, -1, -1);
                 if(visionRestrict < 0) visionRestrict = 0;
-                if(visionRestrict > 7) visionRestrict = 7;
+                if(visionRestrict > 9) visionRestrict = 9;
                 llSetObjectName("");
                 doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Vision restrictions set to level " + (string)visionRestrict + ".");
                 llSetObjectName("ball");
@@ -550,6 +557,13 @@ default
                 m = llDeleteSubString(m, 0, llStringLength("prefix"));
                 objectprefix = m;
             }
+            else if(startswith(m, "furniturecamera"))
+            {
+                list settings = llParseString2List(m, [";"], []);
+                furnitureCameraMode = (integer)llList2String(settings, 1);
+                furnitureCameraPos = (key)llList2String(settings, 2);
+                furnitureCameraFocus = (key)llList2String(settings, 3);
+            }
         }
         else if(c == RLVRC)
         {
@@ -617,7 +631,6 @@ default
 
         if(editmode)
         {
-            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)rezzer + ";;=force");
             return;
         }
 
@@ -677,10 +690,65 @@ default
             }
 
             timerctr++;
-            if(timerctr % 10 == 0)
+            if(timerctr % 5 == 0)
             {
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
-                if(cameraRestrict != 0)
+                if(furnitureCameraMode != 0 && furnitureCameraPos != NULL_KEY && furnitureCameraFocus != NULL_KEY)
+                {
+                    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=n");
+                    vector posPos = llList2Vector(llGetObjectDetails(furnitureCameraPos, [OBJECT_POS]), 0);
+                    vector focusPos = llList2Vector(llGetObjectDetails(furnitureCameraFocus, [OBJECT_POS]), 0);
+                    float closestDist = 65535.0;
+                    key closestPerson = NULL_KEY;
+                    vector closestPos = ZERO_VECTOR;
+
+                    list onsim = llGetAgentList(AGENT_LIST_REGION, []);
+                    integer n = llGetListLength(onsim);
+                    key id;
+                    float dist;
+                    vector pos;
+                    while(~--n)
+                    {
+                        id = llList2Key(onsim, n);
+                        pos = llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0);
+                        dist = llVecDist(focusPos, pos);
+                        if(dist < closestDist) {
+                            closestDist = dist;
+                            closestPerson = id;
+                            closestPos = pos;
+                        }
+                    }
+
+                    if(furnitureCameraMode == 1 || closestPos > 10.0)
+                    {
+                        llSetCameraParams([
+                            CAMERA_ACTIVE, 1,
+                            CAMERA_POSITION_LAG, 0.0,
+                            CAMERA_POSITION, posPos,
+                            CAMERA_POSITION_LOCKED, TRUE,
+                            CAMERA_POSITION_THRESHOLD, 0.0,
+                            CAMERA_FOCUS_LAG, 0.0,
+                            CAMERA_FOCUS, focusPos,
+                            CAMERA_FOCUS_LOCKED, TRUE,
+                            CAMERA_FOCUS_THRESHOLD, 0.0
+                        ]);
+                    }
+                    else
+                    {
+                        llSetCameraParams([
+                            CAMERA_ACTIVE, 1,
+                            CAMERA_POSITION_LAG, 0.0,
+                            CAMERA_POSITION, focusPos,
+                            CAMERA_POSITION_LOCKED, TRUE,
+                            CAMERA_POSITION_THRESHOLD, 0.0,
+                            CAMERA_FOCUS_LAG, 0.5,
+                            CAMERA_FOCUS, closestPos,
+                            CAMERA_FOCUS_LOCKED, TRUE,
+                            CAMERA_FOCUS_THRESHOLD, 0.0
+                        ]);
+                    }
+                }
+                else if(cameraRestrict != 0)
                 {
                     list uuids = llGetAttachedList(rezzer);
                     integer n = llGetListLength(uuids);
@@ -690,7 +758,7 @@ default
                         data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
                         if(llToLower((string)data[0]) == llToLower(name) || llToLower((string)data[0]) == llToLower(objectprefix + name))
                         {
-                            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@" + (string)data[1]);
+                            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
                             return;
                         }
                     }
@@ -700,11 +768,11 @@ default
                         data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
                         if(startswith((string)data[0], "Intrusive Thoughts Focus Target"))
                         {
-                            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@" + (string)data[1]);
+                            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
                             return;
                         }
                     }
-                    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_focus:" + (string)rezzer + ";;=force");
+                    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@setcam_focus:" + (string)rezzer + ";;=force");
                 }
             }
         }

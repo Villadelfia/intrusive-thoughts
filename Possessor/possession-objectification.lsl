@@ -125,7 +125,8 @@ applyVision()
     float dist = 10.0;
     if(visionRestrict > 2) dist = 5.0;
     if(visionRestrict > 4) dist = 2.0;
-    if(visionRestrict > 6) dist = 0.0;
+    if(visionRestrict > 6) dist = 0.5;
+    if(visionRestrict > 8) dist = 0.0;
     string color = "0/0/0";
     if(visionRestrict % 2 == 0) color = "1/1/1";
     if(visionRestrict > 0) llOwnerSay("@setsphere=n,setsphere_origin:1=force,setsphere_distmin:" + (string)(dist/4) + "=force,setsphere_valuemin:0=force,setsphere_distmax:" + (string)dist + "=force,setsphere_param:" + color + "/0=force");
@@ -351,7 +352,7 @@ default
                 if(id == llGetOwner() && visionRestrict > (integer)llGetSubString(m, -1, -1)) return;
                 visionRestrict = (integer)llGetSubString(m, -1, -1);
                 if(visionRestrict < 0) visionRestrict = 0;
-                if(visionRestrict > 7) visionRestrict = 7;
+                if(visionRestrict > 9) visionRestrict = 9;
                 llSetObjectName("");
                 llOwnerSay("secondlife:///app/agent/" + (string)llGetOwner() + "/about's Vision restrictions set to level " + (string)visionRestrict + ".");
                 llRegionSayTo(objectifier, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about's Vision restrictions set to level " + (string)visionRestrict + ".");
