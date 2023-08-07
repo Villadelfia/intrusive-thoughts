@@ -719,7 +719,7 @@ default
                         }
                     }
 
-                    if(furnitureCameraMode == 1 || closestPos > 10.0)
+                    if(furnitureCameraMode == 1 || closestDist > 10.0)
                     {
                         llSetCameraParams([
                             CAMERA_ACTIVE, 1,
