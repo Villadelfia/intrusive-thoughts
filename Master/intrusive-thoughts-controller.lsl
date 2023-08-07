@@ -39,6 +39,7 @@ sendNext()
         {
             llMessageLinked(LINK_SET, M_API_CONFIG_DONE, "", NULL_KEY);
             llMessageLinked(LINK_SET, M_API_STATUS_DONE, "", (string)"");
+            ready = TRUE;
         }
         sending++;
     }
