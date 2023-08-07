@@ -78,6 +78,12 @@ default
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         llSetObjectDesc((string)primary);
         llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
+        llListen(UPDATE_CHANNEL, "", NULL_KEY, "");
+
+        // Set update pin.
+        integer pin = ((integer)("0x"+llGetSubString((string)llGetOwner(),-8,-1)) & 0x3FFFFFFF) ^ 0xBFFFFFFF;
+        llSetRemoteScriptAccessPin(pin);
+
         llSetObjectName("");
 #ifndef PUBLIC_SLAVE
         if(llGetAgentSize(primary) != ZERO_VECTOR)
@@ -123,6 +129,13 @@ default
 #ifndef PUBLIC_SLAVE
     listen(integer c, string n, key k, string m)
     {
+        if(c == UPDATE_CHANNEL)
+        {
+            if(llGetOwnerKey(k) != llGetOwner()) return;
+            if(m == "VERSION_CHECK") llRegionSayTo(k, UPDATE_CHANNEL, "SLAVE_VERSION " + VERSION_CMP);
+            return;
+        }
+
         // Only allow privileged access.
         if(k != primary) return;
 

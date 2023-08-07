@@ -228,6 +228,7 @@ dosetup()
     while(settext(i++, ""));
     llListen(BALL_CHANNEL, "", llGetOwner(), "");
     llListen(COMMAND_CHANNEL, "", llGetOwner(), "");
+    llListen(UPDATE_CHANNEL, "", NULL_KEY, "");
     sethide();
     llMessageLinked(LINK_SET, M_API_HUD_STARTED, "", (key)"");
     http = llHTTPRequest(UPDATE_URL, [], "");
@@ -427,6 +428,11 @@ default
                     }
                 }
             }
+        }
+        else if(channel == UPDATE_CHANNEL)
+        {
+            if(llGetOwnerKey(id) != llGetOwner()) return;
+            if(message == "VERSION_CHECK") llRegionSayTo(id, UPDATE_CHANNEL, "MASTER_VERSION " + VERSION_CMP);
         }
     }
 

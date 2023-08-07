@@ -11,6 +11,8 @@ integer lines;
 string name;
 string todel;
 string prefix;
+integer storedCt = 0;
+integer sending = 0;
 integer menu = 0;
 integer ncpage = 0;
 key lockedavatar = NULL_KEY;
@@ -26,6 +28,21 @@ list page = [
     "RESET",      "BIMBO ODDS", "CUSTOM",
     "AFKCHECK",   " ",          "BACK"
 ];
+
+sendNext()
+{
+    if(sending <= storedCt)
+    {
+        list kv = llParseString2List(llLinksetDataReadProtected("it-" + (string)sending, ""), ["="], []);
+        llMessageLinked(LINK_SET, M_API_CONFIG_DATA, llList2String(kv, 0), (key)llDumpList2String(llDeleteSubList(kv, 0, 0), "="));
+        if(sending == storedCt)
+        {
+            llMessageLinked(LINK_SET, M_API_CONFIG_DONE, "", NULL_KEY);
+            llMessageLinked(LINK_SET, M_API_STATUS_DONE, "", (string)"");
+        }
+        sending++;
+    }
+}
 
 settext()
 {
@@ -165,10 +182,27 @@ default
             }
             else
             {
-                debug("[link_message] M_API_HUD_STARTED requesting configuration");
-                llSetObjectName("");
-                llOwnerSay(VERSION_M + ": Drop your 'Intrusive Thoughts Configuration' notecard onto the HUD to set it up.");
-                llSetObjectName(master_base);
+                if(llLinksetDataReadProtected("it-ct", "") != "")
+                {
+                    debug("[link_message] M_API_HUD_STARTED found stored configuration");
+                    llMessageLinked(LINK_SET, M_API_BUTTON_PRESSED, "hide", "");
+                    llMessageLinked(LINK_SET, M_API_STATUS_MESSAGE, "Loading config...", "");
+                    storedCt = (integer)llLinksetDataReadProtected("it-ct", "");
+                    sending = 0;
+                    sendNext();
+                    sendNext();
+                    sendNext();
+                    sendNext();
+                    sendNext();
+                    sensortimer(0.1);
+                }
+                else
+                {
+                    debug("[link_message] M_API_HUD_STARTED requesting configuration");
+                    llSetObjectName("");
+                    llOwnerSay(VERSION_M + ": Drop your 'Intrusive Thoughts Configuration' notecard onto the HUD to set it up.");
+                    llSetObjectName(master_base);
+                }
             }
         }
         else if(num == M_API_CONFIG_DONE)
@@ -179,6 +213,10 @@ default
             if(llGetPermissions() & PERMISSION_TAKE_CONTROLS == 0) llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
             llSetObjectName(master_base);
             llMessageLinked(LINK_SET, M_API_CONFIG_DONE_2, "", NULL_KEY);
+
+            // Set update pin.
+            integer pin = ((integer)("0x"+llGetSubString((string)llGetOwner(),-8,-1)) & 0x3FFFFFFF) ^ 0xBFFFFFFF;
+            llSetRemoteScriptAccessPin(pin);
         }
         else if(num == M_API_LOCK)
         {
@@ -227,6 +265,18 @@ default
         }
     }
 
+    no_sensor()
+    {
+        sensortimer(0.0);
+        if(sending > storedCt) return;
+        sendNext();
+        sendNext();
+        sendNext();
+        sendNext();
+        sendNext();
+        sensortimer(0.1);
+    }
+
     run_time_permissions(integer perm)
     {
         debug("[run_time_permissions] Entry, perm: " + (string)perm);
@@ -246,6 +296,8 @@ default
                 continued = FALSE;
                 name = "Intrusive Thoughts Configuration";
                 line = 0;
+                storedCt = 0;
+                llLinksetDataReset();
                 getline = llGetNotecardLine(name, line);
             }
         }
@@ -498,6 +550,9 @@ default
                 {
                     debug("[dataserver] Config notecard, line: " + (string)line + ", sending built M_API_CONFIG_DATA");
                     llMessageLinked(LINK_SET, M_API_CONFIG_DATA, setting, (key)value);
+                    llLinksetDataWriteProtected("it-" + (string)storedCt, setting + "=" + value, "");
+                    storedCt++;
+                    llLinksetDataWriteProtected("it-ct", (string)storedCt, "");
                 }
             }
             ++line;
