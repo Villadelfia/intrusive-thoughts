@@ -294,6 +294,8 @@ default
         if(llGetInventoryType("NO_HIDE") == INVENTORY_NONE) llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         name = llGetDisplayName(llGetOwner());
+        if(llLinksetDataReadProtected("locked", "") != "") locked = (integer)llLinksetDataReadProtected("locked", "");
+        if(locked) llMessageLinked(LINK_SET, S_API_SET_LOCK, (string)TRUE, NULL_KEY);
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(RLV_CHANNEL, "", llGetOwner(), "");
         llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
@@ -773,8 +775,16 @@ default
         }
         else if(llToLower(m) == "lock")
         {
-            if(locked) llMessageLinked(LINK_SET, S_API_SET_LOCK, (string)FALSE, k);
-            else       llMessageLinked(LINK_SET, S_API_SET_LOCK, (string)TRUE, k);
+            if(locked)
+            {
+                llMessageLinked(LINK_SET, S_API_SET_LOCK, (string)FALSE, k);
+                llLinksetDataWriteProtected("locked", (string)FALSE, "");
+            }
+            else
+            {
+                llMessageLinked(LINK_SET, S_API_SET_LOCK, (string)TRUE, k);
+                llLinksetDataWriteProtected("locked", (string)TRUE, "");
+            }
         }
         else if(llToLower(m) == "stand" || llToLower(m) == "unsit")
         {

@@ -14,7 +14,11 @@ default
 {
     changed(integer change)
     {
-        if(change & CHANGED_OWNER) resetscripts();
+        if(change & CHANGED_OWNER)
+        {
+            llLinksetDataReset();
+            resetscripts();
+        }
 #ifndef PUBLIC_SLAVE
         if(!notifyTeleport) return;
         if(change & CHANGED_TELEPORT)
@@ -73,7 +77,14 @@ default
 #ifdef RETAIL_MODE
         if(primary == llGetCreator()) primary = llGetOwner();
 #endif
-        owners = [];
+        // Reload from LSD.
+        owners = llParseString2List(llLinksetDataReadProtected("secondary", ""), [","], []);
+        if(llLinksetDataReadProtected("primary", "") != "") primary = (key)llLinksetDataReadProtected("primary", "");
+        if(llLinksetDataReadProtected("publicaccess", "") != "") publicaccess = (integer)llLinksetDataReadProtected("publicaccess", "");
+        if(llLinksetDataReadProtected("groupaccess", "") != "") groupaccess = (integer)llLinksetDataReadProtected("groupaccess", "");
+        if(llLinksetDataReadProtected("lognotify", "") != "") notifyLogon = (integer)llLinksetDataReadProtected("lognotify", "");
+        if(llLinksetDataReadProtected("tpnotify", "") != "") notifyTeleport = (integer)llLinksetDataReadProtected("tpnotify", "");
+
         wearer = llGetOwner();
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         llSetObjectDesc((string)primary);
@@ -99,6 +110,7 @@ default
         llOwnerSay("Your primary owner has been detected as secondlife:///app/agent/" + (string)primary + "/about. If this is incorrect, detach me immediately because this person can configure me and add additional owners.");
         llSetObjectName(slave_base);
         llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
+        llMessageLinked(LINK_SET, S_API_OTHER_ACCESS, (string)publicaccess, (key)((string)groupaccess));
         http = llHTTPRequest(UPDATE_URL, [], "");
 #else
         llOwnerSay("This version of the IT Slave can be configured by *anyone* (including yourself). If this is incorrect, detach me immediately.");
@@ -116,6 +128,7 @@ default
             resetother();
             llSleep(5.0);
             llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
+            llMessageLinked(LINK_SET, S_API_OTHER_ACCESS, (string)publicaccess, (key)((string)groupaccess));
             llMessageLinked(LINK_SET, S_API_STARTED, llDumpList2String(owners, ","), primary);
         }
         if(started) return;
@@ -180,6 +193,8 @@ default
                 ownersay(k, "Added secondary owner secondlife:///app/agent/" + (string)new + "/about.", 0);
                 llRegionSayTo(new, 0, "You've been added as a secondary owner to the Intrusive Thoughts Slave worn by secondlife:///app/agent/" + (string)llGetOwner() + "/about.");
                 owners += [new];
+                llLinksetDataWriteProtected("secondary", llDumpList2String(owners, ","), "");
+                llLinksetDataWriteProtected("primary", (string)primary, "");
                 llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
             }
             else
@@ -202,6 +217,8 @@ default
             {
                 ownersay(k, "Deleting secondary owner secondlife:///app/agent/" + (string)llList2Key(owners, n) + "/about.", 0);
                 owners = llDeleteSubList(owners, n, n);
+                llLinksetDataWriteProtected("secondary", llDumpList2String(owners, ","), "");
+                llLinksetDataWriteProtected("primary", (string)primary, "");
                 llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
             }
             llSetObjectName(slave_base);
@@ -214,6 +231,8 @@ default
             llSetObjectName("");
             ownersay(k, "Group access " + groupstatus + ". Click [secondlife:///app/chat/1/" + prefix + "groupaccess here] to toggle.", 0);
             llSetObjectName(slave_base);
+            llLinksetDataWriteProtected("publicaccess", (string)publicaccess, "");
+            llLinksetDataWriteProtected("groupaccess", (string)groupaccess, "");
             llMessageLinked(LINK_SET, S_API_OTHER_ACCESS, (string)publicaccess, (key)((string)groupaccess));
         }
         else if(m == "publicaccess")
@@ -224,6 +243,8 @@ default
             llSetObjectName("");
             ownersay(k, "Public access " + publicstatus + ". Click [secondlife:///app/chat/1/" + prefix + "publicaccess here] to toggle.", 0);
             llSetObjectName(slave_base);
+            llLinksetDataWriteProtected("publicaccess", (string)publicaccess, "");
+            llLinksetDataWriteProtected("groupaccess", (string)groupaccess, "");
             llMessageLinked(LINK_SET, S_API_OTHER_ACCESS, (string)publicaccess, (key)((string)groupaccess));
         }
         else if(m == "lognotify")
@@ -234,6 +255,7 @@ default
             llSetObjectName("");
             ownersay(k, "Wear/take off notifications " + status + ". Click [secondlife:///app/chat/1/" + prefix + "lognotify here] to toggle.", 0);
             llSetObjectName(slave_base);
+            llLinksetDataWriteProtected("lognotify", (string)notifyLogon, "");
         }
         else if(m == "tpnotify")
         {
@@ -243,6 +265,7 @@ default
             llSetObjectName("");
             ownersay(k, "Teleport notifications " + status + ". Click [secondlife:///app/chat/1/" + prefix + "tpnotify here] to toggle.", 0);
             llSetObjectName(slave_base);
+            llLinksetDataWriteProtected("tpnotify", (string)notifyTeleport, "");
         }
 
     }

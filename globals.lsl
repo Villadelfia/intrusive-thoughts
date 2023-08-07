@@ -313,6 +313,7 @@ integer isowner(key k)
 
 ownersay(key target, string s, integer channel)
 {
+    if(target == NULL_KEY) return;
     if(target != llGetOwnerKey(target) && llList2Integer(llGetObjectDetails(target, [OBJECT_ATTACHED_POINT]), 0) != 0) target = llGetOwnerKey(target);
     if(target == llGetOwner()) llOwnerSay(s);
     else                       llRegionSayTo(target, channel, s);
