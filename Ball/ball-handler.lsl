@@ -78,73 +78,6 @@ die()
     while(TRUE) llSleep(60.0);
 }
 
-applyIm()
-{
-    if(imRestrict > 2)      llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@startim=n|@sendim=n|@recvim=n");
-    else if(imRestrict > 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@startim=n|@sendim=n|@recvim=y");
-    else if(imRestrict > 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@sendim=y|@startim=n|@recvim=y");
-    else                    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@sendim=y|@startim=y|@recvim=y");
-}
-
-applyVision()
-{
-    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=y");
-    float dist = 10.0;
-    if(visionRestrict > 2) dist = 5.0;
-    if(visionRestrict > 4) dist = 2.0;
-    if(visionRestrict > 6) dist = 0.5;
-    if(visionRestrict > 8) dist = 0.0;
-    string color = "0/0/0";
-    if(visionRestrict % 2 == 0) color = "1/1/1";
-    if(visionRestrict > 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setsphere=n|@setsphere_origin:1=force|@setsphere_distmin:" + (string)(dist/4) + "=force|@setsphere_valuemin:0=force|@setsphere_distmax:" + (string)dist + "=force|@setsphere_param:" + color + "/0=force");
-}
-
-applyHearing()
-{
-    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@recvchat=y|@recvemote=y|@recvchat:" + (string)llGetOwnerKey(rezzer) + "=rem|@recvemote:" + (string)llGetOwnerKey(rezzer) + "=rem|@recvchat:" + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + "=rem|@recvemote:" + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + "=rem");
-    if(hearingRestrict == 3)     llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@recvchat=n|@recvemote=n");
-    else if(hearingRestrict > 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@recvchat=n|@recvemote=n|@recvchat:" + (string)llGetOwnerKey(rezzer) + "=add|@recvemote:" + (string)llGetOwnerKey(rezzer) + "=add|@recvchat:" + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + "=add|@recvemote:" + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + "=add");
-}
-
-applySpeech()
-{
-    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=y|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=rem|@redirchat:" + (string)DUMMY_CHANNEL + "=rem|@redirchat:" + (string)GAZE_REN_CHANNEL + "=rem|@rediremote=y|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=rem|@rediremote:" + (string)DUMMY_CHANNEL + "=rem|@rediremote:" + (string)GAZE_REN_CHANNEL + "=rem");
-    if(speechRestrict == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)GAZE_REN_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)GAZE_REN_CHANNEL + "=add");
-    if(speechRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)GAZE_CHAT_CHANNEL + "=add");
-    if(speechRestrict == 2) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)GAZE_CHAT_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)DUMMY_CHANNEL + "=add");
-    if(speechRestrict == 3) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@redirchat=n|@redirchat:" + (string)DUMMY_CHANNEL + "=add|@rediremote=n|@rediremote:" + (string)DUMMY_CHANNEL + "=add");
-}
-
-applyDaze()
-{
-    if(dazeRestrict == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames=y|@shownametags=y|@shownearby=y|@showhovertextall=y|@showworldmap=y|@showminimap=y|@showloc=y");
-    if(dazeRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@shownames=n|@shownametags=n|@shownearby=n|@showhovertextall=n|@showworldmap=n|@showminimap=n|@showloc=n");
-}
-
-applyCamera()
-{
-    if(cameraRestrict == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_origindistmax:50=y");
-    if(cameraRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_origindistmax:50=n");
-}
-
-applyInventory()
-{
-    if(inventoryRestrict == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@showinv=y");
-    if(inventoryRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@showinv=n");
-}
-
-applyWorld()
-{
-    if(worldRestrict == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@touchall=y|@edit=y|@rez=y");
-    if(worldRestrict == 1) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@touchall=n|@edit=n|@rez=n");
-}
-
-doubleNotify(string s)
-{
-    llRegionSayTo(rezzer, 0, s);
-    llRegionSayTo(firstavatar, 0, s);
-}
-
 string restrictionString()
 {
     return (string)imRestrict + "," +
@@ -263,14 +196,15 @@ default
 
                 // Apply RLV restrictions.
                 llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@tplocal=n|@tplm=n|@tploc=n|@tplure=n|@showself=n|@sendgesture=n|@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add|@sendim:" + (string)llGetOwnerKey(rezzer) + "=add");
-                applyIm();
-                applyHearing();
-                applySpeech();
-                applyVision();
-                applyDaze();
-                applyCamera();
-                applyInventory();
-                applyWorld();
+                llMessageLinked(LINK_THIS, X_API_APPLY_IM, (string)imRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_APPLY_HEARING, (string)hearingRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_APPLY_SPEECH, (string)speechRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_APPLY_VISION, (string)visionRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_APPLY_DAZE, (string)dazeRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_APPLY_CAMERA, (string)cameraRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_APPLY_INVENTORY, (string)inventoryRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_APPLY_WORLD, (string)worldRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_APPLY_INVENTORY, (string)inventoryRestrict, NULL_KEY);
 
                 // And animate the sat avatar.
                 llRequestPermissions(llAvatarOnSitTarget(), PERMISSION_TRIGGER_ANIMATION | PERMISSION_TAKE_CONTROLS | PERMISSION_CONTROL_CAMERA | PERMISSION_TRACK_CAMERA);
@@ -368,9 +302,7 @@ default
                     llStopAnimation(animation);
                     animation = "hide_a";
                     llStartAnimation(animation);
-                    llSetObjectName("");
-                    doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about will now be rendered visible again, but it will require a relog.");
-                    llSetObjectName("ball");
+                    llMessageLinked(LINK_THIS, X_API_NOTIFY_HIDEA, "", firstavatar);
                     llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
                 }
                 else
@@ -378,9 +310,7 @@ default
                     llStopAnimation(animation);
                     animation = "hide_b";
                     llStartAnimation(animation);
-                    llSetObjectName("");
-                    doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
-                    llSetObjectName("ball");
+                    llMessageLinked(LINK_THIS, X_API_NOTIFY_HIDEB, "", firstavatar);
                     llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
                 }
             }
@@ -389,9 +319,7 @@ default
                 if(id == firstavatar) return;
                 m = llDeleteSubString(m, 0, llStringLength(prefix + "name"));
                 name = m;
-                llSetObjectName("");
-                doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about is now " + objectprefix + m + ".");
-                llSetObjectName("ball");
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_NAME, objectprefix + m, firstavatar);
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "objrename " + m);
             }
             else if(startswith(m, prefix + "im"))
@@ -400,10 +328,8 @@ default
                 imRestrict = (integer)llGetSubString(m, -1, -1);
                 if(imRestrict < 0) imRestrict = 0;
                 if(imRestrict > 3) imRestrict = 3;
-                llSetObjectName("");
-                doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's IM restrictions set to level " + (string)imRestrict + ".");
-                llSetObjectName("ball");
-                applyIm();
+                llMessageLinked(LINK_THIS, X_API_APPLY_IM, (string)imRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_IM, (string)imRestrict, firstavatar);
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
             else if(startswith(m, prefix + "vi"))
@@ -412,10 +338,8 @@ default
                 visionRestrict = (integer)llGetSubString(m, -1, -1);
                 if(visionRestrict < 0) visionRestrict = 0;
                 if(visionRestrict > 9) visionRestrict = 9;
-                llSetObjectName("");
-                doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Vision restrictions set to level " + (string)visionRestrict + ".");
-                llSetObjectName("ball");
-                applyVision();
+                llMessageLinked(LINK_THIS, X_API_APPLY_VISION, (string)visionRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_VISION, (string)visionRestrict, firstavatar);
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
             else if(startswith(m, prefix + "he"))
@@ -424,10 +348,8 @@ default
                 hearingRestrict = (integer)llGetSubString(m, -1, -1);
                 if(hearingRestrict < 0) hearingRestrict = 0;
                 if(hearingRestrict > 3) hearingRestrict = 3;
-                llSetObjectName("");
-                doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Hearing restrictions set to level " + (string)hearingRestrict + ".");
-                llSetObjectName("ball");
-                applyHearing();
+                llMessageLinked(LINK_THIS, X_API_APPLY_HEARING, (string)hearingRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_HEARING, (string)hearingRestrict, firstavatar);
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
             else if(startswith(m, prefix + "sp"))
@@ -436,10 +358,8 @@ default
                 speechRestrict = (integer)llGetSubString(m, -1, -1);
                 if(speechRestrict < 0) speechRestrict = 0;
                 if(speechRestrict > 3) speechRestrict = 3;
-                llSetObjectName("");
-                doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
-                llSetObjectName("ball");
-                applySpeech();
+                llMessageLinked(LINK_THIS, X_API_APPLY_SPEECH, (string)speechRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_SPEECH, (string)speechRestrict, firstavatar);
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
             else if(startswith(m, prefix + "da"))
@@ -448,10 +368,8 @@ default
                 dazeRestrict = (integer)llGetSubString(m, -1, -1);
                 if(dazeRestrict < 0) dazeRestrict = 0;
                 if(dazeRestrict > 1) dazeRestrict = 1;
-                llSetObjectName("");
-                doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Daze restrictions set to level " + (string)dazeRestrict + ".");
-                llSetObjectName("ball");
-                applyDaze();
+                llMessageLinked(LINK_THIS, X_API_APPLY_DAZE, (string)dazeRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_DAZE, (string)dazeRestrict, firstavatar);
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
             else if(startswith(m, prefix + "ca"))
@@ -460,10 +378,8 @@ default
                 cameraRestrict = (integer)llGetSubString(m, -1, -1);
                 if(cameraRestrict < 0) cameraRestrict = 0;
                 if(cameraRestrict > 1) cameraRestrict = 1;
-                llSetObjectName("");
-                doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Camera restrictions set to level " + (string)cameraRestrict + ".");
-                llSetObjectName("ball");
-                applyCamera();
+                llMessageLinked(LINK_THIS, X_API_APPLY_CAMERA, (string)cameraRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_CAMERA, (string)cameraRestrict, firstavatar);
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
             else if(startswith(m, prefix + "in"))
@@ -472,10 +388,8 @@ default
                 inventoryRestrict = (integer)llGetSubString(m, -1, -1);
                 if(inventoryRestrict < 0) inventoryRestrict = 0;
                 if(inventoryRestrict > 1) inventoryRestrict = 1;
-                llSetObjectName("");
-                doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Inventory restrictions set to level " + (string)inventoryRestrict + ".");
-                llSetObjectName("ball");
-                applyInventory();
+                llMessageLinked(LINK_THIS, X_API_APPLY_INVENTORY, (string)inventoryRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_INVENTORY, (string)inventoryRestrict, firstavatar);
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
             else if(startswith(m, prefix + "wo"))
@@ -484,10 +398,8 @@ default
                 worldRestrict = (integer)llGetSubString(m, -1, -1);
                 if(worldRestrict < 0) worldRestrict = 0;
                 if(worldRestrict > 1) worldRestrict = 1;
-                llSetObjectName("");
-                doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's World restrictions set to level " + (string)worldRestrict + ".");
-                llSetObjectName("ball");
-                applyWorld();
+                llMessageLinked(LINK_THIS, X_API_APPLY_INVENTORY, (string)inventoryRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_WORLD, (string)worldRestrict, firstavatar);
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
         }
@@ -813,31 +725,29 @@ default
             inventoryRestrict = (integer)llList2String(settings, 6);
             worldRestrict = (integer)llList2String(settings, 7);
             integer isHidden = (integer)llList2String(settings, 8);
-            llSetObjectName("");
-            if(imRestrict > 0) doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's IM restrictions set to level " + (string)imRestrict + ".");
-            if(visionRestrict > 0) doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Vision restrictions set to level " + (string)visionRestrict + ".");
-            if(hearingRestrict > 0) doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Hearing restrictions set to level " + (string)hearingRestrict + ".");
-            if(speechRestrict != 1) doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Speech restrictions set to level " + (string)speechRestrict + ".");
-            if(dazeRestrict != 1) doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Daze restrictions set to level " + (string)dazeRestrict + ".");
-            if(cameraRestrict != 1) doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Camera restrictions set to level " + (string)cameraRestrict + ".");
-            if(inventoryRestrict != 1) doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's Inventory restrictions set to level " + (string)inventoryRestrict + ".");
-            if(worldRestrict != 1) doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about's World restrictions set to level " + (string)worldRestrict + ".");
+            if(imRestrict > 0) llMessageLinked(LINK_THIS, X_API_NOTIFY_IM, (string)imRestrict, firstavatar);
+            if(visionRestrict > 0) llMessageLinked(LINK_THIS, X_API_NOTIFY_VISION, (string)visionRestrict, firstavatar);
+            if(hearingRestrict > 0) llMessageLinked(LINK_THIS, X_API_NOTIFY_HEARING, (string)hearingRestrict, firstavatar);
+            if(speechRestrict != 1) llMessageLinked(LINK_THIS, X_API_NOTIFY_SPEECH, (string)speechRestrict, firstavatar);
+            if(dazeRestrict != 1) llMessageLinked(LINK_THIS, X_API_NOTIFY_DAZE, (string)dazeRestrict, firstavatar);
+            if(cameraRestrict != 1) llMessageLinked(LINK_THIS, X_API_NOTIFY_CAMERA, (string)cameraRestrict, firstavatar);
+            if(inventoryRestrict != 1) llMessageLinked(LINK_THIS, X_API_NOTIFY_INVENTORY, (string)inventoryRestrict, firstavatar);
+            if(worldRestrict != 1) llMessageLinked(LINK_THIS, X_API_NOTIFY_WORLD, (string)worldRestrict, firstavatar);
             if(isHidden && animation != "hide_b")
             {
                 if(llGetPermissions() & PERMISSION_TRIGGER_ANIMATION) llStopAnimation(animation);
                 animation = "hide_b";
                 if(llGetPermissions() & PERMISSION_TRIGGER_ANIMATION) llStartAnimation(animation);
-                doubleNotify("secondlife:///app/agent/" + (string)firstavatar + "/about is now rendered truly invisible, nameplate and all.");
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_HIDEB, "", firstavatar);
             }
-            llSetObjectName("ball");
-            applyIm();
-            applyVision();
-            applyHearing();
-            applySpeech();
-            applyDaze();
-            applyCamera();
-            applyInventory();
-            applyWorld();
+            llMessageLinked(LINK_THIS, X_API_APPLY_IM, (string)imRestrict, NULL_KEY);
+            llMessageLinked(LINK_THIS, X_API_APPLY_VISION, (string)visionRestrict, NULL_KEY);
+            llMessageLinked(LINK_THIS, X_API_APPLY_HEARING, (string)hearingRestrict, NULL_KEY);
+            llMessageLinked(LINK_THIS, X_API_APPLY_SPEECH, (string)speechRestrict, NULL_KEY);
+            llMessageLinked(LINK_THIS, X_API_APPLY_DAZE, (string)dazeRestrict, NULL_KEY);
+            llMessageLinked(LINK_THIS, X_API_APPLY_CAMERA, (string)cameraRestrict, NULL_KEY);
+            llMessageLinked(LINK_THIS, X_API_APPLY_INVENTORY, (string)inventoryRestrict, NULL_KEY);
+            llMessageLinked(LINK_THIS, X_API_APPLY_INVENTORY, (string)inventoryRestrict, NULL_KEY);
         }
     }
 }

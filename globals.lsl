@@ -90,6 +90,25 @@
 #define X_API_RELEASE             -4012
 #define X_API_SET_RELAY           -4013
 #define X_API_SET_LAST_FORM       -4014
+#define X_API_NOTIFY_HIDEA        -4015
+#define X_API_NOTIFY_HIDEB        -4016
+#define X_API_NOTIFY_NAME         -4017
+#define X_API_NOTIFY_IM           -4018
+#define X_API_NOTIFY_VISION       -4019
+#define X_API_NOTIFY_HEARING      -4020
+#define X_API_NOTIFY_SPEECH       -4021
+#define X_API_NOTIFY_DAZE         -4022
+#define X_API_NOTIFY_CAMERA       -4023
+#define X_API_NOTIFY_INVENTORY    -4024
+#define X_API_NOTIFY_WORLD        -4025
+#define X_API_APPLY_IM            -4026
+#define X_API_APPLY_VISION        -4027
+#define X_API_APPLY_HEARING       -4028
+#define X_API_APPLY_SPEECH        -4029
+#define X_API_APPLY_DAZE          -4030
+#define X_API_APPLY_CAMERA        -4031
+#define X_API_APPLY_INVENTORY     -4032
+#define X_API_APPLY_WORLD         -4033
 
 #define IT_PLUGIN_REGISTER        -8000
 #define IT_PLUGIN_RESPONSE        -8001
@@ -128,7 +147,7 @@ string slave_base = "Intrusive Thoughts Slave [v3.0.6]";
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
 #define VERSION_PATCH 6
-#define FURNITURE_VERSION 4
+#define FURNITURE_VERSION 5
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG
