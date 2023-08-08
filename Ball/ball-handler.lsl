@@ -624,7 +624,7 @@ default
                         id = llList2Key(onsim, n);
                         pos = llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0);
                         dist = llVecDist(focusPos, pos);
-                        if(dist < closestDist) {
+                        if(dist < closestDist && id != llAvatarOnSitTarget()) {
                             closestDist = dist;
                             closestPerson = id;
                             closestPos = pos;

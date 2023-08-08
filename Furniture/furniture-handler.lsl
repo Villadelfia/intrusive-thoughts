@@ -677,6 +677,7 @@ state running
         storedname = llGetObjectName();
         llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)capturing + "|||" + llGetObjectName() + "|||NULL");
         if(!furnitureIsAlwaysVisible) llSetLinkAlpha(LINK_ALL_OTHERS, 1.0, ALL_SIDES);
+        broadcastCamera();
         llSetTimerEvent(15.0);
     }
 
