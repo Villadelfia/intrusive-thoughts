@@ -114,7 +114,7 @@ handleMenu()
 {
     if(menuState == 0)
     {
-        string msg = "Welcome to your IT furniture!\n";
+        string msg = "";
         list buttons = [];
         if(storedobject)
         {
@@ -144,8 +144,8 @@ handleMenu()
         }
 
         msg += " ▶ This furniture is named " + llGetObjectName() + ".\n";
-        if(objectGroup == "") msg += " ▶ This furniture is not in a group. Set a group to allow objects stored on grouped furniture to communicate.\n";
-        else                  msg += " ▶ This furniture is in the \"" + objectGroup+ "\" group. Objects stored on this furniture can communicate with objects stored on other furniture in the same group.\n";
+        if(objectGroup == "") msg += " ▶ This furniture is not in a group.\n";
+        else                  msg += " ▶ This furniture is in the \"" + objectGroup+ "\" group.\n";
         buttons += ["RENAME", "GROUP"];
 
         if(furnitureIsAlwaysVisible)
@@ -163,7 +163,7 @@ handleMenu()
         {
             if(cameraMode == 0) msg += " ▶ Camera follows normal rules.\n";
             if(cameraMode == 1) msg += " ▶ Camera focuses on object.\n";
-            if(cameraMode == 2) msg += " ▶ Camera focuses on nearby avatars or on object when nobody is nearby.\n";
+            if(cameraMode == 2) msg += " ▶ Camera focuses on avatars.\n";
             buttons += ["NORM CAM", "OBJ CAM", "FPV CAM"];
         }
         else
@@ -174,23 +174,23 @@ handleMenu()
 
         if(objectIsMute)
         {
-            msg += " ▶ Stored objects cannot speak in local chat.\n";
+            msg += " ▶ Stored objects cannot speak.\n";
             buttons += ["CAN SPEAK"];
         }
         else
         {
-            msg += " ▶ Stored objects can speak in local chat.\n";
+            msg += " ▶ Stored objects can speak.\n";
             buttons += ["MUTE"];
         }
 
         if(objectNameTagIsVisible)
         {
-            msg += " ▶ Stored objects have a visible nametag.";
+            msg += " ▶ Visible nametag.";
             buttons += ["HIDE NAME"];
         }
         else
         {
-            msg += " ▶ Stored objects are completely invisible.";
+            msg += " ▶ Invisible nametag.";
             buttons += ["SHOW NAME"];
         }
 
