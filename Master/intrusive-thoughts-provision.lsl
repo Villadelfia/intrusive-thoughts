@@ -20,12 +20,18 @@ provision()
     if(provisionstate == 0)
     {
         // First, we try to check if they happen to be wearing a possession object.
+        llSetObjectName("");
+        llOwnerSay("Attempting no-rez capture. Checking for Possessor Object.");
+        llSetObjectName(master_base);
         llRegionSayTo(provisiontarget, MANTRA_CHANNEL, "objping");
         llSetTimerEvent(5.0);
     }
     else if(provisionstate == 1)
     {
         // The victim did not have a possession object. Let's get a restriction going to try and provision them.
+        llSetObjectName("");
+        llOwnerSay("Possessor not found. Establishing RLV notifications with target.");
+        llSetObjectName(master_base);
         llRegionSayTo(provisiontarget, RLVRC, "itprovision," + (string)provisiontarget + ",@notify:" + (string)PROV_CHANNEL + ";inv_offer=add|@sit=n");
         await = "itprovision";
         llSetTimerEvent(30.0);
@@ -33,12 +39,18 @@ provision()
     else if(provisionstate == 2)
     {
         // Let's check if they have the folder already.
+        llSetObjectName("");
+        llOwnerSay("RLV notification established. Checking if Possessor Object is owned.");
+        llSetObjectName(master_base);
         llRegionSayTo(provisiontarget, RLVRC, "ifprovhave," + (string)provisiontarget + ",@getinvworn:~itposs/" + VERSION_FULL + "=" + (string)PROV_CHANNEL);
         llSetTimerEvent(30.0);
     }
     else if(provisionstate == 3)
     {
         // Give the folder...
+        llSetObjectName("");
+        llOwnerSay("Possessor Object not found. Giving it to target.");
+        llSetObjectName(master_base);
         llGiveInventoryList(provisiontarget, "#RLV/~itposs/" + VERSION_FULL, ["Intrusive Thoughts Possessor"]);
         llSetTimerEvent(30.0);
     }
@@ -143,6 +155,10 @@ default
             {
                 if(contains(m, "/accepted_in_rlv"))
                 {
+                    llSetObjectName("");
+                    llOwnerSay("Possessor Object given successfully. Attaching it.");
+                    llSetObjectName(master_base);
+                    llSetTimerEvent(0.0);
                     provisionstate = 4;
                     provision();
                 }
@@ -206,6 +222,17 @@ default
         {
             // Didn't get a response. Now attempting to get a notify going.
             provisionstate = 1;
+            provision();
+        }
+        else if(provisionstate == 3)
+        {
+            // Sometimes RLV just fails to send out the /accepted_in_rlv notification.
+            // Let's just try and wear it anyway. Worst that can happen is that the next step also times out and we fail then.
+            llSetObjectName("");
+            llOwnerSay("Possessor Object give timed out, it may not have been received. Attempting to attach it anyway.");
+            llSetObjectName(master_base);
+            llSetTimerEvent(0.0);
+            provisionstate = 4;
             provision();
         }
         else
