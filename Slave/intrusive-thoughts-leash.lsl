@@ -18,6 +18,43 @@ string prefix;
 string name;
 vector pcolor = <0.474, 0.057, 0.057>;
 vector pcolordefault = <0.474, 0.057, 0.057>;
+vector pscale = <0.04, 0.04, 1.0>;
+float prate = 0.0;
+vector paccel = <0.0, 0.0, -1.0>;
+string ptex = "cdb7025a-9283-17d9-8d20-cee010f36e90";
+
+scanLeashSettings()
+{
+    list uuids = llGetAttachedList(llGetOwner());
+    integer n = llGetListLength(uuids);
+    list data;
+    while(~--n)
+    {
+        data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_DESC]);
+        if(startswith((string)data[0], "itleash"))
+        {
+            pcolor = (vector)llDeleteSubString((string)data[0], 0, llStringLength("itleash"));
+            jump d;
+        }
+    }
+    pcolor = pcolordefault;
+    @d;
+
+    pscale = <0.04, 0.04, 1.0>
+    prate = 0.0;
+    paccel = <0.0, 0.0, -1.0>;
+    ptex = "cdb7025a-9283-17d9-8d20-cee010f36e90";
+    integer n = llGetInventoryNumber(INVENTORY_NOTECARD);
+    while(~--n)
+    {
+        string nm = llGetInventoryName(INVENTORY_NOTECARD, n);
+        if(startswith(nm, "~PSYS_PART_START_COLOR")) pcolor = (vector)llList2String(llParseString2List(nm, ["="], []), 1);
+        if(startswith(nm, "~PSYS_PART_START_SCALE")) pscale = (vector)llList2String(llParseString2List(nm, ["="], []), 1);
+        if(startswith(nm, "~PSYS_SRC_BURST_RATE")) prate = (float)llList2String(llParseString2List(nm, ["="], []), 1);
+        if(startswith(nm, "~PSYS_SRC_ACCEL")) paccel = (vector)llList2String(llParseString2List(nm, ["="], []), 1);
+        if(startswith(nm, "~PSYS_SRC_TEXTURE")) ptex = llList2String(llParseString2List(nm, ["="], []), 1);
+    }
+}
 
 particles(key k)
 {
@@ -27,32 +64,19 @@ particles(key k)
     }
     else
     {
-        list data;
-        list uuids = llGetAttachedList(llGetOwner());
-        integer n = llGetListLength(uuids);
-        while(~--n)
-        {
-            data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_DESC]);
-            if(startswith((string)data[0], "itleash"))
-            {
-                pcolor = (vector)llDeleteSubString((string)data[0], 0, llStringLength("itleash"));
-                jump done;
-            }
-        }
-        pcolor = pcolordefault;
-        @done;
+        scanLeashSettings();
         llParticleSystem([
             PSYS_PART_FLAGS, PSYS_PART_FOLLOW_VELOCITY_MASK | PSYS_PART_TARGET_POS_MASK | PSYS_PART_FOLLOW_SRC_MASK | PSYS_PART_RIBBON_MASK,
             PSYS_PART_MAX_AGE, 3.5,
             PSYS_PART_START_COLOR, pcolor,
-            PSYS_PART_START_SCALE, <0.04,0.04,1.0>,
+            PSYS_PART_START_SCALE, pscale,
             PSYS_SRC_PATTERN, PSYS_SRC_PATTERN_DROP,
-            PSYS_SRC_BURST_RATE, 0.0,
-            PSYS_SRC_ACCEL, <0.0,0.0,-1.0>,
+            PSYS_SRC_BURST_RATE, prate,
+            PSYS_SRC_ACCEL, paccel,
             PSYS_SRC_BURST_PART_COUNT, 1,
             PSYS_SRC_TARGET_KEY, k,
             PSYS_SRC_MAX_AGE, 0,
-            PSYS_SRC_TEXTURE, "cdb7025a-9283-17d9-8d20-cee010f36e90"
+            PSYS_SRC_TEXTURE, ptex
         ]);
     }
 }
@@ -377,7 +401,7 @@ default
                 // On the second iteration remove the leash entirely.
                 unleash();
                 llSetObjectName("");
-                llOwnerSay("Your leash has been released by secondlife:///app/agent/" + (string)llGetOwnerKey(leashedto) + "/about.");
+                llOwnerSay("Your leash has been released.");
                 llSetObjectName(slave_base);
             }
         }
