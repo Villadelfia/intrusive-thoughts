@@ -225,13 +225,13 @@ default
         }
         else if(m == "ownerexport")
         {
-            string out = "pri:" + (string)primary ";pub:" + (string)publicaccess + ";grp:" + (string)groupaccess;
+            string out = "pri:" + (string)primary + ";pub:" + (string)publicaccess + ";grp:" + (string)groupaccess;
             if(owners != [])
             {
                 out += ";sec:";
                 out += llDumpList2String(owners, ",");
             }
-            llSetObjectName("Owner Data Export:");
+            llSetObjectName("Owner Data Export");
             ownersay(k, out, 0);
             llSetObjectName(slave_base);
         }
@@ -256,7 +256,7 @@ default
                     owners = [];
                     while(~--m)
                     {
-                        ownersay(k, "Added secondary owner secondlife:///app/agent/" + (string)new + "/about.", 0);
+                        ownersay(k, "Added secondary owner secondlife:///app/agent/" + llList2String(new, m) + "/about.", 0);
                         owners += [(key)llList2String(new, m)];
                     }
                 }
@@ -272,7 +272,7 @@ default
                     publicaccess = (integer)llList2String(llParseString2List(token, [":"], []), 1);
                     string publicstatus = "DISABLED";
                     if(publicaccess) publicstatus = "ENABLED";
-                    ownersay(k, "Public access " + publicaccess + ".", 0);
+                    ownersay(k, "Public access " + publicstatus + ".", 0);
                 }
             }
             llSetObjectName(slave_base);
