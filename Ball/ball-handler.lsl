@@ -557,7 +557,7 @@ default
             if(keyisavatar) offset = seatedoffset;
             if(animation == "hide_b") offset = <0.0, 0.0, -5.0>;
 
-            if((keyisavatar == TRUE && llGetAgentSize(rezzer) == ZERO_VECTOR) || (keyisavatar == FALSE && llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) == ZERO_VECTOR))
+            if(llList2Vector(llGetObjectDetails(llGetOwnerKey(rezzer), [OBJECT_POS]), 0) == ZERO_VECTOR && llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) == ZERO_VECTOR)
             {
                 if(firstattempt)
                 {
@@ -582,23 +582,29 @@ default
                 firstattempt = TRUE;
             }
 
-            vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + offset;
+            vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0);
+            if(pos == ZERO_VECTOR) pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0);
+            pos += offset;
             float dist = llVecDist(my, pos);
-            if(dist > 60.0)
+            if(dist > 60.0 && pos.x <= 256 && pos.x >= 0 && pos.y <= 256 && pos.y >= 0)
             {
-                llStopMoveToTarget();
+                llSetTimerEvent(0.5);
                 llSetStatus(STATUS_PHYSICS, FALSE);
+                llStopMoveToTarget();
                 llSetRegionPos(pos);
             }
             else if(dist > 0.05)
             {
-                llSetStatus(STATUS_PHYSICS, TRUE);
+                if(pos.x > 256.0 || pos.x < 0 || pos.y > 256.0 || pos.y < 0) llSetTimerEvent(2.5);
+                else llSetTimerEvent(0.5);
                 llMoveToTarget(pos, 0.1);
+                llSetStatus(STATUS_PHYSICS, TRUE);
             }
             else if(llGetStatus(STATUS_PHYSICS))
             {
-                llStopMoveToTarget();
+                llSetTimerEvent(0.5);
                 llSetStatus(STATUS_PHYSICS, FALSE);
+                llStopMoveToTarget();
             }
 
             timerctr++;

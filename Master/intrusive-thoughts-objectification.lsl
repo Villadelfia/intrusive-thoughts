@@ -510,12 +510,12 @@ default
         llSetTimerEvent(0.0);
         if(timermode == 0)
         {
-            integer l = llGetListLength(objectifiedballs);
+            integer l = llGetListLength(objectifiedavatars);
             while(~--l)
             {
                 integer differentRegion = lastregion != llGetRegionName();
-                list req = llGetObjectDetails(llList2Key(objectifiedballs, l), [OBJECT_CREATOR]);
-                if(req == [] || llList2Key(req, 0) != llGetCreator())
+                list req = llGetObjectDetails(llList2Key(objectifiedavatars, l), [OBJECT_POS]);
+                if(req == [] || llList2Vector(req, 0) == ZERO_VECTOR)
                 {
                     // If we're in a different region, that means we teleported. So don't give up on those people yet.
                     if(differentRegion)
