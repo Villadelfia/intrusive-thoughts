@@ -558,14 +558,28 @@ default
                 if(llGetAgentInfo(lockedavatarkey) & AGENT_SITTING)
                 {
                     llOwnerSay("Standing up '" + llGetSubString(lockedavatarname, 1, -2) + "'.");
-                    if(lockedavatarkey == llGetOwner()) llOwnerSay("@unsit=force");
-                    else                                llRegionSayTo(lockedavatarkey, RLVRC, "st," + (string)lockedavatarkey + ",@unsit=force");
+                    if(lockedavatarkey == llGetOwner())
+                    {
+                        llOwnerSay("@unsit=force");
+                    }
+                    else
+                    {
+                        llRegionSayTo(lockedavatarkey, RLVRC, "st," + (string)lockedavatarkey + ",@unsit=force");
+                        llRegionSayTo(lockedavatarkey, MANTRA_CHANNEL, "unsit");
+                    }
                 }
                 else
                 {
                     llOwnerSay("Sitting '" + llGetSubString(lockedavatarname, 1, -2) + "' on '" + seenobjectname + "'.");
-                    if(lockedavatarkey == llGetOwner()) llOwnerSay("@sit:" + (string)seenobjectkey + "=force");
-                    else                                llRegionSayTo(lockedavatarkey, RLVRC, "si," + (string)lockedavatarkey + ",@sit:" + (string)seenobjectkey + "=force");
+                    if(lockedavatarkey == llGetOwner())
+                    {
+                        llOwnerSay("@sit:" + (string)seenobjectkey + "=force");
+                    }
+                    else
+                    {
+                        llRegionSayTo(lockedavatarkey, RLVRC, "si," + (string)lockedavatarkey + ",@sit:" + (string)seenobjectkey + "=force");
+                        llRegionSayTo(lockedavatarkey, MANTRA_CHANNEL, "sit " + (string)seenobjectkey);
+                    }
                 }
                 llSetObjectName(master_base);
             }
