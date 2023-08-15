@@ -199,7 +199,7 @@ default
                 gotCtrl = TRUE;
                 llMessageLinked(LINK_SET, M_API_SPOOF, "possesscapture", (key)(owner + "||| |||" + victimname));
                 llSetObjectName("");
-                llOwnerSay("You can talk through your victim's mouth by speaking in channel /7. You may also type /7hide to toggle your own visibility on/off, and you may type /7mute to toggle your victim's ability to speak for themselves.");
+                llOwnerSay("You can talk through your victim's mouth by speaking in channel /7. You may also type /7hide to toggle your own visibility on/off, and you may type /7mute to toggle your victim's ability to speak for themselves. If you just want to think to your victim type your message as /7think <message>.");
                 llSetObjectName(master_base);
                 toggleControl();
             }
@@ -271,6 +271,11 @@ default
                 else if(m == "mute")
                 {
                     llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "ctrlmute");
+                }
+                else if(startswith(m, "think"))
+                {
+                    m = llDeleteSubString(m, 0, llStringLength("think"));
+                    llRegionSayTo(possessionvictim, MANTRA_CHANNEL, "ctrlthink " + m);
                 }
                 else
                 {

@@ -186,7 +186,7 @@ When you capture someone, you will get a notification in chat with a link to cli
 
 
 21. How do I use the possession system?
-Same as the objectification and vore systems. You lock onto someone, then you click the "possess" button. It will then give them an object (or use the slave if they're wearing it) and them under your control. You can click the play/pause button so you can move yourself, and you can click the chair button to have your victim sit on what you're looking at. You can also talk into channel /7 to talk through your victim's mouth.
+Same as the objectification and vore systems. You lock onto someone, then you click the "possess" button. It will then give them an object (or use the slave if they're wearing it) and them under your control. You can click the play/pause button so you can move yourself, and you can click the chair button to have your victim sit on what you're looking at. You can also talk into channel /7 to talk through your victim's mouth. There are a few other commands available through the /7 channel, and the HUD will tell you about these when you possess someone.
 
 When you're done, just click the release button.
 

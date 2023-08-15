@@ -157,6 +157,14 @@ default
                 if(llVecDist(llGetPos(), llList2Vector(llGetObjectDetails(controller, [OBJECT_POS]), 0)) > 20.0) llRegionSayTo(controller, 0, prefix + m);
                 llSay(0, prefix + m);
             }
+            else if(startswith(m, "ctrlthink"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("ctrlthink"));
+                llSetObjectName("Your Possessor's Thoughts");
+                llOwnerSay(m);
+                llSetObjectName("Your Thoughts");
+                llRegionSayTo(controller, 0, m);
+            }
             else if(startswith(m, "ctrl"))
             {
                 m = llList2String(llParseString2List(m, [" "], []), 1);

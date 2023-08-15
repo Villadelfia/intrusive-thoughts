@@ -160,3 +160,4 @@ Version 3.0.6:
  - Make leash more configurable.
  - Add strict sitting.
  - Make leashing and objectification region crossing compatible.
+ - Add /7think to possession.
