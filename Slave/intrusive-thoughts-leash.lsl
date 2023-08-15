@@ -59,48 +59,49 @@ particles(key k)
 
 checkSetup()
 {
-    if(leasherinrange != FALSE && leashedto != NULL_KEY)
-    {
-        llOwnerSay("@fly=n,tplm=n,tplure=n,tploc=n,tplure:" + (string)llGetOwnerKey(leashedto) + "=add");
-    }
-    else
-    {
-        llOwnerSay("@fly=y,tplm=y,tplure=y,tploc=y");
-    }
+    if(leasherinrange == TRUE && leashedto != NULL_KEY) llOwnerSay("@fly=n,tplm=n,tplure=n,tploc=n,tplure:" + (string)llGetOwnerKey(leashedto) + "=add");
+    else                                                llOwnerSay("@fly=y,tplm=y,tplure=y,tploc=y");
 }
 
 leash(key target)
 {
+    // Announce leashing.
     llRegionSayTo(target, LEASH_CHANNEL, "leashed");
-
     leashedto = target;
 
+    // Do particles and instantiate timer.
     particles(target);
-
     llSetTimerEvent(3.0);
 
+    // Get position of target. Fallback to wearer if first check fails.
     leashtarget = llList2Vector(llGetObjectDetails(leashedto, [OBJECT_POS]), 0);
+    if(leashtarget == ZERO_VECTOR) leashtarget = llList2Vector(llGetObjectDetails(llGetOwnerKey(leashedto), [OBJECT_POS]), 0);
+
+    // Move to the new leashing target.
     llTargetRemove(leashinghandle);
     llStopMoveToTarget();
     leashinghandle = llTarget(leashtarget, (float)llength);
-    if(leashtarget != ZERO_VECTOR)
-    {
-        llMoveToTarget(leashtarget, 0.7);
-    }
-    leasherinrange=TRUE;
+    if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 0.7);
+    leasherinrange = TRUE;
+
+    // Update setup.
     checkSetup();
 }
 
 unleash()
 {
+    // Announce unleash.
     llRegionSayTo(leashedto, LEASH_CHANNEL, "unleashed");
 
+    // Stop events.
     llTargetRemove(leashinghandle);
     llStopMoveToTarget();
     particles(NULL_KEY);
     leashedto = NULL_KEY;
     llSetTimerEvent(0.0);
     leasherinrange = FALSE;
+
+    // Update setup.
     checkSetup();
 }
 
@@ -292,6 +293,7 @@ default
         llStopMoveToTarget();
         llTargetRemove(leashinghandle);
         leashtarget = llList2Vector(llGetObjectDetails(leashedto, [OBJECT_POS]), 0);
+        if(leashtarget == ZERO_VECTOR) leashtarget = llList2Vector(llGetObjectDetails(llGetOwnerKey(leashedto), [OBJECT_POS]), 0);
         leashinghandle = llTarget(leashtarget, (float)llength);
         if(justmoved)
         {
@@ -308,6 +310,7 @@ default
         if(leashedto)
         {
             vector newpos = llList2Vector(llGetObjectDetails(leashedto, [OBJECT_POS]), 0);
+            if(newpos == ZERO_VECTOR) newpos = llList2Vector(llGetObjectDetails(llGetOwnerKey(leashedto), [OBJECT_POS]), 0);
             if(leashtarget != newpos)
             {
                 llTargetRemove(leashinghandle);
@@ -334,35 +337,48 @@ default
 
     timer()
     {
+        // Get position of our leash target.
         vector leashedtopos = llList2Vector(llGetObjectDetails(leashedto, [OBJECT_POS]), 0);
-        integer isinsim = TRUE;
-        if(leashedtopos == ZERO_VECTOR) isinsim = FALSE;
+        if(leashedtopos == ZERO_VECTOR) leashedtopos = llList2Vector(llGetObjectDetails(llGetOwnerKey(leashedto), [OBJECT_POS]), 0);
 
+        // Is that position within our range?
+        integer isinsim = (leashedtopos != ZERO_VECTOR && llVecDist(llGetPos(), leashedtopos) <= 255);
+
+        // If it's within our range...
         if(isinsim && llVecDist(llGetPos(), leashedtopos) < (60 + llength))
         {
+            // And we lost our leash earlier...
             if(!leasherinrange)
             {
+                // Re-establish the leash.
                 leasherinrange = TRUE;
+                particles(leashedto);
                 llTargetRemove(leashinghandle);
-                leashtarget = leashedtopos;
+                llStopMoveToTarget();
                 leashinghandle = llTarget(leashtarget, (float)llength);
-                if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 0.8);
+                if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 0.7);
                 checkSetup();
             }
         }
         else
         {
+            // If it's not and this is our first iteration...
             if(leasherinrange)
             {
+                // Disable the leash.
+                leasherinrange = FALSE;
                 llTargetRemove(leashinghandle);
                 llStopMoveToTarget();
                 particles(NULL_KEY);
-                leasherinrange = FALSE;
                 checkSetup();
             }
             else
             {
+                // On the second iteration remove the leash entirely.
                 unleash();
+                llSetObjectName("");
+                llOwnerSay("Your leash has been released by secondlife:///app/agent/" + (string)llGetOwnerKey(leashedto) + "/about.");
+                llSetObjectName(slave_base);
             }
         }
     }
