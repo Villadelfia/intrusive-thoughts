@@ -336,7 +336,7 @@ default
     {
         vector leashedtopos = llList2Vector(llGetObjectDetails(leashedto, [OBJECT_POS]), 0);
         integer isinsim = TRUE;
-        if(leashedtopos == ZERO_VECTOR || llVecDist(llGetPos(), leashedtopos) > 255) isinsim = FALSE;
+        if(leashedtopos == ZERO_VECTOR) isinsim = FALSE;
 
         if(isinsim && llVecDist(llGetPos(), leashedtopos) < (60 + llength))
         {
