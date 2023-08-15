@@ -223,6 +223,66 @@ default
             }
             llSetObjectName(slave_base);
         }
+        else if(m == "ownerexport")
+        {
+            string out = "pri:" + (string)primary ";pub:" + (string)publicaccess + ";grp:" + (string)groupaccess;
+            if(owners != [])
+            {
+                out += ";sec:";
+                out += llDumpList2String(owners, ",");
+            }
+            llSetObjectName("Owner Data Export:");
+            ownersay(k, out, 0);
+            llSetObjectName(slave_base);
+        }
+        else if(startswith(m, "ownerimport"))
+        {
+            m = llStringTrim(llDeleteSubString(m, 0, llStringLength("ownerimport")-1), STRING_TRIM);
+            list tokens = llParseString2List(m, [";"], []);
+            integer l = llGetListLength(tokens);
+            llSetObjectName("");
+            while(~--l)
+            {
+                string token = llList2String(tokens, l);
+                if(startswith(token, "pri:"))
+                {
+                    primary = (key)llList2String(llParseString2List(token, [":"], []), 1);
+                    ownersay(k, "Primary owner: secondlife:///app/agent/" + (string)primary + "/about", 0);
+                }
+                else if(startswith(token, "sec:"))
+                {
+                    list new = llParseString2List(llList2String(llParseString2List(token, [":"], []), 1), [","], []);
+                    integer m = llGetListLength(new);
+                    owners = [];
+                    while(~--m)
+                    {
+                        ownersay(k, "Added secondary owner secondlife:///app/agent/" + (string)new + "/about.", 0);
+                        owners += [(key)llList2String(new, m)];
+                    }
+                }
+                else if(startswith(token, "grp:"))
+                {
+                    groupaccess = (integer)llList2String(llParseString2List(token, [":"], []), 1);
+                    string groupstatus = "DISABLED";
+                    if(groupaccess) groupstatus = "ENABLED";
+                    ownersay(k, "Group access " + groupstatus + ".", 0);
+                }
+                else if(startswith(token, "pub:"))
+                {
+                    publicaccess = (integer)llList2String(llParseString2List(token, [":"], []), 1);
+                    string publicstatus = "DISABLED";
+                    if(publicaccess) publicstatus = "ENABLED";
+                    ownersay(k, "Public access " + publicaccess + ".", 0);
+                }
+            }
+            llSetObjectName(slave_base);
+            llLinksetDataWriteProtected("secondary", llDumpList2String(owners, ","), "");
+            llLinksetDataWriteProtected("primary", (string)primary, "");
+            llLinksetDataWriteProtected("publicaccess", (string)publicaccess, "");
+            llLinksetDataWriteProtected("groupaccess", (string)groupaccess, "");
+            llMessageLinked(LINK_SET, S_API_OWNERS, llDumpList2String(owners, ","), primary);
+            llMessageLinked(LINK_SET, S_API_OTHER_ACCESS, (string)publicaccess, (key)((string)groupaccess));
+        }
         else if(m == "groupaccess")
         {
             groupaccess = !groupaccess;
