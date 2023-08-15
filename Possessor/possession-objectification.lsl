@@ -594,6 +594,7 @@ default
         }
 
         leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
+        if(leashtarget == ZERO_VECTOR) leashtarget = llList2Vector(llGetObjectDetails(llGetOwnerKey(objectifier), [OBJECT_POS]), 0);
         if(llVecDist(llGetPos(), leashtarget) > 60.0)
         {
             if(firstoutrange)
@@ -616,6 +617,7 @@ default
         }
         llTargetRemove(leashinghandle);
         leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
+        if(leashtarget == ZERO_VECTOR) leashtarget = llList2Vector(llGetObjectDetails(llGetOwnerKey(objectifier), [OBJECT_POS]), 0);
         leashinghandle = llTarget(leashtarget, 5.0);
         if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 1.5);
         if(cameraRestrict != 0)

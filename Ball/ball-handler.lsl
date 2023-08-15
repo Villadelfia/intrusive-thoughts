@@ -557,7 +557,7 @@ default
             if(keyisavatar) offset = seatedoffset;
             if(animation == "hide_b") offset = <0.0, 0.0, -5.0>;
 
-            if((keyisavatar == TRUE && llGetAgentSize(rezzer) == ZERO_VECTOR) || (keyisavatar == FALSE && llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) == ZERO_VECTOR))
+            if((keyisavatar == TRUE && llList2Vector(llGetObjectDetails(llGetOwnerKey(rezzer), [OBJECT_POS]), 0) == ZERO_VECTOR) || (keyisavatar == FALSE && llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) == ZERO_VECTOR))
             {
                 if(firstattempt)
                 {
@@ -583,6 +583,7 @@ default
             }
 
             vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + offset;
+            if(pos == offset) pos = llList2Vector(llGetObjectDetails(llGetOwnerKey(rezzer), [OBJECT_POS]), 0) + offset;
             float dist = llVecDist(my, pos);
             if(dist > 60.0)
             {
