@@ -40,11 +40,11 @@ scanLeashSettings()
     pcolor = pcolordefault;
     @d;
 
-    pscale = <0.04, 0.04, 1.0>
+    pscale = <0.04, 0.04, 1.0>;
     prate = 0.0;
     paccel = <0.0, 0.0, -1.0>;
     ptex = "cdb7025a-9283-17d9-8d20-cee010f36e90";
-    integer n = llGetInventoryNumber(INVENTORY_NOTECARD);
+    n = llGetInventoryNumber(INVENTORY_NOTECARD);
     while(~--n)
     {
         string nm = llGetInventoryName(INVENTORY_NOTECARD, n);

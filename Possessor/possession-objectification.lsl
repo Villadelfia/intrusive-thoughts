@@ -574,7 +574,7 @@ default
             struggleEvents = 0;
         }
 
-        if((keyisavatar == TRUE && llGetAgentSize(objectifier) == ZERO_VECTOR) || (keyisavatar == FALSE && llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0) == ZERO_VECTOR))
+        if((keyisavatar == TRUE && llList2Vector(llGetObjectDetails(llGetOwnerKey(objectifier), [OBJECT_POS]), 0) == ZERO_VECTOR) || (keyisavatar == FALSE && llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0) == ZERO_VECTOR))
         {
             if(firstattempt)
             {

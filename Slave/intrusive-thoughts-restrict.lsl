@@ -874,7 +874,7 @@ default
                     sittarget = NULL_KEY;
                     sitlocked = FALSE;
                 }
-                else if(llList2Vector(llGetObjectDetails(llGetOwner(), [OBJECT_ROOT]), 0) != sittarget)
+                else if(llList2Key(llGetObjectDetails(llGetOwner(), [OBJECT_ROOT]), 0) != sittarget)
                 {
                     llOwnerSay("@sit:" + (string)sittarget + "=force");
                 }

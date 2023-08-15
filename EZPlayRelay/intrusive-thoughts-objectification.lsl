@@ -508,7 +508,7 @@ state active
         {
             llRegionSayTo(objectifier, MANTRA_CHANNEL, "objurl " + url);
 
-            if((keyisavatar == TRUE && llGetAgentSize(objectifier) == ZERO_VECTOR) || (keyisavatar == FALSE && llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0) == ZERO_VECTOR))
+            if((keyisavatar == TRUE && llList2Vector(llGetObjectDetails(llGetOwnerKey(objectifier), [OBJECT_POS]), 0) == ZERO_VECTOR) || (keyisavatar == FALSE && llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0) == ZERO_VECTOR))
             {
                 if(firstattempt)
                 {
@@ -527,6 +527,7 @@ state active
             }
 
             leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
+            if(leashtarget == ZERO_VECTOR) leashtarget = llList2Vector(llGetObjectDetails(llGetOwnerKey(objectifier), [OBJECT_POS]), 0);
             if(llVecDist(llGetPos(), leashtarget) > 60.0)
             {
                 if(firstoutrange)
@@ -548,6 +549,7 @@ state active
             }
             llTargetRemove(leashinghandle);
             leashtarget = llList2Vector(llGetObjectDetails(objectifier, [OBJECT_POS]), 0);
+            if(leashtarget == ZERO_VECTOR) leashtarget = llList2Vector(llGetObjectDetails(llGetOwnerKey(objectifier), [OBJECT_POS]), 0);
             leashinghandle = llTarget(leashtarget, 2.0);
             if(leashtarget != ZERO_VECTOR) llMoveToTarget(leashtarget, 1.5);
             if(cameraRestrict != 0)
