@@ -157,3 +157,6 @@ Version 3.0.6:
  - Fix issue with fog on objectification.
  - Add more camera options on furniture.
  - Add more fog options on objectification.
+ - Make leash more configurable.
+ - Add strict sitting.
+ - Make leashing and objectification region crossing compatible.
