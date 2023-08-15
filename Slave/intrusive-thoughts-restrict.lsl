@@ -15,6 +15,8 @@ string playing = "";
 integer daze = FALSE;
 integer locked = FALSE;
 integer outfitlocked = FALSE;
+integer sitlocked = FALSE;
+key sittarget = NULL_KEY;
 float currentVision = 4.0;
 float currentFocus = 2.0;
 
@@ -73,6 +75,8 @@ hardReset()
     noim = FALSE;
     daze = FALSE;
     outfitlocked = FALSE;
+    sitlocked = FALSE;
+    sittarget = NULL_KEY;
     currentVision = 4.0;
     currentFocus = 2.0;
     clearLockList();
@@ -89,6 +93,8 @@ softReset()
     noim = FALSE;
     daze = FALSE;
     outfitlocked = FALSE;
+    sitlocked = FALSE;
+    sittarget = NULL_KEY;
     currentVision = 4.0;
     currentFocus = 2.0;
     clearLockList();
@@ -141,6 +147,23 @@ doSetup()
         llOwnerSay("@addattach=y,remattach=y,addoutfit=y,remoutfit=y");
     }
 
+    if(sitlocked)
+    {
+        if(sittarget)
+        {
+            llOwnerSay("@unsit=force,sit=y,sit:" + (string)sittarget + "=force,unsit=n");
+            sensortimer(1.0);
+        }
+        else
+        {
+            llOwnerSay("@unsit=force,unsit=y,sit=n");
+        }
+    }
+    else
+    {
+        llOwnerSay("@unsit=y,sit=y");
+    }
+
     if(locked)
     {
         llOwnerSay("@detach=n");
@@ -186,6 +209,7 @@ handlemenu(key k)
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "listoutfit - List all outfits.]", 0);
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "liststuff - List all stuff.]", 0);
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "stand - Stand up.]", 0);
+        ownersay(k, "[secondlife:///app/chat/1/" + prefix + "locksit - Lock sit/stand state.]", 0);
         ownersay(k, "[secondlife:///app/chat/1/" + prefix + "leash - Leash]/[secondlife:///app/chat/1/" + prefix + "unleash unleash.]", 0);
         if(llGetOwnerKey(k) == primary)
         {
@@ -720,6 +744,31 @@ default
             }
             llSetObjectName(slave_base);
         }
+        else if(llToLower(m) == "locksit")
+        {
+            llSetObjectName("");
+            if(sitlocked)
+            {
+                sitlocked = FALSE;
+                ownersay(k, name + " is no longer prevented from changing their sit state.", 0);
+                llOwnerSay("@unsit=y,sit=y");
+            }
+            else
+            {
+                sitlocked = TRUE;
+                ownersay(k, name + " can no longer change their sit state.", 0);
+                if(sittarget)
+                {
+                    llOwnerSay("@unsit=n");
+                    sensortimer(1.0);
+                }
+                else
+                {
+                    llOwnerSay("@unsit=force,sit=n");
+                }
+            }
+            llSetObjectName(slave_base);
+        }
         else if(llToLower(m) == "focus")
         {
             llMessageLinked(LINK_SET, S_API_FOCUS_TOGGLE, "", k);
@@ -788,7 +837,19 @@ default
         }
         else if(llToLower(m) == "stand" || llToLower(m) == "unsit")
         {
-            llOwnerSay("@unsit=force");
+            sittarget = NULL_KEY;
+            llOwnerSay("@unsit=force,unsit=y,sit=y");
+            if(sitlocked) llOwnerSay("@sit=n");
+        }
+        else if(startswith(llToLower(m), "sit"))
+        {
+            sittarget = (key)llDeleteSubString(m, 0, llStringLength("sit"));
+            llOwnerSay("@unsit=force,unsit=y,sit=y,sit:" + (string)sittarget + "=force");
+            if(sitlocked)
+            {
+                llOwnerSay("@unsit=n");
+                sensortimer(1.0);
+            }
         }
         else if(startswith(m, "@"))
         {
@@ -798,6 +859,31 @@ default
             ownersay(k, "Executing RLV command '" + m + "' on " + name + ".", 0);
             llSetObjectName(slave_base);
             llOwnerSay(m);
+        }
+    }
+
+    no_sensor()
+    {
+        if(sitlocked)
+        {
+            if(sittarget)
+            {
+                vector p = llList2Vector(llGetObjectDetails(sittarget, [OBJECT_POS]), 0);
+                if(p == ZERO_VECTOR)
+                {
+                    sittarget = NULL_KEY;
+                    sitlocked = FALSE;
+                }
+                else if(llList2Vector(llGetObjectDetails(llGetOwner(), [OBJECT_ROOT]), 0) != sittarget)
+                {
+                    llOwnerSay("@sit:" + (string)sittarget + "=force");
+                }
+            }
+        }
+        else
+        {
+            sensortimer(0.0);
+            llOwnerSay("@unsit=y,sit=y");
         }
     }
 
