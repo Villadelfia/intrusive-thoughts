@@ -40,6 +40,7 @@ float getVolume()
 
 playSound()
 {
+    // Gurgling and liquid sound.
     curvol = getVolume();
     llStopSound();
     if(llGetInventoryName(INVENTORY_SOUND, 0) == "") llLoopSound("38510ac5-5338-ec76-1a6c-c2115538aa8d", curvol);

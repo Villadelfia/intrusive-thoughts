@@ -15,6 +15,7 @@ float getVolume()
 
 playSound()
 {
+    // Heartbeat
     curvol = getVolume();
     llStopSound();
     if(llGetInventoryName(INVENTORY_SOUND, 0) == "") llLoopSound("5f6b61f1-d55e-236f-8173-a4a25695f26d", curvol);
