@@ -23,6 +23,31 @@ integer furnitureCameraMode = 0;
 key furnitureCameraPos = NULL_KEY;
 key furnitureCameraFocus = NULL_KEY;
 
+// Creators of stuff that is likely near furniture that should NOT be focused on.
+// We want this to focus on people that can move only.
+list furnitureCameraBlacklist = [
+    "ebb81fdb-8c5b-4afe-94bd-2e790d823491", // Watsoon Steampunk
+    "9870257c-0c11-4329-bde9-e7f5e414a992", // MzBitch2u
+    "dc6a91c8-540e-4434-b996-895455915685", // Tammy Badger
+    "c93fd4fd-e26e-4807-94cb-998877925d8a", // Siennajessicamoon
+    "0520e63a-236e-4902-9eb6-590a0eae48ad", // Snot Gothly
+    "ef227582-1e78-4fed-986a-76bdcad5dfb3", // Valtum
+    "6d9cbaea-b83e-4a5d-8043-9bf1faee651a", // LitaRubeus
+    "bc50a813-5b31-4cbe-9ae6-0031d1b7d53e", // Jenni Silverpath
+    "23e29f4a-caad-47dc-b6ce-7d6d59f5ca4d", // Carina Asbrink
+    "b8dad95f-3875-48ae-a830-ae1972619ccb", // Nic Feila
+    "d7c82582-33de-42db-9982-e9bd8ba9c026", // Rayeanners
+    "63d32336-7cdf-4888-8ad1-89e521345ee6", // Puetano
+    "145b5e86-fcb2-4351-877a-0dfe65e80518", // Honey Puddles
+    "bfb5d38f-ce9e-4701-ac71-79663a25d435", // Tammy Dismantled
+    "d0dcc51e-d359-4103-bba5-d265984ace21", // Issmir
+    "0788796c-b64a-4ad5-8528-a605a2fdc4ba", // Vanessa Foote
+    "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9"  // Myself
+];
+
+// Z-base of the furniture. To avoid focusing on people that are much above or below us.
+float furnitureCameraZBase = 0.0;
+
 // 0 = Nothing extra.
 // 1 = Cannot open IM sessions.
 // 2 = Cannot send IMs.
@@ -69,6 +94,9 @@ integer inventoryRestrict = 1;
 // 1 = No world interaction.
 integer worldRestrict = 1;
 
+vector positionOffset = ZERO_VECTOR;
+rotation rotationOffset = ZERO_ROTATION;
+
 die()
 {
     if(firstavatar) llRegionSayTo(rezzer, STRUGGLE_CHANNEL, "released|" + (string)firstavatar);
@@ -91,24 +119,55 @@ string restrictionString()
            (string)(animation == "hide_b");
 }
 
+getZBase()
+{
+    furnitureCameraZBase = 0.0;
+    list     info = llGetObjectDetails(rezzer, [OBJECT_POS, OBJECT_ROT]) + llGetBoundingBox(rezzer);
+    vector   pos  = llList2Vector(info, 0);
+    rotation rot  = llList2Rot(info, 1);
+    vector   c1   = llList2Vector(info, 2) * rot + pos;
+    vector   c2   = llList2Vector(info, 3) * rot + pos;
+    if(c1.z < c2.z) furnitureCameraZBase = c1.z;
+    else            furnitureCameraZBase = c2.z;
+}
+
 toggleedit()
 {
-    if(editmode == FALSE && (keyisavatar == FALSE || (llGetAgentInfo(rezzer) & AGENT_SITTING) == 0)) return;
+    if(editmode == FALSE && (keyisavatar == TRUE && (llGetAgentInfo(rezzer) & AGENT_SITTING) == 0)) return;
     if(animation == "hide_b") return;
     editmode = !editmode;
-    if(editmode)
+    if(keyisavatar == TRUE)
     {
-        oldpos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + seatedoffset;
-        llSetRegionPos(oldpos);
-        llSetAlpha(1.0, ALL_SIDES);
-        llSetScale(<0.1, 0.1, 5.0>);
+        if(editmode)
+        {
+            oldpos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0) + seatedoffset;
+            llSetRegionPos(oldpos);
+            llSetAlpha(1.0, ALL_SIDES);
+            llSetScale(<0.1, 0.1, 5.0>);
+        }
+        else
+        {
+            vector offset = llGetPos() - oldpos;
+            seatedoffset += offset;
+            llSetAlpha(0.0, ALL_SIDES);
+            llSetScale(<0.1, 0.1, 0.1>);
+        }
     }
     else
     {
-        vector offset = llGetPos() - oldpos;
-        seatedoffset += offset;
-        llSetAlpha(0.0, ALL_SIDES);
-        llSetScale(<0.1, 0.1, 0.1>);
+        if(editmode)
+        {
+            llSetAlpha(1.0, ALL_SIDES);
+            llSetScale(<0.1, 0.1, 5.0>);
+        }
+        else
+        {
+            rotationOffset = llGetRot();
+            positionOffset = llGetPos() - llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0);
+            llRegionSayTo(rezzer, MANTRA_CHANNEL, "offsets;" + (string)positionOffset + ";" + (string)rotationOffset);
+            llSetAlpha(0.0, ALL_SIDES);
+            llSetScale(<0.1, 0.1, 0.1>);
+        }
     }
 }
 
@@ -151,8 +210,15 @@ default
 
         // If the rezzer is an avatar, make sure we actually have the uuid of the avatar and not the hud.
         // Otherwise set the name this object will use to talk.
-        if(keyisavatar) rezzer = llGetOwnerKey(rezzer);
-        else            name = llList2String(llGetObjectDetails(rezzer, [OBJECT_NAME]), 0);
+        if(keyisavatar)
+        {
+            rezzer = llGetOwnerKey(rezzer);
+        }
+        else
+        {
+            getZBase();
+            name = llList2String(llGetObjectDetails(rezzer, [OBJECT_NAME]), 0);
+        }
 
         // If we were rezzed without a start parameter or just normally, don't suicide in 60 seconds.
         if(start_param == 0) return;
@@ -195,7 +261,8 @@ default
                 }
 
                 // Apply RLV restrictions.
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@tplocal=n|@tplm=n|@tploc=n|@tplure=n|@showself=n|@sendgesture=n|@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add|@sendim:" + (string)llGetOwnerKey(rezzer) + "=add");
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@tplocal=n|@tplm=n|@tploc=n|@tplure=n|@sendgesture=n|@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add|@sendim:" + (string)llGetOwnerKey(rezzer) + "=add");
+                if(llGetInventoryNumber(INVENTORY_ANIMATION) == 2) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@showself=n");
                 llMessageLinked(LINK_THIS, X_API_APPLY_IM, (string)imRestrict, NULL_KEY);
                 llMessageLinked(LINK_THIS, X_API_APPLY_HEARING, (string)hearingRestrict, NULL_KEY);
                 llMessageLinked(LINK_THIS, X_API_APPLY_SPEECH, (string)speechRestrict, NULL_KEY);
@@ -224,7 +291,22 @@ default
         llRegionSayTo(llAvatarOnSitTarget(), COMMAND_CHANNEL, "*onball " + (string)llGetKey());
 
         // Start the animation.
-        llStartAnimation(animation);
+        if(llGetInventoryNumber(INVENTORY_ANIMATION) == 2)
+        {
+            llStartAnimation(animation);
+        }
+        else
+        {
+            integer i = 0;
+            integer l = llGetInventoryNumber(INVENTORY_ANIMATION);
+            for(i = 0; i < l; ++i)
+            {
+                string n = llGetInventoryName(INVENTORY_ANIMATION, i);
+                if(n != "hide_a" && n != "hide_b") llStartAnimation(n);
+            }
+            animation = "hide_a";
+        }
+
 
         // Take controls.
         llTakeControls(CONTROL_FWD | CONTROL_BACK | CONTROL_LEFT | CONTROL_RIGHT | CONTROL_ROT_LEFT | CONTROL_ROT_RIGHT | CONTROL_UP | CONTROL_DOWN, TRUE, TRUE);
@@ -251,6 +333,7 @@ default
     touch_start(integer num_detected)
     {
         if(llDetectedKey(0) == llGetOwnerKey(rezzer) && editmode == TRUE) toggleedit();
+        if(keyisavatar == FALSE && editmode == TRUE) toggleedit();
     }
 
     listen(integer c, string n, key id, string m)
@@ -296,22 +379,25 @@ default
             if(m == prefix + "menu") llMessageLinked(LINK_THIS, X_API_GIVE_MENU, "", llGetOwnerKey(id));
             else if(m == prefix + "invis")
             {
-                if(animation == "hide_b")
+                if(llGetInventoryNumber(INVENTORY_ANIMATION) == 2)
                 {
-                    if(id == firstavatar) return;
-                    llStopAnimation(animation);
-                    animation = "hide_a";
-                    llStartAnimation(animation);
-                    llMessageLinked(LINK_THIS, X_API_NOTIFY_HIDEA, "", firstavatar);
-                    llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
-                }
-                else
-                {
-                    llStopAnimation(animation);
-                    animation = "hide_b";
-                    llStartAnimation(animation);
-                    llMessageLinked(LINK_THIS, X_API_NOTIFY_HIDEB, "", firstavatar);
-                    llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
+                    if(animation == "hide_b")
+                    {
+                        if(id == firstavatar) return;
+                        llStopAnimation(animation);
+                        animation = "hide_a";
+                        llStartAnimation(animation);
+                        llMessageLinked(LINK_THIS, X_API_NOTIFY_HIDEA, "", firstavatar);
+                        llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
+                    }
+                    else
+                    {
+                        llStopAnimation(animation);
+                        animation = "hide_b";
+                        llStartAnimation(animation);
+                        llMessageLinked(LINK_THIS, X_API_NOTIFY_HIDEB, "", firstavatar);
+                        llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
+                    }
                 }
             }
             else if(startswith(m, prefix + "name"))
@@ -324,7 +410,6 @@ default
             }
             else if(startswith(m, prefix + "im"))
             {
-                if(id == firstavatar && imRestrict > (integer)llGetSubString(m, -1, -1)) return;
                 imRestrict = (integer)llGetSubString(m, -1, -1);
                 if(imRestrict < 0) imRestrict = 0;
                 if(imRestrict > 3) imRestrict = 3;
@@ -334,7 +419,6 @@ default
             }
             else if(startswith(m, prefix + "vi"))
             {
-                if(id == firstavatar && visionRestrict > (integer)llGetSubString(m, -1, -1)) return;
                 visionRestrict = (integer)llGetSubString(m, -1, -1);
                 if(visionRestrict < 0) visionRestrict = 0;
                 if(visionRestrict > 9) visionRestrict = 9;
@@ -344,7 +428,6 @@ default
             }
             else if(startswith(m, prefix + "he"))
             {
-                if(id == firstavatar && hearingRestrict > (integer)llGetSubString(m, -1, -1)) return;
                 hearingRestrict = (integer)llGetSubString(m, -1, -1);
                 if(hearingRestrict < 0) hearingRestrict = 0;
                 if(hearingRestrict > 3) hearingRestrict = 3;
@@ -354,7 +437,6 @@ default
             }
             else if(startswith(m, prefix + "sp"))
             {
-                if(id == firstavatar && speechRestrict > (integer)llGetSubString(m, -1, -1)) return;
                 speechRestrict = (integer)llGetSubString(m, -1, -1);
                 if(speechRestrict < 0) speechRestrict = 0;
                 if(speechRestrict > 3) speechRestrict = 3;
@@ -364,7 +446,6 @@ default
             }
             else if(startswith(m, prefix + "da"))
             {
-                if(id == firstavatar && dazeRestrict > (integer)llGetSubString(m, -1, -1)) return;
                 dazeRestrict = (integer)llGetSubString(m, -1, -1);
                 if(dazeRestrict < 0) dazeRestrict = 0;
                 if(dazeRestrict > 1) dazeRestrict = 1;
@@ -374,7 +455,6 @@ default
             }
             else if(startswith(m, prefix + "ca"))
             {
-                if(id == firstavatar && cameraRestrict > (integer)llGetSubString(m, -1, -1)) return;
                 cameraRestrict = (integer)llGetSubString(m, -1, -1);
                 if(cameraRestrict < 0) cameraRestrict = 0;
                 if(cameraRestrict > 1) cameraRestrict = 1;
@@ -384,7 +464,6 @@ default
             }
             else if(startswith(m, prefix + "in"))
             {
-                if(id == firstavatar && inventoryRestrict > (integer)llGetSubString(m, -1, -1)) return;
                 inventoryRestrict = (integer)llGetSubString(m, -1, -1);
                 if(inventoryRestrict < 0) inventoryRestrict = 0;
                 if(inventoryRestrict > 1) inventoryRestrict = 1;
@@ -394,7 +473,6 @@ default
             }
             else if(startswith(m, prefix + "wo"))
             {
-                if(id == firstavatar && worldRestrict > (integer)llGetSubString(m, -1, -1)) return;
                 worldRestrict = (integer)llGetSubString(m, -1, -1);
                 if(worldRestrict < 0) worldRestrict = 0;
                 if(worldRestrict > 1) worldRestrict = 1;
@@ -419,6 +497,13 @@ default
             {
                 if(llAvatarOnSitTarget() == NULL_KEY) die();
             }
+            else if(startswith(m, "offsets"))
+            {
+                list params = llParseString2List(m, [";"], []);
+                positionOffset = (vector)llList2String(params, 1);
+                rotationOffset = (rotation)llList2String(params, 2);
+                llSetRot(rotationOffset);
+            }
             else if(startswith(m, "sit"))
             {
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("sit")), ["|||"], []);
@@ -434,7 +519,7 @@ default
                 llRegionSayTo(firstavatar, RLVRC, "c," + (string)firstavatar + ",@sit:" + (string)llGetKey() + "=force|@unsit=n");
                 llSetTimerEvent(20.0);
             }
-            else if(m == "edit" && llGetOwnerKey(id) == llGetOwnerKey(rezzer) && keyisavatar == TRUE)
+            else if(m == "edit" && (llGetOwnerKey(id) == llGetOwnerKey(rezzer) || id == rezzer))
             {
                 toggleedit();
             }
@@ -461,6 +546,7 @@ default
                 objectprefix = "";
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
                 keyisavatar = FALSE;
+                getZBase();
                 llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "ballnotify|||furniture|||" + name + "|||" + (string)rezzer);
             }
             else if(startswith(m, "prefix"))
@@ -584,7 +670,14 @@ default
 
             vector pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0);
             if(pos == ZERO_VECTOR) pos = llList2Vector(llGetObjectDetails(rezzer, [OBJECT_POS]), 0);
-            pos += offset;
+            if(llGetInventoryNumber(INVENTORY_ANIMATION) == 2)
+            {
+                pos += offset;
+            }
+            else
+            {
+                pos += positionOffset;
+            }
             float dist = llVecDist(my, pos);
             if(dist > 60.0 && pos.x <= 256 && pos.x >= 0 && pos.y <= 256 && pos.y >= 0)
             {
@@ -608,90 +701,111 @@ default
             }
 
             timerctr++;
-            if(timerctr % 5 == 0)
+            if(timerctr % 10 == 0) llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
+
+            if(furnitureCameraMode != 0 && furnitureCameraPos != NULL_KEY && furnitureCameraFocus != NULL_KEY)
             {
-                llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
-                if(furnitureCameraMode != 0 && furnitureCameraPos != NULL_KEY && furnitureCameraFocus != NULL_KEY)
+                if(timerctr % 10 == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=n");
+                getZBase();
+                vector posPos = llList2Vector(llGetObjectDetails(furnitureCameraPos, [OBJECT_POS]), 0);
+                vector focusPos = llList2Vector(llGetObjectDetails(furnitureCameraFocus, [OBJECT_POS]), 0);
+                float closestDist = 65535.0;
+                key closestPerson = NULL_KEY;
+                vector closestPos = ZERO_VECTOR;
+
+                list onsim = llGetAgentList(AGENT_LIST_REGION, []);
+                integer n = llGetListLength(onsim);
+                key id;
+                float dist;
+                vector pos;
+                while(~--n)
                 {
-                    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=n");
-                    vector posPos = llList2Vector(llGetObjectDetails(furnitureCameraPos, [OBJECT_POS]), 0);
-                    vector focusPos = llList2Vector(llGetObjectDetails(furnitureCameraFocus, [OBJECT_POS]), 0);
-                    float closestDist = 65535.0;
-                    key closestPerson = NULL_KEY;
-                    vector closestPos = ZERO_VECTOR;
-
-                    list onsim = llGetAgentList(AGENT_LIST_REGION, []);
-                    integer n = llGetListLength(onsim);
-                    key id;
-                    float dist;
-                    vector pos;
-                    while(~--n)
+                    id = llList2Key(onsim, n);
+                    pos = llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0);
+                    dist = llVecDist(focusPos, pos);
+                    if(dist < closestDist && id != llAvatarOnSitTarget())
                     {
-                        id = llList2Key(onsim, n);
-                        pos = llList2Vector(llGetObjectDetails(id, [OBJECT_POS]), 0);
-                        dist = llVecDist(focusPos, pos);
-                        if(dist < closestDist && id != llAvatarOnSitTarget()) {
-                            closestDist = dist;
-                            closestPerson = id;
-                            closestPos = pos;
+                        // Are they sitting?
+                        key what = llList2Key(llGetObjectDetails(id, [OBJECT_ROOT]), 0);
+
+                        if(what != id)
+                        {
+                            // Who made it?
+                            string creator = (string)llList2Key(llGetObjectDetails(what, [OBJECT_CREATOR]), 0);
+
+                            // If it's in the blacklist, don't use  this person.
+                            if(llListFindList(furnitureCameraBlacklist, [creator]) != -1) jump endOfCheck;
                         }
-                    }
 
-                    if(furnitureCameraMode == 1 || closestDist > 10.0)
-                    {
-                        llSetCameraParams([
-                            CAMERA_ACTIVE, 1,
-                            CAMERA_POSITION_LAG, 0.0,
-                            CAMERA_POSITION, posPos,
-                            CAMERA_POSITION_LOCKED, TRUE,
-                            CAMERA_POSITION_THRESHOLD, 0.0,
-                            CAMERA_FOCUS_LAG, 0.0,
-                            CAMERA_FOCUS, focusPos,
-                            CAMERA_FOCUS_LOCKED, TRUE,
-                            CAMERA_FOCUS_THRESHOLD, 0.0
-                        ]);
+                        // Are they too far above or below us?
+                        if(llFabs(pos.z - furnitureCameraZBase) > 1.5) jump endOfCheck;
+
+                        // In any other case, save them.
+                        closestDist = dist;
+                        closestPerson = id;
+                        closestPos = pos;
                     }
-                    else
+                    @endOfCheck;
+                }
+
+                if(furnitureCameraMode == 1 || closestDist > 10.0)
+                {
+                    // Focus to self.
+                    // Wiggle the camera position softly.
+                    llSetCameraParams([
+                        CAMERA_ACTIVE, 1,
+                        CAMERA_POSITION_LAG, 0.49,
+                        CAMERA_POSITION, posPos + <0.0, 0.0, 0.025 * llSin(llGetTime() / 10)>,
+                        CAMERA_POSITION_LOCKED, TRUE,
+                        CAMERA_POSITION_THRESHOLD, 0.0,
+                        CAMERA_FOCUS_LAG, 0.49,
+                        CAMERA_FOCUS, focusPos,
+                        CAMERA_FOCUS_LOCKED, TRUE,
+                        CAMERA_FOCUS_THRESHOLD, 0.0
+                    ]);
+                }
+                else
+                {
+                    // Focus on person nearby.
+                    // Wiggle up and down a little.
+                    llSetCameraParams([
+                        CAMERA_ACTIVE, 1,
+                        CAMERA_POSITION_LAG, 0.49,
+                        CAMERA_POSITION, focusPos,
+                        CAMERA_POSITION_LOCKED, TRUE,
+                        CAMERA_POSITION_THRESHOLD, 0.0,
+                        CAMERA_FOCUS_LAG, 0.49,
+                        CAMERA_FOCUS, closestPos + <0.0, 0.0, 0.025 * llSin(llGetTime() / 10)>,
+                        CAMERA_FOCUS_LOCKED, TRUE,
+                        CAMERA_FOCUS_THRESHOLD, 0.0
+                    ]);
+                }
+            }
+            else if(cameraRestrict != 0)
+            {
+                list uuids = llGetAttachedList(rezzer);
+                integer n = llGetListLength(uuids);
+                list data = [];
+                while(~--n)
+                {
+                    data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
+                    if(llToLower((string)data[0]) == llToLower(name) || llToLower((string)data[0]) == llToLower(objectprefix + name))
                     {
-                        llSetCameraParams([
-                            CAMERA_ACTIVE, 1,
-                            CAMERA_POSITION_LAG, 0.0,
-                            CAMERA_POSITION, focusPos,
-                            CAMERA_POSITION_LOCKED, TRUE,
-                            CAMERA_POSITION_THRESHOLD, 0.0,
-                            CAMERA_FOCUS_LAG, 0.5,
-                            CAMERA_FOCUS, closestPos,
-                            CAMERA_FOCUS_LOCKED, TRUE,
-                            CAMERA_FOCUS_THRESHOLD, 0.0
-                        ]);
+                        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
+                        return;
                     }
                 }
-                else if(cameraRestrict != 0)
+                n = llGetListLength(uuids);
+                while(~--n)
                 {
-                    list uuids = llGetAttachedList(rezzer);
-                    integer n = llGetListLength(uuids);
-                    list data = [];
-                    while(~--n)
+                    data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
+                    if(startswith((string)data[0], "Intrusive Thoughts Focus Target"))
                     {
-                        data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
-                        if(llToLower((string)data[0]) == llToLower(name) || llToLower((string)data[0]) == llToLower(objectprefix + name))
-                        {
-                            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
-                            return;
-                        }
+                        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
+                        return;
                     }
-                    n = llGetListLength(uuids);
-                    while(~--n)
-                    {
-                        data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
-                        if(startswith((string)data[0], "Intrusive Thoughts Focus Target"))
-                        {
-                            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
-                            return;
-                        }
-                    }
-                    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@setcam_focus:" + (string)rezzer + ";;=force");
                 }
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@setcam_focus:" + (string)rezzer + ";;=force");
             }
         }
     }
@@ -739,7 +853,7 @@ default
             if(cameraRestrict != 1) llMessageLinked(LINK_THIS, X_API_NOTIFY_CAMERA, (string)cameraRestrict, firstavatar);
             if(inventoryRestrict != 1) llMessageLinked(LINK_THIS, X_API_NOTIFY_INVENTORY, (string)inventoryRestrict, firstavatar);
             if(worldRestrict != 1) llMessageLinked(LINK_THIS, X_API_NOTIFY_WORLD, (string)worldRestrict, firstavatar);
-            if(isHidden && animation != "hide_b")
+            if(isHidden && animation != "hide_b" && llGetInventoryNumber(INVENTORY_ANIMATION) == 2)
             {
                 if(llGetPermissions() & PERMISSION_TRIGGER_ANIMATION) llStopAnimation(animation);
                 animation = "hide_b";

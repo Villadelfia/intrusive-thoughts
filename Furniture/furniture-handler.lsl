@@ -1,10 +1,8 @@
 #include <IT/globals.lsl>
-key storedobject = NULL_KEY;
-key storedavatar = NULL_KEY;
-key capturing = NULL_KEY;
-string storedname = "";
-key linkTarget = NULL_KEY;
+
+// Linking assistance variables.
 integer handle = -1;
+key linkTarget = NULL_KEY;
 vector startPos = ZERO_VECTOR;
 vector endPos   = ZERO_VECTOR;
 rotation startRot = ZERO_ROTATION;
@@ -14,19 +12,61 @@ vector endScale   = ZERO_VECTOR;
 float startAlpha = 1.0;
 float endAlpha   = 0.0;
 float tVar = 0.0;
-string myName = "";
-integer waitingForRez = FALSE;
 integer wasPhysical = FALSE;
+string myName = "";
 
-// Furniture 2.0 settings.
+// General operational variables.
 integer FURNITURE_CHANNEL;
-integer furnitureIsAlwaysVisible = TRUE;
-integer objectIsMute = TRUE;
-integer objectNameTagIsVisible = TRUE;
-string objectGroup = "";
-key lockedAvatar = NULL_KEY;
+key storedobject = NULL_KEY;
+key storedavatar = NULL_KEY;
+key capturing = NULL_KEY;
+string storedname = "";
+integer waitingForRez = FALSE;
 integer menuState = 0;
+integer gaveUnlockNotification = FALSE;
 list targets = [];
+
+// Whether the furniture is always visible or only when occupied.
+integer furnitureIsAlwaysVisible = TRUE;
+
+// Whether the object can speak in local.
+integer objectIsMute = TRUE;
+
+// If not, what object group it belongs to.
+string objectGroup = "";
+
+// Timer settings.
+// Both zero means indefinite.
+// If they are equal, it's a set time in minutes.
+// If they are not equal, it's a random time between min and max in minutes.
+integer timerMin = 0;
+integer timerMax = 0;
+
+// How locked time is measured. Zero is real time, one is active time.
+integer timerMode = 0;
+
+// The actual time limit, is either -1 for indefinite, or a number in minutes.
+integer lockTimeLimit = -1;
+
+// The amount of time spent locked, both in real time and in actively locked time.
+float lockTimeElapsedReal = 0.0;
+float lockTimeElapsedActive = 0.0;
+
+// How the timer is shown.
+//  0 = full visible
+//  1 = potential range
+//  2 = not shown
+integer timerShowMode = 0;
+
+// The animation played when a victim is captured:
+//  0 = hide_a, aka simply underground
+//  1 = hide_b, aka true invis
+//  2 = custom, it sends over whatever animation is in this furniture and plays that instead. If there's more than one, it'll send over all of them and send play them all.
+integer animationMode = 0;
+
+// Offsets for custom animations.
+vector positionOffset = ZERO_VECTOR;
+rotation rotationOffset = ZERO_ROTATION;
 
 // To use these features, two prims must be linked to the linkset:
 //  - cam_pos
@@ -38,6 +78,64 @@ list targets = [];
 integer cameraMode = 0;
 key camPosKey = NULL_KEY;
 key camFocusKey = NULL_KEY;
+
+// Whether the furniture has someone locked. And if it is a deadlock.
+key lockedAvatar = NULL_KEY;
+integer lockedDeadlock = FALSE;
+
+// How the capturing works;
+// If no timer is set:
+//   1. Capture -> The person will now be locked until released or until relog.
+//   2. Lock    -> The person will now only be released if and when the owner unlocks and releases them. Will recapture on relog.
+// If a timer is set:
+//   1. Capture  -> The person will be locked until released or until relog. If the timer expires before this, they will get offered to release themselves. Can be clicked at any point from then on.
+//   2. Lock     -> The person will now only be released if and when the owner unlocks and releases them, or the timer expires. Will recapture on relog.
+//   3. Deadlock -> Like lock, but now ONLY a timer expiration can cause a release.
+//
+// Animation when captured;
+// There are three options:
+//    1. Hidden -> Victim is just put underground. Unsuitable for multi story buildings or exceptionally big furniture.
+//    2. Invisible -> Victim is completely invisible. Even the nameplate. Needs a relog to become visible again.
+//    3. Custom    -> Will copy any and all animations inside of the furniture to the orb, then play all of them. Meant for custom poses or "pedestals". Can use "edit mode" to adjust position and rotation, will remember the last location.
+
+integer canUnlock()
+{
+    if(lockTimeLimit == -1) return FALSE;
+    if(timerMode == 0)
+    {
+        return lockTimeElapsedReal >= (lockTimeLimit * 60);
+    }
+    else
+    {
+        return lockTimeElapsedActive >= (lockTimeLimit * 60);
+    }
+}
+
+giveUnlockNotification()
+{
+    if(gaveUnlockNotification == TRUE) return;
+    gaveUnlockNotification = TRUE;
+    llRegionSayTo(storedavatar, 0, "Your capture timer is up. You may now, and at any later time, type /5release or click [secondlife:///app/chat/5/release here] to release yourself.");
+}
+
+makeNewTimer()
+{
+    gaveUnlockNotification = FALSE;
+    lockTimeElapsedActive = 0.0;
+    lockTimeElapsedReal = 0.0;
+    if(timerMin == 0 && timerMax == 0)
+    {
+        lockTimeLimit = -1;
+    }
+    else if(timerMin == timerMax)
+    {
+        lockTimeLimit = timerMin;
+    }
+    else
+    {
+        lockTimeLimit = timerMin + (integer)(llFrand(timerMax - timerMin + 1));
+    }
+}
 
 scanCamera()
 {
@@ -110,18 +208,49 @@ saytoobject(string n, string m)
     llSetObjectName(old);
 }
 
-handleMenu()
+string prettyDuration(integer m)
+{
+    integer d = 0;
+    integer h = 0;
+    while(m > 1440)
+    {
+        m -= 1440;
+        d++;
+    }
+
+    while(m > 60)
+    {
+        m -= 60;
+        h++;
+    }
+
+    return (string)d +"d " + (string)h + "h " + (string)m + "m";
+}
+
+handleMenu(key t)
 {
     if(menuState == 0)
     {
         string msg = "";
         list buttons = [];
+
+
+        // Top row: Capturing, releasing, locking, unlocking, deadlocking.
         if(storedobject)
         {
             if(lockedAvatar)
             {
-                msg += "This furniture is currently locked to secondlife:///app/agent/" + (string)lockedAvatar + "/about.\n \n";
-                buttons += [" ", "UNLOCK", " "];
+                if(lockedDeadlock)
+                {
+                    msg += "This furniture is currently deadlocked to secondlife:///app/agent/" + (string)lockedAvatar + "/about.\n \n";
+                    if(canUnlock()) buttons += [" ", "UNLOCK", " "];
+                }
+                else
+                {
+                    msg += "This furniture is currently locked to secondlife:///app/agent/" + (string)lockedAvatar + "/about.\n \n";
+                    if(timerMin != 0 && timerMax != 0) buttons += [" ", "UNLOCK", "DEADLOCK"];
+                    else                               buttons += [" ", "UNLOCK", " "];
+                }
             }
             else
             {
@@ -133,8 +262,17 @@ handleMenu()
         {
             if(lockedAvatar)
             {
-                msg += "This furniture is currently locked to secondlife:///app/agent/" + (string)lockedAvatar + "/about.\n \n";
-                buttons += [" ", "UNLOCK", " "];
+                if(lockedDeadlock)
+                {
+                    msg += "This furniture is currently deadlocked to secondlife:///app/agent/" + (string)lockedAvatar + "/about.\n \n";
+                    if(canUnlock()) buttons += [" ", "UNLOCK", " "];
+                }
+                else
+                {
+                    msg += "This furniture is currently locked to secondlife:///app/agent/" + (string)lockedAvatar + "/about.\n \n";
+                    if(timerMin != 0 && timerMax != 0) buttons += [" ", "UNLOCK", "DEADLOCK"];
+                    else                               buttons += [" ", "UNLOCK", " "];
+                }
             }
             else
             {
@@ -143,6 +281,8 @@ handleMenu()
             }
         }
 
+
+        // Second row: Object group and uncaptured visibility.
         msg += " ▶ This furniture is named " + llGetObjectName() + ".\n";
         if(objectGroup == "") msg += " ▶ This furniture is not in a group.\n";
         else                  msg += " ▶ This furniture is in the \"" + objectGroup+ "\" group.\n";
@@ -159,19 +299,8 @@ handleMenu()
             buttons += ["VISIBLE"];
         }
 
-        if(camPosKey != NULL_KEY && camFocusKey != NULL_KEY)
-        {
-            if(cameraMode == 0) msg += " ▶ Camera follows normal rules.\n";
-            if(cameraMode == 1) msg += " ▶ Camera focuses on object.\n";
-            if(cameraMode == 2) msg += " ▶ Camera focuses on avatars.\n";
-            buttons += ["NORM CAM", "OBJ CAM", "FPV CAM"];
-        }
-        else
-        {
-            buttons += [" ", " ", " "];
-        }
 
-
+        // Third row: Speech, anim, camera.
         if(objectIsMute)
         {
             msg += " ▶ Stored objects cannot speak.\n";
@@ -183,21 +312,59 @@ handleMenu()
             buttons += ["MUTE"];
         }
 
-        if(objectNameTagIsVisible)
+        if(animationMode == 0)
         {
-            msg += " ▶ Visible nametag.";
+            msg += " ▶ Animation: Hide.\n";
             buttons += ["HIDE NAME"];
         }
-        else
+        else if(animationMode == 1)
         {
-            msg += " ▶ Invisible nametag.";
+            msg += " ▶ Animation: Invisible.\n";
+            if(llGetInventoryNumber(INVENTORY_ANIMATION) > 0) buttons += ["CUSTOM"];
+            else                                              buttons += ["SHOW NAME"];
+        }
+        else if(animationMode == 2)
+        {
+            msg += " ▶ Animation: Custom.\n";
             buttons += ["SHOW NAME"];
         }
 
-        if(storedobject) buttons += ["OBJ MENU"];
-        else             buttons += [" "];
+        if(camPosKey != NULL_KEY && camFocusKey != NULL_KEY)
+        {
+            if(cameraMode == 0)
+            {
+                msg += " ▶ Camera follows normal rules.";
+                buttons += ["OBJ CAM"];
+            }
+            else if(cameraMode == 1)
+            {
+                msg += " ▶ Camera focuses on object.";
+                buttons += ["FPV CAM"];
+            }
+            else if(cameraMode == 2)
+            {
+                msg += " ▶ Camera focuses on avatars.";
+                buttons += ["NORM CAM"];
+            }
+        }
+        else
+        {
+            buttons += [" "];
+        }
 
-        llDialog(llGetOwner(), msg, orderbuttons(buttons), FURNITURE_CHANNEL);
+        // Fourth row: Obj menu and timer.
+        if(storedobject)
+        {
+            if(animationMode == 2) buttons += ["TIMER", "EDIT TOGGLE", "OBJ MENU"];
+            else                   buttons += ["TIMER", " ", "OBJ MENU"];
+        }
+        else
+        {
+            buttons += ["TIMER", " ", " "];
+        }
+
+        // Order and send it.
+        llDialog(t, msg, orderbuttons(buttons), FURNITURE_CHANNEL);
     }
     else if(menuState == 1)
     {
@@ -234,15 +401,104 @@ handleMenu()
         }
 
         while(llGetListLength(buttons) < 12) buttons += [" "];
-        llDialog(llGetOwner(), msg, orderbuttons(buttons), FURNITURE_CHANNEL);
+        llDialog(t, msg, orderbuttons(buttons), FURNITURE_CHANNEL);
     }
     else if(menuState == 2)
     {
-        llTextBox(llGetOwner(), "Enter a new name for this furniture.", FURNITURE_CHANNEL);
+        llTextBox(t, "Enter a new name for this furniture.", FURNITURE_CHANNEL);
     }
     else if(menuState == 3)
     {
-        llTextBox(llGetOwner(), "Enter a new group for this furniture. Objects stored on this furniture will be able to talk to objects stored on other furniture with the same group. Enter none to remove the group.", FURNITURE_CHANNEL);
+        llTextBox(t, "Enter a new group for this furniture. Objects stored on this furniture will be able to talk to objects stored on other furniture with the same group. Enter none to remove the group.", FURNITURE_CHANNEL);
+    }
+    else if(menuState == 4)
+    {
+        string msg = "Current timer settings:\n\n";
+        list buttons = [];
+
+        // Timer settings.
+        if(timerMin == 0 && timerMax == 0)
+        {
+            msg += "▶ Indefinite duration.\n";
+        }
+        else if(timerMin == timerMax)
+        {
+            msg += "▶ Duration: " + prettyDuration(timerMin) + ".\n";
+        }
+        else
+        {
+            msg += "▶ Minimum Duration: " + prettyDuration(timerMin) + ".\n";
+            msg += "▶ Maximum Duration: " + prettyDuration(timerMax) + ".\n";
+        }
+        buttons = ["SET TIMER"];
+
+        // When the timer counts.
+        if(timerMode == 0)
+        {
+            msg += "▶ Time counted in real time.\n";
+            buttons += ["ACTIVE TIME"];
+        }
+        else
+        {
+            msg += "▶ Time counted in active time.\n";
+            buttons += ["REAL TIME"];
+        }
+
+        // How the timer is shown.
+        if(timerShowMode == 0)
+        {
+            msg += "▶ Timer is displayed here.\n";
+            buttons += ["HIDE TIMER"];
+        }
+        else if(timerShowMode == 1)
+        {
+            msg += "▶ Timer maximum is displayed here.\n";
+            buttons += ["SHOW TIMER"];
+        }
+        else
+        {
+            msg += "▶ Timer is hidden.\n";
+            buttons += ["SHOW RANGE"];
+        }
+
+        if((storedavatar != NULL_KEY || lockedAvatar != NULL_KEY) && lockTimeLimit != -1)
+        {
+            float spent = 0.0;
+            if(timerMode == 0) spent = lockTimeElapsedReal / 60.0;
+            else               spent = lockTimeElapsedActive / 60.0;
+            integer remaining = lockTimeLimit - llRound(spent);
+            if(remaining >= 0)
+            {
+                if(timerShowMode == 0)
+                {
+                    msg += "\n▶ Time remaining: " + prettyDuration(remaining) + ".\n";
+                }
+                else if(timerShowMode == 1)
+                {
+                    if(timerMin == timerMax)
+                    {
+                        msg += "\n▶ Time remaining: Up to " + prettyDuration(timerMax) + ".\n";
+                    }
+                    else if(spent < timerMin)
+                    {
+                        msg += "\n▶ Minimum time remaining: " + prettyDuration(timerMin - llRound(spent)) + ".\n";
+                        msg += "▶ Maximum time remaining: " + prettyDuration(timerMax - llRound(spent)) + ".\n";
+                    }
+                    else
+                    {
+                        msg += "\n▶ Time remaining: Up to " + prettyDuration(timerMax - llRound(spent)) + ".\n";
+                    }
+                }
+                msg += "\nNote that changing the timer now will not have any effect until you recapture the victim.";
+            }
+        }
+
+        buttons += [" ", " ", "BACK"];
+        llDialog(t, msg, orderbuttons(buttons), FURNITURE_CHANNEL);
+    }
+    else if(menuState == 5)
+    {
+        llTextBox(t, "Enter a time limit for the capture.\n\nIf you want a set time, enter one number in minutes.\nIf you want a minimum and a maximum, enter two numbers separated by a space, both in minutes.\nIf you want to have the capture indefinite, enter NONE.", FURNITURE_CHANNEL);
     }
 }
 
@@ -376,11 +632,12 @@ state running
     {
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
+        llListen(5, "", NULL_KEY, "");
         objectGroup = llGetObjectDesc();
         objectGroup = llStringTrim(objectGroup, STRING_TRIM);
         llSetObjectDesc(objectGroup);
         FURNITURE_CHANNEL = ((integer)("0x"+llGetSubString((string)llGetKey(),-8,-1)) & 0x3FFFFFFF) ^ 0xBFFFFFFF;
-        llListen(FURNITURE_CHANNEL, "", llGetOwner(), "");
+        llListen(FURNITURE_CHANNEL, "", NULL_KEY, "");
         llSetRemoteScriptAccessPin(FURNITURE_CHANNEL);
         llSetLinkAlpha(LINK_THIS, 0.0, ALL_SIDES);
         scanCamera();
@@ -454,7 +711,7 @@ state running
                 // If we have a locked avatar, deny the request.
                 if(lockedAvatar)
                 {
-                    llRegionSayTo(llGetOwnerKey(id), 0, "This furniture is reserved for a specific object. The owner can release this reservation by clicking the furniture.");
+                    llRegionSayTo(llGetOwnerKey(id), 0, "This furniture is reserved for a specific object. You can release this reservation by clicking the furniture.");
                     return;
                 }
 
@@ -483,19 +740,28 @@ state running
                 // If we're locked to someone, refuse.
                 if(lockedAvatar)
                 {
-                    llRegionSayTo(llGetOwnerKey(id), 0, "This furniture is reserved for a specific object. The owner can release this reservation by clicking the furniture.");
+                    llRegionSayTo(llGetOwnerKey(id), 0, "This furniture is reserved for a specific object. You can release this reservation by clicking the furniture.");
                     return;
                 }
 
                 // Set the uuid of who to capture.
-                capturing = (key)llDeleteSubString(m, 0, llStringLength("putdown"));
+                capturing = (key)llDeleteSubString(m, 0, llStringLength("capture"));
 
                 // Then do it.
                 integer option = 4 | 1;
-                if(!objectNameTagIsVisible) option = 4 | 2;
+                if(animationMode == 1) option = 4 | 2;
+                makeNewTimer();
                 llRezAtRoot("ball", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, option);
                 waitingForRez = TRUE;
                 llSetTimerEvent(15.0);
+            }
+
+            // Offsets after edit mode.
+            else if(startswith(m, "offsets"))
+            {
+                list params = llParseString2List(m, [";"], []);
+                positionOffset = (vector)llList2String(params, 1);
+                rotationOffset = (rotation)llList2String(params, 2);
             }
         }
         else if(c == GAZE_CHAT_CHANNEL)
@@ -533,95 +799,127 @@ state running
         {
             if(menuState == 0)
             {
+                // Top row: Capturing, releasing, locking, deadlocking.
                 if(m == "CAPTURE")
                 {
                     menuState = 1;
-                    handleMenu();
+                    handleMenu(id);
                 }
                 else if(m == "RELEASE")
                 {
                     llRegionSayTo(storedobject, MANTRA_CHANNEL, "unsit");
                     storedobject = NULL_KEY;
                     storedavatar = NULL_KEY;
-                    handleMenu();
+                    handleMenu(id);
                 }
                 else if(m == "LOCK")
                 {
                     lockedAvatar = storedavatar;
-                    handleMenu();
+                    handleMenu(id);
+                }
+                else if(m == "DEADLOCK")
+                {
+                    lockedDeadlock = TRUE;
+                    handleMenu(id);
                 }
                 else if(m == "UNLOCK")
                 {
                     lockedAvatar = NULL_KEY;
                     llSensorRemove();
-                    handleMenu();
+                    handleMenu(id);
                 }
+
+                // Second row
                 else if(m == "RENAME")
                 {
                     menuState = 2;
-                    handleMenu();
+                    handleMenu(id);
                 }
                 else if(m == "GROUP")
                 {
                     menuState = 3;
-                    handleMenu();
+                    handleMenu(id);
                 }
                 else if(m == "INVISIBLE" || m == "VISIBLE")
                 {
                     furnitureIsAlwaysVisible = !furnitureIsAlwaysVisible;
                     if(storedobject == NULL_KEY) llSetLinkAlpha(LINK_ALL_OTHERS, (float)furnitureIsAlwaysVisible, ALL_SIDES);
-                    handleMenu();
+                    handleMenu(id);
                 }
+
+                // Third row.
                 else if(m == "CAN SPEAK" || m == "MUTE")
                 {
                     objectIsMute = !objectIsMute;
-                    handleMenu();
+                    handleMenu(id);
                 }
-                else if(m == "SHOW NAME" || m == "HIDE NAME")
+                else if(m == "SHOW NAME")
                 {
-                    objectNameTagIsVisible = !objectNameTagIsVisible;
-                    handleMenu();
+                    animationMode = 0;
+                    handleMenu(id);
+                }
+                else if(m == "HIDE NAME")
+                {
+                    animationMode = 1;
+                    handleMenu(id);
+                }
+                else if(m == "CUSTOM")
+                {
+                    animationMode = 2;
+                    handleMenu(id);
                 }
                 else if(m == "NORM CAM")
                 {
                     cameraMode = 0;
                     broadcastCamera();
-                    handleMenu();
+                    handleMenu(id);
                 }
                 else if(m == "OBJ CAM")
                 {
                     cameraMode = 1;
                     broadcastCamera();
-                    handleMenu();
+                    handleMenu(id);
                 }
                 else if(m == "FPV CAM")
                 {
                     cameraMode = 2;
                     broadcastCamera();
-                    handleMenu();
+                    handleMenu(id);
+                }
+
+                // Fourth row.
+                else if(m == "TIMER")
+                {
+                    menuState = 4;
+                    handleMenu(id);
                 }
                 else if(m == "OBJ MENU")
                 {
                     string prefix = llGetSubString(llGetUsername(storedavatar), 0, 1);
                     llRegionSayTo(storedobject, 5, prefix + "menu");
                 }
+                else if(m == "EDIT TOGGLE")
+                {
+                    llRegionSayTo(storedobject, MANTRA_CHANNEL, "edit");
+                }
                 else if(m == " ")
                 {
-                    handleMenu();
+                    handleMenu(id);
                 }
             }
             else if(menuState == 1)
             {
                 if(m == " ")
                 {
-                    handleMenu();
+                    handleMenu(id);
                 }
                 else
                 {
                     capturing = llList2Key(targets, ((((integer)m)-1)*2)+1);
                     llOwnerSay("Capturing secondlife:///app/agent/" + (string)capturing + "/about...");
                     integer option = 4 | 1;
-                    if(!objectNameTagIsVisible) option = 4 | 2;
+                    if(animationMode == 1) option = 4 | 2;
+                    makeNewTimer();
                     llRezAtRoot("ball", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, option);
                     waitingForRez = TRUE;
                     llSetTimerEvent(15.0);
@@ -638,7 +936,7 @@ state running
                     llRegionSayTo(storedobject, 5, prefix + "name " + llGetObjectName());
                 }
                 menuState = 0;
-                handleMenu();
+                handleMenu(id);
             }
             else if(menuState == 3)
             {
@@ -647,22 +945,89 @@ state running
                 llSetObjectDesc(m);
                 objectGroup = m;
                 menuState = 0;
-                handleMenu();
+                handleMenu(id);
             }
+            else if(menuState == 4)
+            {
+                if(m == "BACK" || m == " ")
+                {
+                    menuState = 0;
+                    handleMenu(id);
+                }
+                else if(m == "SET TIMER")
+                {
+                    menuState = 5;
+                    handleMenu(id);
+                }
+                else if(m == "ACTIVE TIME")
+                {
+                    timerMode = 1;
+                    handleMenu(id);
+                }
+                else if(m == "REAL TIME")
+                {
+                    timerMode = 0;
+                    handleMenu(id);
+                }
+                else if(m == "HIDE TIMER")
+                {
+                    timerShowMode = 2;
+                    handleMenu(id);
+                }
+                else if(m == "SHOW RANGE")
+                {
+                    timerShowMode = 1;
+                    handleMenu(id);
+                }
+                else if(m == "SHOW TIMER")
+                {
+                    timerShowMode = 0;
+                    handleMenu(id);
+                }
+            }
+            else if(menuState == 5)
+            {
+                if(llToUpper(llStringTrim(m, STRING_TRIM)) == "NONE")
+                {
+                    timerMin = 0;
+                    timerMax = 0;
+                }
+                else
+                {
+                    list args = llParseString2List(llStringTrim(m, STRING_TRIM), [" "], []);
+                    if(llGetListLength(args) > 1)
+                    {
+                        timerMin = (integer)llList2String(args, 0);
+                        timerMax = (integer)llList2String(args, 1);
+                        if(timerMin > timerMax) timerMin = timerMax;
+                    }
+                    else
+                    {
+                        timerMin = (integer)llStringTrim(m, STRING_TRIM);
+                        timerMax = timerMin;
+                    }
+                }
+                menuState = 4;
+                handleMenu(id);
+            }
+        }
+        else if(c == 5)
+        {
+            if(canUnlock() == FALSE) return;
+            if(id != storedavatar) return;
+            if(m != "release") return;
+            llRegionSayTo(storedobject, MANTRA_CHANNEL, "unsit");
+            storedobject = NULL_KEY;
+            storedavatar = NULL_KEY;
         }
     }
 
     touch_start(integer num_detected)
     {
-        if(llDetectedKey(0) == llGetOwner())
-        {
-            menuState = 0;
-            handleMenu();
-        }
-        else
-        {
-            llMessageLinked(LINK_ALL_OTHERS, 90005, "", llDetectedKey(0));
-        }
+        if(llDetectedKey(0) == storedavatar) return;
+        menuState = 0;
+        handleMenu(llDetectedKey(0));
+        llMessageLinked(LINK_ALL_OTHERS, 90005, "", llDetectedKey(0));
     }
 
     // Object_rez event is only used for objectification.
@@ -675,6 +1040,16 @@ state running
         storedobject = id;
         storedavatar = capturing;
         storedname = llGetObjectName();
+
+        if(animationMode == 2)
+        {
+            list anims = [];
+            integer l = llGetInventoryNumber(INVENTORY_ANIMATION);
+            while(~--l) anims += [llGetInventoryName(INVENTORY_ANIMATION, l)];
+            llGiveInventoryList(id, ".", anims);
+            llRegionSayTo(id, MANTRA_CHANNEL, "offsets;" + (string)positionOffset + ";" + (string)rotationOffset);
+        }
+
         llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)capturing + "|||" + llGetObjectName() + "|||NULL");
         if(!furnitureIsAlwaysVisible) llSetLinkAlpha(LINK_ALL_OTHERS, 1.0, ALL_SIDES);
         broadcastCamera();
@@ -687,13 +1062,17 @@ state running
         // Quit if we already have the object stored.
         if(storedobject) return;
 
+        // Increment real time.
+        lockTimeElapsedReal += llGetAndResetTime();
+
         // Quit if the object isn't here.
         if(llGetAgentSize(lockedAvatar) == ZERO_VECTOR) return;
 
         // Otherwise, go for it!
         capturing = lockedAvatar;
         integer option = 4 | 1;
-        if(!objectNameTagIsVisible) option = 4 | 2;
+        if(animationMode == 1) option = 4 | 2;
+        gaveUnlockNotification = FALSE;
         llRezAtRoot("ball", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, option);
         waitingForRez = TRUE;
         llSetTimerEvent(15.0);
@@ -704,6 +1083,12 @@ state running
     timer()
     {
         llSetTimerEvent(0.0);
+
+        // The lock keeps ticking.
+        float inc = llGetAndResetTime();
+        lockTimeElapsedReal += inc;
+        if(storedobject) lockTimeElapsedActive += inc;
+
         // It is also used to track stalled rezzes, because SL is an amazing piece of technology that always works perfectly.
         if(waitingForRez)
         {
@@ -711,7 +1096,7 @@ state running
             if(llGetAgentSize(capturing) != ZERO_VECTOR)
             {
                 integer option = 4 | 1;
-                if(!objectNameTagIsVisible) option = 4 | 2;
+                if(animationMode == 1) option = 4 | 2;
                 llRezAtRoot("ball", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, option);
                 waitingForRez = TRUE;
                 llSetTimerEvent(15.0);
@@ -735,6 +1120,10 @@ state running
             if(lockedAvatar) sensortimer(5.0);
             return;
         }
+        else if(canUnlock())
+        {
+            giveUnlockNotification();
+        }
 
         broadcastCamera();
         llSetTimerEvent(5.0);
@@ -747,10 +1136,19 @@ state running
             string packed = "" +
                 (string)furnitureIsAlwaysVisible + "\n" +
                 (string)objectIsMute + "\n" +
-                (string)objectNameTagIsVisible + "\n" +
+                (string)animationMode + "\n" +
                 (string)lockedAvatar + "\n" +
                 llStringToBase64(objectGroup) + "\n" +
-                (string)cameraMode;
+                (string)cameraMode + "\n" +
+                (string)timerMin + "\n" +
+                (string)timerMax + "\n" +
+                (string)timerMode + "\n" +
+                (string)lockTimeLimit + "\n" +
+                (string)lockTimeElapsedReal + "\n" +
+                (string)lockTimeElapsedActive + "\n" +
+                (string)timerShowMode + "\n" +
+                (string)positionOffset + "\n" +
+                (string)rotationOffset;
             llMessageLinked(LINK_THIS, X_API_DUMP_SETTINGS_R, packed, NULL_KEY);
         }
         else if(num == X_API_RESTORE_SETTINGS)
@@ -758,10 +1156,20 @@ state running
             list data = llParseString2List(str, ["\n"], []);
             furnitureIsAlwaysVisible = (integer)llList2String(data, 0);
             objectIsMute = (integer)llList2String(data, 1);
-            objectNameTagIsVisible = (integer)llList2String(data, 2);
+            animationMode = (integer)llList2String(data, 2);
             lockedAvatar = (key)llList2String(data, 3);
             objectGroup = llBase64ToString(llList2String(data, 4));
             cameraMode = (integer)llList2String(data, 5);
+            timerMin = (integer)llList2String(data, 6);
+            timerMax = (integer)llList2String(data, 7);
+            timerMode = (integer)llList2String(data, 8);
+            lockTimeLimit = (integer)llList2String(data, 9);
+            lockTimeElapsedReal = (float)llList2String(data, 10);
+            lockTimeElapsedActive = (float)llList2String(data, 11);
+            timerShowMode = (integer)llList2String(data, 12);
+            positionOffset = (vector)llList2String(data, 13);
+            rotationOffset = (rotation)llList2String(data, 14);
+            llResetTime();
             if(lockedAvatar) sensortimer(5.0);
             scanCamera();
             llMessageLinked(LINK_THIS, X_API_RESTORE_SETTINGS_R, "OK", NULL_KEY);

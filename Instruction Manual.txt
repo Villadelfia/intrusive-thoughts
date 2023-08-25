@@ -215,3 +215,19 @@ To upgrade older furniture, unlink the root prim from the rezzed furniture and d
 It's an RLV relay that's meant to facilitate easy play that don't have a relay for themselves and that don't want to commit to a full IT slave. If you give it to someone and they activate it, you can use any of the IT Objectification, Vore, or Possession features on them without further prompt.
 
 In addition it will save the last Furniture they were stored in and also allow that one free access. This means it can be used as a sort of "permanent-light" TF tool because it doesn't lock onto them and has a powerful safeword. With this feature they can have a character of theirs permanently TFed, but not their entire account.
+
+
+27. How do I use pedestal mode in IT Furniture?
+If you put an animation into your set up furniture, the "Hide" and "Invisible" menu option will get a third option named "Custom." When custom mode is active, it will play all the animations in the furniture's inventory in alphabetical order.
+
+In this mode you can also use the EDIT TOGGLE button to make a cylinder visible that you can position and rotate to get the animation perfect. You can press the button again or click the cylinder to save these settings in the furniture.
+
+
+28. How do I use the timer in IT Furniture?
+You can click on TIMER in the Furniture menu to get a submenu showing you the currently set timer and the remaining time if applicable. In this menu you can choose if and how the timer is shown, if the timer counts only online time or all time, and what the timer is.
+
+If you click SET TIMER in this menu you can enter one time in minutes to set a set timer for capture. If you enter two numbers these will be a minimum and maximum time that will be randomized when capturing. Both are given in minutes.
+
+
+29. What is Deadlock mode?
+If you lock someone into IT Furniture and there is a running timer, you can also Deadlock them. In this case, nobody but the timer can release the victim.

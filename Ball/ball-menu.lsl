@@ -121,11 +121,14 @@ sitterMenu()
     if(worldRestrict < 1)        llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "wo1 No world interaction.]");
     else if(worldRestrict == 1)  llRegionSayTo(firstavatar, 0, " * No world interaction.");
     llRegionSayTo(firstavatar, 0, " ");
-    llRegionSayTo(firstavatar, 0, "Visibility Options:");
-    if(isHidden)  llRegionSayTo(firstavatar, 0, " - Under the ground, nameplate visible.");
-    else          llRegionSayTo(firstavatar, 0, " * Under the ground, nameplate visible.");
-    if(!isHidden) llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.]");
-    else          llRegionSayTo(firstavatar, 0, " * Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.");
+    if(llGetInventoryNumber(INVENTORY_ANIMATION) == 2)
+    {
+        llRegionSayTo(firstavatar, 0, "Visibility Options:");
+        if(isHidden)  llRegionSayTo(firstavatar, 0, " - Under the ground, nameplate visible.");
+        else          llRegionSayTo(firstavatar, 0, " * Under the ground, nameplate visible.");
+        if(!isHidden) llRegionSayTo(firstavatar, 0, " - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.]");
+        else          llRegionSayTo(firstavatar, 0, " * Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.");
+    }
     llSetObjectName("ball");
 }
 
@@ -209,12 +212,15 @@ ownerMenu()
     else                    llOwnerSay(" * No restrictions.");
     if(worldRestrict != 1)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "wo1 No world interaction.]");
     else                    llOwnerSay(" * No world interaction.");
-    llOwnerSay(" ");
-    llOwnerSay("Visibility Options:");
-    if(isHidden)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Under the ground, nameplate visible.]");
-    else          llOwnerSay(" * Under the ground, nameplate visible.");
-    if(!isHidden) llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.]");
-    else          llOwnerSay(" * Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.");
+    if(llGetInventoryNumber(INVENTORY_ANIMATION) == 2)
+    {
+        llOwnerSay(" ");
+        llOwnerSay("Visibility Options:");
+        if(isHidden)  llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Under the ground, nameplate visible.]");
+        else          llOwnerSay(" * Under the ground, nameplate visible.");
+        if(!isHidden) llOwnerSay(" - [secondlife:///app/chat/5/" + prefix + "invis Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.]");
+        else          llOwnerSay(" * Completely invisible, even the nameplate. Slightly fiddly to become visible again after release.");
+    }
     llOwnerSay(" ");
     llOwnerSay("Other Options:");
     llOwnerSay(" - Type /5" + prefix + "name <new name> to rename this object.");

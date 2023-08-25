@@ -161,3 +161,5 @@ Version 3.0.6:
  - Add strict sitting.
  - Make leashing and objectification region crossing compatible.
  - Add /7think to possession.
+ - Add timer to furniture.
+ - Add pedestal mode to furniture. Put an animation in the furniture to enable the "Custom" as an animation option.
