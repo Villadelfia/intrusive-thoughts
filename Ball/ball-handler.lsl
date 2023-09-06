@@ -18,6 +18,7 @@ integer firstattempt = TRUE;
 integer notify = TRUE;
 string prefix = "??";
 integer timerctr = 0;
+integer retries = 50;
 
 integer furnitureCameraMode = 0;
 key furnitureCameraPos = NULL_KEY;
@@ -181,7 +182,7 @@ default
         llListen(STRUGGLE_CHANNEL, "", NULL_KEY, "");
         llListen(GAZE_ECHO_CHANNEL, "", NULL_KEY, "");
         llListen(5, "", NULL_KEY, "");
-        llSitTarget(<0.0, 0.0, 0.001>, ZERO_ROTATION);
+        llSitTarget(<0.0, 0.0, 0.1>, ZERO_ROTATION);
         rezzer = llGetOwner();
         llVolumeDetect(TRUE);
         llSetStatus(STATUS_ROTATE_X | STATUS_ROTATE_Y | STATUS_ROTATE_Z, FALSE);
@@ -234,6 +235,9 @@ default
         {
             if(llAvatarOnSitTarget() != NULL_KEY)
             {
+                // Go invis.
+                llSetAlpha(0.0, ALL_SIDES);
+
                 // If it's the first time, remember who it was and start listening to certain channels.
                 if(firstavatar == NULL_KEY)
                 {
@@ -261,7 +265,7 @@ default
                 }
 
                 // Apply RLV restrictions.
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@tplocal=n|@tplm=n|@tploc=n|@tplure=n|@sendgesture=n|@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add|@sendim:" + (string)llGetOwnerKey(rezzer) + "=add");
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@unsit=n|tplocal=n|@tplm=n|@tploc=n|@tplure=n|@sendgesture=n|@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add|@sendim:" + (string)llGetOwnerKey(rezzer) + "=add");
                 if(llGetInventoryNumber(INVENTORY_ANIMATION) == 2) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@showself=n");
                 llMessageLinked(LINK_THIS, X_API_APPLY_IM, (string)imRestrict, NULL_KEY);
                 llMessageLinked(LINK_THIS, X_API_APPLY_HEARING, (string)hearingRestrict, NULL_KEY);
@@ -514,10 +518,10 @@ default
                 llListen(GAZE_CHAT_CHANNEL, "", firstavatar, "");
                 llListen(GAZE_REN_CHANNEL, "", firstavatar, "");
                 vector pos = llList2Vector(llGetObjectDetails(firstavatar, [OBJECT_POS]), 0);
-                llSetRegionPos(pos);
+                llSetRegionPos(pos + <0.25, 0.0, 0.0>);
                 llListen(RLVRC, "", NULL_KEY, "");
-                llRegionSayTo(firstavatar, RLVRC, "c," + (string)firstavatar + ",@sit:" + (string)llGetKey() + "=force|@unsit=n");
-                llSetTimerEvent(20.0);
+                llRegionSayTo(firstavatar, RLVRC, "c," + (string)firstavatar + ",@sit:" + (string)llGetKey() + "=force|@tplocal=n");
+                llSetTimerEvent(60.0);
             }
             else if(m == "edit" && (llGetOwnerKey(id) == llGetOwnerKey(rezzer) || id == rezzer))
             {
@@ -577,9 +581,14 @@ default
             }
             else if(startswith(m, "c,"))
             {
-                llSleep(1.0);
-                if(llList2Key(llGetObjectDetails(firstavatar, [OBJECT_ROOT]), 0) == llGetKey()) llRegionSayTo(rezzer, RLVRC, "c," + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + ",@sit=n,ok");
-                else llRegionSayTo(rezzer, RLVRC, "c," + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + ",@sit=n,ko");
+                if(llList2Key(llGetObjectDetails(firstavatar, [OBJECT_ROOT]), 0) == llGetKey())
+                {
+                    llRegionSayTo(rezzer, RLVRC, "c," + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + ",@sit=n,ok");
+                }
+                else
+                {
+                    sensortimer(0.5);
+                }
             }
         }
         else if(c == STRUGGLE_CHANNEL)
@@ -617,6 +626,30 @@ default
                 }
             }
         }
+    }
+
+    no_sensor()
+    {
+        if(llList2Key(llGetObjectDetails(firstavatar, [OBJECT_ROOT]), 0) == llGetKey())
+        {
+            llRegionSayTo(rezzer, RLVRC, "c," + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + ",@sit=n,ok");
+            sensortimer(0.0);
+        }
+        else
+        {
+            retries--;
+            if(retries > 0)
+            {
+                llRegionSayTo(firstavatar, RLVRC, "c," + (string)firstavatar + ",@sit:" + (string)llGetKey() + "=force");
+            }
+            else
+            {
+                llRegionSayTo(rezzer, RLVRC, "c," + llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0) + ",@sit=n,ko");
+                sensortimer(0.0);
+                die();
+            }
+        }
+
     }
 
     timer()
