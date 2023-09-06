@@ -153,6 +153,7 @@ handleSay(string message)
     string word;
     string oldword;
     string newword;
+    string part;
     integer replaceidx;
     integer quotecnt = 0;
 
@@ -231,7 +232,9 @@ handleSay(string message)
                     string fromCheck = llList2String(speechfilterpartialfrom, l1);
                     if(startswith(llToLower(messagecopy), fromCheck))
                     {
-                        message += llList2String(speechfilterpartialto, l1);
+                        part = llGetSubString(messagecopy, 0, llStringLength(fromCheck)-1);
+                        if(llToUpper(part) == part) message += llToUpper(llList2String(speechfilterpartialto, l1));
+                        else                        message += llList2String(speechfilterpartialto, l1);
                         messagecopy = llDeleteSubString(messagecopy, 0, llStringLength(fromCheck)-1);
                         jump replacedpartial;
                     }
