@@ -63,8 +63,9 @@ givemenu()
     {
         string dest = llList2String(locations, i);
         string status = llList2String(locationstatusses, (integer)(i/5));
-        string say = dest + " (" + status + ") — [secondlife:///app/chat/1/tpto%20" + dest + " (together)] [secondlife:///app/chat/1/tpme%20" + dest + " (alone)]";
-        if(lockedavatar) say = say + " [secondlife:///app/chat/1/send%20" + dest + " (send locked avatar)]";
+        string say = "- [secondlife:///app/chat/1/tpto%20" + dest + " " + dest + " (together)] [secondlife:///app/chat/1/tpme%20" + dest + " (alone)]";
+        if(lockedavatar) say += " [secondlife:///app/chat/1/send%20" + dest + " (send locked avatar)]";
+        say += " — " + status;
         llOwnerSay(say);
     }
     llOwnerSay(" ");

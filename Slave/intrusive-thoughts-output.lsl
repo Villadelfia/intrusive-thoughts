@@ -70,7 +70,7 @@ handleSelfSay(string name, string message)
             integer offset = 0;
             while(bytes >= 1024) bytes = getstringbytes(llGetSubString(message, 0, --offset));
             if(blindmute) llRegionSayTo(llGetOwner(), 0, llGetSubString(message, 0, offset));
-            else          llOwnerSay(message);
+            else          llOwnerSay(llGetSubString(message, 0, offset));
             message = llDeleteSubString(message, 0, offset);
             bytes = getstringbytes(message);
         }
