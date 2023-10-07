@@ -429,6 +429,19 @@ default
                     }
                 }
             }
+            else if(message == "possess")
+            {
+                llMessageLinked(LINK_SET, M_API_POSSESS, "", NULL_KEY);
+            }
+            else if(message == "vore")
+            {
+                llMessageLinked(LINK_SET, M_API_VORE, "", NULL_KEY);
+            }
+            else if(startswith(message, "objectify"))
+            {
+                message = llStringTrim(llDeleteSubString(message, 0, llStringLength("objectify")), STRING_TRIM);
+                llMessageLinked(LINK_SET, M_API_OBJECTIFY, message, NULL_KEY);
+            }
         }
         else if(channel == UPDATE_CHANNEL)
         {

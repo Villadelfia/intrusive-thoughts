@@ -64,6 +64,9 @@
 #define M_API_TOGGLE_HIDE         -2015
 #define M_API_HIDE_OFF            -2016
 #define M_API_CONFIG_DONE_2       -2017
+#define M_API_OBJECTIFY           -2018
+#define M_API_POSSESS             -2019
+#define M_API_VORE                -2020
 
 #define RLV_API_SET_SRC           -3000
 #define RLV_API_CLR_SRC           -3001

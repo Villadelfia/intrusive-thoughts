@@ -233,7 +233,6 @@ default
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
-        llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
     }
 
     attach(key id)
@@ -270,15 +269,6 @@ default
 
             // Avoid triggering multiple times falsely.
             dialog = -1;
-        }
-        else if(c == COMMAND_CHANNEL)
-        {
-            if(llGetOwnerKey(id) != llGetOwner()) return;
-            if(startswith(m, "objectify"))
-            {
-                m = llStringTrim(llDeleteSubString(m, 0, llStringLength("objectify")), STRING_TRIM);
-                addobject(m);
-            }
         }
         else if(c == MANTRA_CHANNEL)
         {
@@ -484,6 +474,10 @@ default
                 dialog = 0;
                 llTextBox(llGetOwner(), "As what do you wish to wear " + lockedname + "?", O_DIALOG_CHANNEL);
             }
+        }
+        else if(num == M_API_OBJECTIFY)
+        {
+            addobject(str);
         }
         else if(num == M_API_PROVISION_RESPONSE)
         {
