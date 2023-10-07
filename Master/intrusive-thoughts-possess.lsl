@@ -51,6 +51,8 @@ possess()
     if(possessState == 0)
     {
         // First, we try to check if they happen to be wearing a possession object.
+        if(lockedavatar == llGetOwner()) return;
+        if(lockedavatar == NULL_KEY || lockedname == "") return;
         llSetObjectName("");
         llOwnerSay("Attempting to possess '" + lockedname + "'.");
         llSetObjectName(master_base);
@@ -114,6 +116,7 @@ default
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(POSS_CHANNEL, "", NULL_KEY, "");
+        llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
         llListen(7, "", llGetOwner(), "");
     }
 
@@ -164,6 +167,16 @@ default
                     }
                 }
                 await = "";
+            }
+        }
+        else if(c == COMMAND_CHANNEL)
+        {
+            if(llGetOwnerKey(id) != llGetOwner()) return;
+            if(startswith(m, "possess"))
+            {
+                m = llStringTrim(llDeleteSubString(m, 0, llStringLength("possess")), STRING_TRIM);
+                possessState = 0;
+                possess();
             }
         }
         else if(c == MANTRA_CHANNEL)

@@ -64,6 +64,7 @@ unvore()
 vore()
 {
     if(lockedavatar == llGetOwner()) return;
+    if(lockedavatar == NULL_KEY || lockedname == "") return;
     llSetObjectName("");
 
     if(!canrez(llGetPos()))
@@ -125,6 +126,7 @@ default
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+        llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
     }
 
     attach(key id)
@@ -180,6 +182,15 @@ default
             {
                 m = llStringTrim(llList2String(llParseString2List(m, ["|||"], []), 1), STRING_TRIM);
                 voredirect(m, llGetOwnerKey(id));
+            }
+        }
+        else if(c == COMMAND_CHANNEL)
+        {
+            if(llGetOwnerKey(id) != llGetOwner()) return;
+            if(startswith(m, "vore"))
+            {
+                m = llStringTrim(llDeleteSubString(m, 0, llStringLength("vore")), STRING_TRIM);
+                vore();
             }
         }
     }

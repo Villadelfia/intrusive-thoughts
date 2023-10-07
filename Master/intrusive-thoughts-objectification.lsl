@@ -171,7 +171,7 @@ releaseall()
 addobject(string desc)
 {
     if(lockedavatar == llGetOwner()) return;
-    if(lockedname == NULL_KEY || lockedname == "") return;
+    if(lockedavatar == NULL_KEY || lockedname == "") return;
     if(desc == "") desc = "object";
     if(startswith(llToLower(desc), llToLower(objectprefix))) desc = llGetSubString(desc, llStringLength(objectprefix), -1);
     targetdescription = desc;
