@@ -227,7 +227,7 @@ dosetup()
     i = 0;
     while(settext(i++, ""));
     llListen(BALL_CHANNEL, "", llGetOwner(), "");
-    llListen(COMMAND_CHANNEL, "", llGetOwner(), "");
+    llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
     llListen(UPDATE_CHANNEL, "", NULL_KEY, "");
     sethide();
     llMessageLinked(LINK_SET, M_API_HUD_STARTED, "", (key)"");
@@ -384,6 +384,7 @@ default
         }
         else if(channel == COMMAND_CHANNEL)
         {
+            if(llGetOwnerKey(id) != llGetOwner()) return;
             if(message == "hardreset")
             {
                 llSetObjectName("");

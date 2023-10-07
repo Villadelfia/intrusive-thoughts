@@ -233,6 +233,7 @@ default
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+        llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
     }
 
     attach(key id)
@@ -269,6 +270,15 @@ default
 
             // Avoid triggering multiple times falsely.
             dialog = -1;
+        }
+        else if(c == COMMAND_CHANNEL)
+        {
+            if(llGetOwnerKey(id) != llGetOwner()) return;
+            if(startswith(m, "objectify"))
+            {
+                m = llStringTrim(llDeleteSubString(m, 0, llStringLength("objectify")), STRING_TRIM);
+                addobject(m);
+            }
         }
         else if(c == MANTRA_CHANNEL)
         {
