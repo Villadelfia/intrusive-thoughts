@@ -67,6 +67,10 @@
 #define M_API_OBJECTIFY           -2018
 #define M_API_POSSESS             -2019
 #define M_API_VORE                -2020
+#define M_API_OBJECTIFY_Q         -2021
+#define M_API_POSSESS_Q           -2022
+#define M_API_VORE_Q              -2023
+#define M_API_RELEASE             -2024
 
 #define RLV_API_SET_SRC           -3000
 #define RLV_API_CLR_SRC           -3001

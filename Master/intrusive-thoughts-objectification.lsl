@@ -479,6 +479,29 @@ default
         {
             addobject(str);
         }
+        else if(num == M_API_OBJECTIFY_Q)
+        {
+            if(llStringLength(str) == 36) {
+                integer ki = llListFindList(objectifiednames, [(key)str]);
+                key k = NULL_KEY;
+                if(ki != -1) k = llList2Key(objectifiedavatars, ki);
+                llRegionSayTo(id, 1, "objectified " + (string)k);
+            } else {
+                integer ni = llListFindList(objectifiednames, [str]);
+                if(ni == -1) {
+                    llRegionSayTo(id, 1, "objectified");
+                } else {
+                    llRegionSayTo(id, 1, "objectified " + llList2String(objectifiednames, ni));
+                }
+            }
+        }
+        else if(num == M_API_RELEASE)
+        {
+            integer ki = llListFindList(objectifiednames, [(key)str]);
+            integer ni = llListFindList(objectifiednames, [str]);
+            if(ki != -1) release(ki);
+            else if(ni != -1) release(ni);
+        }
         else if(num == M_API_PROVISION_RESPONSE)
         {
             list params = llParseString2List(str, ["|||"], []);

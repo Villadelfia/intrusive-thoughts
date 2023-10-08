@@ -289,6 +289,16 @@ default
         {
             vore();
         }
+        else if(num == M_API_VORE_Q)
+        {
+            key k = NULL_KEY;
+            if(vorevictim == (key)str) k = vorecarrier;
+            llRegionSayTo(id, 1, "vored " + (string)k);
+        }
+        else if(num == M_API_RELEASE)
+        {
+            if(vorevictim == (key)str) unvore();
+        }
     }
 
     timer()

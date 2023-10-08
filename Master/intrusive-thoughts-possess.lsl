@@ -365,6 +365,16 @@ default
             possessState = 0;
             possess();
         }
+        else if(num == M_API_POSSESS_Q)
+        {
+            key k = NULL_KEY;
+            if(possessionvictim == (key)str) k = possessionvictim;
+            llRegionSayTo(id, 1, "possessed " + (string)k);
+        }
+        else if(num == M_API_RELEASE)
+        {
+            if(possessionvictim == (key)str) unpossess();
+        }
     }
 
     run_time_permissions(integer perm)

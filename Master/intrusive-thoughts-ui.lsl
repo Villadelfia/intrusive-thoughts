@@ -429,6 +429,19 @@ default
                     }
                 }
             }
+            else if(message == "possessed")
+            {
+                llMessageLinked(LINK_SET, M_API_POSSESS_Q, "", id);
+            }
+            else if(message == "vored")
+            {
+                llMessageLinked(LINK_SET, M_API_VORE_Q, "", id);
+            }
+            else if(startswith(message, "objectified"))
+            {
+                message = llStringTrim(llDeleteSubString(message, 0, llStringLength("objectified")), STRING_TRIM);
+                llMessageLinked(LINK_SET, M_API_OBJECTIFY_Q, message, id);
+            }
             else if(message == "possess")
             {
                 llMessageLinked(LINK_SET, M_API_POSSESS, "", NULL_KEY);
@@ -441,6 +454,11 @@ default
             {
                 message = llStringTrim(llDeleteSubString(message, 0, llStringLength("objectify")), STRING_TRIM);
                 llMessageLinked(LINK_SET, M_API_OBJECTIFY, message, NULL_KEY);
+            }
+            else if(startswith(message, "release"))
+            {
+                message = llStringTrim(llDeleteSubString(message, 0, llStringLength("release")), STRING_TRIM);
+                llMessageLinked(LINK_SET, M_API_RELEASE, message, NULL_KEY);
             }
         }
         else if(channel == UPDATE_CHANNEL)
