@@ -291,9 +291,7 @@ default
         }
         else if(num == M_API_VORE_Q)
         {
-            key k = NULL_KEY;
-            if(vorevictim == (key)str) k = vorecarrier;
-            llRegionSayTo(id, 1, "vored " + (string)k);
+            llRegionSayTo(id, 1, "vored " + (string)vorevictim);
         }
         else if(num == M_API_RELEASE)
         {

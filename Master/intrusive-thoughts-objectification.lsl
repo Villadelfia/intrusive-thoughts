@@ -482,23 +482,23 @@ default
         else if(num == M_API_OBJECTIFY_Q)
         {
             if(llStringLength(str) == 36) {
-                integer ki = llListFindList(objectifiednames, [(key)str]);
-                key k = NULL_KEY;
-                if(ki != -1) k = llList2Key(objectifiedavatars, ki);
-                llRegionSayTo(id, 1, "objectified " + (string)k);
-            } else {
-                integer ni = llListFindList(objectifiednames, [str]);
-                if(ni == -1) {
+                integer ki = llListFindList(objectifiedavatars, [(key)str]);
+                if(ki == -1) {
                     llRegionSayTo(id, 1, "objectified");
                 } else {
-                    llRegionSayTo(id, 1, "objectified " + llList2String(objectifiednames, ni));
+                    llRegionSayTo(id, 1, "objectified " + llList2String(objectifieddescriptions, ki));
                 }
+            } else {
+                integer ni = llListFindList(objectifieddescriptions, [str]);
+                key k = NULL_KEY;
+                if(ni != -1) k = llList2Key(objectifiedavatars, ni);
+                llRegionSayTo(id, 1, "objectified " + (string)k);
             }
         }
         else if(num == M_API_RELEASE)
         {
-            integer ki = llListFindList(objectifiednames, [(key)str]);
-            integer ni = llListFindList(objectifiednames, [str]);
+            integer ki = llListFindList(objectifiedavatars, [(key)str]);
+            integer ni = llListFindList(objectifieddescriptions, [str]);
             if(ki != -1) release(ki);
             else if(ni != -1) release(ni);
         }

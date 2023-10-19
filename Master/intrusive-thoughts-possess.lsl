@@ -367,9 +367,7 @@ default
         }
         else if(num == M_API_POSSESS_Q)
         {
-            key k = NULL_KEY;
-            if(possessionvictim == (key)str) k = possessionvictim;
-            llRegionSayTo(id, 1, "possessed " + (string)k);
+            llRegionSayTo(id, 1, "possessed " + (string)possessionvictim);
         }
         else if(num == M_API_RELEASE)
         {
