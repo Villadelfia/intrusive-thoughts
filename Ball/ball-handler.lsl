@@ -736,7 +736,7 @@ default
             timerctr++;
             if(timerctr % 10 == 0) llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
 
-            if(furnitureCameraMode != 0 && furnitureCameraPos != NULL_KEY && furnitureCameraFocus != NULL_KEY)
+            if(keyisavatar == FALSE && furnitureCameraMode != 0 && furnitureCameraPos != NULL_KEY && furnitureCameraFocus != NULL_KEY)
             {
                 if(timerctr % 10 == 0) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=n");
                 getZBase();

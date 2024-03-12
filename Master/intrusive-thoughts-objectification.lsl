@@ -378,7 +378,11 @@ default
             if(i == -1) return;
 
             llSetObjectName(objectprefix + llList2String(llParseString2List(obj, [";"], []), 0));
-            if(llToLower(llStringTrim(m, STRING_TRIM)) != "/me" && startswith(m, "/me") == TRUE && contains(m, "\"") == FALSE) llSay(0, m);
+            if(llToLower(llStringTrim(m, STRING_TRIM)) != "/me" && startswith(m, "/me") == TRUE && contains(m, "\"") == FALSE)
+            {
+                if(llGetInventoryType("validate") == INVENTORY_SCRIPT) llMessageLinked(LINK_THIS, X_API_DO_VALIDATE, m, (key)(objectprefix + llList2String(llParseString2List(obj, [";"], []), 0)));
+                else                                                   llSay(0, m);
+            }
             else
             {
                 integer n = llGetListLength(objectifiedavatars);
@@ -528,7 +532,20 @@ default
                 llSetObjectName(master_base);
                 if(timermode != 0) handlequeue();
             }
-
+        }
+        else if(num == X_API_VALIDATE_OK)
+        {
+            llSetObjectName((string)id);
+            llSay(0, str);
+            llSetObjectName(master_base);
+        }
+        else if(num == X_API_VALIDATE_NO)
+        {
+            llSetObjectName((string)id);
+            integer n = llGetListLength(objectifiedavatars);
+            while(~--n) llRegionSayTo(llList2Key(objectifiedballs, n), GAZE_ECHO_CHANNEL, str);
+            llOwnerSay(str);
+            llSetObjectName(master_base);
         }
     }
 

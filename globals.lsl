@@ -116,6 +116,9 @@
 #define X_API_APPLY_CAMERA        -4031
 #define X_API_APPLY_INVENTORY     -4032
 #define X_API_APPLY_WORLD         -4033
+#define X_API_DO_VALIDATE         -4034
+#define X_API_VALIDATE_OK         -4035
+#define X_API_VALIDATE_NO         -4036
 
 #define IT_PLUGIN_REGISTER        -8000
 #define IT_PLUGIN_RESPONSE        -8001
