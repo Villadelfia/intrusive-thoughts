@@ -183,6 +183,7 @@ default
         llListen(GAZE_ECHO_CHANNEL, "", NULL_KEY, "");
         llListen(5, "", NULL_KEY, "");
         llSitTarget(<0.0, 0.0, 0.1>, ZERO_ROTATION);
+        llSetLinkPrimitiveParamsFast(LINK_SET, [PRIM_SIT_FLAGS, SIT_FLAG_NO_COLLIDE]);
         rezzer = llGetOwner();
         llVolumeDetect(TRUE);
         llSetStatus(STATUS_ROTATE_X | STATUS_ROTATE_Y | STATUS_ROTATE_Z, FALSE);

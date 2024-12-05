@@ -160,6 +160,7 @@ default
                 llLinkSitTarget(i, ZERO_VECTOR, ZERO_ROTATION);
             }
         }
+        llSetLinkPrimitiveParamsFast(LINK_SET, [PRIM_SIT_FLAGS, SIT_FLAG_NO_COLLIDE]);
         rezzer = llGetOwner();
         llVolumeDetect(TRUE);
         llSetStatus(STATUS_ROTATE_X | STATUS_ROTATE_Y | STATUS_ROTATE_Z, FALSE);

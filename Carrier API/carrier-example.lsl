@@ -21,6 +21,7 @@ setup()
 {
     // First you must set up the sit target(s).
     llSitTarget(<0.0, 0.0, 0.001>, ZERO_ROTATION);
+    llSetLinkPrimitiveParamsFast(LINK_SET, [PRIM_SIT_FLAGS, SIT_FLAG_NO_COLLIDE]);
 
     // Notify the API script that your seats are ready and on which links there are seats.
     // The second parameter is the location the carrier will follow, relative to the position of the rezzer.
