@@ -503,61 +503,77 @@ default
     {
         if(q == getline && ready == FALSE)
         {
-            if(d == EOF)
+            while(d != NAK)
             {
-                debug("[dataserver] End of config notecard");
-                llRemoveInventory("Intrusive Thoughts Configuration");
-                llMessageLinked(LINK_SET, M_API_CONFIG_DONE, "", NULL_KEY);
-                llMessageLinked(LINK_SET, M_API_STATUS_DONE, "", (string)"");
-                ready = TRUE;
-                name = "";
-                return;
-            }
-            else if(llStringTrim(d, STRING_TRIM) == "")
-            {
-                debug("[dataserver] Config notecard, ignored line: " + (string)line);
-            }
-            else if(startswith(d, "#"))
-            {
-                debug("[dataserver] Config notecard, ignored line: " + (string)line);
-            }
-            else
-            {
-                if(continued)
+                integer sent = 0;
+                if(d == EOF)
                 {
-                    debug("[dataserver] Config notecard, line: " + (string)line + ", data continuation: " + d);
-                    value += d;
+                    debug("[dataserver] End of config notecard");
+                    llRemoveInventory("Intrusive Thoughts Configuration");
+                    llMessageLinked(LINK_SET, M_API_CONFIG_DONE, "", NULL_KEY);
+                    llMessageLinked(LINK_SET, M_API_STATUS_DONE, "", (string)"");
+                    ready = TRUE;
+                    name = "";
+                    return;
+                }
+                else if(llStringTrim(d, STRING_TRIM) == "")
+                {
+                    debug("[dataserver] Config notecard, ignored line: " + (string)line);
+                }
+                else if(startswith(d, "#"))
+                {
+                    debug("[dataserver] Config notecard, ignored line: " + (string)line);
                 }
                 else
                 {
-                    list tokens = llParseStringKeepNulls(d, ["="], []);
-                    setting = llStringTrim(llList2String(tokens, 0), STRING_TRIM);
-                    value   = llStringTrim(llDumpList2String(llDeleteSubList(tokens, 0, 0), "="), STRING_TRIM);
-                    debug("[dataserver] Config notecard, line: " + (string)line + ", start of data for setting: " + setting + ", data: " + value);
-                }
+                    if(continued)
+                    {
+                        debug("[dataserver] Config notecard, line: " + (string)line + ", data continuation: " + d);
+                        value += d;
+                    }
+                    else
+                    {
+                        list tokens = llParseStringKeepNulls(d, ["="], []);
+                        setting = llStringTrim(llList2String(tokens, 0), STRING_TRIM);
+                        value   = llStringTrim(llDumpList2String(llDeleteSubList(tokens, 0, 0), "="), STRING_TRIM);
+                        debug("[dataserver] Config notecard, line: " + (string)line + ", start of data for setting: " + setting + ", data: " + value);
+                    }
 
-                if(llGetSubString(d, -1, -1) == "\\")
-                {
-                    continued = TRUE;
-                    value = llDeleteSubString(value, -1, -1);
-                    debug("[dataserver] Config notecard, line: " + (string)line + ", current data continues in next line");
-                }
-                else
-                {
-                    continued = FALSE;
-                }
+                    if(llGetSubString(d, -1, -1) == "\\")
+                    {
+                        continued = TRUE;
+                        value = llDeleteSubString(value, -1, -1);
+                        debug("[dataserver] Config notecard, line: " + (string)line + ", current data continues in next line");
+                    }
+                    else
+                    {
+                        continued = FALSE;
+                    }
 
-                if(!continued)
-                {
-                    debug("[dataserver] Config notecard, line: " + (string)line + ", sending built M_API_CONFIG_DATA");
-                    llMessageLinked(LINK_SET, M_API_CONFIG_DATA, setting, (key)value);
-                    llLinksetDataWriteProtected("it-" + (string)storedCt, setting + "=" + value, "");
-                    storedCt++;
-                    llLinksetDataWriteProtected("it-ct", (string)storedCt, "");
+                    if(!continued)
+                    {
+                        debug("[dataserver] Config notecard, line: " + (string)line + ", sending built M_API_CONFIG_DATA");
+                        llMessageLinked(LINK_SET, M_API_CONFIG_DATA, setting, (key)value);
+                        llLinksetDataWriteProtected("it-" + (string)storedCt, setting + "=" + value, "");
+                        storedCt++;
+                        llLinksetDataWriteProtected("it-ct", (string)storedCt, "");
+                        sent++;
+                        if(sent > 30)
+                        {
+                            llSleep(0.5);
+                            sent = 0;
+                        }
+                    }
                 }
+                ++line;
+                d = llGetNotecardLineSync(name, line);
             }
-            ++line;
-            getline = llGetNotecardLine(name, line);
+
+            if(d == NAK)
+            {
+                --line;
+                getline = llGetNotecardLine(name, line);
+            }
         }
         else if(q == getlines)
         {
@@ -569,41 +585,57 @@ default
         }
         else if(q == getline)
         {
-            settext();
-            if(d == EOF)
+            while(d != NAK)
             {
-                debug("[dataserver] End of applier notecard, notecard: " + name);
-                name = "";
-                return;
-            }
-            else if(llStringTrim(d, STRING_TRIM) == "")
-            {
-                debug("[dataserver] Applier notecard, ignored line: " + (string)line + ", notecard: " + name);
-            }
-            else if(startswith(d, "█"))
-            {
-                prefix = llGetSubString(d, 1, -1);
-                if(prefix == "END")
+                integer sent = 0;
+                settext();
+                if(d == EOF)
                 {
-                    debug("[dataserver] Applier notecard, line: " + (string)line + ", notecard: " + name + ", explicit early end");
-                    line = lines-1;
+                    debug("[dataserver] End of applier notecard, notecard: " + name);
+                    name = "";
+                    return;
+                }
+                else if(llStringTrim(d, STRING_TRIM) == "")
+                {
+                    debug("[dataserver] Applier notecard, ignored line: " + (string)line + ", notecard: " + name);
+                }
+                else if(startswith(d, "█"))
+                {
+                    prefix = llGetSubString(d, 1, -1);
+                    if(prefix == "END")
+                    {
+                        debug("[dataserver] Applier notecard, line: " + (string)line + ", notecard: " + name + ", explicit early end");
+                        line = lines-1;
+                    }
+                    else
+                    {
+                        debug("[dataserver] Applier notecard, line: " + (string)line + ", notecard: " + name + ", prefix change: " + prefix);
+                    }
+                }
+                else if(startswith(d, "#"))
+                {
+                    debug("[dataserver] Applier notecard, ignored line: " + (string)line + ", notecard: " + name);
                 }
                 else
                 {
-                    debug("[dataserver] Applier notecard, line: " + (string)line + ", notecard: " + name + ", prefix change: " + prefix);
+                    debug("[dataserver] Applier notecard, line: " + (string)line + ", notecard: " + name + ", data for prefix: " + prefix + ", data: " + d);
+                    llRegionSayTo(target, MANTRA_CHANNEL, prefix + " " + d);
+                    sent++;
+                    if(sent > 30)
+                    {
+                        llSleep(0.5);
+                        sent = 0;
+                    }
                 }
+                ++line;
+                d = llGetNotecardLineSync(name, line);
             }
-            else if(startswith(d, "#"))
+
+            if(d == NAK)
             {
-                debug("[dataserver] Applier notecard, ignored line: " + (string)line + ", notecard: " + name);
+                --line;
+                getline = llGetNotecardLine(name, line);
             }
-            else
-            {
-                debug("[dataserver] Applier notecard, line: " + (string)line + ", notecard: " + name + ", data for prefix: " + prefix + ", data: " + d);
-                llRegionSayTo(target, MANTRA_CHANNEL, prefix + " " + d);
-            }
-            ++line;
-            getline = llGetNotecardLine(name, line);
         }
     }
 
