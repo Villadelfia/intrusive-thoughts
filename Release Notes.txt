@@ -164,3 +164,5 @@ Version 3.0.6:
  - Add timer to furniture.
  - Add pedestal mode to furniture. Put an animation in the furniture to enable the "Custom" as an animation option.
  - Improve reliability.
+ - Add option for manual validation.
+ - Fix potential crash of Slave.

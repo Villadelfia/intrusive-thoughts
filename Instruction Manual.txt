@@ -231,3 +231,62 @@ If you click SET TIMER in this menu you can enter one time in minutes to set a s
 
 29. What is Deadlock mode?
 If you lock someone into IT Furniture and there is a running timer, you can also Deadlock them. In this case, nobody but the timer can release the victim.
+
+
+30. How do I use extra validation on emotes of objectified people?
+If there is a script present in your IT Master HUD with the exact name "validate", all emotes spoken by objects you are wearing will be sent for extra filtering. The system will send a message on link message number -4034 with the message in the string and the name prefix in the key. You may then do anything you wish with these and send them back on -4035 to accept them (they will be spoken aloud), or on -4036 to reject them (they will be treated as normal speech.)
+
+As an example, here is the validate script I use. You will need to provide your own OpenAI key to make this work:
+
+string endPoint = "https://api.openai.com/v1/chat/completions";
+string apiKey = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+string systemPrompt = "You will judge the following prompt. You will return a JSON object with one property named \"accept\", set to either true or false.\n\nThe prompt contains an emote from the point of view of an inanimate object. Inanimate objects can think, and struggle, but they cannot speak or meaningfully communicate. If the prompt contains a deliberate attempt at speech or goes far beyond what is reasonable for an inanimate object, \"accept\" should be set to false. Otherwise it should be set to true.";
+string msg;
+string pre;
+key httpT = NULL_KEY;
+
+doApiCall(string prompt) {
+    string messages = llList2Json(JSON_ARRAY, [
+        llList2Json(JSON_OBJECT, ["role", "system", "content", systemPrompt]),
+        llList2Json(JSON_OBJECT, ["role", "user", "content", prompt])
+    ]);
+    string body = llList2Json(JSON_OBJECT, [
+        "model", "gpt-3.5-turbo-0125",
+        "messages", messages,
+        "max_tokens", 4096,
+        "temperature", 0.0,
+        "top_p", 1.0,
+        "response_format", llList2Json(JSON_OBJECT, [
+            "type", "json_object"
+        ])
+    ]);
+    httpT = llHTTPRequest(endPoint, [
+        HTTP_METHOD, "POST",
+        HTTP_MIMETYPE, "application/json",
+        HTTP_VERIFY_CERT, TRUE,
+        HTTP_VERBOSE_THROTTLE, FALSE,
+        HTTP_PRAGMA_NO_CACHE, TRUE,
+        HTTP_BODY_MAXLENGTH, 16384,
+        HTTP_CUSTOM_HEADER, "Authorization", "Bearer " + apiKey
+    ], body);
+}
+
+default {
+    link_message(integer sender_num, integer num, string str, key id) {
+        if(num == -4034) {
+            msg = str;
+            pre = (string)id;
+            str = (string)id + " " + llStringTrim(llDeleteSubString(str, 0, 2), STRING_TRIM);
+            doApiCall(str);
+        }
+    }
+
+    http_response(key t, integer status, list metadata, string body) {
+        if(t != httpT) return;
+        httpT = NULL_KEY;
+        string content = llJsonGetValue(body, ["choices", 0, "message", "content"]);
+        integer accept = llJsonGetValue(content, ["accept"]) == JSON_TRUE;
+        if(accept) llMessageLinked(LINK_THIS, -4035, msg, (key)pre);
+        else       llMessageLinked(LINK_THIS, -4036, msg, (key)pre);
+    }
+}

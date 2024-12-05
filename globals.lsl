@@ -47,6 +47,8 @@
 #define S_API_MANTRA_DONE         -1023
 #define S_API_SET_LOCK            -1024
 #define S_API_SCHEDULE_DETACH     -1025
+#define S_API_MENU                -1026
+#define S_API_NAME                -1027
 
 #define M_API_HUD_STARTED         -2000
 #define M_API_CONFIG_DATA         -2001
@@ -144,15 +146,15 @@
 
 #define BUTTON_TRANSPARENCY 0.4
 
-string master_base = "Intrusive Thoughts Master [v3.0.6c]";
-string slave_base = "Intrusive Thoughts Slave [v3.0.6c]";
-#define VERSION_S "IT-Slave v3.0.6c"
-#define VERSION_M "IT-Master v3.0.6c"
+string master_base = "Intrusive Thoughts Master [v3.0.6d]";
+string slave_base = "Intrusive Thoughts Slave [v3.0.6d]";
+#define VERSION_S "IT-Slave v3.0.6d"
+#define VERSION_M "IT-Master v3.0.6d"
 // 3 digits for major
 // 3 digits for minor
 // 3 digits for patch
 // 2 digits for revision with base = 00, a = 01, b = 02...
-#define VERSION_CMP "00300000603"
+#define VERSION_CMP "00300000604"
 #define VERSION_FULL "31CAF3"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0

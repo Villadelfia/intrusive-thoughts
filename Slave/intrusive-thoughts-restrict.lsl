@@ -72,6 +72,7 @@ toggleLockEntry(string what, key who)
 hardReset()
 {
     name = llGetDisplayName(llGetOwner());
+    llMessageLinked(LINK_THIS, S_API_NAME, name, NULL_KEY);
     noim = FALSE;
     daze = FALSE;
     outfitlocked = FALSE;
@@ -105,6 +106,7 @@ softReset()
 
 doSetup()
 {
+    llMessageLinked(LINK_THIS, S_API_NAME, name, NULL_KEY);
 #ifndef PUBLIC_SLAVE
     llOwnerSay("@accepttp:" + (string)primary + "=add,accepttprequest:" + (string)primary + "=add,acceptpermission=add");
     integer i = llGetListLength(owners);
@@ -171,69 +173,6 @@ doSetup()
     }
 
     applyLockList();
-}
-
-handlemenu(key k)
-{
-    if(isowner(k) == FALSE && llGetOwnerKey(k) != llGetOwner()) return;
-    llSetObjectName("");
-
-    // Greeting
-    ownersay(k, "List of available commands for " + name + ":", 0);
-    ownersay(k, " ", 0);
-
-    // Animations
-    integer numinv = llGetInventoryNumber(INVENTORY_ANIMATION);
-    integer i;
-    for(i = 0; i < numinv; ++i)
-    {
-        ownersay(k, "[secondlife:///app/chat/1/" + prefix + llEscapeURL(llGetInventoryName(INVENTORY_ANIMATION, i)) + " - Play " + llGetInventoryName(INVENTORY_ANIMATION, i) + " animation.]", 0);
-    }
-
-    // Stop animation
-    ownersay(k, "[secondlife:///app/chat/1/" + prefix + "stop - Stop all animations.]", 0);
-    ownersay(k, " ", 0);
-
-    // Emergency release.
-    ownersay(k, "[secondlife:///app/chat/1/" + prefix + "emergency - Remove all restrictions in case of emergency.]", 0);
-
-    // Owner commands.
-#ifndef PUBLIC_SLAVE
-    if(isowner(k))
-    {
-#endif
-        ownersay(k, " ", 0);
-        ownersay(k, "[secondlife:///app/chat/1/" + prefix + "noim - Toggle local IMs.]", 0);
-        ownersay(k, "[secondlife:///app/chat/1/" + prefix + "strip - Strip all clothes.]", 0);
-        ownersay(k, "[secondlife:///app/chat/1/" + prefix + "listform - List all forms.]", 0);
-        ownersay(k, "[secondlife:///app/chat/1/" + prefix + "listoutfit - List all outfits.]", 0);
-        ownersay(k, "[secondlife:///app/chat/1/" + prefix + "liststuff - List all stuff.]", 0);
-        ownersay(k, "[secondlife:///app/chat/1/" + prefix + "stand - Stand up.]", 0);
-        ownersay(k, "[secondlife:///app/chat/1/" + prefix + "locksit - Lock sit/stand state.]", 0);
-        ownersay(k, "[secondlife:///app/chat/1/" + prefix + "leash - Leash]/[secondlife:///app/chat/1/" + prefix + "unleash unleash.]", 0);
-        if(llGetOwnerKey(k) == primary)
-        {
-            ownersay(k, "[secondlife:///app/chat/1/" + prefix + "ownerinfo - Add/remove secondary owners.]", 0);
-            ownersay(k, "- Notification toggles: [secondlife:///app/chat/1/" + prefix + "tpnotify On teleport]/[secondlife:///app/chat/1/" + prefix + "lognotify On wear/detach].", 0);
-        }
-        ownersay(k, " ", 0);
-        ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "deaf deafness]/[secondlife:///app/chat/1/" + prefix + "blind blindness]/[secondlife:///app/chat/1/" + prefix + "mute muting].", 0);
-        ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "mind mindlessness]/[secondlife:///app/chat/1/" + prefix + "daze dazing]/[secondlife:///app/chat/1/" + prefix + "focus focussing].", 0);
-        ownersay(k, "- Toggle [secondlife:///app/chat/1/" + prefix + "lock IT lock]/[secondlife:///app/chat/1/" + prefix + "lockoutfit outfit lock].", 0);
-        ownersay(k, "- Sight radius: [secondlife:///app/chat/1/" + prefix + "b--- ---] [secondlife:///app/chat/1/" + prefix + "b-- --] [secondlife:///app/chat/1/" + prefix + "b- -] " + formatfloat(currentVision, 2) + " meters [secondlife:///app/chat/1/" + prefix + "b+ +] [secondlife:///app/chat/1/" + prefix + "b++ ++] [secondlife:///app/chat/1/" + prefix + "b+++ +++]", 0);
-        ownersay(k, "- Focus distance: [secondlife:///app/chat/1/" + prefix + "f--- ---] [secondlife:///app/chat/1/" + prefix + "f-- --] [secondlife:///app/chat/1/" + prefix + "f- -] " + formatfloat(currentFocus, 2) + " meters [secondlife:///app/chat/1/" + prefix + "f+ +] [secondlife:///app/chat/1/" + prefix + "f++ ++] [secondlife:///app/chat/1/" + prefix + "f+++ +++]", 0);
-        ownersay(k, " ", 0);
-        ownersay(k, "- [secondlife:///app/chat/1/" + prefix + "afkcheck /1" + prefix + "afkcheck]: Have the slave do an AFK check.", 0);
-        ownersay(k, "- /1" + prefix + "say <message>: Say a message.", 0);
-        ownersay(k, "- /1" + prefix + "think <message>: Think a message.", 0);
-        ownersay(k, "- /1" + prefix + "leashlength <meters>: Set the leash length.", 0);
-        ownersay(k, "- /1" + prefix + "blindset <distance>: Directly set distance of sight radius in meters.", 0);
-        ownersay(k, "- /1" + prefix + "focusset <distance>: Directly set focus distance in meters.", 0);
-#ifndef PUBLIC_SLAVE
-    }
-#endif
-
-    llSetObjectName(slave_base);
 }
 
 default
@@ -308,16 +247,12 @@ default
         if(perm & PERMISSION_TAKE_CONTROLS) llTakeControls(CONTROL_FWD, TRUE, TRUE);
     }
 
-    touch_start(integer num)
-    {
-        handlemenu(llDetectedKey(0));
-    }
-
     state_entry()
     {
         if(llGetInventoryType("NO_HIDE") == INVENTORY_NONE) llSetLinkAlpha(LINK_SET, 1.0, ALL_SIDES);
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
         name = llGetDisplayName(llGetOwner());
+        llMessageLinked(LINK_THIS, S_API_NAME, name, NULL_KEY);
         if(llLinksetDataReadProtected("locked", "") != "") locked = (integer)llLinksetDataReadProtected("locked", "");
         if(locked) llMessageLinked(LINK_SET, S_API_SET_LOCK, (string)TRUE, NULL_KEY);
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
@@ -501,7 +436,7 @@ default
             }
             else if(llToLower(m) == "!" || m == "" || llToLower(m) == "menu")
             {
-                handlemenu(k);
+                llMessageLinked(LINK_THIS, S_API_MENU, "", k);
             }
         }
 
@@ -521,6 +456,7 @@ default
             {
                 m = llDeleteSubString(m, 0, llStringLength("NAME"));
                 name = m;
+                llMessageLinked(LINK_THIS, S_API_NAME, name, NULL_KEY);
             }
             else if(startswith(m, "PREFIX_STUFF"))
             {
