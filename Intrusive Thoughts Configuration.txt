@@ -110,3 +110,20 @@ relaymode = ask
 #relayfilter = block_im
 #relayfilter = sendim*:+=
 #relayfilter = unsit
+
+####################
+## Customization ##
+####################
+# You can change several textures of the HUD:
+# - texturemain: The uuid of the hud texture. Followed by the tint.
+# - texturebutton: The uuid of the button visible when the hud is closed. Followed by the tint.
+# - textureno: The uuid of the forbidden sign over the lock and RLV buttons. Followed by the tint.
+# - colortext: The text color.
+# - colorinactive: The color for inactive buttons.
+# The assets for these can be found on the project's github: https://github.com/Villadelfia/intrusive-thoughts
+# The examples given are the default settings.
+#texturemain = 39f25043-8672-5593-d459-d1feba59a154;<1.0, 1.0, 1.0>
+#texturebutton = 2de8659e-7b3a-a87b-cf9b-946272ce47f4;<1.0, 1.0, 1.0>
+#textureno = ceb086c1-86ed-3caa-77d1-eb9bea096dea;<0.655, 0.655, 0.655>
+#colortext = <0.255, 0.278, 0.337>
+#colorinactive = <0.773, 0.780, 0.820>

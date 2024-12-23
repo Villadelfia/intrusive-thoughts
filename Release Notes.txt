@@ -167,3 +167,4 @@ Version 3.0.6:
  - Add option for manual validation.
  - Fix potential crash of Slave.
  - Loading speed increase.
+ - Add theming.

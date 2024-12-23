@@ -560,6 +560,115 @@ default
                 else                            llSetTimerEvent(0.5);
             }
         }
+        else if(num == M_API_CONFIG_DATA)
+        {
+            list params = llParseString2List((string)id, [";"], []);
+            string tex = llList2String(params, 0);
+            vector col = (vector)llList2String(params, 1);
+
+            // Search for link "hide", adjust face "0"
+            if(str == "texturebutton")
+            {
+                llSetObjectName("");
+                llOwnerSay(VERSION_M + ": Set main button texture to " + tex + " with color " + (string)col + ".");
+                llSetObjectName(master_base);
+                integer i = llGetNumberOfPrims();
+                while(~--i)
+                {
+                    string name = llGetLinkName(i);
+                    if(name == "hide")
+                    {
+                        llSetLinkPrimitiveParamsFast(i, [
+                            PRIM_TEXTURE, 0, tex, <1.0, 1.0, 0.0>, ZERO_VECTOR, 0.0,
+                            PRIM_COLOR, 0, col, 1.0,
+                            PRIM_ALPHA_MODE, 0, PRIM_ALPHA_MODE_NONE, 0
+                        ]);
+                        return;
+                    }
+                }
+            }
+
+            // Search for link "main", adjust face "ALL_SIDES"
+            else if(str == "texturemain")
+            {
+                llSetObjectName("");
+                llOwnerSay(VERSION_M + ": Set hud texture to " + tex + " with color " + (string)col + ".");
+                llSetObjectName(master_base);
+                integer i = llGetNumberOfPrims();
+                while(~--i)
+                {
+                    string name = llGetLinkName(i);
+                    if(name == "main")
+                    {
+                        llSetLinkPrimitiveParamsFast(i, [
+                            PRIM_TEXTURE, ALL_SIDES, tex, <1.0, 1.0, 0.0>, ZERO_VECTOR, 0.0,
+                            PRIM_COLOR, ALL_SIDES, col, 1.0,
+                            PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_NONE, 0
+                        ]);
+                        return;
+                    }
+                }
+            }
+
+            // Search for all links with description "indicator", adjust face "4"
+            else if(str == "textureno")
+            {
+                llSetObjectName("");
+                llOwnerSay(VERSION_M + ": Set indicator texture to " + tex + " with color " + (string)col + ".");
+                llSetObjectName(master_base);
+                integer i = llGetNumberOfPrims();
+                while(~--i)
+                {
+                    string desc = llList2String(llGetObjectDetails(llGetLinkKey(i), [OBJECT_DESC]), 0);
+                    if(desc == "indicator")
+                    {
+                        llSetLinkPrimitiveParamsFast(i, [
+                            PRIM_TEXTURE, 4, tex, <1.0, 1.0, 0.0>, ZERO_VECTOR, 0.0,
+                            PRIM_COLOR, 4, col, 1.0,
+                            PRIM_ALPHA_MODE, 4, PRIM_ALPHA_MODE_BLEND, 0
+                        ]);
+                    }
+                }
+            }
+
+            // Search for all links with description "text", adjust all faces.
+            else if(str == "colortext")
+            {
+                llSetObjectName("");
+                llOwnerSay(VERSION_M + ": Set text color to " + (string)id + ".");
+                llSetObjectName(master_base);
+                integer i = llGetNumberOfPrims();
+                while(~--i)
+                {
+                    string desc = llList2String(llGetObjectDetails(llGetLinkKey(i), [OBJECT_DESC]), 0);
+                    if(desc == "text")
+                    {
+                        llSetLinkPrimitiveParamsFast(i, [
+                            PRIM_COLOR, ALL_SIDES, (vector)((string)id), 1.0
+                        ]);
+                    }
+                }
+            }
+
+            // Search for all links that start with button, adjust face 4.
+            else if(str == "colorinactive")
+            {
+                llSetObjectName("");
+                llOwnerSay(VERSION_M + ": Set inactive color to " + (string)id + ".");
+                llSetObjectName(master_base);
+                integer i = llGetNumberOfPrims();
+                while(~--i)
+                {
+                    string desc = llList2String(llGetObjectDetails(llGetLinkKey(i), [OBJECT_DESC]), 0);
+                    if(startswith(desc, "button"))
+                    {
+                        llSetLinkPrimitiveParamsFast(i, [
+                            PRIM_COLOR, 4, (vector)((string)id), llList2Float(llGetLinkPrimitiveParams(i, [PRIM_COLOR, 4]), 1)
+                        ]);
+                    }
+                }
+            }
+        }
         else if(num == M_API_SET_FILTER)
         {
             setbuttonfilter(str, (integer)((string)id));

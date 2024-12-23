@@ -269,13 +269,20 @@ default
     no_sensor()
     {
         sensortimer(0.0);
-        if(sending > storedCt) return;
-        sendNext();
-        sendNext();
-        sendNext();
-        sendNext();
-        sendNext();
-        sensortimer(0.1);
+        if(llGetInventoryType("Intrusive Thoughts Configuration") == INVENTORY_NOTECARD)
+        {
+            getline = llGetNotecardLine(name, line);
+        }
+        else
+        {
+            if(sending > storedCt) return;
+            sendNext();
+            sendNext();
+            sendNext();
+            sendNext();
+            sendNext();
+            sensortimer(0.1);
+        }
     }
 
     run_time_permissions(integer perm)
@@ -503,9 +510,9 @@ default
     {
         if(q == getline && ready == FALSE)
         {
+            integer sent = 0;
             while(d != NAK)
             {
-                integer sent = 0;
                 if(d == EOF)
                 {
                     debug("[dataserver] End of config notecard");
@@ -558,10 +565,11 @@ default
                         storedCt++;
                         llLinksetDataWriteProtected("it-ct", (string)storedCt, "");
                         sent++;
-                        if(sent > 30)
+                        if(sent > 15)
                         {
-                            llSleep(0.5);
-                            sent = 0;
+                            ++line;
+                            sensortimer(0.1);
+                            return;
                         }
                     }
                 }
