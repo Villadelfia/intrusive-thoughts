@@ -481,7 +481,7 @@ default
                 worldRestrict = (integer)llGetSubString(m, -1, -1);
                 if(worldRestrict < 0) worldRestrict = 0;
                 if(worldRestrict > 1) worldRestrict = 1;
-                llMessageLinked(LINK_THIS, X_API_APPLY_INVENTORY, (string)inventoryRestrict, NULL_KEY);
+                llMessageLinked(LINK_THIS, X_API_APPLY_WORLD, (string)worldRestrict, NULL_KEY);
                 llMessageLinked(LINK_THIS, X_API_NOTIFY_WORLD, (string)worldRestrict, firstavatar);
                 llMessageLinked(LINK_THIS, X_API_SETTINGS_SAVE, restrictionString(), NULL_KEY);
             }
@@ -901,7 +901,7 @@ default
             llMessageLinked(LINK_THIS, X_API_APPLY_DAZE, (string)dazeRestrict, NULL_KEY);
             llMessageLinked(LINK_THIS, X_API_APPLY_CAMERA, (string)cameraRestrict, NULL_KEY);
             llMessageLinked(LINK_THIS, X_API_APPLY_INVENTORY, (string)inventoryRestrict, NULL_KEY);
-            llMessageLinked(LINK_THIS, X_API_APPLY_INVENTORY, (string)inventoryRestrict, NULL_KEY);
+            llMessageLinked(LINK_THIS, X_API_APPLY_WORLD, (string)worldRestrict, NULL_KEY);
         }
     }
 }
