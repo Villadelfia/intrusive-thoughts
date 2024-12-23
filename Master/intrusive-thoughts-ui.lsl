@@ -572,7 +572,7 @@ default
                 llSetObjectName("");
                 llOwnerSay(VERSION_M + ": Set main button texture to " + tex + " with color " + (string)col + ".");
                 llSetObjectName(master_base);
-                integer i = llGetNumberOfPrims();
+                integer i = llGetNumberOfPrims() + 1;
                 while(~--i)
                 {
                     string name = llGetLinkName(i);
@@ -594,7 +594,7 @@ default
                 llSetObjectName("");
                 llOwnerSay(VERSION_M + ": Set hud texture to " + tex + " with color " + (string)col + ".");
                 llSetObjectName(master_base);
-                integer i = llGetNumberOfPrims();
+                integer i = llGetNumberOfPrims() + 1;
                 while(~--i)
                 {
                     string name = llGetLinkName(i);
@@ -616,7 +616,7 @@ default
                 llSetObjectName("");
                 llOwnerSay(VERSION_M + ": Set indicator texture to " + tex + " with color " + (string)col + ".");
                 llSetObjectName(master_base);
-                integer i = llGetNumberOfPrims();
+                integer i = llGetNumberOfPrims() + 1;
                 while(~--i)
                 {
                     string desc = llList2String(llGetObjectDetails(llGetLinkKey(i), [OBJECT_DESC]), 0);
@@ -637,7 +637,7 @@ default
                 llSetObjectName("");
                 llOwnerSay(VERSION_M + ": Set text color to " + (string)id + ".");
                 llSetObjectName(master_base);
-                integer i = llGetNumberOfPrims();
+                integer i = llGetNumberOfPrims() + 1;
                 while(~--i)
                 {
                     string desc = llList2String(llGetObjectDetails(llGetLinkKey(i), [OBJECT_DESC]), 0);
@@ -656,7 +656,7 @@ default
                 llSetObjectName("");
                 llOwnerSay(VERSION_M + ": Set inactive color to " + (string)id + ".");
                 llSetObjectName(master_base);
-                integer i = llGetNumberOfPrims();
+                integer i = llGetNumberOfPrims() + 1;
                 while(~--i)
                 {
                     string desc = llList2String(llGetObjectDetails(llGetLinkKey(i), [OBJECT_DESC]), 0);

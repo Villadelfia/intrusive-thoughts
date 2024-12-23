@@ -146,15 +146,15 @@
 
 #define BUTTON_TRANSPARENCY 0.4
 
-string master_base = "Intrusive Thoughts Master [v3.0.6d]";
-string slave_base = "Intrusive Thoughts Slave [v3.0.6d]";
-#define VERSION_S "IT-Slave v3.0.6d"
-#define VERSION_M "IT-Master v3.0.6d"
+string master_base = "Intrusive Thoughts Master [v3.0.6e]";
+string slave_base = "Intrusive Thoughts Slave [v3.0.6e]";
+#define VERSION_S "IT-Slave v3.0.6e"
+#define VERSION_M "IT-Master v3.0.6e"
 // 3 digits for major
 // 3 digits for minor
 // 3 digits for patch
 // 2 digits for revision with base = 00, a = 01, b = 02...
-#define VERSION_CMP "00300000604"
+#define VERSION_CMP "00300000605"
 #define VERSION_FULL "31CAF3"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
