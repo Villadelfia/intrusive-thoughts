@@ -216,6 +216,11 @@ default
                     }
                 }
             }
+            else
+            {
+                // To avoid cases where the wearer tries a rez, fails, then gets the group tag and tries again, then changes groups.
+                groupchangeneeded = TRUE;
+            }
             lastparcel = parcelid;
 
             if(!rezmode)
