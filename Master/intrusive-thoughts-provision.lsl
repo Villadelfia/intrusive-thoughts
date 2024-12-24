@@ -1,5 +1,6 @@
 #include <IT/globals.lsl>
 key lastparcel = NULL_KEY;
+integer groupchangeneeded = FALSE;
 key provisiontarget = NULL_KEY;
 string provisionname = "";
 string provisiondesc = "";
@@ -185,18 +186,34 @@ default
             provisiondesc = llList2String(params, 1);
             key parcelid = llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_ID]), 0);
 
+            // Reset group change marker if needed.
+            if(parcelid != lastparcel)
+            {
+                groupchangeneeded = FALSE;
+            }
+
             // Check if we can rez.
             integer rezmode = canrez(llGetPos());
             if(!rezmode)
             {
+                // Only give the verbal warning if we're in a new place.
                 if(parcelid != lastparcel)
                 {
                     llSetObjectName("");
                     llOwnerSay("Cannot rez on this parcel. Trying to set land group. If that fails I will perform a no-rez capture.");
                     llSetObjectName(master_base);
+                }
+
+                // If we are in the same place, and a group change helped last time, or we're in a new place, try changing groups.
+                if((parcelid == lastparcel && groupchangeneeded == TRUE) || (parcelid != lastparcel))
+                {
                     llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
                     llSleep(2.5);
                     rezmode = canrez(llGetPos());
+                    if(rezmode)
+                    {
+                        groupchangeneeded = TRUE;
+                    }
                 }
             }
             lastparcel = parcelid;
@@ -212,6 +229,11 @@ default
                 provisiontarget = NULL_KEY;
                 llRezAtRoot("ball", llGetPos() - <0.0, 0.0, 3.0>, ZERO_VECTOR, ZERO_ROTATION, (integer)llList2String(params, 2) | (integer)llList2String(params, 3));
             }
+        }
+        else if(num == M_API_HUD_STARTED)
+        {
+            lastparcel = NULL_KEY;
+            groupchangeneeded = FALSE;
         }
     }
 
