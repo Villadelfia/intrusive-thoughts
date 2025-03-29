@@ -57,7 +57,6 @@ capture()
     if(keyisavatar)
     {
         llOwnerSay("@tplure:" + (string)objectifier + "=add,accepttp:" + (string)objectifier + "=add");
-        llOwnerSay("@startim:" + (string)objectifier + "=add,recvim:" + (string)objectifier + "=add,sendim:" + (string)objectifier + "=add");
     }
 
     // Apply the saved settings loaded from the server.

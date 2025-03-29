@@ -266,7 +266,7 @@ default
                 }
 
                 // Apply RLV restrictions.
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@unsit=n|tplocal=n|@tplm=n|@tploc=n|@tplure=n|@sendgesture=n|@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add|@sendim:" + (string)llGetOwnerKey(rezzer) + "=add");
+                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@unsit=n|tplocal=n|@tplm=n|@tploc=n|@tplure=n|@sendgesture=n");
                 if(llGetInventoryNumber(INVENTORY_ANIMATION) == 2) llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@showself=n");
                 llMessageLinked(LINK_THIS, X_API_APPLY_IM, (string)imRestrict, NULL_KEY);
                 llMessageLinked(LINK_THIS, X_API_APPLY_HEARING, (string)hearingRestrict, NULL_KEY);
@@ -532,7 +532,6 @@ default
             {
                 if(llAvatarOnSitTarget() == NULL_KEY) die();
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("puton")), ["|||"], []);
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@startim:" + (string)llGetOwnerKey(rezzer) + "=rem|@recvim:" + (string)llGetOwnerKey(rezzer) + "=rem|@sendim:" + (string)llGetOwnerKey(rezzer) + "=rem");
                 rezzer = (key)llList2String(params, 0);
                 name = llList2String(params, 1);
                 objectprefix = "";
@@ -540,13 +539,11 @@ default
                 llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "ballnotify|||avatar|||" + name + "|||" + (string)rezzer);
                 keyisavatar = TRUE;
                 llClearCameraParams();
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add|@sendim:" + (string)llGetOwnerKey(rezzer) + "=add");
             }
             else if(startswith(m, "putdown"))
             {
                 if(llAvatarOnSitTarget() == NULL_KEY) die();
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("putdown")), ["|||"], []);
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@startim:" + (string)llGetOwnerKey(rezzer) + "=rem|@recvim:" + (string)llGetOwnerKey(rezzer) + "=rem|@sendim:" + (string)llGetOwnerKey(rezzer) + "=rem");
                 rezzer = (key)llList2String(params, 0);
                 name = llList2String(params, 1);
                 objectprefix = "";

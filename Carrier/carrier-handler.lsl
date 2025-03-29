@@ -205,7 +205,7 @@ default
                     captured = TRUE;
                 }
                 prefix = llToLower(llGetSubString(llGetUsername(firstavatar), 0, 1));
-                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@sendgesture=n|@startim:" + (string)llGetOwnerKey(rezzer) + "=add|@recvim:" + (string)llGetOwnerKey(rezzer) + "=add");
+                llRegionSayTo(llAvatarOnLinkSitTarget(volumelink), RLVRC, "restrict," + (string)llAvatarOnLinkSitTarget(volumelink) + ",@tplocal=n|@tplm=n|@tploc=n|@tplure_sec=n|@sendgesture=n");
                 applyIm();
                 llRequestPermissions(llAvatarOnLinkSitTarget(volumelink), PERMISSION_TRIGGER_ANIMATION | PERMISSION_TAKE_CONTROLS);
             }
