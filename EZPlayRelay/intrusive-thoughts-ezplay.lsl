@@ -10,6 +10,7 @@ integer relayInUse = FALSE;
 string lastForm = "";
 integer pendingForm = FALSE;
 integer expectingTp = FALSE;
+rotation base = ZERO_ROTATION;
 
 notifyPrimary()
 {
@@ -307,7 +308,8 @@ state active
                 lastForm = "possession|||" + (string)controller;
                 llMessageLinked(LINK_SET, X_API_SET_CONTROLLER, "", controller);
                 muted = FALSE;
-                llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
+                llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);
+                base = llGetRootRotation();
             }
             else if(m == "pingctrl")
             {
@@ -332,6 +334,7 @@ state active
             else if(m == "ctrlstand")
             {
                 llOwnerSay("@unsit=force,unsit=y");
+                base = llGetRootRotation();
             }
             else if(m == "ctrlmute")
             {
@@ -378,24 +381,18 @@ state active
             else if(startswith(m, "ctrl"))
             {
                 m = llList2String(llParseString2List(m, [" "], []), 1);
-                vector v;
+                vector v = ZERO_VECTOR;
                 if(contains(m, "f")) v.x += IMPULSE;
                 if(contains(m, "b")) v.x -= IMPULSE;
-                if(contains(m, "l")) v.y += IMPULSE;
-                if(contains(m, "r")) v.y -= IMPULSE;
                 if(contains(m, "u")) v.z  = IMPULSE*10;
                 else                 v.z  = 0.1;
                 if(contains(m, "r") || contains(m, "l"))
                 {
-                    vector startpos = llGetPos();
-                    rotation rot = llGetRootRotation();
-                    vector endpos;
-                    if(contains(m, "l")) endpos = startpos + (<1.0,  1.0, 0.0> * rot) * 3;
-                    if(contains(m, "r")) endpos = startpos + (<1.0, -1.0, 0.0> * rot) * 3;
-                    vector point = endpos - llGetPos();
-                    llOwnerSay("@setrot:" + (string)llAtan2(point.x, point.y) + "=force");
+                    if(contains(m, "l")) base *= llEuler2Rot(<0, 0, 0.025>);
+                    if(contains(m, "r")) base *= llEuler2Rot(<0, 0, -0.025>);
+                    llSetAgentRot(base, 0);
                 }
-                llApplyImpulse(v, TRUE);
+                if(v.x != 0.0 || v.y != 0.0 || v.z != 0.1) llApplyImpulse(v, TRUE);
             }
         }
     }

@@ -168,3 +168,4 @@ Version 3.0.6:
  - Fix potential crash of Slave.
  - Loading speed increase.
  - Add theming.
+ - Improve possession.

@@ -1,5 +1,6 @@
 #include <IT/globals.lsl>
 #define IMPULSE 1.6
+rotation base = ZERO_ROTATION;
 key controller = NULL_KEY;
 key objectifier = NULL_KEY;
 integer muted = FALSE;
@@ -81,7 +82,8 @@ default
             {
                 controller = llGetOwnerKey(id);
                 muted = FALSE;
-                llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS);
+                llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);
+                base = llGetRootRotation();
             }
             else if(startswith(m, "sit") && controller == NULL_KEY && objectifier == NULL_KEY)
             {
@@ -114,6 +116,7 @@ default
             else if(m == "ctrlstand")
             {
                 llOwnerSay("@unsit=force,unsit=y");
+                base = llGetRootRotation();
             }
             else if(m == "ctrlmute")
             {
@@ -171,19 +174,13 @@ default
                 vector v;
                 if(contains(m, "f")) v.x += IMPULSE;
                 if(contains(m, "b")) v.x -= IMPULSE;
-                if(contains(m, "l")) v.y += IMPULSE;
-                if(contains(m, "r")) v.y -= IMPULSE;
                 if(contains(m, "u")) v.z  = IMPULSE*10;
                 else                 v.z  = 0.1;
                 if(contains(m, "r") || contains(m, "l"))
                 {
-                    vector startpos = llGetPos();
-                    rotation rot = llGetRootRotation();
-                    vector endpos;
-                    if(contains(m, "l")) endpos = startpos + (<1.0,  1.0, 0.0> * rot) * 3;
-                    if(contains(m, "r")) endpos = startpos + (<1.0, -1.0, 0.0> * rot) * 3;
-                    vector point = endpos - llGetPos();
-                    llOwnerSay("@setrot:" + (string)llAtan2(point.x, point.y) + "=force");
+                    if(contains(m, "l")) base *= llEuler2Rot(<0, 0, 0.1>);
+                    if(contains(m, "r")) base *= llEuler2Rot(<0, 0, -0.1>);
+                    llSetAgentRot(base, 0);
                 }
                 llApplyImpulse(v, TRUE);
             }
