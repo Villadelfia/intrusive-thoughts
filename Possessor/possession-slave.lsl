@@ -171,18 +171,18 @@ default
             else if(startswith(m, "ctrl"))
             {
                 m = llList2String(llParseString2List(m, [" "], []), 1);
-                vector v;
+                vector v = ZERO_VECTOR;
                 if(contains(m, "f")) v.x += IMPULSE;
                 if(contains(m, "b")) v.x -= IMPULSE;
                 if(contains(m, "u")) v.z  = IMPULSE*10;
                 else                 v.z  = 0.1;
                 if(contains(m, "r") || contains(m, "l"))
                 {
-                    if(contains(m, "l")) base *= llEuler2Rot(<0, 0, 0.1>);
-                    if(contains(m, "r")) base *= llEuler2Rot(<0, 0, -0.1>);
+                    if(contains(m, "l")) base *= llEuler2Rot(<0, 0, 0.025>);
+                    if(contains(m, "r")) base *= llEuler2Rot(<0, 0, -0.025>);
                     llSetAgentRot(base, 0);
                 }
-                llApplyImpulse(v, TRUE);
+                if(v.x != 0.0 || v.y != 0.0 || v.z != 0.1) llApplyImpulse(v, TRUE);
             }
         }
         else if(c == STRUGGLE_CHANNEL)
