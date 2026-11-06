@@ -39,6 +39,7 @@ sendScript()
     key k = llList2Key(updatable, 0);
     integer pin = ((integer)("0x"+llGetSubString((string)k,-8,-1)) & 0x3FFFFFFF) ^ 0xBFFFFFFF;
     llRemoteLoadScriptPin(k, "intrusive-thoughts-furniture", pin, TRUE, 1);
+    llRemoteLoadScriptPin(k, "intrusive-thoughts-messages", pin, TRUE, 1);
 }
 
 default
@@ -169,6 +170,7 @@ state slave
                 {
                     await = 1;
                     llRemoveInventory("intrusive-thoughts-furniture");
+                    if(llGetInventoryType("intrusive-thoughts-messages") == INVENTORY_SCRIPT) llRemoveInventory("intrusive-thoughts-messages");
                     llRegionSay(MANTRA_CHANNEL, "furnupdscript");
                     llOwnerSay("Requesting new script...");
                 }

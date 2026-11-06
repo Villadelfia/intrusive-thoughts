@@ -19,6 +19,7 @@ integer notify = TRUE;
 string prefix = "??";
 integer timerctr = 0;
 integer retries = 50;
+key targetOwner = NULL_KEY;
 
 integer furnitureCameraMode = 0;
 key furnitureCameraPos = NULL_KEY;
@@ -203,6 +204,8 @@ default
 
         // Set the rezzer and default animation.
         rezzer = (key)llList2String(llGetObjectDetails(llGetKey(), [OBJECT_REZZER_KEY]), 0);
+        targetOwner = rezzer;
+        if(llGetStartString() != "") targetOwner = (key)llGetStartString();
         animation = "hide_a";
 
         // Set certain settings based on the start parameter.
@@ -321,7 +324,7 @@ default
         {
             llSetObjectName("");
             llRegionSayTo(llAvatarOnSitTarget(), 0, "You can restrict yourself further by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you are captured by the same person.");
-            llRegionSayTo(llGetOwnerKey(rezzer), 0, "You can edit the restrictions on your victim by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you capture the same person.");
+            llRegionSayTo(targetOwner, 0, "You can edit the restrictions on your victim by clicking [secondlife:///app/chat/5/" + prefix + "menu here] or by typing /5" + prefix + "menu. Settings made will be saved and remembered for when you capture the same person.");
             llSetObjectName("ball");
         }
 
@@ -380,7 +383,7 @@ default
         }
         else if(c == 5)
         {
-            if(id != firstavatar && llGetOwner() != llGetOwnerKey(id)) return;
+            if(id != firstavatar && targetOwner != llGetOwnerKey(id)) return;
             if(m == prefix + "menu") llMessageLinked(LINK_THIS, X_API_GIVE_MENU, "", llGetOwnerKey(id));
             else if(m == prefix + "invis")
             {
@@ -533,6 +536,8 @@ default
                 if(llAvatarOnSitTarget() == NULL_KEY) die();
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("puton")), ["|||"], []);
                 rezzer = (key)llList2String(params, 0);
+                targetOwner = rezzer;
+                llMessageLinked(LINK_THIS, X_API_CHANGE_TARGET_OWNER, "", targetOwner);
                 name = llList2String(params, 1);
                 objectprefix = "";
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "puton " + (string)llAvatarOnSitTarget() + "|||" + name + "|||" + url);

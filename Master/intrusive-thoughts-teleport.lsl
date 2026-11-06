@@ -192,8 +192,10 @@ default
     http_response(key q, integer status, list metadata, string body)
     {
         if(q != ds) return;
-        string region = llList2String(llParseString2List(body, ["'"], []), 1);
-        if(status != 200 || region == "error")
+        string region = llDumpList2String(llParseString2List(body,["+"],[])," ");
+        //string region = llList2String(llParseString2List(body, ["'"], []), 1);
+        //if(status != 200 || region == "error")
+        if(status != 200 || llGetSubString(body,0,4) == "Error")
         {
             llSetObjectName("");
             llOwnerSay("Error getting landmark data...");
@@ -216,7 +218,9 @@ default
             targetsimcorner = <256.0 * (float) ((integer)(global.x / 256.0)), 256.0 * (float) ((integer)(global.y / 256.0)), 0.0>;
             targetsimlocal = global - targetsimcorner;
             targetsimcorner /= 256;
-            string url = "https://cap.secondlife.com/cap/0/b713fe80-283b-4585-af4d-a3b7d9a32492?var=region&grid_x=" + (string)llRound(targetsimcorner.x) + "&grid_y=" + (string)llRound(targetsimcorner.y);
+            //Thanks LL. Not even able to keep a simple API up?
+            //string url = "https://cap.secondlife.com/cap/0/b713fe80-283b-4585-af4d-a3b7d9a32492?var=region&grid_x=" + (string)llRound(targetsimcorner.x) + "&grid_y=" + (string)llRound(targetsimcorner.y);
+            string url = "http://api.gridsurvey.com/simquery.php?xy=" + (string)llRound(targetsimcorner.x) + "," + (string)llRound(targetsimcorner.y) + "&item=name";
             ds = llHTTPRequest(url, [], "");
             while(llGetInventoryNumber(INVENTORY_LANDMARK) > 0) llRemoveInventory(llGetInventoryName(INVENTORY_LANDMARK, 0));
         }

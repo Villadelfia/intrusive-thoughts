@@ -121,6 +121,26 @@
 #define X_API_DO_VALIDATE         -4034
 #define X_API_VALIDATE_OK         -4035
 #define X_API_VALIDATE_NO         -4036
+#define X_API_CHANGE_TARGET_OWNER -4037
+
+#define FM_RELEASE                -5000
+#define FD_OWNER                  -5001
+#define FD_CAPTURER               -5002
+#define FD_NAME                   -5003
+#define FD_GROUP                  -5004
+#define FD_TIME                   -5005
+#define FM_WELCOME                -5006
+#define FM_LINK                   -5007
+#define FM_PLEASE_REZ             -5008
+#define FM_NO_TEMP                -5009
+#define FM_NO_PERM                -5010
+#define FM_G2G                    -5011
+#define FM_REINIT                 -5012
+#define FM_LOCK1                  -5013
+#define FM_LOCK2                  -5014
+#define FM_CHANNEL                -5015
+#define FM_CAPTURING              -5016
+#define FM_MAINMENU               -5017
 
 #define IT_PLUGIN_REGISTER        -8000
 #define IT_PLUGIN_RESPONSE        -8001
@@ -146,20 +166,20 @@
 
 #define BUTTON_TRANSPARENCY 0.4
 
-string master_base = "Intrusive Thoughts Master [v3.0.6g]";
-string slave_base = "Intrusive Thoughts Slave [v3.0.6g]";
-#define VERSION_S "IT-Slave v3.0.6g"
-#define VERSION_M "IT-Master v3.0.6g"
+string master_base = "Intrusive Thoughts Master [v3.0.7]";
+string slave_base = "Intrusive Thoughts Slave [v3.0.7]";
+#define VERSION_S "IT-Slave v3.0.7"
+#define VERSION_M "IT-Master v3.0.7"
 // 3 digits for major
 // 3 digits for minor
 // 3 digits for patch
 // 2 digits for revision with base = 00, a = 01, b = 02...
-#define VERSION_CMP "00300000608"
-#define VERSION_FULL "31CAF5"
+#define VERSION_CMP "00300000700"
+#define VERSION_FULL "31CAF8"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
-#define VERSION_PATCH 6
-#define FURNITURE_VERSION 12
+#define VERSION_PATCH 7
+#define FURNITURE_VERSION 15
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG

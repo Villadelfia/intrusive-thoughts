@@ -169,3 +169,7 @@ Version 3.0.6:
  - Loading speed increase.
  - Add theming.
  - Improve possession.
+
+Version 3.0.7:
+ - Add private mode to furniture.
+ - Fix broken LL API for landmark teleports.

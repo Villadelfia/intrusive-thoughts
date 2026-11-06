@@ -26,6 +26,10 @@ integer menuState = 0;
 integer gaveUnlockNotification = FALSE;
 list targets = [];
 
+// Allow the actual menu to be limited to the owner and capturer.
+integer ownerOnly = FALSE;
+key whoCaptured = NULL_KEY;
+
 // Whether the furniture is always visible or only when occupied.
 integer furnitureIsAlwaysVisible = TRUE;
 
@@ -115,7 +119,7 @@ giveUnlockNotification()
 {
     if(gaveUnlockNotification == TRUE) return;
     gaveUnlockNotification = TRUE;
-    llRegionSayTo(storedavatar, 0, "Your capture timer is up. You may now, and at any later time, type /5release or click [secondlife:///app/chat/5/release here] to release yourself.");
+    llMessageLinked(LINK_THIS, FM_RELEASE, "", storedavatar);
 }
 
 makeNewTimer()
@@ -229,142 +233,39 @@ string prettyDuration(integer m)
 
 handleMenu(key t)
 {
+    if(t != llGetOwner()) 
+    {
+        if(t != llGetOwner() && ownerOnly) 
+        {
+            llMessageLinked(LINK_THIS, FD_OWNER, "", t);
+            return;
+        } 
+        else if(t != whoCaptured && whoCaptured != NULL_KEY && storedavatar != NULL_KEY) 
+        {
+            llMessageLinked(LINK_THIS, FD_CAPTURER, "", t);
+            return;
+        }
+    }
+
     if(menuState == 0)
     {
-        string msg = "";
-        list buttons = [];
-
-
-        // Top row: Capturing, releasing, locking, unlocking, deadlocking.
-        if(storedobject)
-        {
-            if(lockedAvatar)
-            {
-                if(lockedDeadlock)
-                {
-                    msg += "This furniture is currently deadlocked to secondlife:///app/agent/" + (string)lockedAvatar + "/about.\n \n";
-                    if(canUnlock()) buttons += [" ", "UNLOCK", " "];
-                }
-                else
-                {
-                    msg += "This furniture is currently locked to secondlife:///app/agent/" + (string)lockedAvatar + "/about.\n \n";
-                    if(timerMin != 0 && timerMax != 0) buttons += [" ", "UNLOCK", "DEADLOCK"];
-                    else                               buttons += [" ", "UNLOCK", " "];
-                }
-            }
-            else
-            {
-                msg += "This furniture is currently occupied by secondlife:///app/agent/" + (string)storedavatar + "/about.\n \n";
-                buttons += ["RELEASE", "LOCK", " "];
-            }
-        }
-        else
-        {
-            if(lockedAvatar)
-            {
-                if(lockedDeadlock)
-                {
-                    msg += "This furniture is currently deadlocked to secondlife:///app/agent/" + (string)lockedAvatar + "/about.\n \n";
-                    if(canUnlock()) buttons += [" ", "UNLOCK", " "];
-                }
-                else
-                {
-                    msg += "This furniture is currently locked to secondlife:///app/agent/" + (string)lockedAvatar + "/about.\n \n";
-                    if(timerMin != 0 && timerMax != 0) buttons += [" ", "UNLOCK", "DEADLOCK"];
-                    else                               buttons += [" ", "UNLOCK", " "];
-                }
-            }
-            else
-            {
-                msg += "This furniture is currently ready to capture anyone.\n \n";
-                buttons += ["CAPTURE", " ",  " "];
-            }
-        }
-
-
-        // Second row: Object group and uncaptured visibility.
-        msg += " ▶ This furniture is named " + llGetObjectName() + ".\n";
-        if(objectGroup == "") msg += " ▶ This furniture is not in a group.\n";
-        else                  msg += " ▶ This furniture is in the \"" + objectGroup+ "\" group.\n";
-        buttons += ["RENAME", "GROUP"];
-
-        if(furnitureIsAlwaysVisible)
-        {
-            msg += " ▶ The furniture is always visible, even when not occupied.\n \n";
-            buttons += ["INVISIBLE"];
-        }
-        else
-        {
-            msg += " ▶ The furniture is invisible when not occupied.\n \n";
-            buttons += ["VISIBLE"];
-        }
-
-
-        // Third row: Speech, anim, camera.
-        if(objectIsMute)
-        {
-            msg += " ▶ Stored objects cannot speak.\n";
-            buttons += ["CAN SPEAK"];
-        }
-        else
-        {
-            msg += " ▶ Stored objects can speak.\n";
-            buttons += ["MUTE"];
-        }
-
-        if(animationMode == 0)
-        {
-            msg += " ▶ Animation: Hide.\n";
-            buttons += ["HIDE NAME"];
-        }
-        else if(animationMode == 1)
-        {
-            msg += " ▶ Animation: Invisible.\n";
-            if(llGetInventoryNumber(INVENTORY_ANIMATION) > 0) buttons += ["CUSTOM"];
-            else                                              buttons += ["SHOW NAME"];
-        }
-        else if(animationMode == 2)
-        {
-            msg += " ▶ Animation: Custom.\n";
-            buttons += ["SHOW NAME"];
-        }
-
-        if(camPosKey != NULL_KEY && camFocusKey != NULL_KEY)
-        {
-            if(cameraMode == 0)
-            {
-                msg += " ▶ Camera follows normal rules.";
-                buttons += ["OBJ CAM"];
-            }
-            else if(cameraMode == 1)
-            {
-                msg += " ▶ Camera focuses on object.";
-                buttons += ["FPV CAM"];
-            }
-            else if(cameraMode == 2)
-            {
-                msg += " ▶ Camera focuses on avatars.";
-                buttons += ["NORM CAM"];
-            }
-        }
-        else
-        {
-            buttons += [" "];
-        }
-
-        // Fourth row: Obj menu and timer.
-        if(storedobject)
-        {
-            if(animationMode == 2) buttons += ["TIMER", "EDIT TOGGLE", "OBJ MENU"];
-            else                   buttons += ["TIMER", " ", "OBJ MENU"];
-        }
-        else
-        {
-            buttons += ["TIMER", " ", " "];
-        }
-
-        // Order and send it.
-        llDialog(t, msg, orderbuttons(buttons), FURNITURE_CHANNEL);
+        string param = 
+            (string)storedobject + "|||" +
+            (string)lockedAvatar + "|||" +
+            (string)lockedDeadlock + "|||" +
+            (string)canUnlock() + "|||" +
+            (string)timerMin + "|||" +
+            (string)timerMax + "|||" +
+            (string)storedavatar + "|||" +
+            (string)ownerOnly + "|||" +
+            objectGroup + "|||" +
+            (string)furnitureIsAlwaysVisible + "|||" +
+            (string)objectIsMute + "|||" +
+            (string)animationMode + "|||" +
+            (string)camPosKey + "|||" +
+            (string)camFocusKey + "|||" +
+            (string)cameraMode + "|||";
+        llMessageLinked(LINK_THIS, FM_MAINMENU, param, t);
     }
     else if(menuState == 1)
     {
@@ -405,11 +306,11 @@ handleMenu(key t)
     }
     else if(menuState == 2)
     {
-        llTextBox(t, "Enter a new name for this furniture.", FURNITURE_CHANNEL);
+        llMessageLinked(LINK_THIS, FD_NAME, "", t);
     }
     else if(menuState == 3)
     {
-        llTextBox(t, "Enter a new group for this furniture. Objects stored on this furniture will be able to talk to objects stored on other furniture with the same group. Enter none to remove the group.", FURNITURE_CHANNEL);
+        llMessageLinked(LINK_THIS, FD_GROUP, "", t);
     }
     else if(menuState == 4)
     {
@@ -498,7 +399,7 @@ handleMenu(key t)
     }
     else if(menuState == 5)
     {
-        llTextBox(t, "Enter a time limit for the capture.\n\nIf you want a set time, enter one number in minutes.\nIf you want a minimum and a maximum, enter two numbers separated by a space, both in minutes.\nIf you want to have the capture indefinite, enter NONE.", FURNITURE_CHANNEL);
+        llMessageLinked(LINK_THIS, FD_TIME, "", t);
     }
 }
 
@@ -513,7 +414,7 @@ default
     {
         if(llGetAttached() != 0)
         {
-            llOwnerSay("Please rez me instead of wearing me.");
+            llMessageLinked(LINK_THIS, FM_PLEASE_REZ, "", NULL_KEY);
             return;
         }
         if(llGetLinkNumber() != 0)
@@ -522,11 +423,8 @@ default
             return;
         }
         llSetRemoteScriptAccessPin(0);
-        llOwnerSay("Welcome to your " + llGetObjectName() + ".\n\nFirst, I need to link up with another object. Drop the script I am giving you right now into that object and follow the instructions.");
-        llGiveInventory(llGetOwner(), "IT Furniture Linking Script");
+        llMessageLinked(LINK_THIS, FM_WELCOME, "", NULL_KEY);
         handle = llListen(-1443216791, "", NULL_KEY, "");
-        llPreloadSound("dec9fb53-0fef-29ae-a21d-b3047525d312");
-        llSetStatus(STATUS_PHANTOM, TRUE);
     }
 
     listen(integer channel, string name, key id, string message)
@@ -539,10 +437,10 @@ default
         wasPhysical = llList2Integer(dets, 0);
         if(llList2Integer(dets, 1))
         {
-            llOwnerSay("Can't link to temp rezzed objects!");
+            llMessageLinked(LINK_THIS, FM_NO_TEMP, "", NULL_KEY);
             llResetScript();
         }
-        llOwnerSay("I am linking to " + llList2String(llGetObjectDetails(linkTarget, [OBJECT_NAME]), 0) + ". Please grant me the linking permission to complete setup.");
+        llMessageLinked(LINK_THIS, FM_LINK, "", linkTarget);
         llRequestPermissions(llGetOwner(), PERMISSION_CHANGE_LINKS);
     }
 
@@ -577,7 +475,7 @@ default
         }
         else
         {
-            llOwnerSay("You must grant the linking permission to continue.");
+            llMessageLinked(LINK_THIS, FM_NO_PERM, "", NULL_KEY);
             llResetScript();
         }
     }
@@ -619,7 +517,7 @@ default
             if(wasPhysical) llSetLinkPrimitiveParamsFast(LINK_ROOT, [PRIM_TYPE, PRIM_TYPE_SPHERE, PRIM_HOLE_DEFAULT, <0.0, 1.0, 0.0>, 0.0, <0.0, 0.0, 0.0>, <0.0, 1.0, 0.0>]);
             llSetStatus(STATUS_PHANTOM, !wasPhysical);
             llSetStatus(STATUS_PHYSICS, wasPhysical);
-            llOwnerSay("Alright, I'm good to go. You can now store objects in me via the IT Master HUD. Click me for more options.");
+            llMessageLinked(LINK_THIS, FM_G2G, "", NULL_KEY);
             llRemoveInventory("IT Furniture Linking Script");
             state running;
         }
@@ -637,6 +535,7 @@ state running
         objectGroup = llStringTrim(objectGroup, STRING_TRIM);
         llSetObjectDesc(objectGroup);
         FURNITURE_CHANNEL = ((integer)("0x"+llGetSubString((string)llGetKey(),-8,-1)) & 0x3FFFFFFF) ^ 0xBFFFFFFF;
+        llMessageLinked(LINK_THIS, FM_CHANNEL, (string)FURNITURE_CHANNEL, NULL_KEY);
         llListen(FURNITURE_CHANNEL, "", NULL_KEY, "");
         llSetRemoteScriptAccessPin(FURNITURE_CHANNEL);
         llSetLinkAlpha(LINK_THIS, 0.0, ALL_SIDES);
@@ -653,7 +552,7 @@ state running
 
     on_rez(integer start)
     {
-        llOwnerSay("Fresh rez detected... Reinitializing.");
+        llMessageLinked(LINK_THIS, FM_REINIT, "", NULL_KEY);
         lockedAvatar = NULL_KEY;
         storedobject = NULL_KEY;
         storedavatar = NULL_KEY;
@@ -684,8 +583,7 @@ state running
                 }
                 else
                 {
-                    if(storedobject) llRegionSayTo(llGetOwnerKey(id), 0, "The stored object is locked to this furniture. The owner can unlock it by clicking the furniture.");
-                    else             llRegionSayTo(llGetOwnerKey(id), 0, "This furniture is reserved for a specific object. The owner can release this reservation by clicking the furniture.");
+                    llMessageLinked(LINK_THIS, FM_LOCK1, (string)storedobject, id);
                 }
             }
 
@@ -711,7 +609,7 @@ state running
                 // If we have a locked avatar, deny the request.
                 if(lockedAvatar)
                 {
-                    llRegionSayTo(llGetOwnerKey(id), 0, "This furniture is reserved for a specific object. You can release this reservation by clicking the furniture.");
+                    llMessageLinked(LINK_THIS, FM_LOCK2, "", id);
                     return;
                 }
 
@@ -720,6 +618,7 @@ state running
 
                 // We store the object.
                 list params = llParseString2List(llDeleteSubString(m, 0, llStringLength("putdown")), ["|||"], []);
+                whoCaptured = llGetOwnerKey(id);
                 storedobject = (key)llList2String(params, 0);
                 storedname = llList2String(params, 1);
                 whichperson();
@@ -740,18 +639,19 @@ state running
                 // If we're locked to someone, refuse.
                 if(lockedAvatar)
                 {
-                    llRegionSayTo(llGetOwnerKey(id), 0, "This furniture is reserved for a specific object. You can release this reservation by clicking the furniture.");
+                    llMessageLinked(LINK_THIS, FM_LOCK2, "", id);
                     return;
                 }
 
                 // Set the uuid of who to capture.
+                whoCaptured = llGetOwnerKey(id);
                 capturing = (key)llDeleteSubString(m, 0, llStringLength("capture"));
 
                 // Then do it.
                 integer option = 4 | 1;
                 if(animationMode == 1) option = 4 | 2;
                 makeNewTimer();
-                llRezAtRoot("ball", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, option);
+                llRezObjectWithParams("ball", [REZ_PARAM, option, REZ_PARAM_STRING, (string)whoCaptured]);
                 waitingForRez = TRUE;
                 llSetTimerEvent(15.0);
             }
@@ -826,6 +726,16 @@ state running
                 {
                     lockedAvatar = NULL_KEY;
                     llSensorRemove();
+                    handleMenu(id);
+                }
+                else if(m == "PUBLIC")
+                {
+                    ownerOnly = FALSE;
+                    handleMenu(id);
+                }
+                else if(m == "OWNER")
+                {
+                    ownerOnly = TRUE;
                     handleMenu(id);
                 }
 
@@ -915,12 +825,13 @@ state running
                 }
                 else
                 {
+                    whoCaptured = id;
                     capturing = llList2Key(targets, ((((integer)m)-1)*2)+1);
-                    llOwnerSay("Capturing secondlife:///app/agent/" + (string)capturing + "/about...");
+                    llMessageLinked(LINK_THIS, FM_CAPTURING, (string)capturing, id);
                     integer option = 4 | 1;
                     if(animationMode == 1) option = 4 | 2;
                     makeNewTimer();
-                    llRezAtRoot("ball", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, option);
+                    llRezObjectWithParams("ball", [REZ_PARAM, option, REZ_PARAM_STRING, (string)whoCaptured]);
                     waitingForRez = TRUE;
                     llSetTimerEvent(15.0);
                 }
@@ -1073,7 +984,7 @@ state running
         integer option = 4 | 1;
         if(animationMode == 1) option = 4 | 2;
         gaveUnlockNotification = FALSE;
-        llRezAtRoot("ball", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, option);
+        llRezObjectWithParams("ball", [REZ_PARAM, option, REZ_PARAM_STRING, (string)whoCaptured]);
         waitingForRez = TRUE;
         llSetTimerEvent(15.0);
         llSensorRemove();
@@ -1097,7 +1008,7 @@ state running
             {
                 integer option = 4 | 1;
                 if(animationMode == 1) option = 4 | 2;
-                llRezAtRoot("ball", llGetPos(), ZERO_VECTOR, ZERO_ROTATION, option);
+                llRezObjectWithParams("ball", [REZ_PARAM, option, REZ_PARAM_STRING, (string)whoCaptured]);
                 waitingForRez = TRUE;
                 llSetTimerEvent(15.0);
                 return;
