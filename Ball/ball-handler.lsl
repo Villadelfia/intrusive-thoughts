@@ -239,6 +239,8 @@ default
         {
             if(llAvatarOnSitTarget() != NULL_KEY)
             {
+                llSetObjectName("ball");
+
                 // Go invis.
                 llSetAlpha(0.0, ALL_SIDES);
 
@@ -524,6 +526,7 @@ default
                 vector pos = llList2Vector(llGetObjectDetails(firstavatar, [OBJECT_POS]), 0);
                 llSetRegionPos(pos + <0.25, 0.0, 0.0>);
                 llListen(RLVRC, "", NULL_KEY, "");
+                llSetObjectName(objectprefix + llList2String(llParseString2List(name, [";"], []), 0));
                 llRegionSayTo(firstavatar, RLVRC, "c," + (string)firstavatar + ",@sit:" + (string)llGetKey() + "=force|@tplocal=n");
                 llSetTimerEvent(60.0);
             }

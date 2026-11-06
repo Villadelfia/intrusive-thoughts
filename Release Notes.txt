@@ -173,3 +173,4 @@ Version 3.0.6:
 Version 3.0.7:
  - Add private mode to furniture.
  - Fix broken LL API for landmark teleports.
+ - Improve name of objectification ball in RLV relays.
