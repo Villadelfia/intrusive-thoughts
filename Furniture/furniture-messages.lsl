@@ -1,6 +1,118 @@
 #include <IT/globals.lsl>
 integer FURNITURE_CHANNEL;
 
+scanLinkSet(integer canAdd)
+{
+    list data = llParseString2List(llLinksetDataRead("link_texture_data"), [";"], []);
+    integer n = llGetObjectPrimCount(llGetKey());
+    integer i;
+    list details;
+    string linkkey;
+    if(!canAdd) jump noadd;
+    for(i = 1; i <= n; i++)
+    {
+        // We never alter our prim.
+        linkkey = llGetObjectLinkKey(llGetKey(), i);
+        if(linkkey == llGetObjectLinkKey(llGetKey(), LINK_THIS)) jump skip;
+
+        // We need lots of details...
+        details = llGetLinkPrimitiveParams(i, [
+            PRIM_NAME, 
+            PRIM_DESC
+        ]);
+
+        // We skip links labeled nohide in description or name.
+        string name = llList2String(details, 0);
+        string desc = llList2String(details, 1);
+        if(llToLower(name) == "nohide" || llToLower(desc) == "nohide") jump skip;
+
+        // Check if a description matched a stored link.
+        integer idx = llListFindList(data, [desc]);
+        if(idx != -1 && llStringLength(desc) == 36)
+        {
+            data = llListReplaceList(data, [(string)linkkey, (string)i], idx, idx+1);
+            jump skip;
+        }
+
+        // Otherwise, we have stuff to add to the data!
+        llSetLinkPrimitiveParamsFast(i, [PRIM_DESC, (string)linkkey]);
+        list add = [(string)linkkey, (string)i];
+        integer j;
+        for(j = 0; j < 8; j++)
+        {
+            details = llGetLinkPrimitiveParams(i, [
+                PRIM_ALPHA_MODE, j,
+                PRIM_COLOR, j,
+                PRIM_GLTF_BASE_COLOR, j
+            ]);
+
+            // Alpha mode + mask value + alpha blend.
+            add += [(string)llList2Integer(details, 0)];
+            add += [(string)llList2Integer(details, 1)];
+            add += [(string)llList2Float(details, 3)];
+
+            // GLTF alpha mode + mask value + alpha blend + tint color.
+            add += [(string)llList2Integer(details, 10)];
+            add += [(string)llList2Float(details, 11)];
+            add += [(string)llList2Float(details, 9)];
+            add += [(string)llList2Vector(details, 8)];
+        }
+        data += add;
+        @skip;
+    }
+
+    // Now we check for missing links and remove them.
+    @noadd;
+    n = llGetListLength(data);
+    for(i = n - 58; i >= 0; i -= 58)
+    {
+        key root = llList2Key(llGetObjectDetails((key)llList2String(data, i), [OBJECT_ROOT]), 0);
+        if(root != llGetLinkKey(LINK_ROOT)) data = llDeleteSubList(data, i, i+57);
+    }
+
+    // And save.
+    llLinksetDataWrite("link_texture_data", llDumpList2String(data, ";"));
+}
+
+
+doShow() 
+{
+    scanLinkSet(FALSE);
+    list data = llParseString2List(llLinksetDataRead("link_texture_data"), [";"], []);
+    integer n = llGetListLength(data);
+    integer i;
+    integer j;
+    integer target;
+    for(i = 0; i < n; i += 58)
+    {
+        target = (integer)llList2String(data, i+1);
+        for(j = 0; j < 8; j++)
+        {
+            llSetLinkPrimitiveParamsFast(target,[PRIM_ALPHA_MODE, j, (integer)llList2String(data, (i+2)+(j*6)+0), (integer)llList2String(data, (i+2)+(j*7)+1)]);
+            llSetLinkAlpha(target, (float)llList2String(data, (i+2)+(j*7)+2), j);
+            llSetLinkGLTFOverrides(target, j, [
+                OVERRIDE_GLTF_BASE_ALPHA_MODE, (integer)llList2String(data, (i+2)+(j*7)+3), 
+                OVERRIDE_GLTF_BASE_ALPHA_MASK, (float)llList2String(data, (i+2)+(j*7)+4),
+                OVERRIDE_GLTF_BASE_ALPHA, (float)llList2String(data, (i+2)+(j*7)+5),
+                OVERRIDE_GLTF_BASE_COLOR_FACTOR, (vector)llList2String(data, (i+2)+(j*7)+6)
+            ]);
+        }
+    }
+}
+
+doHide()
+{
+    scanLinkSet(TRUE);
+    list data = llParseString2List(llLinksetDataRead("link_texture_data"), [";"], []);
+    integer n = llGetListLength(data);
+    integer i;
+    for(i = 0; i < n; i += 58)
+    {
+        llSetLinkAlpha((integer)llList2String(data, i+1), 0.0, ALL_SIDES);
+        llSetLinkGLTFOverrides((integer)llList2String(data, i+1), ALL_SIDES, [OVERRIDE_GLTF_BASE_ALPHA_MODE, PRIM_GLTF_ALPHA_MODE_BLEND, OVERRIDE_GLTF_BASE_ALPHA, 0.0]);
+    }
+}
+
 default
 {
     state_entry()
@@ -250,6 +362,12 @@ default
 
             // Order and send it.
             llDialog(id, msg, orderbuttons(buttons), FURNITURE_CHANNEL);
+        }
+        else if(num == FM_API_SET_VISIBLE)
+        {
+            integer show = (integer)str;
+            if(show) doShow();
+            else     doHide();
         }
     }
 }

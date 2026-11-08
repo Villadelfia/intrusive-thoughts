@@ -233,10 +233,14 @@ If you click SET TIMER in this menu you can enter one time in minutes to set a s
 If you lock someone into IT Furniture and there is a running timer, you can also Deadlock them. In this case, nobody but the timer can release the victim.
 
 
-30. How do I use extra validation on emotes of objectified people?
+30. How do I only hide certain prims in a linkset when furniture is set to invisible when empty?
+Change that link's name or description to "nohide" to exempt it.
+
+
+31. How do I use extra validation on emotes of objectified people?
 If there is a script present in your IT Master HUD with the exact name "validate", all emotes spoken by objects you are wearing will be sent for extra filtering. The system will send a message on link message number -4034 with the message in the string and the name prefix in the key. You may then do anything you wish with these and send them back on -4035 to accept them (they will be spoken aloud), or on -4036 to reject them (they will be treated as normal speech.)
 
-As an example, here is the validate script I use. You will need to provide your own OpenAI key to make this work:
+As an example, here is a validate script using an external AI provider. You will need to provide your own OpenAI key to make this work:
 
 string endPoint = "https://api.openai.com/v1/chat/completions";
 string apiKey = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";

@@ -141,6 +141,7 @@
 #define FM_CHANNEL                -5015
 #define FM_CAPTURING              -5016
 #define FM_MAINMENU               -5017
+#define FM_API_SET_VISIBLE        -5018
 
 #define IT_PLUGIN_REGISTER        -8000
 #define IT_PLUGIN_RESPONSE        -8001
@@ -179,7 +180,7 @@ string slave_base = "Intrusive Thoughts Slave [v3.0.7]";
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
 #define VERSION_PATCH 7
-#define FURNITURE_VERSION 15
+#define FURNITURE_VERSION 16
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG
