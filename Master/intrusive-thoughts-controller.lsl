@@ -17,6 +17,7 @@ integer menu = 0;
 integer ncpage = 0;
 key lockedavatar = NULL_KEY;
 string lockedname = "";
+string confignc = "";
 
 integer continued = FALSE;
 string setting;
@@ -201,7 +202,7 @@ default
                 {
                     debug("[link_message] M_API_HUD_STARTED requesting configuration");
                     llSetObjectName("");
-                    llOwnerSay(VERSION_M + ": Drop your 'Intrusive Thoughts Configuration' notecard onto the HUD to set it up.");
+                    llOwnerSay(VERSION_M + ": Drop your notecard with 'Intrusive Thoughts Configuration' in the name onto the HUD to set it up.");
                     llSetObjectName(master_base);
                 }
             }
@@ -269,12 +270,22 @@ default
     no_sensor()
     {
         sensortimer(0.0);
-        if(llGetInventoryType("Intrusive Thoughts Configuration") == INVENTORY_NOTECARD)
+        integer n = llGetInventoryNumber(INVENTORY_NOTECARD);
+        name = "Intrusive Thoughts Configuration";
+        while(~--n) 
+        {
+            if(contains(llGetInventoryName(INVENTORY_NOTECARD, n), "Intrusive Thoughts Configuration")) 
+            {
+                name = llGetInventoryName(INVENTORY_NOTECARD, n);
+            }
+        }
+        if(llGetInventoryType(name) == INVENTORY_NOTECARD)
         {
             getline = llGetNotecardLine(name, line);
         }
         else
         {
+            name = "";
             if(sending > storedCt) return;
             sendNext();
             sendNext();
@@ -295,18 +306,30 @@ default
     {
         if(change & CHANGED_INVENTORY)
         {
-            if(llGetInventoryType("Intrusive Thoughts Configuration") == INVENTORY_NOTECARD)
+            integer n = llGetInventoryNumber(INVENTORY_NOTECARD);
+            name = "Intrusive Thoughts Configuration";
+            while(~--n) 
+            {
+                if(contains(llGetInventoryName(INVENTORY_NOTECARD, n), "Intrusive Thoughts Configuration")) 
+                {
+                    name = llGetInventoryName(INVENTORY_NOTECARD, n);
+                }
+            }
+            if(llGetInventoryType(name) == INVENTORY_NOTECARD)
             {
                 debug("[changed] Trigger reconfiguration due to NC");
                 if(!ready) llMessageLinked(LINK_SET, M_API_BUTTON_PRESSED, "hide", "");
                 llMessageLinked(LINK_SET, M_API_STATUS_MESSAGE, "Loading config...", "");
                 ready = FALSE;
                 continued = FALSE;
-                name = "Intrusive Thoughts Configuration";
                 line = 0;
                 storedCt = 0;
                 llLinksetDataReset();
                 getline = llGetNotecardLine(name, line);
+            }
+            else
+            {
+                name = "";
             }
         }
     }
@@ -516,7 +539,7 @@ default
                 if(d == EOF)
                 {
                     debug("[dataserver] End of config notecard");
-                    llRemoveInventory("Intrusive Thoughts Configuration");
+                    llRemoveInventory(name);
                     llMessageLinked(LINK_SET, M_API_CONFIG_DONE, "", NULL_KEY);
                     llMessageLinked(LINK_SET, M_API_STATUS_DONE, "", (string)"");
                     ready = TRUE;

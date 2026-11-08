@@ -599,7 +599,11 @@ state running
                 // Otherwise, give it up.
                 llRegionSayTo(storedobject, MANTRA_CHANNEL, "puton " + (string)llGetOwnerKey(id) + "|||" + storedname);
                 storedobject = NULL_KEY;
-                if(!furnitureIsAlwaysVisible) llSetLinkAlpha(LINK_ALL_OTHERS, 0.0, ALL_SIDES);
+                if(!furnitureIsAlwaysVisible) 
+                {
+                    llSetLinkAlpha(LINK_ALL_OTHERS, 0.0, ALL_SIDES);
+                    llSetLinkGLTFOverrides(LINK_ALL_OTHERS, ALL_SIDES, [OVERRIDE_GLTF_BASE_ALPHA_MODE, PRIM_GLTF_ALPHA_MODE_BLEND, OVERRIDE_GLTF_BASE_ALPHA, 0.0]);
+                }
                 llSetTimerEvent(0.0);
             }
 
@@ -626,7 +630,11 @@ state running
                 // Let the object know to follow us now.
                 llRegionSayTo(storedobject, MANTRA_CHANNEL, "putdown " + (string)llGetKey() + "|||" + llGetObjectName());
                 llRegionSayTo(id, MANTRA_CHANNEL, "putdown");
-                if(!furnitureIsAlwaysVisible) llSetLinkAlpha(LINK_ALL_OTHERS, 1.0, ALL_SIDES);
+                if(!furnitureIsAlwaysVisible) 
+                {
+                    llSetLinkAlpha(LINK_ALL_OTHERS, 1.0, ALL_SIDES);
+                    llSetLinkGLTFOverrides(LINK_ALL_OTHERS, ALL_SIDES, [OVERRIDE_GLTF_BASE_ALPHA_MODE, PRIM_GLTF_ALPHA_MODE_BLEND, OVERRIDE_GLTF_BASE_ALPHA, 1.0]);
+                }
                 llSetTimerEvent(5.0);
             }
 
@@ -753,7 +761,11 @@ state running
                 else if(m == "INVISIBLE" || m == "VISIBLE")
                 {
                     furnitureIsAlwaysVisible = !furnitureIsAlwaysVisible;
-                    if(storedobject == NULL_KEY) llSetLinkAlpha(LINK_ALL_OTHERS, (float)furnitureIsAlwaysVisible, ALL_SIDES);
+                    if(storedobject == NULL_KEY) 
+                    {
+                        llSetLinkAlpha(LINK_ALL_OTHERS, (float)furnitureIsAlwaysVisible, ALL_SIDES);
+                        llSetLinkGLTFOverrides(LINK_ALL_OTHERS, ALL_SIDES, [OVERRIDE_GLTF_BASE_ALPHA_MODE, PRIM_GLTF_ALPHA_MODE_BLEND, OVERRIDE_GLTF_BASE_ALPHA, (float)furnitureIsAlwaysVisible]);
+                    }
                     handleMenu(id);
                 }
 
@@ -962,7 +974,11 @@ state running
         }
 
         llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)capturing + "|||" + llGetObjectName() + "|||NULL");
-        if(!furnitureIsAlwaysVisible) llSetLinkAlpha(LINK_ALL_OTHERS, 1.0, ALL_SIDES);
+        if(!furnitureIsAlwaysVisible) 
+        {
+            llSetLinkAlpha(LINK_ALL_OTHERS, 1.0, ALL_SIDES);
+            llSetLinkGLTFOverrides(LINK_ALL_OTHERS, ALL_SIDES, [OVERRIDE_GLTF_BASE_ALPHA_MODE, PRIM_GLTF_ALPHA_MODE_BLEND, OVERRIDE_GLTF_BASE_ALPHA, 1.0]);
+        }
         broadcastCamera();
         llSetTimerEvent(15.0);
     }
@@ -1027,7 +1043,11 @@ state running
         {
             storedavatar = NULL_KEY;
             storedobject = NULL_KEY;
-            if(!furnitureIsAlwaysVisible) llSetLinkAlpha(LINK_ALL_OTHERS, 0.0, ALL_SIDES);
+            if(!furnitureIsAlwaysVisible) 
+            {
+                llSetLinkAlpha(LINK_ALL_OTHERS, 0.0, ALL_SIDES);
+                llSetLinkGLTFOverrides(LINK_ALL_OTHERS, ALL_SIDES, [OVERRIDE_GLTF_BASE_ALPHA_MODE, PRIM_GLTF_ALPHA_MODE_BLEND, OVERRIDE_GLTF_BASE_ALPHA, 0.0]);
+            }
             if(lockedAvatar) sensortimer(5.0);
             return;
         }
