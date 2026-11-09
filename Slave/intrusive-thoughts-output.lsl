@@ -264,6 +264,27 @@ default
         {
             softReset();
         }
+        else if(num == S_API_ABSENCE_RESET)
+        {
+            hardReset();
+        }
+        else if(num == S_API_ENABLED)
+        {
+            if((integer)str == TRUE)
+            {
+                if(tempDisable == TRUE)
+                {
+                    tempDisable = FALSE;
+                }
+            }
+            else
+            {
+                if(tempDisable == FALSE)
+                {
+                    softReset();
+                }
+            }
+        }
         else if(num == S_API_FOCUS_LEVEL)
         {
             currentFocus = (float)str;

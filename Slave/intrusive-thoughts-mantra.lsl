@@ -23,7 +23,6 @@ softReset()
     {
         statement = "";
         llOwnerSay("@clear");
-        llOwnerSay("@detach=n");
         llMessageLinked(LINK_SET, S_API_MANTRA_DONE, "", NULL_KEY);
     }
     checkSetup();
@@ -161,6 +160,28 @@ default
         else if(num == S_API_EMERGENCY)
         {
             softReset();
+        }
+        else if(num == S_API_ABSENCE_RESET)
+        {
+            hardReset();
+        }
+        else if(num == S_API_ENABLED)
+        {
+            if((integer)str == TRUE)
+            {
+                if(tempDisable == TRUE)
+                {
+                    tempDisable = FALSE;
+                    checkSetup();
+                }
+            }
+            else
+            {
+                if(tempDisable == FALSE)
+                {
+                    softReset();
+                }
+            }
         }
         else if(num == S_API_ENABLE)
         {

@@ -49,6 +49,8 @@
 #define S_API_SCHEDULE_DETACH     -1025
 #define S_API_MENU                -1026
 #define S_API_NAME                -1027
+#define S_API_ABSENCE_RESET       -1028
+#define S_API_ENABLED             -1029
 
 #define M_API_HUD_STARTED         -2000
 #define M_API_CONFIG_DATA         -2001

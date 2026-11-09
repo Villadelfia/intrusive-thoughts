@@ -432,6 +432,20 @@ You blink slowly as your vision returns at your Creator's command and you see cl
 
 
 
+###################
+# SECTION 6: OTHER SETTINGS #
+###################
+
+# If set to a non-zero positive number, this setting causes all other settings to reset when you are in a different sim from your slave for a time in minutes equal to the number set. Issues may occur if you and your slave are just across a sim border from each other.
+█RESET_ON_ABSENCE
+10
+
+# If set to a non-zero number, the IT vocal and auditory features will only be active when you are present. If combined with RESET_ON_ABSENCE they will still completely reset after some time.
+█REQUIRE_PRESENCE
+1
+
+
+
 █END
 # Any lines beyond this will not be read. You may leave documentation for yourself here without
 # Harming the loading speed of the configuration.

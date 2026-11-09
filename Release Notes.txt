@@ -175,3 +175,4 @@ Version 3.0.7:
  - Fix broken LL API for landmark teleports.
  - Improve name of objectification ball in RLV relays.
  - Furniture is now PBR-aware, and can skip links with nohide in the name or the description for invisible mode.
+ - Add presence-based resetting to IT slaves.

@@ -270,29 +270,36 @@ default
     no_sensor()
     {
         sensortimer(0.0);
-        integer n = llGetInventoryNumber(INVENTORY_NOTECARD);
-        name = "Intrusive Thoughts Configuration";
-        while(~--n) 
+        if(ready == FALSE) 
         {
-            if(contains(llGetInventoryName(INVENTORY_NOTECARD, n), "Intrusive Thoughts Configuration")) 
+            integer n = llGetInventoryNumber(INVENTORY_NOTECARD);
+            name = "Intrusive Thoughts Configuration";
+            while(~--n) 
             {
-                name = llGetInventoryName(INVENTORY_NOTECARD, n);
+                if(contains(llGetInventoryName(INVENTORY_NOTECARD, n), "Intrusive Thoughts Configuration")) 
+                {
+                    name = llGetInventoryName(INVENTORY_NOTECARD, n);
+                }
+            }
+            if(llGetInventoryType(name) == INVENTORY_NOTECARD)
+            {
+                getline = llGetNotecardLine(name, line);
+            }
+            else
+            {
+                name = "";
+                if(sending > storedCt) return;
+                sendNext();
+                sendNext();
+                sendNext();
+                sendNext();
+                sendNext();
+                sensortimer(0.1);
             }
         }
-        if(llGetInventoryType(name) == INVENTORY_NOTECARD)
+        else if(name != "")
         {
             getline = llGetNotecardLine(name, line);
-        }
-        else
-        {
-            name = "";
-            if(sending > storedCt) return;
-            sendNext();
-            sendNext();
-            sendNext();
-            sendNext();
-            sendNext();
-            sensortimer(0.1);
         }
     }
 
@@ -616,9 +623,9 @@ default
         }
         else if(q == getline)
         {
+            integer sent = 0;
             while(d != NAK)
             {
-                integer sent = 0;
                 settext();
                 if(d == EOF)
                 {
@@ -652,10 +659,11 @@ default
                     debug("[dataserver] Applier notecard, line: " + (string)line + ", notecard: " + name + ", data for prefix: " + prefix + ", data: " + d);
                     llRegionSayTo(target, MANTRA_CHANNEL, prefix + " " + d);
                     sent++;
-                    if(sent > 30)
+                    if(sent > 15)
                     {
-                        llSleep(0.5);
-                        sent = 0;
+                        ++line;
+                        sensortimer(0.1);
+                        return;
                     }
                 }
                 ++line;

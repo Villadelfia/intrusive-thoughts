@@ -164,6 +164,10 @@ default
         {
             softReset();
         }
+        else if(num == S_API_ABSENCE_RESET)
+        {
+            hardReset();
+        }
     }
 
     attach(key id)

@@ -12,16 +12,18 @@ integer justmoved;
 vector leashtarget;
 integer leasherinrange;
 key leashedto;
-integer awaycounter = -1;
 integer llength = 2;
 string prefix;
-string name;
 vector pcolor = <0.474, 0.057, 0.057>;
 vector pcolordefault = <0.474, 0.057, 0.057>;
 vector pscale = <0.04, 0.04, 1.0>;
 float prate = 0.0;
 vector paccel = <0.0, 0.0, -1.0>;
 string ptex = "cdb7025a-9283-17d9-8d20-cee010f36e90";
+integer absencereset = 0;
+integer requirepresence = FALSE;
+key absencetarget = NULL_KEY;
+integer present = TRUE;
 
 scanLeashSettings()
 {
@@ -168,10 +170,73 @@ default
     state_entry()
     {
         prefix = llGetSubString(llGetUsername(llGetOwner()), 0, 1);
-        name = llGetDisplayName(llGetOwner());
         llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         unleash();
+    }
+
+    attach(key id)
+    {
+        if(id != NULL_KEY)
+        {
+            if(absencereset > 0 || requirepresence != FALSE)
+            {
+                llSleep(10.0);
+                present = TRUE;
+                sensortimer(1.0);
+            }
+        }
+        else
+        {
+            sensortimer(0.0);
+        }
+    }
+
+    no_sensor()
+    {
+        sensortimer(0.0);
+        if(absencereset > 0)
+        {
+            if(llGetAgentSize(absencetarget) == ZERO_VECTOR)
+            {
+                if(llGetTime() > (absencereset*60))
+                {
+                    llMessageLinked(LINK_SET, S_API_ABSENCE_RESET, "", "");
+                    llOwnerSay("You've just had your IT slave restrictions reset because secondlife:///app/agent/" + (string)absencetarget + "/about was absent for more than " + (string)absencereset + " minutes.");
+                    llInstantMessage(absencetarget, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has just had their restrictions reset because you were absent for more than " + (string)absencereset + " minutes.");
+                    absencereset = 0;
+                    absencetarget = NULL_KEY;
+                    requirepresence = FALSE;
+                    present = TRUE;
+                    return;
+                }
+            }
+            else
+            {
+                llResetTime();
+            }
+        }
+
+        if(requirepresence != FALSE)
+        {
+            if(llGetAgentSize(absencetarget) == ZERO_VECTOR)
+            {
+                if(present)
+                {
+                    present = FALSE;
+                    llMessageLinked(LINK_SET, S_API_ENABLED, (string)present, "");
+                }
+            }
+            else
+            {
+                if(!present)
+                {
+                    present = TRUE;
+                    llMessageLinked(LINK_SET, S_API_ENABLED, (string)present, "");
+                }
+            }
+        }
+        sensortimer(1.0);
     }
 
     listen(integer c, string n, key k, string m)
@@ -181,7 +246,44 @@ default
 #endif
         if(c == MANTRA_CHANNEL)
         {
-            if(startswith(m, "leashto"))
+            if(m == "RESET")
+            {
+                sensortimer(0.0);
+                absencetarget = llGetOwnerKey(k);
+                absencereset = 0;
+                requirepresence = FALSE;
+                present = TRUE;
+            }
+            else if(m == "END")
+            {
+                llSleep(1.0);
+                if(absencereset > 0)
+                {
+                    if(requirepresence != FALSE) ownersay(k, "[presence]: I will automatically reset my settings after you leave for " + (string)absencereset + " minute(s). Vocal and auditory features will require your presence.", HUD_SPEAK_CHANNEL);
+                    else                         ownersay(k, "[presence]: I will automatically reset my settings after you leave for " + (string)absencereset + " minute(s). Vocal and auditory features will not require your presence.", HUD_SPEAK_CHANNEL);
+                }
+                else
+                {
+                    if(requirepresence != FALSE) ownersay(k, "[presence]: Vocal and auditory features will require your presence.", HUD_SPEAK_CHANNEL);
+                    else                         ownersay(k, "[presence]: Vocal and auditory features will not require your presence.", HUD_SPEAK_CHANNEL);
+                }
+                if(absencereset > 0 || requirepresence != FALSE)
+                {
+                    sensortimer(1.0);
+                    llResetTime();
+                }
+            }
+            else if(startswith(m, "RESET_ON_ABSENCE"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("RESET_ON_ABSENCE"));
+                absencereset = (integer)m;
+            }
+            else if(startswith(m, "REQUIRE_PRESENCE"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("REQUIRE_PRESENCE"));
+                requirepresence = (integer)m;
+            }
+            else if(startswith(m, "leashto"))
             {
                 m = llDeleteSubString(m, 0, llStringLength("leashto"));
                 leash((key)m);

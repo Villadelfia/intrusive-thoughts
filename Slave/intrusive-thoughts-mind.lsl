@@ -159,6 +159,17 @@ default
         {
             softReset();
         }
+        else if(num == S_API_ABSENCE_RESET)
+        {
+            hardReset();
+        }
+        else if(num == S_API_ENABLED)
+        {
+            if((integer)str == FALSE)
+            {
+                softReset();
+            }
+        }
     }
 
     state_entry()

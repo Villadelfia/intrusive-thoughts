@@ -5,6 +5,7 @@ integer publicaccess = FALSE;
 integer groupaccess = FALSE;
 
 string name = "";
+string recovername = "";
 list speechblacklistfrom = [];
 list speechblacklistwordsfrom = [];
 list speechblacklistto = [];
@@ -45,6 +46,7 @@ hardReset()
 {
     tempDisable = FALSE;
     name = "";
+    recovername = "";
     speechblacklistfrom = [];
     speechblacklistwordsfrom = [];
     speechblacklistto = [];
@@ -416,6 +418,7 @@ default
         if(num == S_API_RLV_CHECK)
         {
             tempDisable = FALSE;
+            name = recovername;
             checkSetup();
         }
         else if(num == S_API_MANTRA_DONE)
@@ -472,6 +475,30 @@ default
         {
             softReset();
         }
+        else if(num == S_API_ABSENCE_RESET)
+        {
+            hardReset();
+        }
+        else if(num == S_API_ENABLED)
+        {
+            if((integer)str == TRUE)
+            {
+                if(tempDisable == TRUE)
+                {
+                    name = recovername;
+                    tempDisable = FALSE;
+                    checkSetup();
+                }
+            }
+            else
+            {
+                if(tempDisable == FALSE)
+                {
+                    name = "";
+                    softReset();
+                }
+            }
+        }
     }
 
     state_entry()
@@ -506,6 +533,7 @@ default
         {
             m = llDeleteSubString(m, 0, llStringLength("NAME"));
             name = m;
+            recovername = m;
             checkSetup();
         }
         else if(startswith(m, "SPEECH_BLACKLIST_ENTRY"))
