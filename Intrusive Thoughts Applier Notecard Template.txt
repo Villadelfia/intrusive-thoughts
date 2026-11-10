@@ -155,6 +155,13 @@ enable voice
 # If this is set to 1, muted text will look the same color to the submissive as unmuted text.
 # If this is combined with no mute message, you can mute your submissive without revealing
 # that they're not being heard.
+#
+# If this is set to 2, the submissive will always see what they typed, even excluding any of the 
+# garbling settings, while everyone else hears what the garbler does. Consider it a more extreme
+# version of 1.
+#
+# If this is set to 3, the opposite of 2 is done. The submissive will hear the garbled text, but to
+# everyone else they just speak normally.
 █BLIND_MUTE
 0
 
@@ -443,6 +450,22 @@ You blink slowly as your vision returns at your Creator's command and you see cl
 # If set to a non-zero number, the IT vocal and auditory features will only be active when you are present. If combined with RESET_ON_ABSENCE they will still completely reset after some time.
 █REQUIRE_PRESENCE
 1
+
+# If provided, will say this message when applying only to slave.
+█APPLY_MESSAGE_PRIVATE
+You feel yourself slip into the state of a dummy kitty~
+
+# If provided, will say this message when removing only to slave.
+█RESET_MESSAGE_PRIVATE
+You feel your mind return to Roxy~
+
+# If provided, will say this message when applying in nearby.
+█APPLY_MESSAGE_PUBLIC
+Roxy feels herself slip into the state of a dummy kitty~
+
+# If provided, will say this message when removing in nearby.
+█RESET_MESSAGE_PUBLIC
+Shoes feels her mind return to Roxy~
 
 
 

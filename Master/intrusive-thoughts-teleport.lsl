@@ -20,6 +20,19 @@ dotp(string region, string x, string y, string z)
     llOwnerSay("@tploc=y,unsit=y,tpto:" + region + "/" + x + "/" + y  + "/" + z + "=force");
 }
 
+summon()
+{
+    llSetObjectName("");
+    string region = llGetRegionName();
+    vector p = llGetPos();
+    string x = (string)((integer)p.x);
+    string y = (string)((integer)p.y);
+    string z = (string)((integer)p.z+1);
+    llOwnerSay("Summoning your slaves to: " + slurlp(region, x, y, z));
+    llSetObjectName(master_base);
+    llRegionSay(COMMAND_CHANNEL, "*tpto " + region + "/" + x + "/" + y  + "/" + z);
+}
+
 tpme(string region, string x, string y, string z)
 {
     llSetObjectName("");
@@ -73,6 +86,7 @@ givemenu()
     llOwnerSay("/1tpto <slurl> — Teleport with your slaves to the SLURL");
     llOwnerSay("/1tpme <slurl> — Teleport alone to the SLURL");
     if(lockedavatar) llOwnerSay("/1send <slurl> — Teleport the locked avatar to the SLURL");
+    llOwnerSay("[secondlife:///app/chat/1/summon /1summon] — Summon every slave you control on this region to you");
     llOwnerSay("—or— drop a landmark onto the HUD to teleport there with your slaves");
     llSetObjectName(master_base);
 }
@@ -146,6 +160,11 @@ default
             llOwnerSay("Requesting a redelivery of the most up-to-date version of IT. If you do not get a delivery within a minute, please manually redeliver a copy at the store at http://maps.secondlife.com/secondlife/Bedos/96/106/901.");
             llSetObjectName(master_base);
             llHTTPRequest("http://villadelfia.org:3000/deliverit/" + llEscapeURL((string)llGetOwner()), [], "");
+            return;
+        }
+
+        if(m == "summon") {
+            summon();
             return;
         }
 

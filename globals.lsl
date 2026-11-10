@@ -177,7 +177,7 @@ string slave_base = "Intrusive Thoughts Slave [v3.0.7]";
 // 3 digits for minor
 // 3 digits for patch
 // 2 digits for revision with base = 00, a = 01, b = 02...
-#define VERSION_CMP "00300000700"
+#define VERSION_CMP "00300000701"
 #define VERSION_FULL "31CAF8"
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0

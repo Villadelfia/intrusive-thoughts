@@ -145,6 +145,7 @@ handleSay(string message)
         llMessageLinked(LINK_SET, S_API_SAY, message, (key)name);
         return;
     }
+    string origmessage = message;
     if(startswith(message, "((") == TRUE && endswith(message, "))") == TRUE) return;
     integer emote = FALSE;
     if(startswith(llToLower(message), "/me") || startswith(llToLower(message), "/shout/me") || startswith(llToLower(message), "/shout /me") ||
@@ -308,14 +309,14 @@ handleSay(string message)
     @blacklisttripped;
     if(wordcnt < minimumpostlength && minimumpostlength > 0)
     {
-        if(blindmute) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
-        else          llMessageLinked(LINK_SET, S_API_SELF_SAY, "/me needs to use at least " + (string)minimumpostlength + " words in a message.", (key)name);
+        if(blindmute == 1) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
+        else               llMessageLinked(LINK_SET, S_API_SELF_SAY, "/me needs to use at least " + (string)minimumpostlength + " words in a message.", (key)name);
         return;
     }
     else if(wordcnt > maximumpostlength && maximumpostlength > 0)
     {
-        if(blindmute) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
-        else          llMessageLinked(LINK_SET, S_API_SELF_SAY, "/me needs to use at most " + (string)maximumpostlength + " words in a message.", (key)name);
+        if(blindmute == 1) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
+        else               llMessageLinked(LINK_SET, S_API_SELF_SAY, "/me needs to use at most " + (string)maximumpostlength + " words in a message.", (key)name);
         return;
     }
 
@@ -325,8 +326,8 @@ handleSay(string message)
         evaluateMessagesPerHour();
         if(llGetListLength(speechhistory) >= maximumpostsperhour)
         {
-            if(blindmute) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
-            else          llMessageLinked(LINK_SET, S_API_SELF_SAY, "/me can speak at most " + (string)maximumpostsperhour + " times per hour.", (key)name);
+            if(blindmute == 1) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
+            else               llMessageLinked(LINK_SET, S_API_SELF_SAY, "/me can speak at most " + (string)maximumpostsperhour + " times per hour.", (key)name);
             return;
         }
         else
@@ -343,20 +344,48 @@ handleSay(string message)
     integer bypass = emote == TRUE && llToLower(llStringTrim(message, STRING_TRIM)) != "/me" && contains(message, "\"") == FALSE;
     if(mute == FALSE || bypass == TRUE)
     {
-        llMessageLinked(LINK_SET, S_API_SAY, message, (key)name);
+        if(blindmute == 3) 
+        {
+            llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
+            llMessageLinked(LINK_SET, S_API_ONLY_OTHERS_SAY, origmessage, (key)name);
+        }
+        else if(blindmute == 2)
+        {
+            llMessageLinked(LINK_SET, S_API_ONLY_OTHERS_SAY, message, (key)name);
+            llMessageLinked(LINK_SET, S_API_SELF_SAY, origmessage, (key)name);
+        }
+        else
+        {
+            llMessageLinked(LINK_SET, S_API_SAY, message, (key)name);
+        }
     }
     else
     {
         if(mutetype == "DROP" || mutecensor == [])
         {
-            llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
+            if(blindmute == 3) 
+            {
+                llMessageLinked(LINK_SET, S_API_ONLY_OTHERS_SAY, origmessage, (key)name);
+            }
+            if(blindmute == 2) llMessageLinked(LINK_SET, S_API_SELF_SAY, origmessage, (key)name);
+            else               llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
         }
         else if(mutetype == "REPLACE")
         {
-            if(blindmute)
+            if(blindmute == 1)
             {
                 llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
                 llMessageLinked(LINK_SET, S_API_ONLY_OTHERS_SAY, llList2String(mutecensor, llFloor(llFrand(llGetListLength(mutecensor)))), (key)name);
+            }
+            else if(blindmute == 2)
+            {
+                llMessageLinked(LINK_SET, S_API_SELF_SAY, origmessage, (key)name);
+                llMessageLinked(LINK_SET, S_API_ONLY_OTHERS_SAY, llList2String(mutecensor, llFloor(llFrand(llGetListLength(mutecensor)))), (key)name);
+            }
+            else if(blindmute == 3)
+            {
+                llMessageLinked(LINK_SET, S_API_SELF_SAY, llList2String(mutecensor, llFloor(llFrand(llGetListLength(mutecensor)))), (key)name);
+                llMessageLinked(LINK_SET, S_API_ONLY_OTHERS_SAY, origmessage, (key)name);
             }
             else
             {
@@ -365,7 +394,9 @@ handleSay(string message)
         }
         else
         {
-            if(blindmute) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
+            if(blindmute == 3)      llMessageLinked(LINK_SET, S_API_ONLY_OTHERS_SAY, origmessage, (key)name);
+            else if(blindmute == 2) llMessageLinked(LINK_SET, S_API_SELF_SAY, origmessage, (key)name);
+            else if(blindmute == 1) llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
             messagecopy = message;
             message = "";
             quotecnt = 0;
@@ -399,8 +430,9 @@ handleSay(string message)
                 }
                 messagecopy = llDeleteSubString(messagecopy, 0, llStringLength(oldword));
             }
-            if(blindmute) llMessageLinked(LINK_SET, S_API_ONLY_OTHERS_SAY, message, (key)name);
-            else          llMessageLinked(LINK_SET, S_API_SAY, message, (key)name);
+            if(blindmute == 3)      llMessageLinked(LINK_SET, S_API_SELF_SAY, message, (key)name);
+            else if(blindmute != 0) llMessageLinked(LINK_SET, S_API_ONLY_OTHERS_SAY, message, (key)name);
+            else                    llMessageLinked(LINK_SET, S_API_SAY, message, (key)name);
         }
     }
 }
@@ -614,8 +646,7 @@ default
         else if(startswith(m, "BLIND_MUTE"))
         {
             m = llDeleteSubString(m, 0, llStringLength("BLIND_MUTE"));
-            if(m != "0") blindmute = TRUE;
-            else         blindmute = FALSE;
+            blindmute = (integer)m;
         }
         else if(startswith(m, "VOCAL_BIMBO_LIMIT"))
         {

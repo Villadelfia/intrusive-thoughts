@@ -24,6 +24,8 @@ integer absencereset = 0;
 integer requirepresence = FALSE;
 key absencetarget = NULL_KEY;
 integer present = TRUE;
+string privatereset = "";
+string publicreset = "";
 
 scanLeashSettings()
 {
@@ -201,6 +203,17 @@ default
             {
                 if(llGetTime() > (absencereset*60))
                 {
+                    if(privatereset != "") {
+                        llSetObjectName("");
+                        llOwnerSay(privatereset);
+                        privatereset = "";
+                    }
+                    if(publicreset != "") {
+                        llSetObjectName("");
+                        llSay(0, publicreset);
+                        publicreset = "";
+                    }
+                    llSetObjectName(slave_base);
                     llMessageLinked(LINK_SET, S_API_ABSENCE_RESET, "", "");
                     llOwnerSay("You've just had your IT slave restrictions reset because secondlife:///app/agent/" + (string)absencetarget + "/about was absent for more than " + (string)absencereset + " minutes.");
                     llInstantMessage(absencetarget, "secondlife:///app/agent/" + (string)llGetOwner() + "/about has just had their restrictions reset because you were absent for more than " + (string)absencereset + " minutes.");
@@ -253,6 +266,16 @@ default
                 absencereset = 0;
                 requirepresence = FALSE;
                 present = TRUE;
+                if(privatereset != "") {
+                    llSetObjectName("");
+                    llOwnerSay(privatereset);
+                    privatereset = "";
+                }
+                if(publicreset != "") {
+                    llSetObjectName("");
+                    llSay(0, publicreset);
+                    publicreset = "";
+                }
             }
             else if(m == "END")
             {
@@ -278,10 +301,27 @@ default
                 m = llDeleteSubString(m, 0, llStringLength("RESET_ON_ABSENCE"));
                 absencereset = (integer)m;
             }
-            else if(startswith(m, "REQUIRE_PRESENCE"))
+            else if(startswith(m, "APPLY_MESSAGE_PRIVATE"))
             {
-                m = llDeleteSubString(m, 0, llStringLength("REQUIRE_PRESENCE"));
-                requirepresence = (integer)m;
+                m = llDeleteSubString(m, 0, llStringLength("APPLY_MESSAGE_PRIVATE"));
+                llSetObjectName("");
+                llOwnerSay(m);
+            }
+            else if(startswith(m, "RESET_MESSAGE_PRIVATE"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("RESET_MESSAGE_PRIVATE"));
+                privatereset = m;
+            }
+            else if(startswith(m, "APPLY_MESSAGE_PUBLIC"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("APPLY_MESSAGE_PUBLIC"));
+                llSetObjectName("");
+                llSay(0, m);
+            }
+            else if(startswith(m, "RESET_MESSAGE_PUBLIC"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("RESET_MESSAGE_PUBLIC"));
+                publicreset = m;
             }
             else if(startswith(m, "leashto"))
             {

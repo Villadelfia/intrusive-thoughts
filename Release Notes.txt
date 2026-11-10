@@ -166,13 +166,17 @@ Version 3.0.6:
  - Improve reliability.
  - Add option for manual validation.
  - Fix potential crash of Slave.
+
+Version 3.0.7:
  - Loading speed increase.
  - Add theming.
  - Improve possession.
-
-Version 3.0.7:
  - Add private mode to furniture.
  - Fix broken LL API for landmark teleports.
  - Improve name of objectification ball in RLV relays.
  - Furniture is now PBR-aware, and can skip links with nohide in the name or the description for invisible mode.
- - Add presence-based resetting to IT slaves.
+ - Add presence-based resetting to IT slaves as well as presence-based enforcement.
+ - Add the ability to name your config nc anything with "Intrusive Thoughts Configuration" in the name.
+ - Add "summon" button to TP menu that summons all slaves to your position if they are on the sim.
+ - Add apply and unapply messages to slave.
+ - Add two more BLIND_MUTE options: One where the slave is blind to any garbling, and one where only the slave sees the garbling.
