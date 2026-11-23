@@ -152,10 +152,21 @@ default
         }
         else if(num == FM_WELCOME)
         {
-            llOwnerSay("Welcome to your " + llGetObjectName() + ".\n\nFirst, I need to link up with another object. Drop the script I am giving you right now into that object and follow the instructions.");
+            llOwnerSay("Welcome to your " + llGetObjectName() + ".\n\nFirst, I need to link up with another object. Drop the script I am giving you right now into that object and follow the instructions.\n\nAdvanced users have two more options:\n- You can also just link me to the object you want to use as furniture. I need to be the root prim of the linkset, so select me last.\n- Click and hold me for 2 seconds and I'll become an unlinked furniture, ideal for no-mod objects or if you want multiple furnitures over one object.");
             llGiveInventory(llGetOwner(), "IT Furniture Linking Script");
             llPreloadSound("dec9fb53-0fef-29ae-a21d-b3047525d312");
             llSetStatus(STATUS_PHANTOM, TRUE);
+        }
+        else if(num == FM_NOT_ROOT)
+        {
+            llOwnerSay("Warning: The IT Furniture prim is not the root prim of this linkset. It will still work when you directly click the furniture prim, but the IT Master HUD will not be able to see or use this furniture.");
+        }
+        else if(num == FM_HIDE_LINK)
+        {
+            llSetLinkPrimitiveParamsFast(LINK_THIS, [PRIM_TEXTURE,    ALL_SIDES, TEXTURE_TRANSPARENT, <1.0, 1.0, 0.0>, ZERO_VECTOR, 0.0,
+                                                                 PRIM_COLOR,      ALL_SIDES, <1.0, 1.0, 1.0>, 1.0,
+                                                                 PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_MASK, 255,
+                                                                 PRIM_GLOW,       ALL_SIDES, 0.0]);
         }
         else if(num == FM_LINK)
         {
@@ -175,7 +186,7 @@ default
         }
         else if(num == FM_G2G)
         {
-            llOwnerSay("Alright, I'm good to go. You can now store objects in me via the IT Master HUD. Click me for more options.");
+            llOwnerSay("Alright, I'm good to go. You can now store objects in me via the IT Master HUD. Click me for more options such as setting my name.");
         }
         else if(num == FM_REINIT)
         {

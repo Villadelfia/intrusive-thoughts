@@ -171,7 +171,7 @@ Version 3.0.7:
  - Loading speed increase.
  - Add theming.
  - Improve possession.
- - Add private mode to furniture.
+ - Add private mode to furniture plus new creation methods.
  - Fix broken LL API for landmark teleports.
  - Improve name of objectification ball in RLV relays.
  - Furniture is now PBR-aware, and can skip links with nohide in the name or the description for invisible mode.

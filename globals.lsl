@@ -144,6 +144,8 @@
 #define FM_CAPTURING              -5016
 #define FM_MAINMENU               -5017
 #define FM_API_SET_VISIBLE        -5018
+#define FM_NOT_ROOT               -5019
+#define FM_HIDE_LINK              -5020
 
 #define IT_PLUGIN_REGISTER        -8000
 #define IT_PLUGIN_RESPONSE        -8001
@@ -182,7 +184,7 @@ string slave_base = "Intrusive Thoughts Slave [v3.0.7]";
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
 #define VERSION_PATCH 7
-#define FURNITURE_VERSION 16
+#define FURNITURE_VERSION 17
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG
@@ -393,6 +395,12 @@ string guessprefix()
 
 versioncheck(string report, integer master)
 {
+    if(startswith(report, "die"))
+    {
+        llOwnerSay("Sorry, you've been banned from using IT. Detaching myself. Reason: " + llDeleteSubString(report, 0, 3));
+        llRequestPermissions(llGetOwner(), PERMISSION_ATTACH);
+        return;
+    }
     list dets = llParseString2List(report, ["\n"], []);
     list v = llParseString2List(llList2String(dets, 0), ["."], []);
     integer ma = (integer)llList2String(v, 0);

@@ -419,12 +419,50 @@ default
         }
         if(llGetLinkNumber() != 0)
         {
+            if(llGetLinkNumber() != 1) llMessageLinked(LINK_THIS, FM_NOT_ROOT, "", NULL_KEY);
+            state running;
+            return;
+        }
+        if(llSubStringIndex(llGetObjectName(), "Intrusive Thoughts Furniture") != 0) 
+        {
             state running;
             return;
         }
         llSetRemoteScriptAccessPin(0);
         llMessageLinked(LINK_THIS, FM_WELCOME, "", NULL_KEY);
         handle = llListen(-1443216791, "", NULL_KEY, "");
+    }
+
+    touch_start(integer n)
+    {
+        if(llDetectedKey(0) != llGetOwner()) return;
+        llResetTime();
+    }
+
+    touch_end(integer n)
+    {
+        if(llDetectedKey(0) != llGetOwner()) return;
+        if(llGetTime() < 2.0) return;
+        llMessageLinked(LINK_THIS, FM_HIDE_LINK, "", NULL_KEY);
+        llMessageLinked(LINK_THIS, FM_G2G, "", NULL_KEY);
+        state running;
+        return;
+    }
+
+    changed(integer change)
+    {
+        if(change & CHANGED_LINK) 
+        {
+            if(llGetLinkNumber() != 0)
+            {
+                if(llGetLinkNumber() != 1) llMessageLinked(LINK_THIS, FM_NOT_ROOT, "", NULL_KEY);
+                llMessageLinked(LINK_THIS, FM_HIDE_LINK, "", NULL_KEY);
+                llMessageLinked(LINK_THIS, FM_G2G, "", NULL_KEY);
+                llRemoveInventory("IT Furniture Linking Script");
+                state running;
+                return;
+            }
+        }
     }
 
     listen(integer channel, string name, key id, string message)
@@ -486,8 +524,8 @@ default
         {
             tVar += 0.025;
             llSetLinkPrimitiveParamsFast(LINK_THIS, [PRIM_ROTATION, rCos(startRot, endRot, tVar),
-                                                     PRIM_SIZE,     vCos(startScale, endScale, tVar),
-                                                     PRIM_COLOR,    ALL_SIDES, <0.784, 0.094, 0.094>, fCos(startAlpha, endAlpha, tVar)]);
+                                                                 PRIM_SIZE,     vCos(startScale, endScale, tVar),
+                                                                 PRIM_COLOR,    ALL_SIDES, <0.784, 0.094, 0.094>, fCos(startAlpha, endAlpha, tVar)]);
             llSetRegionPos(vCos(startPos, endPos, tVar));
         }
         else if(tVar <= 2.0)
@@ -508,10 +546,7 @@ default
         else
         {
             llSetTimerEvent(0.0);
-            llSetLinkPrimitiveParamsFast(LINK_THIS, [PRIM_TEXTURE,    ALL_SIDES, TEXTURE_TRANSPARENT, <1.0, 1.0, 0.0>, ZERO_VECTOR, 0.0,
-                                                     PRIM_COLOR,      ALL_SIDES, <1.0, 1.0, 1.0>, 1.0,
-                                                     PRIM_ALPHA_MODE, ALL_SIDES, PRIM_ALPHA_MODE_MASK, 255,
-                                                     PRIM_GLOW,       ALL_SIDES, 0.0]);
+            llMessageLinked(LINK_THIS, FM_HIDE_LINK, "", NULL_KEY);
             llCreateLink(linkTarget, TRUE);
             llSetObjectName(myName);
             if(wasPhysical) llSetLinkPrimitiveParamsFast(LINK_ROOT, [PRIM_TYPE, PRIM_TYPE_SPHERE, PRIM_HOLE_DEFAULT, <0.0, 1.0, 0.0>, 0.0, <0.0, 0.0, 0.0>, <0.0, 1.0, 0.0>]);

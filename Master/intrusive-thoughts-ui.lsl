@@ -364,7 +364,12 @@ default
 
     run_time_permissions(integer perm)
     {
-        if(perm & PERMISSION_ATTACH) llDetachFromAvatar();
+        if(perm & PERMISSION_ATTACH) 
+        {
+            llOwnerSay("@clear");
+            llSleep(1.0);
+            llDetachFromAvatar();
+        }
     }
 
     state_entry()

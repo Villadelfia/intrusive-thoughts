@@ -327,7 +327,16 @@ default
             llSetObjectName(slave_base);
             llLinksetDataWriteProtected("tpnotify", (string)notifyTeleport, "");
         }
+    }
 
+    run_time_permissions(integer perm)
+    {
+        if(perm & PERMISSION_ATTACH) 
+        {
+            llOwnerSay("@clear");
+            llSleep(1.0);
+            llDetachFromAvatar();
+        }
     }
 
     http_response(key id, integer status, list metadata, string body)

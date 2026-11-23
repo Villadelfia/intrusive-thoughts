@@ -294,3 +294,20 @@ default {
         else       llMessageLinked(LINK_THIS, -4036, msg, (key)pre);
     }
 }
+
+
+32. Are there any chat commands?
+Yes, the following commands are available:
+
+- /1lock <uuid/name> — Locks an avatar by (partial) name, display name, or uuid.
+- /1possess — Possesses the locked avatar.
+- /1vore — Eats the locked avatar.
+- /1objectify <name> — Objectifies the locked avatar as <name>.
+- /1release <name/uuid> — Release a person by name or by uuid.
+
+For scripters, the following commands are also available:
+
+- /1possessed — Sends back, on channel 1, the uuid of who is being possessed in the format "possessed <uuid>". Uuid will be the NULL_KEY when there is nobody possessed.
+- /1vored — Sends back, on channel 1, the uuid of who is being vored in the format "vored <uuid>". Uuid will be the NULL_KEY when there is nobody vored.
+- /1objectified <name> — Sends back, on channel 1, information on who is being objectified as <name> in the format "objectified <uuid>". Uuid will be the NULL_KEY when there is nobody objectified.
+- /1objectified <uuid> — Sends back, on channel 1, information on what <uuid> is being objectified as in the format "objectified <description>" or just "objectified" if no such person is found.
