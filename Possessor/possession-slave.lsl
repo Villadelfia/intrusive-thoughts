@@ -14,6 +14,7 @@ default
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(STRUGGLE_CHANNEL, "", NULL_KEY, "");
         llListen(0, "", NULL_KEY, "");
+        llListen(7, "", NULL_KEY, "");
     }
 
     attach(key id)
@@ -82,6 +83,7 @@ default
             {
                 controller = llGetOwnerKey(id);
                 muted = FALSE;
+                llOwnerSay("@redirchat:1192033=rem,rediremote:1192033=rem,redirchat:7=add,rediremote:7=add");
                 llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);
                 base = llGetRootRotation();
             }
@@ -123,13 +125,13 @@ default
                 if(muted)
                 {
                     muted = FALSE;
-                    llOwnerSay("@sendchat=y,sendchannel=y");
+                    llOwnerSay("@redirchat:1192033=rem,rediremote:1192033=rem,redirchat:7=add,rediremote:7=add");
                     ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.", 0);
                 }
                 else
                 {
                     muted = TRUE;
-                    llOwnerSay("@sendchat=n,sendchannel=n");
+                    llOwnerSay("@redirchat:1192033=add,rediremote:1192033=add,redirchat:7=rem,rediremote:7=rem");
                     ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.", 0);
                 }
             }
@@ -218,6 +220,23 @@ default
                     llOwnerSay("@clear,detachme=force");
                 }
             }
+        }
+        else if(c == 7)
+        {
+            if(llGetOwnerKey(id) != llGetOwner()) return;
+            string prefix = "secondlife:///app/agent/" + (string)llGetOwner() + "/about";
+            if(startswith(m, "/me"))
+            {
+                prefix = "/me " + prefix;
+                m = llDeleteSubString(m, 0, 2);
+            }
+            else
+            {
+                prefix += ": ";
+            }
+            llSetObjectName("");
+            if(llVecDist(llGetPos(), llList2Vector(llGetObjectDetails(controller, [OBJECT_POS]), 0)) > 20.0) llRegionSayTo(controller, 0, prefix + m);
+            llSay(0, prefix + m);
         }
     }
 

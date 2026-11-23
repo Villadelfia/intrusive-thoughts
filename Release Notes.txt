@@ -180,3 +180,5 @@ Version 3.0.7:
  - Add "summon" button to TP menu that summons all slaves to your position if they are on the sim.
  - Add apply and unapply messages to slave.
  - Add two more BLIND_MUTE options: One where the slave is blind to any garbling, and one where only the slave sees the garbling.
+ - Add convenience locking of focus targets.
+ - Add a /1<prefix>info to see who and what anyone is wearing using IT.

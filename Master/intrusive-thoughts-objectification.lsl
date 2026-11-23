@@ -233,6 +233,7 @@ default
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+        llListen(COMMAND_CHANNEL, "", NULL_KEY, "");
     }
 
     attach(key id)
@@ -390,6 +391,30 @@ default
                 llOwnerSay(m);
             }
             llSetObjectName(master_base);
+        }
+        else if(c == COMMAND_CHANNEL)
+        {
+            if(m != llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1)) + "info") return;
+            id = llGetOwnerKey(id);
+            if(objectifiedavatars == [])
+            {
+                llSetObjectName("");
+                llRegionSayTo(id, 0, "secondlife:///app/agent/" + (string)llGetOwner() + "/about isn't wearing anyone.");
+                llSetObjectName(master_base);
+            }
+            else
+            {
+                string msg = "secondlife:///app/agent/" + (string)llGetOwner() + "/about is wearing:\n";
+                integer i;
+                integer l = llGetListLength(objectifiedavatars);
+                for(i = 0; i < l; ++i)
+                {
+                    msg += "\n- secondlife:///app/agent/" + (string)llList2Key(objectifiedavatars, i) + "/about as " + llList2String(objectifieddescriptions, i) + ".";
+                }
+                llSetObjectName("");
+                llRegionSayTo(id, 0, msg);
+                llSetObjectName(master_base);
+            }
         }
     }
 
@@ -618,7 +643,7 @@ default
             string region = llGetRegionName();
             integer l = llGetListLength(objectifiedballs);
             llSetObjectName("");
-            llOwnerSay("Fetching your objectified avatars and giving them 30 seconds to arrive...");
+            llOwnerSay("Fetching your objectified avatars and giving them 60 seconds to arrive...");
             llSetObjectName(master_base);
 
             while(~--l)
@@ -639,7 +664,7 @@ default
             }
 
             timermode = 2;
-            countdown = 11;
+            countdown = 21;
             arrived = [];
             llSetTimerEvent(3.0);
         }

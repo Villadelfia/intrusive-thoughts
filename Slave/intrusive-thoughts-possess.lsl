@@ -13,6 +13,7 @@ release()
 {
     llReleaseControls();
     llOwnerSay("@interact=y,tplocal=y,tplm=y,tploc=y,unsit=y,sendchat=y,sendchannel=y");
+    llOwnerSay("@redirchat:1192033=rem,rediremote:1192033=rem,redirchat:7=rem,rediremote:7=rem");
     controller = NULL_KEY;
     llSetTimerEvent(0.0);
 }
@@ -47,6 +48,7 @@ default
     {
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(0, "", NULL_KEY, "");
+        llListen(7, "", NULL_KEY, "");
     }
 
     listen(integer c, string n, key id, string m)
@@ -88,6 +90,26 @@ default
             return;
         }
 
+        if(c == 7)
+        {
+            if(llGetOwnerKey(id) != llGetOwner()) return;
+            string prefix = "secondlife:///app/agent/" + (string)llGetOwner() + "/about";
+            if(startswith(m, "/me"))
+            {
+                prefix = "/me " + prefix;
+                m = llDeleteSubString(m, 0, 2);
+            }
+            else
+            {
+                prefix += ": ";
+            }
+            llSetObjectName("");
+            if(llVecDist(llGetPos(), llList2Vector(llGetObjectDetails(controller, [OBJECT_POS]), 0)) > 20.0) llRegionSayTo(controller, 0, prefix + m);
+            llSay(0, prefix + m);
+            llSetObjectName(slave_base);
+            return;
+        }
+
         id = llGetOwnerKey(id);
 #ifndef PUBLIC_SLAVE
         if(isowner(id) == FALSE) return;
@@ -106,6 +128,7 @@ default
         {
             muted = FALSE;
             controller = id;
+            if(name == "") llOwnerSay("@redirchat:1192033=rem,rediremote:1192033=rem,redirchat:7=add,rediremote:7=add");
             llRequestPermissions(llGetOwner(), PERMISSION_TAKE_CONTROLS | PERMISSION_TRIGGER_ANIMATION);
             base = llGetRootRotation();
         }
@@ -136,13 +159,13 @@ default
             if(muted)
             {
                 muted = FALSE;
-                llOwnerSay("@sendchat=y,sendchannel=y");
+                if(name == "") llOwnerSay("@redirchat:1192033=rem,rediremote:1192033=rem,redirchat:7=add,rediremote:7=add");
                 ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can speak again.", 0);
             }
             else
             {
                 muted = TRUE;
-                llOwnerSay("@sendchat=n,sendchannel=n");
+                if(name == "") llOwnerSay("@redirchat:1192033=add,rediremote:1192033=add,redirchat:7=rem,rediremote:7=rem");
                 ownersay(id, "secondlife:///app/agent/" + (string)llGetOwner() + "/about can no longer speak.", 0);
             }
         }

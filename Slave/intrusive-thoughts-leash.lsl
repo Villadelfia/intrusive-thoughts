@@ -301,6 +301,11 @@ default
                 m = llDeleteSubString(m, 0, llStringLength("RESET_ON_ABSENCE"));
                 absencereset = (integer)m;
             }
+            else if(startswith(m, "REQUIRE_PRESENCE"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("REQUIRE_PRESENCE"));
+                requirepresence = (integer)m;
+            }
             else if(startswith(m, "APPLY_MESSAGE_PRIVATE"))
             {
                 m = llDeleteSubString(m, 0, llStringLength("APPLY_MESSAGE_PRIVATE"));

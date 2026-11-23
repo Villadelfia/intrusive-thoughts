@@ -311,3 +311,5 @@ For scripters, the following commands are also available:
 - /1vored — Sends back, on channel 1, the uuid of who is being vored in the format "vored <uuid>". Uuid will be the NULL_KEY when there is nobody vored.
 - /1objectified <name> — Sends back, on channel 1, information on who is being objectified as <name> in the format "objectified <uuid>". Uuid will be the NULL_KEY when there is nobody objectified.
 - /1objectified <uuid> — Sends back, on channel 1, information on what <uuid> is being objectified as in the format "objectified <description>" or just "objectified" if no such person is found.
+
+It is also possible to see what objects *anyone* using the IT Master HUD is wearing by typing /1<prefix>info where <prefix> is replaced with the first two letters of their legacy name. So for Pandora Nova, that would be /1painfo.

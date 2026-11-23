@@ -3,6 +3,7 @@ integer lastpoint = -1;
 integer point = -1;
 float adjPos = 0.05;
 float adjRot = 2.5;
+integer locked = FALSE;
 
 update()
 {
@@ -63,6 +64,8 @@ start()
     // Update the description for slaves.
     update();
 
+    if(locked) locked = FALSE;
+
     // Start update loop.
     llSetTimerEvent(0.5);
 }
@@ -72,7 +75,7 @@ giveMenu()
     string oldn = llGetObjectName();
     llSetObjectName("");
     llOwnerSay("Focus Target Menu:");
-    llOwnerSay("Click [secondlife:///app/chat/5/" + llEscapeURL((string)llGetKey() + "preview") + " here] to preview what the object or slave will see.");
+    llOwnerSay("Click [secondlife:///app/chat/5/" + llEscapeURL((string)llGetKey() + "preview") + " here] to preview what the object or slave will see. Click [secondlife:///app/chat/5/" + llEscapeURL((string)llGetKey() + "lock") + " here] to lock/unlock the focus target onto your avatar.");
     llOwnerSay(" ");
     llOwnerSay("Adjustment amount:");
     llOwnerSay("[secondlife:///app/chat/5/" + llEscapeURL((string)llGetKey() + "a0") + " Fine (1cm / 2.5°)]/[secondlife:///app/chat/5/" + llEscapeURL((string)llGetKey() + "a1") + " medium (5cm / 10°)]/[secondlife:///app/chat/5/" + llEscapeURL((string)llGetKey() + "a2") + " coarse (10cm / 25°)]");
@@ -115,6 +118,20 @@ default
         if(m == "menu")
         {
             giveMenu();
+        }
+        else if(m == "lock")
+        {
+            locked = !locked;
+            string oldn = llGetObjectName();
+            llSetObjectName("");
+            if(locked) {
+                llOwnerSay("Locking this focus target onto your avatar...");
+                llOwnerSay("@detach=n");
+            } else {
+                llOwnerSay("Unlocking this focus target from your avatar...");
+                llOwnerSay("@detach=y");
+            }
+            llSetObjectName(oldn);
         }
         else if(m == "preview")
         {
