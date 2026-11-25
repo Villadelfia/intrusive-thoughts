@@ -823,9 +823,22 @@ default
             }
             else if(cameraRestrict != 0)
             {
+                integer sitting = ((llGetAgentInfo(rezzer) & AGENT_SITTING) != 0) || (llList2Key(llGetObjectDetails(rezzer, [OBJECT_ROOT]), 0) != rezzer);
+                string suffix = ";stand";
+                if(sitting) suffix = ";sit";
                 list uuids = llGetAttachedList(rezzer);
                 integer n = llGetListLength(uuids);
                 list data = [];
+                while(~--n)
+                {
+                    data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
+                    if(startswith(llToLower((string)data[0]), llToLower(name) + suffix) || startswith(llToLower((string)data[0]), llToLower(objectprefix + name) + suffix))
+                    {
+                        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
+                        return;
+                    }
+                }
+                n = llGetListLength(uuids);
                 while(~--n)
                 {
                     data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);

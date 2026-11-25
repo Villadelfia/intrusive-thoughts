@@ -186,3 +186,4 @@ Version 3.0.7:
  - Add a /1setname and /1setprefix command to easily change your name.
  - Allow, but do not display, slashes in objectification names to allow more flexibility in #RLV auto attach/detach.
  - Improve reliability of group changing for rez.
+ - Add option to have focus target differentiate between standing and sitting.

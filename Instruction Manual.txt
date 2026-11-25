@@ -196,6 +196,8 @@ When worn as is, any slave or object that has focusing restrictions active will 
 
 You can also rename the object a specific name to make that specific object look at it. For example, if you wear a focus target called Heels, the worn object called Heels will look at that target. All other objects will still look at the standard focus target.
 
+Any specific focus target can have ";sit" added to the name to be looked at when the wearer is sitting, and likewise ";stand" can be added to be focused on only when standing.
+
 
 23. Can I stop the IT slave from resizing?
 Yes, just put anything (texture, sound, notecard...) inside of it with the name NO_RESIZE, and it won't.
