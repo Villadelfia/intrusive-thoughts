@@ -126,6 +126,7 @@ default
         llListen(RLVRC, "", NULL_KEY, "");
         llListen(GAZE_CHAT_CHANNEL, "", NULL_KEY, "");
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
+        llListen(COMMAND_CHANNEL, "", llGetOwner(), "");
     }
 
     attach(key id)
@@ -183,6 +184,21 @@ default
                 voredirect(m, llGetOwnerKey(id));
             }
         }
+        else if(c == COMMAND_CHANNEL)
+        {
+            if(startswith(m, "setname"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("setname"));
+                owner = llStringTrim(m,STRING_TRIM);
+                if(llGetSubString(owner, -1, -1) == "s") objectprefix = owner + "' ";
+                else                                                     objectprefix = owner + "'s ";
+            }
+            else if(startswith(m, "setprefix"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("setprefix"));
+                objectprefix = llStringTrim(m,STRING_TRIM) + " ";
+            }
+        }
     }
 
     object_rez(key id)
@@ -228,6 +244,8 @@ default
             {
                 owner = (string)id;
                 if(owner == "" || owner == "Avatar") owner = guessname();
+                if(llGetSubString(owner, -1, -1) == "s") objectprefix = owner + "' ";
+                else                                                     objectprefix = owner + "'s ";
             }
             else if(str == "objectprefix")
             {

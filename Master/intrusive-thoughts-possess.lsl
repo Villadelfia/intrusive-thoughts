@@ -117,6 +117,7 @@ default
         llListen(MANTRA_CHANNEL, "", NULL_KEY, "");
         llListen(POSS_CHANNEL, "", NULL_KEY, "");
         llListen(7, "", llGetOwner(), "");
+        llListen(COMMAND_CHANNEL, "", llGetOwner(), "");
     }
 
     attach(key id)
@@ -285,6 +286,14 @@ default
                 }
             }
 
+        }
+        else if(c == COMMAND_CHANNEL)
+        {
+            if(startswith(m, "setname"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("setname"));
+                owner = llStringTrim(m,STRING_TRIM);
+            }
         }
     }
 

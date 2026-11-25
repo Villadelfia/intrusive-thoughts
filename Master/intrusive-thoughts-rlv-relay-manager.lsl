@@ -16,6 +16,8 @@ integer enabled = FALSE;
 integer configured = FALSE;
 integer relaymode = 0;
 list allowed = [];
+list lookupqueue = [];
+key inflight = NULL_KEY;
 
 makelisten(key who)
 {
@@ -67,21 +69,40 @@ givemenu()
         llOwnerSay("Your RLV relay is currently disabled. Click [secondlife:///app/chat/1/rlvon here] to turn on your RLV relay.");
     }
 
+    // RLV relay mode.
+    llOwnerSay(" ");
+    if(relaymode == 0)      llOwnerSay("Your relay is in ask mode. Switch to: [secondlife:///app/chat/1/rlvmodegroup group] [secondlife:///app/chat/1/rlvmodeauto auto].");
+    else if(relaymode == 1) llOwnerSay("Your relay is in group mode. Switch to: [secondlife:///app/chat/1/rlvmodeask ask] [secondlife:///app/chat/1/rlvmodeauto auto].");
+    else                    llOwnerSay("Your relay is in auto mode. Switch to: [secondlife:///app/chat/1/rlvmodeask ask] [secondlife:///app/chat/1/rlvmodegroup group].");
+
     // Commands.
     llOwnerSay(" ");
     llOwnerSay("/1rlvrun <command> — Run an RLV command on yourself. This will bypass any filters you have set up.");
+    llOwnerSay("/1rlvtrust <uuid/name> — Add person to your allow list by legacy name or uuid.");
+    llOwnerSay("/1filteradd <filter> — Add an RLV command filter.");
     llOwnerSay("[secondlife:///app/chat/1/rlvmenu /1rlvmenu] — Show this menu.");
+
+    // Trust list.
+    integer i;
+    integer l = llGetListLength(allowed);
+    if(relaymode != 2)
+    {
+        llOwnerSay(" ");
+        llOwnerSay("Trusted list:");
+        llOwnerSay(" - Yourself.");
+        if(allowed != [])
+        {
+            for(i = 0; i < l; ++i) llOwnerSay(" - secondlife:///app/agent/" + (string)llList2Key(allowed, i) + "/about [secondlife:///app/chat/1/rlvuntrust%20" + (string)i + " (remove)].");
+        }
+    }
 
     // Restrictions.
     integer dev = -1;
-    integer i;
-    integer l = llGetListLength(restrictions);
-
-    llOwnerSay(" ");
-    llOwnerSay("Active restrictions:");
+    l = llGetListLength(restrictions);
     if(restrictions != [])
     {
-
+        llOwnerSay(" ");
+        llOwnerSay("Active restrictions (click any to remove):");
         for(i = 0; i < l; i += 3)
         {
             integer newdev = (integer)llList2String(restrictions, i);
@@ -94,33 +115,18 @@ givemenu()
             }
             llOwnerSay(" - [secondlife:///app/chat/1/relaycmd%20" + (string)dev + "%20" + llEscapeURL(res + "=y") + " " + res + "]");
         }
-
-        llOwnerSay(" ");
-        llOwnerSay("Click any of the above links to remove that restriction.");
-    }
-    else
-    {
-        llOwnerSay(" - None");
     }
 
     // Filters.
-    llOwnerSay(" ");
-    llOwnerSay("RLV filters:");
     if(filters != [])
     {
+        llOwnerSay(" ");
+        llOwnerSay("RLV filters (click any to remove):");
         l = llGetListLength(filters);
         for(i = 0; i < l; ++i) llOwnerSay(" - [secondlife:///app/chat/1/filterdel%20" + (string)i + " " + llList2String(filters, i) + "]");
-
-        llOwnerSay(" ");
-        llOwnerSay("Click any of the above links to remove that filter.");
-    }
-    else
-    {
-        llOwnerSay(" - None");
-        llOwnerSay(" ");
     }
 
-    llOwnerSay("Type \"/1filteradd <filter>\" to add an RLV command filter.");
+    
     llSetObjectName(master_base);
 }
 
@@ -199,6 +205,51 @@ default
                     llOwnerSay("Your RLV relay has been turned on.");
                     llSetObjectName(master_base);
                     llOwnerSay("@touchme=add");
+                }
+            }
+            else if(llToLower(m) == "rlvmodeask")
+            {
+                relaymode = 0;
+                llSetObjectName("");
+                llOwnerSay("Your RLV relay has been set to ask mode.");
+                llSetObjectName(master_base);
+            }
+            else if(llToLower(m) == "rlvmodegroup")
+            {
+                relaymode = 1;
+                llSetObjectName("");
+                llOwnerSay("Your RLV relay has been set to group mode.");
+                llSetObjectName(master_base);
+            }
+            else if(llToLower(m) == "rlvmodeauto")
+            {
+                relaymode = 2;
+                llSetObjectName("");
+                llOwnerSay("Your RLV relay has been set to auto mode.");
+                llSetObjectName(master_base);
+            }
+            else if(startswith(llToLower(m), "rlvuntrust"))
+            {
+                integer which = (integer)llDeleteSubString(m, 0, llStringLength("rlvuntrust"));
+                llSetObjectName("");
+                llOwnerSay("RLV Relay will no longer automatically allow devices owned by secondlife:///app/agent/" + (string)llList2Key(allowed, which) + "/about.");
+                llSetObjectName(master_base);
+                allowed = llDeleteSubList(allowed, which, which);
+            }
+            else if(startswith(llToLower(m), "rlvtrust"))
+            {
+                key who = (key)llDeleteSubString(m, 0, llStringLength("rlvtrust"));
+                if(who)
+                {
+                    allowed += [who];
+                    llSetObjectName("");
+                    llOwnerSay(VERSION_M + ": RLV Relay will automatically allow devices owned by secondlife:///app/agent/" + (string)who + "/about.");
+                    llSetObjectName(master_base);
+                }
+                else
+                {
+                    lookupqueue += [(string)who];
+                    inflight = llRequestUserKey(llList2String(lookupqueue, 0));
                 }
             }
 
@@ -370,7 +421,7 @@ default
                     enabled = TRUE;
                     llMessageLinked(LINK_SET, M_API_SET_FILTER, "relay", (key)((string)enabled));
                     llSetObjectName("");
-                    llOwnerSay("Your RLV relay has been turned on.");
+                    llOwnerSay("Your RLV relay has been turned on. Remember that you can type [secondlife:///app/chat/1/rlvmenu /1rlvmenu] to get to the menu to change relay mode, trusted people, ongoing restrictions, and other stuff!");
                     llSetObjectName(master_base);
                     llOwnerSay("@touchme=add");
                 }
@@ -423,7 +474,7 @@ default
             if(enabled == TRUE)
             {
                 llSetObjectName("");
-                llOwnerSay(VERSION_M + ": Your RLV relay is turned on, supporting up to " + (string)llGetListLength(rlvclients) + " devices.");
+                llOwnerSay(VERSION_M + ": Your RLV relay is turned on, supporting up to " + (string)llGetListLength(rlvclients) + " devices. Remember that you can type [secondlife:///app/chat/1/rlvmenu /1rlvmenu] to get to the menu to change relay mode, trusted people, ongoing restrictions, and other stuff!");
                 llSetObjectName(master_base);
                 llOwnerSay("@touchme=add");
             }
@@ -439,6 +490,10 @@ default
                 llOwnerSay(VERSION_M + ": Your RLV relay is turned off. It supports up to " + (string)llGetListLength(rlvclients) + " devices.");
                 llSetObjectName(master_base);
             }
+            if(llGetListLength(lookupqueue) != 0) 
+            {
+                inflight = llRequestUserKey(llList2String(lookupqueue, 0));
+            }
             configured = TRUE;
         }
         else if(num == M_API_CONFIG_DATA)
@@ -447,6 +502,8 @@ default
             {
                 allowed = [];
                 filters = [];
+                lookupqueue = [];
+                inflight = NULL_KEY;
                 configured = FALSE;
             }
 
@@ -477,10 +534,17 @@ default
             }
             else if(str == "relayallowed")
             {
-                allowed += [k];
-                llSetObjectName("");
-                llOwnerSay(VERSION_M + ": RLV Relay will automatically allow devices owned by secondlife:///app/agent/" + (string)k + "/about.");
-                llSetObjectName(master_base);
+                if(k)
+                {
+                    allowed += [k];
+                    llSetObjectName("");
+                    llOwnerSay(VERSION_M + ": RLV Relay will automatically allow devices owned by secondlife:///app/agent/" + (string)k + "/about.");
+                    llSetObjectName(master_base);
+                }
+                else
+                {
+                    lookupqueue += [(string)k];
+                }
             }
             else if(str == "relayfilter")
             {
@@ -542,6 +606,25 @@ default
                     llSetObjectName(master_base);
                 }
             }
+        }
+    }
+
+    dataserver(key q, string data)
+    {
+        if(q != inflight) return;
+        inflight = NULL_KEY;
+        key k = (key)data;
+        if(k)
+        {
+            allowed += [k];
+            llSetObjectName("");
+            llOwnerSay(VERSION_M + ": RLV Relay will automatically allow devices owned by secondlife:///app/agent/" + (string)k + "/about.");
+            llSetObjectName(master_base);
+        }
+        lookupqueue = llDeleteSubList(lookupqueue, 0, 0);
+        if(llGetListLength(lookupqueue) != 0) 
+        {
+            inflight = llRequestUserKey(llList2String(lookupqueue, 0));
         }
     }
 

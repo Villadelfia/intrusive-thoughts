@@ -351,7 +351,7 @@ default
         if(c == GAZE_CHAT_CHANNEL)
         {
             if(keyisavatar == TRUE) return;
-            llSetObjectName(objectprefix + llList2String(llParseString2List(name, [";"], []), 0));
+            llSetObjectName(objectprefix + llList2String(llParseString2List(name, [";", "/"], []), 0));
             if(llToLower(llStringTrim(m, STRING_TRIM)) == "/me" || startswith(m, "/me") == FALSE || contains(m, "\"") == TRUE)
             {
                 llRegionSayTo(llAvatarOnSitTarget(), 0, m);
@@ -364,7 +364,7 @@ default
         }
         else if(c == GAZE_REN_CHANNEL)
         {
-            llSetObjectName(objectprefix + llList2String(llParseString2List(name, [";"], []), 0));
+            llSetObjectName(objectprefix + llList2String(llParseString2List(name, [";", "/"], []), 0));
             llSay(0, m);
             llSetObjectName("ball");
         }
@@ -864,6 +864,7 @@ default
         else if(method == "POST")
         {
             llSetTimerEvent(0.0);
+            llSetObjectName("teleporting");
             llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "cantp," + (string)llAvatarOnSitTarget() + ",@unsit=y|@tplocal=y|@tplm=y|@tploc=y|@tpto:" + body + "=force|!release");
             llHTTPResponse(id, 200, "OK");
             llSleep(10.0);

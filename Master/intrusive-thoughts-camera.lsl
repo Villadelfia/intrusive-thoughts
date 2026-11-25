@@ -8,6 +8,7 @@ default
     state_entry()
     {
         debug("[state_entry] Script start");
+        llListen(COMMAND_CHANNEL, "", llGetOwner(), "");
     }
 
     attach(key id)
@@ -22,6 +23,33 @@ default
         if(perm & PERMISSION_TRACK_CAMERA) llSetTimerEvent(0.5);
     }
 
+    listen(integer c, string n, key id, string m)
+    {
+        if(c == COMMAND_CHANNEL)
+        {
+            if(startswith(m, "setname"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("setname"));
+                string owner = llStringTrim(m,STRING_TRIM);
+                string objectprefix;
+                if(llGetSubString(owner, -1, -1) == "s") objectprefix = owner + "' ";
+                else                                                     objectprefix = owner + "'s ";
+                llSetObjectName("");
+                llOwnerSay(VERSION_M + ": Set spoof name prefix to " + owner);
+                llOwnerSay(VERSION_M + ": Set spoof object prefix to " + objectprefix);
+                llSetObjectName(master_base);
+            }
+            else if(startswith(m, "setprefix"))
+            {
+                m = llDeleteSubString(m, 0, llStringLength("setprefix"));
+                string objectprefix = llStringTrim(m,STRING_TRIM);
+                llSetObjectName("");
+                llOwnerSay(VERSION_M + ": Set spoof object prefix to " + objectprefix);
+                llSetObjectName(master_base);
+            }
+        }
+    }
+
     link_message(integer sender_num, integer num, string str, key id)
     {
         if(num == M_API_CONFIG_DATA)
@@ -31,8 +59,12 @@ default
             if(str == "name")
             {
                 string owner = (string)id;
+                string objectprefix;
                 if(owner == "" || owner == "Avatar") owner = guessname();
+                if(llGetSubString(owner, -1, -1) == "s") objectprefix = owner + "' ";
+                else                                                     objectprefix = owner + "'s ";
                 llOwnerSay(VERSION_M + ": Set spoof name prefix to " + owner);
+                llOwnerSay(VERSION_M + ": Set spoof object prefix to " + objectprefix);
             }
             else if(str == "objectprefix")
             {

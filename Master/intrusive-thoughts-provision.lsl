@@ -204,16 +204,22 @@ default
                     llSetObjectName(master_base);
                 }
 
-                // If we are in the same place, and a group change helped last time, or we're in a new place, try changing groups.
+                // If we are in the same place, and a group change helped last time, or we're in a new place, try changing groups. We try up to 5 times.
                 if((parcelid == lastparcel && groupchangeneeded == TRUE) || (parcelid != lastparcel))
                 {
-                    llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
-                    llSleep(2.5);
-                    rezmode = canrez(llGetPos());
-                    if(rezmode)
+                    integer n = 5;
+                    while(~--n) 
                     {
-                        groupchangeneeded = TRUE;
+                        llOwnerSay("@setgroup:" + (string)llList2Key(llGetParcelDetails(llGetPos(), [PARCEL_DETAILS_GROUP]), 0) + "=force");
+                        llSleep(2.5);
+                        rezmode = canrez(llGetPos());
+                        if(rezmode) 
+                        {
+                            groupchangeneeded = TRUE;
+                            jump ship;
+                        }
                     }
+                    @ship;
                 }
             }
             else

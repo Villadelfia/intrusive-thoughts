@@ -181,4 +181,8 @@ Version 3.0.7:
  - Add apply and unapply messages to slave.
  - Add two more BLIND_MUTE options: One where the slave is blind to any garbling, and one where only the slave sees the garbling.
  - Add convenience locking of focus targets.
- - Add a /1<prefix>info to see who and what anyone is wearing using IT.
+ - Add a /1<prefix>info command to see who and what anyone is wearing using IT.
+ - Add more options in the /1rlvmenu menu, and also a reminder that it exists.
+ - Add a /1setname and /1setprefix command to easily change your name.
+ - Allow, but do not display, slashes in objectification names to allow more flexibility in #RLV auto attach/detach.
+ - Improve reliability of group changing for rez.

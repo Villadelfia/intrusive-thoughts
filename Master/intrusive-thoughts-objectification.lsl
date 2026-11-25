@@ -34,6 +34,11 @@ integer dialog = 0;
 integer filter = FALSE;
 integer configured = FALSE;
 
+string topropername(string d)
+{
+    return llList2String(llParseString2List(d, ["/"], []),0);
+}
+
 detachobject(string o)
 {
     if(o == "") return;
@@ -64,7 +69,7 @@ givereleasemenu()
     for(i = 0; i < l; ++i)
     {
         buttons += [(string)i];
-        prompt += "\n" + (string)i + ": " + llList2String(objectifiednames, i) + " (" + objectprefix + llList2String(objectifieddescriptions, i) + ")";
+        prompt += "\n" + (string)i + ": " + llList2String(objectifiednames, i) + " (" + objectprefix + topropername(llList2String(objectifieddescriptions, i)) + ")";
     }
     if(getstringbytes(prompt) > 512)
     {
@@ -73,7 +78,7 @@ givereleasemenu()
         for(i = 0; i < l; ++i)
         {
             buttons += [(string)i];
-            prompt += "\n" + (string)i + ": " + llList2String(objectifieddescriptions, i) + ")";
+            prompt += "\n" + (string)i + ": " + topropername(llList2String(objectifieddescriptions, i)) + ")";
         }
     }
     while(llGetListLength(buttons) < 11) buttons += [" "];
@@ -99,7 +104,7 @@ giveeditmenu()
     for(i = 0; i < l; ++i)
     {
         buttons += [(string)i];
-        prompt += "\n" + (string)i + ": " + llList2String(objectifiednames, i) + " (" + objectprefix + llList2String(objectifieddescriptions, i)+ ")";
+        prompt += "\n" + (string)i + ": " + llList2String(objectifiednames, i) + " (" + objectprefix + topropername(llList2String(objectifieddescriptions, i)) + ")";
     }
     if(getstringbytes(prompt) > 512)
     {
@@ -108,7 +113,7 @@ giveeditmenu()
         for(i = 0; i < l; ++i)
         {
             buttons += [(string)i];
-            prompt += "\n" + (string)i + ": " + llList2String(objectifieddescriptions, i) + ")";
+            prompt += "\n" + (string)i + ": " + topropername(llList2String(objectifieddescriptions, i)) + ")";
         }
     }
     while(llGetListLength(buttons) < 12) buttons += [" "];
@@ -133,7 +138,7 @@ givestoremenu()
     for(i = 0; i < l; ++i)
     {
         buttons += [(string)i];
-        prompt += "\n" + (string)i + ": " + llList2String(objectifiednames, i) + " (" + objectprefix + llList2String(objectifieddescriptions, i)+ ")";
+        prompt += "\n" + (string)i + ": " + llList2String(objectifiednames, i) + " (" + objectprefix + topropername(llList2String(objectifieddescriptions, i)) + ")";
     }
     if(getstringbytes(prompt) > 512)
     {
@@ -142,7 +147,7 @@ givestoremenu()
         for(i = 0; i < l; ++i)
         {
             buttons += [(string)i];
-            prompt += "\n" + (string)i + ": " + llList2String(objectifieddescriptions, i) + ")";
+            prompt += "\n" + (string)i + ": " + topropername(llList2String(objectifieddescriptions, i)) + ")";
         }
     }
     while(llGetListLength(buttons) < 12) buttons += [" "];
@@ -153,7 +158,7 @@ givestoremenu()
 release(integer i)
 {
     detachobject(llList2String(objectifieddescriptions, i));
-    llMessageLinked(LINK_SET, M_API_SPOOF, "objrelease", (key)(owner + "|||" + llList2String(objectifieddescriptions, i) + "|||" + llList2String(objectifiednames, i)));
+    llMessageLinked(LINK_SET, M_API_SPOOF, "objrelease", (key)(owner + "|||" + topropername(llList2String(objectifieddescriptions, i)) + "|||" + llList2String(objectifiednames, i)));
     llRegionSayTo(llList2Key(objectifiedballs, i), MANTRA_CHANNEL, "unsit");
     objectifiednames = llDeleteSubList(objectifiednames, i, i);
     objectifiedavatars = llDeleteSubList(objectifiedavatars, i, i);
@@ -296,8 +301,8 @@ default
                 else
                 {
                     detachobject(llList2String(objectifieddescriptions, store));
-                    llMessageLinked(LINK_SET, M_API_SPOOF, "objputdown", (key)(owner + "|||" + llList2String(objectifieddescriptions, store) + "|||" + llList2String(objectifiednames, store) + "|||" + n));
-                    llRegionSayTo(id, MANTRA_CHANNEL, "putdown " + (string)llList2Key(objectifiedballs, store) + "|||" + llList2String(objectifieddescriptions, store));
+                    llMessageLinked(LINK_SET, M_API_SPOOF, "objputdown", (key)(owner + "|||" + topropername(llList2String(objectifieddescriptions, store)) + "|||" + llList2String(objectifiednames, store) + "|||" + n));
+                    llRegionSayTo(id, MANTRA_CHANNEL, "putdown " + (string)llList2Key(objectifiedballs, store) + "|||" + topropername(llList2String(objectifieddescriptions, store)));
                     objectifiednames = llDeleteSubList(objectifiednames, store, store);
                     objectifiedavatars = llDeleteSubList(objectifiedavatars, store, store);
                     objectifiedballs = llDeleteSubList(objectifiedballs, store, store);
@@ -313,7 +318,7 @@ default
                 string desc = llList2String(params, 1);
                 string url = llList2String(params, 2);
                 attachobject(desc);
-                llMessageLinked(LINK_SET, M_API_SPOOF, "objputon", (key)(owner + "|||" + desc + "|||" + llGetDisplayName(av) + "|||" + storingon));
+                llMessageLinked(LINK_SET, M_API_SPOOF, "objputon", (key)(owner + "|||" + topropername(desc) + "|||" + llGetDisplayName(av) + "|||" + storingon));
                 llRegionSayTo(id, MANTRA_CHANNEL, "prefix " + objectprefix);
                 objectifiedballs += [id];
                 objectifiedavatars += [av];
@@ -378,11 +383,11 @@ default
             string obj = llList2String(objectifieddescriptions, i);
             if(i == -1) return;
 
-            llSetObjectName(objectprefix + llList2String(llParseString2List(obj, [";"], []), 0));
+            llSetObjectName(objectprefix + llList2String(llParseString2List(obj, [";", "/"], []), 0));
             if(llToLower(llStringTrim(m, STRING_TRIM)) != "/me" && startswith(m, "/me") == TRUE && contains(m, "\"") == FALSE)
             {
-                if(llGetInventoryType("validate") == INVENTORY_SCRIPT) llMessageLinked(LINK_THIS, X_API_DO_VALIDATE, m, (key)(objectprefix + llList2String(llParseString2List(obj, [";"], []), 0)));
-                else                                                   llSay(0, m);
+                if(llGetInventoryType("validate") == INVENTORY_SCRIPT) llMessageLinked(LINK_THIS, X_API_DO_VALIDATE, m, (key)(objectprefix + llList2String(llParseString2List(obj, [";", "/"], []), 0)));
+                else llSay(0, m);
             }
             else
             {
@@ -394,7 +399,25 @@ default
         }
         else if(c == COMMAND_CHANNEL)
         {
-            if(m != llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1)) + "info") return;
+            if(llGetOwnerKey(id) == llGetOwner())
+            {
+                if(startswith(m, "setname"))
+                {
+                    m = llDeleteSubString(m, 0, llStringLength("setname"));
+                    owner = llStringTrim(m,STRING_TRIM);
+                    if(llGetSubString(owner, -1, -1) == "s") objectprefix = owner + "' ";
+                    else                                                     objectprefix = owner + "'s ";
+                    return;
+                }
+                else if(startswith(m, "setprefix"))
+                {
+                    m = llDeleteSubString(m, 0, llStringLength("setprefix"));
+                    objectprefix = llStringTrim(m,STRING_TRIM) + " ";
+                    return;
+                }
+            }
+
+            if(m != llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1)) + "info" && m != "*info") return;
             id = llGetOwnerKey(id);
             if(objectifiedavatars == [])
             {
@@ -409,7 +432,7 @@ default
                 integer l = llGetListLength(objectifiedavatars);
                 for(i = 0; i < l; ++i)
                 {
-                    msg += "\n- secondlife:///app/agent/" + (string)llList2Key(objectifiedavatars, i) + "/about as " + llList2String(objectifieddescriptions, i) + ".";
+                    msg += "\n- secondlife:///app/agent/" + (string)llList2Key(objectifiedavatars, i) + "/about as " + topropername(llList2String(objectifieddescriptions, i)) + ".";
                 }
                 llSetObjectName("");
                 llRegionSayTo(id, 0, msg);
@@ -421,13 +444,19 @@ default
     object_rez(key id)
     {
         if(llList2String(llGetObjectDetails(id, [OBJECT_NAME]), 0) != "ball") return;
+        if(objectifiedavatars == [])
+        {
+            llSetObjectName("");
+            llOwnerSay("You and anyone around you can get info on who you're wearing by typing /1" + llToLower(llGetSubString(llGetUsername(llGetOwner()), 0, 1)) + "info or /1*info.");
+            llSetObjectName(master_base);
+        }
         lastrezzed = id;
         objectifiedballs += [id];
         objectifiedavatars += [target];
         objectifiednames += [targetname];
         objectifieddescriptions += [targetdescription];
         objectifiedurls += ["null"];
-        llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)target + "|||" + targetdescription + "|||" + objectprefix);
+        llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)target + "|||" + topropername(targetdescription) + "|||" + objectprefix);
         if(timermode == 0) await = "c";
         else
         {
@@ -459,6 +488,8 @@ default
             {
                 owner = (string)id;
                 if(owner == "" || owner == "Avatar") owner = guessname();
+                if(llGetSubString(owner, -1, -1) == "s") objectprefix = owner + "' ";
+                else                                                     objectprefix = owner + "'s ";
             }
             else if(str == "objectprefix")
             {
@@ -542,7 +573,7 @@ default
                 objectifiednames += [llList2String(params, 1)];
                 objectifieddescriptions += [llList2String(params, 2)];
                 objectifiedurls += ["null"];
-                llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)llList2String(params, 0) + "|||" + llList2String(params, 2) + "|||" + objectprefix);
+                llRegionSayTo(id, MANTRA_CHANNEL, "sit " + (string)llList2String(params, 0) + "|||" + topropername(llList2String(params, 2)) + "|||" + objectprefix);
                 if(timermode == 0) await = "c";
                 else
                 {
