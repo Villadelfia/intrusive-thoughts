@@ -1,0 +1,360 @@
+############
+# Overview #
+############
+
+Starting from IT 3.1.0, it is possible for IT slaves to be controlled remotely. This feature is meant for advanced users that know how to set up and administrate a web server. To facilitate this, these new keys will be added to the configuration notecard format:
+
+█WEB_URL
+https://www.example.com:1234/example_endpoint
+
+█WEB_HANDLE_HEAR
+1
+
+█WEB_HANDLE_SPEAK
+1
+
+If WEB_URL is set, the system will request a URL for itself, and send it to that endpoint. From this point on, this endpoint can control the IT slave using specifically formed json payloads.
+
+If WEB_HANDLE_HEAR is set to a positive value, the slave will completely block the wearer's hearing, and instead send everything heard from avatars or objects to the web endpoint to be handled there. The number this is set to is included in the payload. If this is set, you are forbidden from using any and all hearing options in IT as they will conflict.
+
+If WEB_HANDLE_SPEAK is set to a positive value, the slave will completely block the wearer's speech and emotes, and instead send everything they try to type to the web endpoint to be handled there. The number this is set to is included in the payload. If this is set, you are forbidden from using any and all speech options, including mantras, in IT as they will conflict.
+
+For both WEB_HANDLE_HEAR and WEB_HANDLE_SPEAK, if you set them to negative values, they will not block hearing or speech, but they will still send everything that's heard or said to the endpoint.
+
+
+##################
+# Payload Format #
+##################
+
+All messages from the slave to the endpoint are sent using the standard llHTTPRequest(...) call, with the following options set:
+
+- HTTP_METHOD: POST
+- HTTP_MIMETYPE: application/json
+- HTTP_BODY_MAXLENGTH: 16384
+- HTTP_VERBOSE_THROTTLE: FALSE
+
+All other options are left to their defaults. In addition, SL will provide the following HTTP headers which you should use for security purposes:
+
+- X-SecondLife-Owner-Name: The username of the wearer.
+- X-SecondLife-Owner-Key: The uuid of the wearer.
+
+More headers and default settings can be found here: https://wiki.secondlife.com/wiki/LlHTTPRequest
+
+The payload itself is always a json object which will be documented in the next section. The server must always respond within 60 seconds, therefore you have three options for your response:
+
+- A fully formed "action" json response, which the slave will execute upon receipt.
+- The text "OK", which the slave will discard.
+- The text "NAK", which the slave will also discard, but also interpret as a command to stop talking to this endpoint. It will completely disable the web module until it is re-configured.
+
+Any return code that's in the 400-599 range or isn't one of these three options will be interpreted as an error and treated as such, please see the error handling section for info on how this works.
+
+
+#######################
+# Spontaneous Packets #
+#######################
+
+These packets will be sent from the slave spontaneously under certain circumstances.
+
+
+# URL Update
+
+{
+    "action": "URL_UPDATE",
+    "url": "https://.../",
+    "secret": "very_secret_key"
+}
+
+This will be sent when initially setting up the web module, whenever the wearer changes region, and whenever the system is trying to recover from an error. The secret is a randomly generated key that must be included in ALL your action packets or the system will refuse them.
+
+
+# URL Error
+
+{
+    "action": "URL_ERROR",
+    "reason": "reason_here"
+}
+
+This is sent when the system cannot get a url for itself, and you must clear your saved url and secret. You may only respond "OK" or "NAK" to this. If you respond "OK", the system will temporarily turn itself off until it can get a URL again. If you respond "NAK", it'll stop trying to get a URL and will instead turn itself off until reconfigured by the Master HUD.
+
+
+# Wearer speaks
+
+{
+    "action": "WEARER_SPEAK",
+    "handle": 1,
+    "message": "The message..."
+}
+
+When WEB_HANDLE_SPEAK is set to a non-zero number, these packets are sent out whenever the wearer tries to speak. Handle is set to the exact value given to WEB_HANDLE_SPEAK, and message is the exact message they tried to say. Note that if the byte length of message is exactly 1024 bytes, it's very likely that you'll receive two of these right after the other. You must still respond to both.
+
+
+# Wearer hears avatar
+
+{
+    "action": "AVATAR_HEAR",
+    "handle": 1,
+    "avatar_username": "avatar.username",
+    "avatar_displayname": "Avatar Displayname",
+    "avatar_uuid": "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9",
+    "avatar_pos": "<1, 2, 3>",
+    "message": "The message..."
+}
+
+When WEB_HANDLE_HEAR is set to a non-zero number, these packets are sent out whenever the wearer hears an avatar. Handle is set to the exact value given to WEB_HANDLE_HEAR, and message is the exact message they tried to say. Note that if the byte length of message is exactly 1024 bytes, it's very likely that you'll receive two of these right after the other. You must still respond to both.
+
+
+# Wearer hears an object
+
+{
+    "action": "OBJECT_HEAR",
+    "handle": 1,
+    "object_uuid": "42d32826-6055-47f3-6e32-cf58f9010ae2",
+    "object_name": "Object",
+    "object_owner": "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9",
+    "object_owner_username": "avatar.username",
+    "object_owner_displayname": "Avatar Displayname",
+    "object_deeded": 0,
+    "object_attach_point": 12,
+    "object_pos": "<1, 2, 3>",
+    "message": "The message..."
+}
+
+When WEB_HANDLE_HEAR is set to a non-zero number, these packets are sent out whenever the wearer hears an object. Handle is set to the exact value given to WEB_HANDLE_HEAR, and message is the exact message they tried to say. Note that if the byte length of message is exactly 1024 bytes, it's very likely that you'll receive two of these right after the other. You must still respond to both.
+
+Object_attach_point is the numeric attach point as defined in the llGetObjectDetails(...) function.
+
+Note that username and displayname in this message are very likely to be empty or invalid if object_attach_point is 0 because the owner is likely not present. You can use online key2name services to get this data anyway. Object_deeded is included for your convenience when crafting a response.
+
+
+# System receives a link_message with number -9999
+
+{
+    "action": "LINK_MESSAGE",
+    "string": "string in message",
+    "key": "key in message"
+}
+
+Any message received from llMessageLinked with a number of -9999 will have its entire contents sent to the server endpoint. This can be used with the action packet of the same name to do more advanced stuff than thought of here.
+
+
+##################
+# Action Packets #
+##################
+
+Meant to be sent to the URL you've received via POST, or as a response to a spontaneous packet. Unless otherwise specified, the slave will respond either with "OK" and a 200 response code, or with "NAK" and a 403 response code.
+
+The basic format of an action packet is as follows:
+
+{
+    "action": "ACTION_NAME",
+    "secret": "the_secret_key",
+    ...
+}
+
+If the secret key does not match, the rest of the payload isn't even checked. You'll just get a 403 response. If it does match, the action and any extra fields are parsed and executed if correct.
+
+
+# Say something
+
+{
+    "action": "SAY_WEARER or SAY_OTHERS or SAY_ALL or SAY_ALL_DIRECT",
+    "secret": "the_secret_key",
+    "name": "Desired Name",
+    "message": "The message...",
+    "range": 20.0
+}
+
+Will say something using the given name. Behavior depends on the exact action:
+
+- SAY_WEARER: Speaks to the wearer using llRegionSayTo(...).
+- SAY_OTHERS: Speaks to everyone in range but the wearer using llRegionSayTo(...).
+- SAY_ALL: Speaks to everyone using llSay(...).
+- SAY_ALL_DIRECT: Speaks to everyone in range including the wearer using llRegionSayTo(...).
+
+Range is handled as follows:
+
+- If it is greater than 100.0, it is capped to 100.0.
+- If it is greater than 20.0, SAY_ALL will switch to llShout instead.
+- If it is less than or equal to 10.0, SAY_ALL will switch to llWhisper instead.
+- If it is missing or set to 0.0 or lower, it's treated as if it's 20.0.
+- All actions other than SAY_WEARER and SAY_ALL will use the exact range specified.
+
+Intended to be used for garbling spoken text.
+
+
+# Say something to one specific person
+
+{
+    "action": "SAY_TO",
+    "secret": "the_secret_key",
+    "avatar_uuid": "42d32826-6055-47f3-6e32-cf58f9010ae2",
+    "name": "Desired Name",
+    "message": "The message..."
+}
+
+Will send a message to the person defined by target. If they are in the same region, it will be done using llRegionSayTo(...), otherwise it will be done using llInstantMessage(...).
+
+
+# Pretend to be a heard message
+
+{
+    "action": "HEAR",
+    "secret": "the_secret_key",
+    "uuid": "42d32826-6055-47f3-6e32-cf58f9010ae2",
+    "message": "The message..."
+}
+
+Will use llRegionSayTo(...) to pretend to be a heard message.
+
+If the uuid is an avatar that's present, the slave will rename itself to a nameless object, and prepend the message with an SLURL that will be rendered by the viewer as a clickable name like this: "secondlife:///app/agent/1aaf1cad-8d64-4966-b1ee-4d17dee81ca9/inspect: Hi!"
+
+If the uuid is an object that's present, the slave will rename itself to a nameless object, and prepend the message with an SLURL that will be rendered by the viewer as a clickable name like this: "secondlife:///app/objectim/15322a27-68a6-d268-b51d-e7a61097570a/?name=Object&owner=c7a188a0-9324-43f2-b2c9-886c70f1aed5&slurl=The%20Bridled%20Estate%2F143%2F116%2F763: Hi!"
+
+Intended to be used to garble heard messages.
+
+
+# Execute an RLV command
+
+{
+    "action": "RLV_EXECUTE",
+    "secret": "the_secret_key",
+    "command": "@detach=n"
+}
+
+Will say command using llOwnerSay(...). Any occurences of RLV_CHANNEL will be replaced with an internal channel and any responses on this channel will be reported to you with the following packet:
+
+{
+    "action": "RLV_RESPONSE",
+    "message": "The response..."
+}
+
+
+# A simple ping
+
+{
+    "action": "PING",
+    "secret": "the_secret_key"
+}
+
+Simply responds with "OK". Use it every 2 minutes or so to find out when the wearer goes offline.
+
+
+# Info on an avatar or object
+
+{
+    "action": "INFO",
+    "secret": "the_secret_key",
+    "uuid": "42d32826-6055-47f3-6e32-cf58f9010ae2"
+}
+
+Gives the following response:
+
+{
+    "action": "INFO_RESPONSE",
+    "my_region": "Bedos",
+    "my_pos": "<128.0, 128.0, 20.0>",
+    "my_sitting": "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9",
+    "uuid": "42d32826-6055-47f3-6e32-cf58f9010ae2"
+}
+
+If the uuid points to an avatar that's present on the same region, the following fields will also be included:
+
+{
+    "avatar_pos": "<1.0, 2.0, 3.0>",
+    "avatar_dist": 123.0,
+    "avatar_username": "avatar.username",
+    "avatar_displayname": "Avatar Displayname",
+    "avatar_sitting": "42d32826-6055-47f3-6e32-cf58f9010ae2"
+}
+
+If the uuid points to an object that's present on the same region, the following fields will also be included:
+
+{
+    "object_pos": "<1.0, 2.0, 3.0>",
+    "object_dist": 123.0,
+    "object_name": "Object",
+    "object_owner": "42d32826-6055-47f3-6e32-cf58f9010ae2"
+}
+
+Avatar_sitting and my_sitting might be all zeroes if the avatar is not sitting, its own uuid if it's sitting on the ground, or the uuid of the object it's sitting on. Keep an eye on this action because it is very likely that more details will be added over time, so do not error out when there's more fields than you expect.
+
+
+# Scan nearby people.
+
+{
+    "action": "SCAN_NEARBY",
+    "secret": "the_secret_key",
+    "include_distances": 1
+}
+
+Will return an object like the following if include_distances is set to 1:
+
+{
+    "action": "SCAN_RESULT",
+    "nearby": [
+        "42d32826-6055-47f3-6e32-cf58f9010ae2", 0.7,
+        "1aaf1cad-8d64-4966-b1ee-4d17dee81ca9", 4.63
+    ]
+}
+
+Nearby contains a strided list of the 25 nearest people followed by their distance from the wearer. Use INFO to get more info.
+
+If include_distances is set to 0, the nearby list includes everyone present on the region in no particular order, but the distances themselves are not included.
+
+
+# Pause the system
+
+{
+    "action": "SET_PAUSED",
+    "secret": "the_secret_key",
+    "paused": 1
+}
+
+If paused is set to 0, the system will be unpaused. If it is set to 1, the system will be paused. While paused, hearing and speech are fully allowed, but the system will still listen to commands.
+
+
+# Turn off the system
+
+{
+    "action": "TURN_OFF",
+    "secret": "the_secret_key"
+}
+
+Turns off the entire web system until reconfigured using the Master HUD.
+
+
+# Set new values for WEB_HANDLE_HEAR and WEB_HANDLE_SPEAK
+
+{
+    "action": "HANDLE_HEAR or HANDLE_SPEAK",
+    "secret": "the_secret_key",
+    "value": 1
+}
+
+Replaces the set value for WEB_HANDLE_HEAR or WEB_HANDLE_SPEAK. If set to a non-zero value those systems will be enabled.
+
+
+# Link message
+
+{
+    "action": "LINK_MESSAGE",
+    "secret": "the_secret_key",
+    "number": -1234,
+    "string": "string to send",
+    "key": "key to send"
+}
+
+Sends a llMessageLinked to LINK_SET using the supplied parameters. This can be used to control your own scripts. Note that one of the spontaneous messages involves any message with number -9999 that your scripts send back.
+
+
+################
+# Error States #
+################
+
+Three error states are possible:
+
+1. The system can't get an URL. The system will notify the endpoint and disable itself and try to get an URL every 3 minutes until it succeeds.
+
+2. A throttle is hit. The system will disable itself for 40 seconds, and if this happened in the process of hearing or speaking, the message will be allowed through ungarbled.
+
+3. The server times out or otherwise errors. The system will turn itself off and regularly attempt to send a URL update packet. When this succeeds it'll turn itself back on.

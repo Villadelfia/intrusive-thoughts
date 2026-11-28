@@ -223,7 +223,10 @@ default
         {
             getZBase();
             name = llList2String(llGetObjectDetails(rezzer, [OBJECT_NAME]), 0);
+            llMessageLinked(LINK_THIS, X_API_NOTIFY_NAMES, name, (key)objectprefix);
         }
+
+        llMessageLinked(LINK_THIS, X_API_IS_AVATAR, (string)keyisavatar, "");
 
         // If we were rezzed without a start parameter or just normally, don't suicide in 60 seconds.
         if(start_param == 0) return;
@@ -416,6 +419,7 @@ default
                 m = llDeleteSubString(m, 0, llStringLength(prefix + "name"));
                 name = m;
                 llMessageLinked(LINK_THIS, X_API_NOTIFY_NAME, objectprefix + m, firstavatar);
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_NAMES, name, (key)objectprefix);
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "objrename " + m);
             }
             else if(startswith(m, prefix + "im"))
@@ -521,6 +525,7 @@ default
                 name = llList2String(params, 1);
                 objectprefix = llList2String(params, 2);
                 if(objectprefix == "NULL") objectprefix = "";
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_NAMES, name, (key)objectprefix);
                 llListen(GAZE_CHAT_CHANNEL, "", firstavatar, "");
                 llListen(GAZE_REN_CHANNEL, "", firstavatar, "");
                 vector pos = llList2Vector(llGetObjectDetails(firstavatar, [OBJECT_POS]), 0);
@@ -543,9 +548,11 @@ default
                 llMessageLinked(LINK_THIS, X_API_CHANGE_TARGET_OWNER, "", targetOwner);
                 name = llList2String(params, 1);
                 objectprefix = "";
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_NAMES, name, (key)objectprefix);
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "puton " + (string)llAvatarOnSitTarget() + "|||" + name + "|||" + url);
                 llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "ballnotify|||avatar|||" + name + "|||" + (string)rezzer);
                 keyisavatar = TRUE;
+                llMessageLinked(LINK_THIS, X_API_IS_AVATAR, (string)keyisavatar, "");
                 llClearCameraParams();
             }
             else if(startswith(m, "putdown"))
@@ -555,8 +562,10 @@ default
                 rezzer = (key)llList2String(params, 0);
                 name = llList2String(params, 1);
                 objectprefix = "";
+                llMessageLinked(LINK_THIS, X_API_NOTIFY_NAMES, name, (key)objectprefix);
                 llRegionSayTo(rezzer, MANTRA_CHANNEL, "objurl " + url);
                 keyisavatar = FALSE;
+                llMessageLinked(LINK_THIS, X_API_IS_AVATAR, (string)keyisavatar, "");
                 getZBase();
                 llRegionSayTo(llAvatarOnSitTarget(), MANTRA_CHANNEL, "ballnotify|||furniture|||" + name + "|||" + (string)rezzer);
             }
@@ -823,42 +832,7 @@ default
             }
             else if(cameraRestrict != 0)
             {
-                integer sitting = ((llGetAgentInfo(rezzer) & AGENT_SITTING) != 0) || (llList2Key(llGetObjectDetails(rezzer, [OBJECT_ROOT]), 0) != rezzer);
-                string suffix = ";stand";
-                if(sitting) suffix = ";sit";
-                list uuids = llGetAttachedList(rezzer);
-                integer n = llGetListLength(uuids);
-                list data = [];
-                while(~--n)
-                {
-                    data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
-                    if(startswith(llToLower((string)data[0]), llToLower(name) + suffix) || startswith(llToLower((string)data[0]), llToLower(objectprefix + name) + suffix))
-                    {
-                        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
-                        return;
-                    }
-                }
-                n = llGetListLength(uuids);
-                while(~--n)
-                {
-                    data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
-                    if(llToLower((string)data[0]) == llToLower(name) || llToLower((string)data[0]) == llToLower(objectprefix + name))
-                    {
-                        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
-                        return;
-                    }
-                }
-                n = llGetListLength(uuids);
-                while(~--n)
-                {
-                    data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
-                    if(startswith((string)data[0], "Intrusive Thoughts Focus Target"))
-                    {
-                        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
-                        return;
-                    }
-                }
-                llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@setcam_focus:" + (string)rezzer + ";;=force");
+                llMessageLinked(LINK_THIS, X_API_DO_FOCUS, "", rezzer);
             }
         }
     }

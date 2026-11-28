@@ -97,16 +97,16 @@ default
             if((string)id == "get" && lockedname != "")
             {
                 llMessageLinked(LINK_SET, IT_PLUGIN_OWNERSAY, lockedname + " is wearing:", assigneduuid);
-                string prefix = llToLower(llGetSubString(lockedname, 0, 1));
+                string prefix = llToLower(llGetSubString(llGetUsername(lockedkey), 0, 1));
                 list data;
                 list uuids = llGetAttachedList(lockedkey);
-                string uuid;
+                string dev;
                 integer n = llGetListLength(uuids);
                 while(~--n)
                 {
-                    uuid = llList2Key(uuids, n);
-                    data = llGetObjectDetails(uuid, [OBJECT_NAME, OBJECT_CREATOR]);
-                    llMessageLinked(LINK_SET, IT_PLUGIN_OWNERSAY, "» " + (string)data[0] + " ([secondlife:///app/chat/1/" + prefix + "@detach:" + uuid + "=force take off]) « by secondlife:///app/agent/" + (string)((key)data[1]) + "/about", assigneduuid);
+                    dev = llList2Key(uuids, n);
+                    data = llGetObjectDetails(dev, [OBJECT_NAME, OBJECT_CREATOR]);
+                    llMessageLinked(LINK_SET, IT_PLUGIN_OWNERSAY, "» " + (string)data[0] + " ([secondlife:///app/chat/1/" + prefix + "@detach:" + dev + "=force take off]) « by secondlife:///app/agent/" + (string)( (key)data[1] ) + "/about", assigneduuid);
                 }
             }
         }

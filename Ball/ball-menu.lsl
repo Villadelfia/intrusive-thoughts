@@ -13,6 +13,8 @@ integer inventoryRestrict = 1;
 integer worldRestrict = 1;
 integer isHidden = 0;
 key targetOwner = NULL_KEY;
+string name;
+integer keyisavatar;
 
 string restrictionString()
 {
@@ -260,7 +262,21 @@ default
                 prefix = llToLower(llGetSubString(llGetUsername(llAvatarOnSitTarget()), 0, 1));
                 firstavatar = llAvatarOnSitTarget();
                 httpid = llHTTPRequest("http://villadelfia.org:3000/itprefs/l/" + llEscapeURL((string)rezzer + "-" + (string)llAvatarOnSitTarget()), [], "");
+                llSetTimerEvent(5.0);
             }
+        }
+    }
+
+    timer()
+    {
+        if(!keyisavatar || llAvatarOnSitTarget() == NULL_KEY)
+        {
+            llSetObjectDesc("");
+        }
+        else
+        {
+            llSetObjectDesc((string)targetOwner + ";" + prefix + ";" + name + ";" + restrictionString());
+            llRegionSayTo(targetOwner, MANTRA_CHANNEL, "ball_owned");
         }
     }
 
@@ -284,6 +300,7 @@ default
             worldRestrict = (integer)llList2String(settings, 7);
             isHidden = (integer)llList2String(settings, 8);
             llHTTPRequest("http://villadelfia.org:3000/itprefs/s/" + llEscapeURL((string)rezzer + "-" + (string)llAvatarOnSitTarget()) + "/" + llEscapeURL(str), [], "");
+            if(keyisavatar) llSetObjectDesc((string)targetOwner + ";" + prefix + ";" + name + ";" + restrictionString());
         }
         else if(num == X_API_SETTINGS_LOAD)
         {
@@ -315,6 +332,10 @@ default
             llSetObjectName("");
             doubleNotify(id, "secondlife:///app/agent/" + (string)id + "/about is now " + str + ".");
             llSetObjectName("ball");
+        }
+        else if(num == X_API_NOTIFY_NAMES)
+        {
+            name = str;
         }
         else if(num == X_API_NOTIFY_IM)
         {
@@ -427,7 +448,67 @@ default
         }
         else if(num == X_API_CHANGE_TARGET_OWNER)
         {
+            if(targetOwner != id) llRegionSayTo(targetOwner, MANTRA_CHANNEL, "ball_disowned");
             targetOwner = id;
+        }
+        else if(num == X_API_IS_AVATAR)
+        {
+            keyisavatar = (integer)str;
+        }
+        else if(num == X_API_DO_FOCUS)
+        {
+            integer sitting = ((llGetAgentInfo(id) & AGENT_SITTING) != 0) || (llList2Key(llGetObjectDetails(id, [OBJECT_ROOT]), 0) != id);
+            string suffix = ";stand";
+            if(sitting) suffix = ";sit";
+            list uuids = llGetAttachedList(id);
+            integer n = llGetListLength(uuids);
+            list data = [];
+            while(~--n)
+            {
+                data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC, OBJECT_CREATOR]);
+                if((key)data[2] == (key)IT_CREATOR)
+                {
+                    if(endswith(llToLower((string)data[0]), llToLower(name) + suffix) && contains((string)data[1], "setcam_focus"))
+                    {
+                        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
+                        return;
+                    }
+                }
+            }
+            n = llGetListLength(uuids);
+            while(~--n)
+            {
+                data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC, OBJECT_CREATOR]);
+                if((key)data[2] == (key)IT_CREATOR)
+                {
+                    if(endswith(llToLower((string)data[0]), llToLower(name)) && contains((string)data[1], "setcam_focus"))
+                    {
+                        llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
+                        return;
+                    }
+                }
+            }
+            n = llGetListLength(uuids);
+            while(~--n)
+            {
+                data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
+                if(startswith((string)data[0], "Intrusive Thoughts Focus Target") && endswith((string)data[0], suffix))
+                {
+                    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
+                    return;
+                }
+            }
+            n = llGetListLength(uuids);
+            while(~--n)
+            {
+                data = llGetObjectDetails(llList2Key(uuids, n), [OBJECT_NAME, OBJECT_DESC]);
+                if(startswith((string)data[0], "Intrusive Thoughts Focus Target"))
+                {
+                    llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@" + (string)data[1]);
+                    return;
+                }
+            }
+            llRegionSayTo(llAvatarOnSitTarget(), RLVRC, "restrict," + (string)llAvatarOnSitTarget() + ",@setcam_unlock=y|@setcam_focus:" + (string)id + ";;=force");
         }
     }
 

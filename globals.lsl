@@ -1,4 +1,5 @@
 #define MANTRA_CHANNEL      -2033649842
+#define HELPER_CHANNEL      -2048267954
 #define PING_CHANNEL        -1766324201
 #define UPDATE_CHANNEL      -1433121154
 #define S_DIALOG_CHANNEL    -1246653822
@@ -124,6 +125,9 @@
 #define X_API_VALIDATE_OK         -4035
 #define X_API_VALIDATE_NO         -4036
 #define X_API_CHANGE_TARGET_OWNER -4037
+#define X_API_NOTIFY_NAMES        -4038
+#define X_API_DO_FOCUS            -4039
+#define X_API_IS_AVATAR           -4040
 
 #define FM_RELEASE                -5000
 #define FD_OWNER                  -5001
@@ -184,7 +188,7 @@ string slave_base = "Intrusive Thoughts Slave [v3.0.7a]";
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 0
 #define VERSION_PATCH 7
-#define FURNITURE_VERSION 19
+#define FURNITURE_VERSION 20
 #define UPDATE_URL "https://villadelfia.org/sl/it-version.php"
 
 #ifdef DEBUG
